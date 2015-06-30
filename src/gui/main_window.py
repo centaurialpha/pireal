@@ -19,10 +19,11 @@
 
 """ Pireal Main Window """
 
-#from collections import Callable
+from collections import Callable
 from PyQt4.QtGui import (
     QMainWindow,
 )
+from PyQt4.QtCore import SIGNAL
 
 
 class Pireal(QMainWindow):
@@ -72,3 +73,18 @@ class Pireal(QMainWindow):
             menu_name = menubar_item['name']
             items = menubar_item['items']
             menu = menubar.addMenu(menu_name)
+            for menu_item in items:
+                if isinstance(menu_item, str):
+                    # Is a separator
+                    menu.addSeparator()
+                else:
+                    action = menu_item['name']
+                    obj, connection = menu_item['slot'].split(':')
+                    if obj.startswith('pireal'):
+                        obj = self
+                    else:
+                        pass
+                    qaction = menu.addAction(action)
+                    slot = getattr(obj, connection, None)
+                    if isinstance(slot, Callable):
+                        self.connect(qaction, SIGNAL("triggered()"), slot)

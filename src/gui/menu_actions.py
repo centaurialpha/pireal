@@ -18,13 +18,16 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 """
-Default in Spanish
+This module contains an ordered dictionary, in turn this has a dictionary
+with the name and a list of items with properties as an icon , shortcut,
+slot for each item in a menu, by default, strings they are in Spanish.
+
 """
 
 from collections import OrderedDict
 from PyQt4.QtGui import QApplication
 
-tr = QApplication.translate
+translate = QApplication.translate
 
 
 MENU = OrderedDict()
@@ -32,8 +35,22 @@ MENU = OrderedDict()
 
 # Menu File
 MENU['file'] = {
-    'name': tr("Pireal", "&Archivo"),
+    'name': translate("PIREAL", "&Archivo"),
     'items': [{
-        'name': tr("Pireal", "Nueva Base de Datos"),
-        'slot': "actions:create_data_base"}]
-    }
+        'name': translate("PIREAL", "Nueva Base de Datos"),
+        'slot': "actions:create_data_base"
+    }, {
+        'name': "Nueva Consulta",
+        'slot': "actions:new_query"
+    }, "-", {
+        'name': "Abrir",
+        'slot': "actions:open_file"
+    }, {
+        'name': "Guardar",
+        'slot': "actions:save_file"
+    }, {
+        'name': "Guardar como...",
+        'slot': "actions:save_file_as"
+    }, "-", {
+        'name': "Salir",
+        'slot': "pireal:close"}]}
