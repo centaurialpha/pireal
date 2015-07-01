@@ -54,3 +54,23 @@ MENU['file'] = {
     }, "-", {
         'name': "Salir",
         'slot': "pireal:close"}]}
+
+
+# Menu Edit
+MENU['edit'] = {
+    'name': "&Editar",
+    'items': [{
+        'name': "Deshacer",
+        'slot': "actions:undo_action"
+    }, {
+        'name': "Rehacer",
+        'slot': "actions:redo_action"
+    }, {
+        'name': "Cortar",
+        'slot': "actions:cut_action"
+    }, {
+        'name': "Copiar",
+        'slot': "actions:copy_action"
+    }, {
+        'name': "Pegar",
+        'slot': "actions:paste_action"}]}
