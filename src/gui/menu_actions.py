@@ -74,3 +74,20 @@ MENU['edit'] = {
     }, {
         'name': "Pegar",
         'slot': "actions:paste_action"}]}
+
+
+# Menu Relation
+MENU['relation'] = {
+    'name': "&Relación",
+    'items': [{
+        'name': "Nueva Relación",
+        'slot': "actions:create_new_relation"
+    }, {
+        'name': "Eliminar Relación",
+        'slot': "actions:remove_relation"
+    }, "-", {
+        'name': "Agregar Registro",
+        'slot': "actions:insert_tuple"
+    }, {
+        'name': "Eliminar Registro",
+        'slot': "actions:remove_tuple"}]}
