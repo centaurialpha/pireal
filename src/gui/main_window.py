@@ -76,6 +76,11 @@ class Pireal(QMainWindow):
         cls.__ACTIONS[name] = action
 
     def __load_menubar(self, menubar):
+        """
+        This method installs the menubar, menus and QAction's, also connects
+        to a slot each QAction.
+        """
+
         from src.gui import menu_actions
 
         for item in menu_actions.MENU:
