@@ -82,6 +82,9 @@ class Pireal(QMainWindow):
         """
 
         from src.gui import menu_actions
+        from src import keymap
+
+        kmap = keymap.KEYMAP
 
         for item in menu_actions.MENU:
             menubar_item = menu_actions.MENU[item]
@@ -100,6 +103,10 @@ class Pireal(QMainWindow):
                     else:
                         pass
                     qaction = menu.addAction(action)
+                    # Install the shorcut
+                    shortcut = kmap.get(connection, None)
+                    if shortcut is not None:
+                        qaction.setShortcut(shortcut)
                     # The name of QAction is the connection
                     Pireal.load_action(connection, qaction)
                     slot = getattr(obj, connection, None)
