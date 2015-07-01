@@ -91,3 +91,14 @@ MENU['relation'] = {
     }, {
         'name': "Eliminar Registro",
         'slot': "actions:remove_tuple"}]}
+
+
+# Menu Help
+MENU['help'] = {
+    'name': "A&yuda",
+    'items': [{
+        'name': "Acerca de Pireal",
+        'slot': "pireal:about_pireal"
+    }, {
+        'name': "Acerca de Qt",
+        'slot': "pireal:about_qt"}]}
