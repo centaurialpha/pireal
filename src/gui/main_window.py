@@ -22,6 +22,7 @@
 from collections import Callable
 from PyQt4.QtGui import (
     QMainWindow,
+    QMessageBox
 )
 from PyQt4.QtCore import SIGNAL
 
@@ -97,3 +98,8 @@ class Pireal(QMainWindow):
                     slot = getattr(obj, connection, None)
                     if isinstance(slot, Callable):
                         self.connect(qaction, SIGNAL("triggered()"), slot)
+
+    def about_qt(self):
+        """ Show about qt dialog """
+
+        QMessageBox.aboutQt(self)
