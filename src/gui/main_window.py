@@ -100,6 +100,8 @@ class Pireal(QMainWindow):
                     else:
                         pass
                     qaction = menu.addAction(action)
+                    # The name of QAction is the connection
+                    Pireal.load_action(connection, qaction)
                     slot = getattr(obj, connection, None)
                     if isinstance(slot, Callable):
                         self.connect(qaction, SIGNAL("triggered()"), slot)
