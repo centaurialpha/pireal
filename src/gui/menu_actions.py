@@ -40,65 +40,65 @@ MENU['file'] = {
         'name': translate("PIREAL", "Nueva Base de Datos"),
         'slot': "actions:create_data_base"
     }, {
-        'name': "Nueva Consulta",
+        'name': translate("PIREAL", "Nueva Consulta"),
         'slot': "actions:new_query"
     }, "-", {
-        'name': "Abrir",
+        'name': translate("PIREAL", "Abrir"),
         'slot': "actions:open_file"
     }, {
-        'name': "Guardar",
+        'name': translate("PIREAL", "Guardar"),
         'slot': "actions:save_file"
     }, {
-        'name': "Guardar como...",
+        'name': translate("PIREAL", "Guardar como..."),
         'slot': "actions:save_file_as"
     }, "-", {
-        'name': "Salir",
+        'name': translate("PIREAL", "Salir"),
         'slot': "pireal:close"}]}
 
 
 # Menu Edit
 MENU['edit'] = {
-    'name': "&Editar",
+    'name': translate("PIREAL", "&Editar"),
     'items': [{
-        'name': "Deshacer",
+        'name': translate("PIREAL", "Deshacer"),
         'slot': "actions:undo_action"
     }, {
-        'name': "Rehacer",
+        'name': translate("PIREAL", "Rehacer"),
         'slot': "actions:redo_action"
     }, {
-        'name': "Cortar",
+        'name': translate("PIREAL", "Cortar"),
         'slot': "actions:cut_action"
     }, {
-        'name': "Copiar",
+        'name': translate("PIREAL", "Copiar"),
         'slot': "actions:copy_action"
     }, {
-        'name': "Pegar",
+        'name': translate("PIREAL", "Pegar"),
         'slot': "actions:paste_action"}]}
 
 
 # Menu Relation
 MENU['relation'] = {
-    'name': "&Relación",
+    'name': translate("PIREAL", "&Relación"),
     'items': [{
-        'name': "Nueva Relación",
+        'name': translate("PIREAL", "Nueva Relación"),
         'slot': "actions:create_new_relation"
     }, {
-        'name': "Eliminar Relación",
+        'name': translate("PIREAL", "Eliminar Relación"),
         'slot': "actions:remove_relation"
     }, "-", {
-        'name': "Agregar Registro",
+        'name': translate("PIREAL", "Agregar Registro"),
         'slot': "actions:insert_tuple"
     }, {
-        'name': "Eliminar Registro",
+        'name': translate("PIREAL", "Eliminar Registro"),
         'slot': "actions:remove_tuple"}]}
 
 
 # Menu Help
 MENU['help'] = {
-    'name': "A&yuda",
+    'name': translate("PIREAL", "A&yuda"),
     'items': [{
-        'name': "Acerca de Pireal",
+        'name': translate("PIREAL", "Acerca de Pireal"),
         'slot': "pireal:about_pireal"
     }, {
-        'name': "Acerca de Qt",
+        'name': translate("PIREAL", "Acerca de Qt"),
         'slot': "pireal:about_qt"}]}
