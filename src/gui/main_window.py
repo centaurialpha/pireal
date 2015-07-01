@@ -28,6 +28,15 @@ from PyQt4.QtCore import SIGNAL
 
 class Pireal(QMainWindow):
 
+    """
+    Main Window class
+
+    This class is responsible for installing all application services.
+    The services are in a dictionary that can be accessed
+    from the class methods.
+
+    """
+
     __SERVICES = {}
     __ACTIONS = {}
 
