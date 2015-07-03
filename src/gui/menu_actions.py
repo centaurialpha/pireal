@@ -65,7 +65,7 @@ MENU['edit'] = {
     }, {
         'name': translate("PIREAL", "Rehacer"),
         'slot': "actions:redo_action"
-    }, {
+    }, "-", {
         'name': translate("PIREAL", "Cortar"),
         'slot': "actions:cut_action"
     }, {
@@ -73,7 +73,10 @@ MENU['edit'] = {
         'slot': "actions:copy_action"
     }, {
         'name': translate("PIREAL", "Pegar"),
-        'slot': "actions:paste_action"}]}
+        'slot': "actions:paste_action"
+    }, "-", {
+        'name': translate("PIREAL", "Preferencias"),
+        'slot': 'actions:preferences'}]}
 
 
 # Menu Relation
@@ -90,7 +93,10 @@ MENU['relation'] = {
         'slot': "actions:insert_tuple"
     }, {
         'name': translate("PIREAL", "Eliminar Registro"),
-        'slot': "actions:remove_tuple"}]}
+        'slot': "actions:remove_tuple",
+    }, "-", {
+        'name': translate("PIREAL", "Ejecutar Consultas"),
+        'slot': "actions:execute_queries"}]}
 
 
 # Menu Help

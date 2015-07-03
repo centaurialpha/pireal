@@ -52,6 +52,10 @@ if __name__ == "__main__":
     print("Executing Pireal from source")
     print("01. Python {0} - Qt {1} on {2} {3}".format(
           info['python'], info['qt'], info['os'], info['name']))
+
+    # Import resources
+    from src import resources  # lint:ok
+
     qapp = QApplication(sys.argv)
 
     from src.gui.main_window import Pireal

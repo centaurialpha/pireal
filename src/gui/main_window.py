@@ -22,7 +22,9 @@
 from collections import Callable
 from PyQt4.QtGui import (
     QMainWindow,
-    QMessageBox
+    QMessageBox,
+    QToolBar,
+    QIcon
 )
 from PyQt4.QtCore import SIGNAL
 
@@ -40,6 +42,28 @@ class Pireal(QMainWindow):
 
     __SERVICES = {}
     __ACTIONS = {}
+
+    # The name of items is the connection text
+    TOOLBAR_ITEMS = [
+        'create_data_base',
+        'new_query',
+        '',  # Is a separator!
+        'open_file',
+        'save_file',
+        '',
+        'undo_action',
+        'redo_action',
+        'cut_action',
+        'copy_action',
+        'paste_action',
+        '',
+        'create_new_relation',
+        'remove_relation',
+        'insert_tuple',
+        'remove_tuple',
+        '',
+        'execute_queries'
+    ]
 
     def __init__(self):
         QMainWindow.__init__(self)
@@ -77,14 +101,17 @@ class Pireal(QMainWindow):
 
     def __load_menubar(self, menubar):
         """
-        This method installs the menubar, menus and QAction's, also connects
-        to a slot each QAction.
+        This method installs the menubar and toolbar, menus and QAction's,
+        also connects to a slot each QAction.
         """
 
         from src.gui import menu_actions
         from src import keymap
 
+        # Keymap
         kmap = keymap.KEYMAP
+        # Toolbar items
+        toolbar_items = {}
 
         for item in menu_actions.MENU:
             menubar_item = menu_actions.MENU[item]
@@ -103,15 +130,35 @@ class Pireal(QMainWindow):
                     else:
                         pass
                     qaction = menu.addAction(action)
-                    # Install the shorcut
+
+                    # Icon name is connection
+                    icon = QIcon(":img/%s" % connection)
+                    qaction.setIcon(icon)
+
+                    # Install shortcuts
                     shortcut = kmap.get(connection, None)
                     if shortcut is not None:
                         qaction.setShortcut(shortcut)
+
+                    # Items for toolbar
+                    if connection in Pireal.TOOLBAR_ITEMS:
+                        toolbar_items[connection] = qaction
+
                     # The name of QAction is the connection
                     Pireal.load_action(connection, qaction)
                     slot = getattr(obj, connection, None)
                     if isinstance(slot, Callable):
                         self.connect(qaction, SIGNAL("triggered()"), slot)
+
+        # Install toolbar
+        toolbar = QToolBar(self)
+        for action in Pireal.TOOLBAR_ITEMS:
+            qaction = toolbar_items.get(action, None)
+            if qaction is not None:
+                toolbar.addAction(qaction)
+            else:
+                toolbar.addSeparator()
+        self.addToolBar(toolbar)
 
     def about_qt(self):
         """ Show about qt dialog """
