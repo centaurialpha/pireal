@@ -24,7 +24,7 @@ from PyQt4.QtGui import (
     QMainWindow,
     QMessageBox,
     QToolBar,
-    QIcon
+    QIcon,
 )
 from PyQt4.QtCore import SIGNAL
 
@@ -71,6 +71,10 @@ class Pireal(QMainWindow):
 
         menubar = self.menuBar()
         self.__load_menubar(menubar)
+
+        # Mdi area
+        mdi = Pireal.get_service("mdi")
+        self.setCentralWidget(mdi)
 
         # Install service
         Pireal.load_service("pireal", self)

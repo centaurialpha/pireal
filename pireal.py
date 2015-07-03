@@ -59,6 +59,7 @@ if __name__ == "__main__":
     qapp = QApplication(sys.argv)
 
     from src.gui.main_window import Pireal
+    from src.gui import mdi_area  # lint:ok
 
     # Style
     qapp.setStyle(QStyleFactory.create("gtk"))

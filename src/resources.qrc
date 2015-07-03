@@ -17,5 +17,6 @@
         <file alias="execute_queries">images/run.png</file>
         <file alias="save_file">images/save.png</file>
         <file alias="undo_action">images/undo.png</file>
+        <file alias="logo">images/logo.png</file>
     </qresource>
 </RCC>
