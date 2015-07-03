@@ -19,7 +19,11 @@
 
 from PyQt4.QtGui import (
     QWidget,
-    QMdiSubWindow
+    QMdiSubWindow,
+    QVBoxLayout,
+    QSplitter,
+    QListWidget,
+    QStackedWidget
 )
 
 
@@ -27,6 +31,24 @@ class TableWidget(QWidget):
 
     def __init__(self):
         super(TableWidget, self).__init__()
+        vbox = QVBoxLayout(self)
+        vbox.setContentsMargins(0, 0, 0, 0)
+
+        # Splitter
+        self._splitter = QSplitter()
+
+        # List of names of tables/relations
+        self._list_tables = QListWidget()
+        self._splitter.addWidget(self._list_tables)
+        # Stack
+        self.stacked = QStackedWidget()
+        self._splitter.addWidget(self.stacked)
+
+        vbox.addWidget(self._splitter)
+
+    def showEvent(self, event):
+        QWidget.showEvent(self, event)
+        self._splitter.setSizes([self.height(), self.width()])
 
 
 class MdiDB(QMdiSubWindow):
