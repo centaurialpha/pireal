@@ -116,6 +116,8 @@ class Pireal(QMainWindow):
         kmap = keymap.KEYMAP
         # Toolbar items
         toolbar_items = {}
+        # Actions
+        actions = Pireal.get_service("actions")
 
         for item in menu_actions.MENU:
             menubar_item = menu_actions.MENU[item]
@@ -129,10 +131,7 @@ class Pireal(QMainWindow):
                 else:
                     action = menu_item['name']
                     obj, connection = menu_item['slot'].split(':')
-                    if obj.startswith('pireal'):
-                        obj = self
-                    else:
-                        pass
+                    obj = self if obj.startswith("pireal") else actions
                     qaction = menu.addAction(action)
 
                     # Icon name is connection
