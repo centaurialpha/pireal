@@ -23,6 +23,23 @@ class Relation(object):
     This class represents a relation/table as a set of tuples.
     Fields is a list, where indexes are connected with the
     indexes of the tuples.
+
+    fields = ["id", "name", "skill"]
+    content = {
+        ('2', 'Gabriel', 'Python'),
+        ('8', 'Mariela', 'Chef'),
+        ('4', 'Rodrigo', 'Gamer')
+    }
+
+    The following output is the result of printing the relation.
+    Relation.__str__:
+
+    |      id      |     name     |    skill     |
+    ----------------------------------------------
+    |      8       |   Mariela    |     Chef     |
+    |      4       |   Rodrigo    |    Gamer     |
+    |      2       |   Gabriel    |    Python    |
+
     """
 
     def __init__(self):
@@ -82,7 +99,7 @@ class Relation(object):
         return new_relation
 
     def __str__(self):
-        """ Returns a representation of the relation """
+        """ Magic method. Returns a representation of the relation """
 
         fields = ""
         for field in self.fields:
@@ -108,15 +125,17 @@ if __name__ == "__main__":
     r.fields = fields
 
     # Data
-    reg = ('1', 'Gabriel', 'Python')
-    r.insert(reg)
-    reg2 = ('4', 'Rodrigo', 'Games')
-    r.insert(reg2)
-    reg3 = ("9", 'Mariela', 'Chef')
-    r.insert(reg3)
+    data = {
+        ('1', 'Gabriel', 'Python'),
+        ('9', 'Rodrigo', 'Games'),
+        ("4", 'Mariela', 'Chef')
+    }
+    # Insert data
+    for reg in data:
+        r.insert(reg)
 
     # Relation
-    #print(r)
+    print(r)
 
     #r2 = r.project("skill", "name")
     # Project skill and name
