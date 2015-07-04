@@ -165,6 +165,7 @@ class Pireal(QMainWindow):
 
         self.enable_disable_db_actions(False)
         self.enable_disable_relation_actions(False)
+        self.enable_disable_query_actions(False)
 
     def enable_disable_db_actions(self, enable=True):
         """ Public method. Enables or disables db QAction """
@@ -187,6 +188,22 @@ class Pireal(QMainWindow):
         actions = [
             'insert_tuple',
             'remove_tuple',
+            'execute_queries'
+        ]
+
+        for action in actions:
+            qaction = Pireal.get_action(action)
+            qaction.setEnabled(enable)
+
+    def enable_disable_query_actions(self, enable=True):
+        """ Public method. Enables or disables queries QAction """
+
+        actions = [
+            'undo_action',
+            'redo_action',
+            'copy_action',
+            'cut_action',
+            'paste_action',
             'execute_queries'
         ]
 
