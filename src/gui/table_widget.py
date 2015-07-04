@@ -25,6 +25,7 @@ from PyQt4.QtGui import (
     QListWidget,
     QStackedWidget
 )
+from src.gui.main_window import Pireal
 
 
 class TableWidget(QWidget):
@@ -57,3 +58,8 @@ class MdiDB(QMdiSubWindow):
         super(MdiDB, self).__init__()
         self.table_widget = TableWidget()
         self.setWidget(self.table_widget)
+
+    def closeEvent(self, event):
+        # Disable QAction's
+        pireal = Pireal.get_service("pireal")
+        pireal.enable_disable_db_actions(False)

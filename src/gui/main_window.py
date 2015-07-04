@@ -163,6 +163,37 @@ class Pireal(QMainWindow):
                 toolbar.addSeparator()
         self.addToolBar(toolbar)
 
+        self.enable_disable_db_actions(False)
+        self.enable_disable_relation_actions(False)
+
+    def enable_disable_db_actions(self, enable=True):
+        """ Public method. Enables or disables db QAction """
+
+        actions = [
+            'new_query',
+            'save_file',
+            'save_file_as',
+            'create_new_relation',
+            'remove_relation'
+        ]
+
+        for action in actions:
+            qaction = Pireal.get_action(action)
+            qaction.setEnabled(enable)
+
+    def enable_disable_relation_actions(self, enable=True):
+        """ Public method. Enables or disables relation's QAction """
+
+        actions = [
+            'insert_tuple',
+            'remove_tuple',
+            'execute_queries'
+        ]
+
+        for action in actions:
+            qaction = Pireal.get_action(action)
+            qaction.setEnabled(enable)
+
     def about_qt(self):
         """ Show about qt dialog """
 
