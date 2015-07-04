@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import getpass
 from PyQt4.QtGui import (
     QInputDialog
 )
@@ -33,10 +34,12 @@ class Actions(QObject):
 
     def create_data_base(self):
         db_name, ok = QInputDialog.getText(self.__pireal, self.tr("New DB"),
-                                           self.tr("Name:"))
+                                           self.tr("Name:"),
+                                           text=getpass.getuser())
         if ok:
             from src.gui import table_widget
             db_widget = table_widget.MdiDB()
+            db_widget.setWindowTitle(db_name + '.pdb')
             mdi = Pireal.get_service("mdi")
             db_widget.setMinimumSize(mdi.width(), mdi.height() / 1.7)
             mdi.addSubWindow(db_widget)
