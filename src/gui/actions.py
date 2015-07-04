@@ -47,5 +47,11 @@ class Actions(QObject):
             pireal.enable_disable_db_actions()
             db_widget.show()
 
+    def create_new_relation(self):
+        from src.gui import new_relation_dialog
+        pireal = Pireal.get_service("pireal")
+        dialog = new_relation_dialog.NewRelationDialog(pireal)
+        dialog.show()
+
 
 actions = Actions()

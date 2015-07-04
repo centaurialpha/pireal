@@ -23,7 +23,14 @@ from PyQt4.QtGui import (
     QVBoxLayout,
     QSplitter,
     QListWidget,
-    QStackedWidget
+    QListWidgetItem,
+    QStackedWidget,
+    QTableWidget,
+    QTableWidgetItem
+)
+from PyQt4.QtCore import (
+    Qt,
+    SIGNAL
 )
 from src.gui.main_window import Pireal
 
@@ -47,6 +54,31 @@ class TableWidget(QWidget):
 
         vbox.addWidget(self._splitter)
 
+        self.connect(self._list_tables, SIGNAL("currentRowChanged(int)"),
+                     self.__change_table)
+
+    def __change_table(self, index):
+        self.stacked.setCurrentIndex(index)
+
+    def add_table(self, rows, columns, name, data):
+        table = QTableWidget()
+        table.setRowCount(rows)
+        table.setColumnCount(columns)
+
+        for k, v in list(data.items()):
+            item = QTableWidgetItem()
+            item.setText(v)
+            if k[0] == 0:
+                table.setHorizontalHeaderItem(k[1], item)
+            else:
+                table.setItem(k[0] - 1, k[1], item)
+        ntuples = " [ " + str(rows) + " ]"
+        item_list = QListWidgetItem(name + ntuples)
+        item_list.setTextAlignment(Qt.AlignHCenter)
+        self._list_tables.addItem(item_list)
+        self.stacked.addWidget(table)
+        self.stacked.setCurrentIndex(self.stacked.count() - 1)
+
     def showEvent(self, event):
         QWidget.showEvent(self, event)
         self._splitter.setSizes([self.height(), self.width()])
@@ -58,6 +90,8 @@ class MdiDB(QMdiSubWindow):
         super(MdiDB, self).__init__()
         self.table_widget = TableWidget()
         self.setWidget(self.table_widget)
+
+        Pireal.load_service("db", self.table_widget)
 
     def closeEvent(self, event):
         # Disable QAction's
