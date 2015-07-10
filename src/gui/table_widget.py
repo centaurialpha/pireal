@@ -42,6 +42,8 @@ class TableWidget(QWidget):
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
 
+        self.relations = {}
+
         # Splitter
         self._splitter = QSplitter()
 

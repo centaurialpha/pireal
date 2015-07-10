@@ -72,9 +72,11 @@ class Pireal(QMainWindow):
         menubar = self.menuBar()
         self.__load_menubar(menubar)
 
-        # Mdi area
-        mdi = Pireal.get_service("mdi")
-        self.setCentralWidget(mdi)
+        # Central widget
+        central_widget = self.__load_ui()
+        self.setCentralWidget(central_widget)
+        #mdi = Pireal.get_service("mdi")
+        #self.setCentralWidget(mdi)
 
         # Install service
         Pireal.load_service("pireal", self)
@@ -166,6 +168,11 @@ class Pireal(QMainWindow):
         self.enable_disable_db_actions(False)
         self.enable_disable_relation_actions(False)
         self.enable_disable_query_actions(False)
+
+    def __load_ui(self):
+        container = Pireal.get_service("container")
+        container.show_start_page()
+        return container
 
     def enable_disable_db_actions(self, enable=True):
         """ Public method. Enables or disables db QAction """

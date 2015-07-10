@@ -31,6 +31,7 @@ from PyQt4.QtGui import (
 )
 from PyQt4.QtCore import SIGNAL
 from src.gui.main_window import Pireal
+from src.core import relation
 
 
 class NewRelationDialog(QDialog):
@@ -109,15 +110,19 @@ class NewRelationDialog(QDialog):
         rows = self._table.rowCount()
         columns = self._table.columnCount()
 
-        # Generator
-        #fields = (self._table.item(0, i).text() for i in range(columns))
+        rel = relation.Relation()
+        fields = [self._table.item(0, i).text() for i in range(columns)]
+        rel.fields = fields
 
         data = {}
-        for row in range(rows):
+        for row in range(1, rows):
+            reg = []
             for column in range(columns):
+                reg.append(self._table.item(row, column).text())
                 data[row, column] = self._table.item(row, column).text()
-
+            rel.insert(reg)
         table_widget = Pireal.get_service("db")
         table_widget.add_table(rows - 1, columns, name, data)
+        table_widget.relations[name] = rel
 
         self.close()

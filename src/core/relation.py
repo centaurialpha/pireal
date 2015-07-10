@@ -49,7 +49,7 @@ class Relation(object):
     def insert(self, record):
         """ Inserts a register """
 
-        self.content.add(record)
+        self.content.add(tuple(record))
 
     def select(self, expression):
         """

@@ -19,10 +19,12 @@
 
 import getpass
 from PyQt4.QtGui import (
-    QInputDialog
+    QInputDialog,
+    QFileDialog
 )
 from PyQt4.QtCore import QObject
 from src.gui.main_window import Pireal
+from src.core import parser
 
 
 class Actions(QObject):
@@ -52,6 +54,35 @@ class Actions(QObject):
         pireal = Pireal.get_service("pireal")
         dialog = new_relation_dialog.NewRelationDialog(pireal)
         dialog.show()
+
+    def new_query(self):
+        from src.gui.query_editor import query_widget
+        widget = query_widget.QueryWidget()
+        pireal = Pireal.get_service("pireal")
+        # Load the instance
+        Pireal.load_service("query-editor", widget)
+        # MdiArea
+        mdi = Pireal.get_service("mdi")
+        widget.setMinimumSize(mdi.width(), mdi.minimumSizeHint().height())
+        mdi.addSubWindow(widget)
+        # Enable querie's QAction
+        pireal.enable_disable_query_actions()
+        widget.show()
+
+    def open_file(self):
+        pireal = Pireal.get_service("pireal")
+        filename = QFileDialog.getOpenFileNames(pireal,
+                                                self.tr("Abrir Archivo"))
+        print(filename)
+
+    def execute_queries(self):
+        # Editor instance
+        query_editor = Pireal.get_service("query-editor").editor
+        query = query_editor.toPlainText()  # Text
+        # Parse query
+        expression = parser.convert_to_python(query)
+        table_widget = Pireal.get_service("db")
+        rel = eval(expression, table_widget.relations)
 
 
 actions = Actions()
