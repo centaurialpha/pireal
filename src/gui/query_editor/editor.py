@@ -20,9 +20,11 @@
 from PyQt4.QtGui import (
     QPlainTextEdit
 )
+from src.gui.query_editor import highlighter
 
 
 class Editor(QPlainTextEdit):
 
     def __init__(self):
         super(Editor, self).__init__()
+        self._highlighter = highlighter.Highlighter(self.document())
