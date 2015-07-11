@@ -21,7 +21,8 @@ from PyQt4.QtGui import (
     QWidget,
     QVBoxLayout,
     QStackedWidget,
-    QInputDialog
+    QInputDialog,
+    QFileDialog
 )
 from src.gui.main_window import Pireal
 from src.gui import (
@@ -57,6 +58,8 @@ class Container(QWidget):
             # Enable QAction's
             pireal = Pireal.get_service("pireal")
             pireal.enable_disable_db_actions()
+            lateral = Pireal.get_service("lateral")
+            lateral.show()
             # Title
             pireal.change_title(db_name)
 
@@ -80,6 +83,36 @@ class Container(QWidget):
         widget = self.stacked.currentWidget()
         if isinstance(widget, table_widget.TableWidget):
             self.close()
+
+    def load_relation(self):
+        """ Load relation from file """
+
+        import csv
+        from PyQt4.QtGui import QTableWidgetItem, QTableWidget
+
+        filename = QFileDialog.getOpenFileName(self, self.tr("Abrir Archivo"))
+        table = QTableWidget()
+        with open(filename, newline='') as f:
+            table.setRowCount(0)
+            table.setColumnCount(0)
+            csv_reader = csv.reader(f)
+            for row_data in csv_reader:
+                row = table.rowCount()
+                table.setColumnCount(len(row_data))
+                for column, data in enumerate(row_data):
+                    item = QTableWidgetItem()
+                    item.setText(data)
+                    if row == 0:
+                        table.setHorizontalHeaderItem(column, item)
+                    else:
+                        table.setItem(row - 1, column, item)
+                table.insertRow(row)
+            table.removeRow(table.rowCount() - 1)
+        self.table_widget.stacked.addWidget(table)
+        lateral = Pireal.get_service("lateral")
+        import os
+        name = os.path.splitext(os.path.basename(filename))[0]
+        lateral.add_item_list(name)
 
     def closeEvent(self, event):
         print("CLOSE")

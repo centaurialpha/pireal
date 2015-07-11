@@ -175,9 +175,16 @@ class Pireal(QMainWindow):
     def __load_ui(self):
         container = Pireal.get_service("container")
         container.show_start_page()
+        # Query Widget
         query_widget = Pireal.get_service("query_widget")
         query_widget.hide()
+        # Lateral Widget
+        lateral = Pireal.get_service("lateral")
+        lateral.hide()
+
+        self.addDockWidget(Qt.LeftDockWidgetArea, lateral)
         self.addDockWidget(Qt.BottomDockWidgetArea, query_widget)
+
         return container
 
     def change_title(self, title):
@@ -191,7 +198,8 @@ class Pireal(QMainWindow):
             'save_file',
             'save_file_as',
             'create_new_relation',
-            'remove_relation'
+            'remove_relation',
+            'load_relation'
         ]
 
         for action in actions:

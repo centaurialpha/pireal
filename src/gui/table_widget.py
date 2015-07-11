@@ -82,6 +82,9 @@ class TableWidget(QWidget):
         self.stacked.addWidget(table)
         self.stacked.setCurrentIndex(self.stacked.count() - 1)
 
+    def add_table_from_file(self):
+        pass
+
     #def showEvent(self, event):
         #QWidget.showEvent(self, event)
         #self._splitter.setSizes([self.height(), self.width()])

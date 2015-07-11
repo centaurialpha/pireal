@@ -19,7 +19,8 @@
 
 from PyQt4.QtGui import (
     QDockWidget,
-    QTabWidget
+    QTabWidget,
+    QWidget
 )
 from PyQt4.QtCore import SIGNAL
 from src.gui.query_editor import editor
@@ -30,6 +31,12 @@ class QueryWidget(QDockWidget):
 
     def __init__(self):
         super(QueryWidget, self).__init__()
+        # Remove title bar widget
+        title_bar = self.titleBarWidget()
+        empty = QWidget()
+        self.setTitleBarWidget(empty)
+        del title_bar
+
         self.__nquery = 1
         # Tabs
         self.tab = QTabWidget()

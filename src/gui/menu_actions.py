@@ -91,6 +91,9 @@ MENU['relation'] = {
     }, {
         'name': translate("PIREAL", "Eliminar Relación"),
         'slot': "container:remove_relation"
+    }, {
+        'name': translate("PIREAL", "Cargar Relación"),
+        'slot': "container:load_relation"
     }, "-", {
         'name': translate("PIREAL", "Agregar Registro"),
         'slot': "container:insert_tuple"
