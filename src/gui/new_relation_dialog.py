@@ -121,8 +121,8 @@ class NewRelationDialog(QDialog):
                 reg.append(self._table.item(row, column).text())
                 data[row, column] = self._table.item(row, column).text()
             rel.insert(reg)
-        table_widget = Pireal.get_service("db")
+        table_widget = Pireal.get_service("container").table_widget
         table_widget.add_table(rows - 1, columns, name, data)
-        table_widget.relations[name] = rel
+        #table_widget.relations[name] = rel
 
         self.close()

@@ -26,7 +26,10 @@ from PyQt4.QtGui import (
     QToolBar,
     QIcon,
 )
-from PyQt4.QtCore import SIGNAL
+from PyQt4.QtCore import (
+    SIGNAL,
+    Qt
+)
 
 
 class Pireal(QMainWindow):
@@ -119,7 +122,7 @@ class Pireal(QMainWindow):
         # Toolbar items
         toolbar_items = {}
         # Actions
-        actions = Pireal.get_service("actions")
+        container = Pireal.get_service("container")
 
         for item in menu_actions.MENU:
             menubar_item = menu_actions.MENU[item]
@@ -133,7 +136,7 @@ class Pireal(QMainWindow):
                 else:
                     action = menu_item['name']
                     obj, connection = menu_item['slot'].split(':')
-                    obj = self if obj.startswith("pireal") else actions
+                    obj = self if obj.startswith("pireal") else container
                     qaction = menu.addAction(action)
 
                     # Icon name is connection
@@ -172,7 +175,13 @@ class Pireal(QMainWindow):
     def __load_ui(self):
         container = Pireal.get_service("container")
         container.show_start_page()
+        query_widget = Pireal.get_service("query_widget")
+        query_widget.hide()
+        self.addDockWidget(Qt.BottomDockWidgetArea, query_widget)
         return container
+
+    def change_title(self, title):
+        self.setWindowTitle(title + " - Pireal")
 
     def enable_disable_db_actions(self, enable=True):
         """ Public method. Enables or disables db QAction """

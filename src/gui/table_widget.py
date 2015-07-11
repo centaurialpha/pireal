@@ -39,28 +39,29 @@ class TableWidget(QWidget):
 
     def __init__(self):
         super(TableWidget, self).__init__()
+
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
 
-        self.relations = {}
+        #self.relations = {}
 
-        # Splitter
-        self._splitter = QSplitter()
+        ## Splitter
+        #self._splitter = QSplitter()
 
-        # List of names of tables/relations
-        self._list_tables = QListWidget()
-        self._splitter.addWidget(self._list_tables)
-        # Stack
+        ## List of names of tables/relations
+        #self._list_tables = QListWidget()
+        #self._splitter.addWidget(self._list_tables)
+        ## Stack
         self.stacked = QStackedWidget()
-        self._splitter.addWidget(self.stacked)
+        vbox.addWidget(self.stacked)
 
-        vbox.addWidget(self._splitter)
+        #vbox.addWidget(self._splitter)
 
-        self.connect(self._list_tables, SIGNAL("currentRowChanged(int)"),
-                     self.__change_table)
+        #self.connect(self._list_tables, SIGNAL("currentRowChanged(int)"),
+                     #self.__change_table)
 
-    def __change_table(self, index):
-        self.stacked.setCurrentIndex(index)
+    #def __change_table(self, index):
+        #self.stacked.setCurrentIndex(index)
 
     def add_table(self, rows, columns, name, data):
         table = QTableWidget()
@@ -74,28 +75,28 @@ class TableWidget(QWidget):
                 table.setHorizontalHeaderItem(k[1], item)
             else:
                 table.setItem(k[0] - 1, k[1], item)
-        ntuples = " [ " + str(rows) + " ]"
-        item_list = QListWidgetItem(name + ntuples)
-        item_list.setTextAlignment(Qt.AlignHCenter)
-        self._list_tables.addItem(item_list)
+        #ntuples = " [ " + str(rows) + " ]"
+        #item_list = QListWidgetItem(name + ntuples)
+        #item_list.setTextAlignment(Qt.AlignHCenter)
+        #self._list_tables.addItem(item_list)
         self.stacked.addWidget(table)
         self.stacked.setCurrentIndex(self.stacked.count() - 1)
 
-    def showEvent(self, event):
-        QWidget.showEvent(self, event)
-        self._splitter.setSizes([self.height(), self.width()])
+    #def showEvent(self, event):
+        #QWidget.showEvent(self, event)
+        #self._splitter.setSizes([self.height(), self.width()])
 
 
-class MdiDB(QMdiSubWindow):
+#class MdiDB(QMdiSubWindow):
 
-    def __init__(self):
-        super(MdiDB, self).__init__()
-        self.table_widget = TableWidget()
-        self.setWidget(self.table_widget)
+    #def __init__(self):
+        #super(MdiDB, self).__init__()
+        #self.table_widget = TableWidget()
+        #self.setWidget(self.table_widget)
 
-        Pireal.load_service("db", self.table_widget)
+        #Pireal.load_service("db", self.table_widget)
 
-    def closeEvent(self, event):
-        # Disable QAction's
-        pireal = Pireal.get_service("pireal")
-        pireal.enable_disable_db_actions(False)
+    #def closeEvent(self, event):
+        ## Disable QAction's
+        #pireal = Pireal.get_service("pireal")
+        #pireal.enable_disable_db_actions(False)

@@ -38,19 +38,22 @@ MENU['file'] = {
     'name': translate("PIREAL", "&Archivo"),
     'items': [{
         'name': translate("PIREAL", "Nueva Base de Datos"),
-        'slot': "actions:create_data_base"
+        'slot': "container:create_data_base"
     }, {
         'name': translate("PIREAL", "Nueva Consulta"),
-        'slot': "actions:new_query"
+        'slot': "container:new_query"
     }, "-", {
         'name': translate("PIREAL", "Abrir"),
-        'slot': "actions:open_file"
+        'slot': "container:open_file"
     }, {
         'name': translate("PIREAL", "Guardar"),
-        'slot': "actions:save_file"
+        'slot': "container:save_file"
     }, {
         'name': translate("PIREAL", "Guardar como..."),
-        'slot': "actions:save_file_as"
+        'slot': "container:save_file_as"
+    }, "-", {
+        'name': translate("PIREAL", "Cerrar"),
+        'slot': "container:close_db"
     }, "-", {
         'name': translate("PIREAL", "Salir"),
         'slot': "pireal:close"}]}
@@ -61,22 +64,22 @@ MENU['edit'] = {
     'name': translate("PIREAL", "&Editar"),
     'items': [{
         'name': translate("PIREAL", "Deshacer"),
-        'slot': "actions:undo_action"
+        'slot': "container:undo_action"
     }, {
         'name': translate("PIREAL", "Rehacer"),
-        'slot': "actions:redo_action"
+        'slot': "container:redo_action"
     }, "-", {
         'name': translate("PIREAL", "Cortar"),
-        'slot': "actions:cut_action"
+        'slot': "container:cut_action"
     }, {
         'name': translate("PIREAL", "Copiar"),
-        'slot': "actions:copy_action"
+        'slot': "container:copy_action"
     }, {
         'name': translate("PIREAL", "Pegar"),
-        'slot': "actions:paste_action"
+        'slot': "container:paste_action"
     }, "-", {
         'name': translate("PIREAL", "Preferencias"),
-        'slot': 'actions:preferences'}]}
+        'slot': 'container:preferences'}]}
 
 
 # Menu Relation
@@ -84,19 +87,19 @@ MENU['relation'] = {
     'name': translate("PIREAL", "&Relación"),
     'items': [{
         'name': translate("PIREAL", "Nueva Relación"),
-        'slot': "actions:create_new_relation"
+        'slot': "container:create_new_relation"
     }, {
         'name': translate("PIREAL", "Eliminar Relación"),
-        'slot': "actions:remove_relation"
+        'slot': "container:remove_relation"
     }, "-", {
         'name': translate("PIREAL", "Agregar Registro"),
-        'slot': "actions:insert_tuple"
+        'slot': "container:insert_tuple"
     }, {
         'name': translate("PIREAL", "Eliminar Registro"),
-        'slot': "actions:remove_tuple",
+        'slot': "container:remove_tuple",
     }, "-", {
         'name': translate("PIREAL", "Ejecutar Consultas"),
-        'slot': "actions:execute_queries"}]}
+        'slot': "container:execute_queries"}]}
 
 
 # Menu Help
