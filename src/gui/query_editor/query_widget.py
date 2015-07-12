@@ -94,6 +94,7 @@ class QueryWidget(QDockWidget):
             expression = parser.convert_to_python(line.strip())
             rel = eval(expression, table.relations)
             table.add_new_table(rel, relation_name)
+            table.relations[relation_name] = rel
 
 
 query_widget = QueryWidget()
