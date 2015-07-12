@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import csv
+
 
 class Relation(object):
     """
@@ -42,9 +44,16 @@ class Relation(object):
 
     """
 
-    def __init__(self):
-        self.fields = list()
+    def __init__(self, filename=''):
         self.content = set()
+        if not filename:
+            self.fields = list()
+        else:
+            with open(filename) as f:
+                csv_reader = csv.reader(f)
+                self.fields = list(next(csv_reader))
+                for i in csv_reader:
+                    self.insert(i)
 
     def insert(self, record):
         """ Inserts a register """

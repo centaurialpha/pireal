@@ -43,7 +43,7 @@ class TableWidget(QWidget):
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
 
-        #self.relations = {}
+        self.relations = {}
 
         ## Splitter
         #self._splitter = QSplitter()
@@ -63,6 +63,9 @@ class TableWidget(QWidget):
     #def __change_table(self, index):
         #self.stacked.setCurrentIndex(index)
 
+    def count(self):
+        return self.stacked.count()
+
     def add_table(self, rows, columns, name, data):
         table = QTableWidget()
         table.setRowCount(rows)
@@ -81,6 +84,32 @@ class TableWidget(QWidget):
         #self._list_tables.addItem(item_list)
         self.stacked.addWidget(table)
         self.stacked.setCurrentIndex(self.stacked.count() - 1)
+
+    def add_new_table(self, rel, name):
+        import itertools
+
+        table = QTableWidget()
+        table.setRowCount(0)
+        table.setColumnCount(0)
+
+        data = itertools.chain([rel.fields], rel.content)
+
+        for row_data in data:
+            row = table.rowCount()
+            table.setColumnCount(len(row_data))
+            for col, text in enumerate(row_data):
+                item = QTableWidgetItem()
+                item.setText(text)
+                if row == 0:
+                    table.setHorizontalHeaderItem(col, item)
+                else:
+                    table.setItem(row - 1, col, item)
+            table.insertRow(row)
+        table.removeRow(table.rowCount() - 1)
+        self.stacked.addWidget(table)
+        self.stacked.setCurrentIndex(self.stacked.count() - 1)
+        lateral = Pireal.get_service("lateral")
+        lateral.add_item_list([name])
 
     def add_table_from_file(self):
         pass

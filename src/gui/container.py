@@ -58,8 +58,6 @@ class Container(QWidget):
             # Enable QAction's
             pireal = Pireal.get_service("pireal")
             pireal.enable_disable_db_actions()
-            lateral = Pireal.get_service("lateral")
-            lateral.show()
             # Title
             pireal.change_title(db_name)
 
@@ -90,11 +88,15 @@ class Container(QWidget):
         import csv
         import os
         from PyQt4.QtGui import QTableWidgetItem, QTableWidget
+        from src.core import relation
 
         filenames = QFileDialog.getOpenFileNames(self,
                                                  self.tr("Abrir Archivo"))
         lateral = Pireal.get_service("lateral")
         for filename in filenames:
+            rel = relation.Relation(filename)
+            relation_name = os.path.splitext(os.path.basename(filename))[0]
+            self.table_widget.relations[relation_name] = rel
             table = QTableWidget()
             with open(filename, newline='') as f:
                 table.setRowCount(0)
@@ -113,9 +115,11 @@ class Container(QWidget):
                     table.insertRow(row)
                 table.removeRow(table.rowCount() - 1)
             self.table_widget.stacked.addWidget(table)
+        #FIXME: names
         names = [os.path.splitext(os.path.basename(i))[0]
                  for i in filenames]
         lateral.add_item_list(names)
+        lateral.show()
 
     def execute_queries(self):
         query_widget = Pireal.get_service("query_widget")

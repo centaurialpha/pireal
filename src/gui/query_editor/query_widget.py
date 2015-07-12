@@ -75,16 +75,25 @@ class QueryWidget(QDockWidget):
         self.__nquery += 1
 
     def execute_queries(self):
+        import re
         # Editor instance
         editor = self.tab.currentWidget()
         # Text
-        query = editor.toPlainText()
+        text = editor.toPlainText()
         # Ignore comments
-        for line in query.splitlines():
+        table = Pireal.get_service("container").table_widget
+        for line in text.splitlines():
             if line.startswith('--'):
                 continue
-            expression = parser.convert_to_python(line)
-            print(expression)
+            parts = line.split('=', 1)
+            parts[0] = parts[0].strip()
+            if re.match(r'^[_a-zA-Z]+[_a-zA-Z0-9]*$', parts[0]):
+                relation_name, line = parts
+            else:
+                relation_name = 'rel'
+            expression = parser.convert_to_python(line.strip())
+            rel = eval(expression, table.relations)
+            table.add_new_table(rel, relation_name)
 
 
 query_widget = QueryWidget()

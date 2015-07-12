@@ -235,6 +235,13 @@ class Pireal(QMainWindow):
             qaction = Pireal.get_action(action)
             qaction.setEnabled(enable)
 
+    def show_hide_lateral(self):
+        lateral = Pireal.get_service("lateral")
+        if lateral.isVisible():
+            lateral.hide()
+        else:
+            lateral.show()
+
     def about_qt(self):
         """ Show about qt dialog """
 
