@@ -26,22 +26,7 @@ class Relation(object):
     Fields is a list, where indexes are connected with the
     indexes of the tuples.
 
-    fields = ["id", "name", "skill"]
-    content = {
-        ('2', 'Gabriel', 'Python'),
-        ('8', 'Mariela', 'Chef'),
-        ('4', 'Rodrigo', 'Gamer')
-    }
-
-    The following output is the result of printing the relation.
-    Relation.__str__:
-
-    |      id      |     name     |    skill     |
-    ----------------------------------------------
-    |      8       |   Mariela    |     Chef     |
-    |      4       |   Rodrigo    |    Gamer     |
-    |      2       |   Gabriel    |    Python    |
-
+    :param filename: *.csv* or *.prf* file
     """
 
     def __init__(self, filename=''):
@@ -56,14 +41,19 @@ class Relation(object):
                     self.insert(i)
 
     def insert(self, record):
-        """ Inserts a register """
+        """ Inserts a register
+
+        :param record: A record (tuple)
+        """
 
         self.content.add(tuple(record))
 
     def select(self, expression):
-        """
-        The select operator returns a new relation with the tuples that
+        """ The select operator returns a new relation with the tuples that
         satisfy an expression.
+
+        :param expression: A python valid expression
+        :returns: A new relation with the tuples that satisfy an *expression*
         """
 
         new_relation = Relation()
@@ -85,10 +75,12 @@ class Relation(object):
         return new_relation
 
     def project(self, *args):
-        """
-        The project operator returns a new relation.
+        """ The project operator returns a new relation.
         Extract columns (attributes) resulting in a vertical subset of
-        attributes of the relation .
+        attributes of the relation
+
+        :param args: A tuple of field names
+        :returns: A new relation with the new fields
         """
 
         indexes = []
@@ -108,7 +100,14 @@ class Relation(object):
         return new_relation
 
     def __str__(self):
-        """ Magic method. Returns a representation of the relation """
+        """ Magic method. Returns a representation of the relation
+
+        |      id      |     name     |    skill     |
+        ----------------------------------------------
+        |      8       |   Mariela    |     Chef     |
+        |      4       |   Rodrigo    |    Gamer     |
+        |      2       |   Gabriel    |    Python    |
+        """
 
         fields = ""
         for field in self.fields:

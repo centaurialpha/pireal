@@ -1,0 +1,401 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>src.gui package &mdash; Pireal Project 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="top" title="Pireal Project 0.1 documentation" href="index.html" />
+    <link rel="up" title="API Documentation" href="api.html" />
+    <link rel="next" title="src.gui.query_editor package" href="src.gui.query_editor.html" />
+    <link rel="prev" title="src.core package" href="src.core.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="src.gui.query_editor.html" title="src.gui.query_editor package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="src.core.html" title="src.core package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Pireal Project 0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="api.html" accesskey="U">API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">src.gui package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-src.gui.actions">src.gui.actions module</a></li>
+<li><a class="reference internal" href="#module-src.gui.container">src.gui.container module</a></li>
+<li><a class="reference internal" href="#module-src.gui.lateral_widget">src.gui.lateral_widget module</a></li>
+<li><a class="reference internal" href="#module-src.gui.main_window">src.gui.main_window module</a></li>
+<li><a class="reference internal" href="#module-src.gui.menu_actions">src.gui.menu_actions module</a></li>
+<li><a class="reference internal" href="#module-src.gui.new_relation_dialog">src.gui.new_relation_dialog module</a></li>
+<li><a class="reference internal" href="#module-src.gui.start_page">src.gui.start_page module</a></li>
+<li><a class="reference internal" href="#module-src.gui.table_widget">src.gui.table_widget module</a></li>
+<li><a class="reference internal" href="#module-src.gui">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="src.core.html"
+                        title="previous chapter">src.core package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="src.gui.query_editor.html"
+                        title="next chapter">src.gui.query_editor package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/src.gui.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="src-gui-package">
+<h1>src.gui package<a class="headerlink" href="#src-gui-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="src.gui.query_editor.html">src.gui.query_editor package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src.gui.query_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.gui.query_editor.html#module-src.gui.query_editor.editor">src.gui.query_editor.editor module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.gui.query_editor.html#module-src.gui.query_editor.highlighter">src.gui.query_editor.highlighter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.gui.query_editor.html#module-src.gui.query_editor.query_widget">src.gui.query_editor.query_widget module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.gui.query_editor.html#module-src.gui.query_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-src.gui.actions">
+<span id="src-gui-actions-module"></span><h2>src.gui.actions module<a class="headerlink" href="#module-src.gui.actions" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.gui.actions.Actions">
+<em class="property">class </em><code class="descclassname">src.gui.actions.</code><code class="descname">Actions</code><a class="headerlink" href="#src.gui.actions.Actions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt4.QtCore.QObject</span></code></p>
+<dl class="method">
+<dt id="src.gui.actions.Actions.create_data_base">
+<code class="descname">create_data_base</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.actions.Actions.create_data_base" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.gui.actions.Actions.create_new_relation">
+<code class="descname">create_new_relation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.actions.Actions.create_new_relation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.gui.actions.Actions.execute_queries">
+<code class="descname">execute_queries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.actions.Actions.execute_queries" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.gui.actions.Actions.new_query">
+<code class="descname">new_query</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.actions.Actions.new_query" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.gui.actions.Actions.open_file">
+<code class="descname">open_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.actions.Actions.open_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.gui.container">
+<span id="src-gui-container-module"></span><h2>src.gui.container module<a class="headerlink" href="#module-src.gui.container" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.gui.container.Container">
+<em class="property">class </em><code class="descclassname">src.gui.container.</code><code class="descname">Container</code><a class="headerlink" href="#src.gui.container.Container" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QWidget</span></code></p>
+<dl class="method">
+<dt id="src.gui.container.Container.closeEvent">
+<code class="descname">closeEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.container.Container.closeEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.gui.container.Container.close_db">
+<code class="descname">close_db</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.container.Container.close_db" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.gui.container.Container.create_data_base">
+<code class="descname">create_data_base</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.container.Container.create_data_base" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.gui.container.Container.create_new_relation">
+<code class="descname">create_new_relation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.container.Container.create_new_relation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.gui.container.Container.execute_queries">
+<code class="descname">execute_queries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.container.Container.execute_queries" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.gui.container.Container.load_relation">
+<code class="descname">load_relation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.container.Container.load_relation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load relation from file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.gui.container.Container.new_query">
+<code class="descname">new_query</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.container.Container.new_query" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.gui.container.Container.show_start_page">
+<code class="descname">show_start_page</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.container.Container.show_start_page" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.gui.lateral_widget">
+<span id="src-gui-lateral-widget-module"></span><h2>src.gui.lateral_widget module<a class="headerlink" href="#module-src.gui.lateral_widget" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.gui.lateral_widget.LateralWidget">
+<em class="property">class </em><code class="descclassname">src.gui.lateral_widget.</code><code class="descname">LateralWidget</code><a class="headerlink" href="#src.gui.lateral_widget.LateralWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QDockWidget</span></code></p>
+<dl class="method">
+<dt id="src.gui.lateral_widget.LateralWidget.add_item_list">
+<code class="descname">add_item_list</code><span class="sig-paren">(</span><em>items</em><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.lateral_widget.LateralWidget.add_item_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.gui.main_window">
+<span id="src-gui-main-window-module"></span><h2>src.gui.main_window module<a class="headerlink" href="#module-src.gui.main_window" title="Permalink to this headline">¶</a></h2>
+<p>Pireal Main Window</p>
+<dl class="class">
+<dt id="src.gui.main_window.Pireal">
+<em class="property">class </em><code class="descclassname">src.gui.main_window.</code><code class="descname">Pireal</code><a class="headerlink" href="#src.gui.main_window.Pireal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QMainWindow</span></code></p>
+<p>Main Window class</p>
+<p>This class is responsible for installing all application services.
+The services are in a dictionary that can be accessed
+from the class methods.</p>
+<dl class="attribute">
+<dt id="src.gui.main_window.Pireal.TOOLBAR_ITEMS">
+<code class="descname">TOOLBAR_ITEMS</code><em class="property"> = ['create_data_base', 'new_query', '', 'open_file', 'save_file', '', 'undo_action', 'redo_action', 'cut_action', 'copy_action', 'paste_action', '', 'create_new_relation', 'remove_relation', 'insert_tuple', 'remove_tuple', '', 'execute_queries']</em><a class="headerlink" href="#src.gui.main_window.Pireal.TOOLBAR_ITEMS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.gui.main_window.Pireal.about_qt">
+<code class="descname">about_qt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.main_window.Pireal.about_qt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show about qt dialog</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.gui.main_window.Pireal.change_title">
+<code class="descname">change_title</code><span class="sig-paren">(</span><em>title</em><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.main_window.Pireal.change_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.gui.main_window.Pireal.enable_disable_db_actions">
+<code class="descname">enable_disable_db_actions</code><span class="sig-paren">(</span><em>enable=True</em><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.main_window.Pireal.enable_disable_db_actions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Public method. Enables or disables db QAction</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.gui.main_window.Pireal.enable_disable_query_actions">
+<code class="descname">enable_disable_query_actions</code><span class="sig-paren">(</span><em>enable=True</em><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.main_window.Pireal.enable_disable_query_actions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Public method. Enables or disables queries QAction</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.gui.main_window.Pireal.enable_disable_relation_actions">
+<code class="descname">enable_disable_relation_actions</code><span class="sig-paren">(</span><em>enable=True</em><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.main_window.Pireal.enable_disable_relation_actions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Public method. Enables or disables relation&#8217;s QAction</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="src.gui.main_window.Pireal.get_action">
+<em class="property">classmethod </em><code class="descname">get_action</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.main_window.Pireal.get_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the instance of a loaded QAction</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="src.gui.main_window.Pireal.get_service">
+<em class="property">classmethod </em><code class="descname">get_service</code><span class="sig-paren">(</span><em>service</em><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.main_window.Pireal.get_service" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the instance of a loaded service</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="src.gui.main_window.Pireal.load_action">
+<em class="property">classmethod </em><code class="descname">load_action</code><span class="sig-paren">(</span><em>name</em>, <em>action</em><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.main_window.Pireal.load_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a QAction</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="src.gui.main_window.Pireal.load_service">
+<em class="property">classmethod </em><code class="descname">load_service</code><span class="sig-paren">(</span><em>name</em>, <em>instance</em><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.main_window.Pireal.load_service" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a service providing the service name and the instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.gui.main_window.Pireal.show_hide_lateral">
+<code class="descname">show_hide_lateral</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.main_window.Pireal.show_hide_lateral" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.gui.menu_actions">
+<span id="src-gui-menu-actions-module"></span><h2>src.gui.menu_actions module<a class="headerlink" href="#module-src.gui.menu_actions" title="Permalink to this headline">¶</a></h2>
+<p>This module contains an ordered dictionary, in turn this has a dictionary
+with the name and a list of items with properties as an icon , shortcut,
+slot for each item in a menu, by default, strings they are in Spanish.</p>
+<dl class="function">
+<dt id="src.gui.menu_actions.translate">
+<code class="descclassname">src.gui.menu_actions.</code><code class="descname">translate</code><span class="sig-paren">(</span><em>str</em>, <em>str</em>, <em>str disambiguation=None</em>, <em>QCoreApplication.Encoding encoding=QCoreApplication.CodecForTr</em><span class="sig-paren">)</span> &rarr; str<a class="headerlink" href="#src.gui.menu_actions.translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>QCoreApplication.translate(str, str, str, QCoreApplication.Encoding, int) -&gt; str</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.gui.new_relation_dialog">
+<span id="src-gui-new-relation-dialog-module"></span><h2>src.gui.new_relation_dialog module<a class="headerlink" href="#module-src.gui.new_relation_dialog" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.gui.new_relation_dialog.NewRelationDialog">
+<em class="property">class </em><code class="descclassname">src.gui.new_relation_dialog.</code><code class="descname">NewRelationDialog</code><span class="sig-paren">(</span><em>parent=None</em><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.new_relation_dialog.NewRelationDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QDialog</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.gui.start_page">
+<span id="src-gui-start-page-module"></span><h2>src.gui.start_page module<a class="headerlink" href="#module-src.gui.start_page" title="Permalink to this headline">¶</a></h2>
+<p>QML interface</p>
+<dl class="class">
+<dt id="src.gui.start_page.StartPage">
+<em class="property">class </em><code class="descclassname">src.gui.start_page.</code><code class="descname">StartPage</code><a class="headerlink" href="#src.gui.start_page.StartPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QWidget</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.gui.table_widget">
+<span id="src-gui-table-widget-module"></span><h2>src.gui.table_widget module<a class="headerlink" href="#module-src.gui.table_widget" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.gui.table_widget.TableWidget">
+<em class="property">class </em><code class="descclassname">src.gui.table_widget.</code><code class="descname">TableWidget</code><a class="headerlink" href="#src.gui.table_widget.TableWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QWidget</span></code></p>
+<dl class="method">
+<dt id="src.gui.table_widget.TableWidget.add_new_table">
+<code class="descname">add_new_table</code><span class="sig-paren">(</span><em>rel</em>, <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.table_widget.TableWidget.add_new_table" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.gui.table_widget.TableWidget.add_table">
+<code class="descname">add_table</code><span class="sig-paren">(</span><em>rows</em>, <em>columns</em>, <em>name</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.table_widget.TableWidget.add_table" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.gui.table_widget.TableWidget.add_table_from_file">
+<code class="descname">add_table_from_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.table_widget.TableWidget.add_table_from_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.gui.table_widget.TableWidget.count">
+<code class="descname">count</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.gui.table_widget.TableWidget.count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.gui">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src.gui" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="src.gui.query_editor.html" title="src.gui.query_editor package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="src.core.html" title="src.core package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Pireal Project 0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="api.html" >API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Gabriel Acosta.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

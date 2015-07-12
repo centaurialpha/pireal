@@ -60,7 +60,11 @@ def _find_end_parenthesis(text):
 
 
 def parse(query):
-    """ This function generates a list of tokens """
+    """This function generates a list of tokens
+
+    :param query: A string to be tokenize
+    :returns: A list of tokens
+    """
 
     tokens = []
 
