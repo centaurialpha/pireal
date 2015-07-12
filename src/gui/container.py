@@ -115,7 +115,8 @@ class Container(QWidget):
         lateral.add_item_list(name)
 
     def execute_queries(self):
-        print("RUN")
+        query_widget = Pireal.get_service("query_widget")
+        query_widget.execute_queries()
 
     def closeEvent(self, event):
         print("CLOSE")

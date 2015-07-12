@@ -25,6 +25,7 @@ from PyQt4.QtGui import (
 from PyQt4.QtCore import SIGNAL
 from src.gui.query_editor import editor
 from src.gui.main_window import Pireal
+from src.core import parser
 
 
 class QueryWidget(QDockWidget):
@@ -72,5 +73,18 @@ class QueryWidget(QDockWidget):
                                 self.tr("consulta_{}".format(self.__nquery)))
         self.tab.setCurrentIndex(index)
         self.__nquery += 1
+
+    def execute_queries(self):
+        # Editor instance
+        editor = self.tab.currentWidget()
+        # Text
+        query = editor.toPlainText()
+        # Ignore comments
+        for line in query.splitlines():
+            if line.startswith('--'):
+                continue
+            expression = parser.convert_to_python(line)
+            print(expression)
+
 
 query_widget = QueryWidget()
