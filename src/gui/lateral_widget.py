@@ -45,9 +45,10 @@ class LateralWidget(QDockWidget):
         table = Pireal.get_service("container").table_widget
         table.stacked.setCurrentIndex(index)
 
-    def add_item_list(self, text):
-        item = QListWidgetItem(text)
-        item.setTextAlignment(Qt.AlignHCenter)
-        self._list_widget.addItem(item)
+    def add_item_list(self, items):
+        for i in items:
+            item = QListWidgetItem(i)
+            item.setTextAlignment(Qt.AlignHCenter)
+            self._list_widget.addItem(item)
 
 lateral = LateralWidget()
