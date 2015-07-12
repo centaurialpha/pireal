@@ -57,6 +57,13 @@ class Highlighter(QSyntaxHighlighter):
         self._rules = [(QRegExp(pattern), keyword_format)
                        for pattern in Highlighter.KEYWORDS]
 
+        # Number format
+        number_format = QTextCharFormat()
+        number_pattern = QRegExp("[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?")
+        number_pattern.setMinimal(True)
+        number_format.setForeground(Qt.orange)
+        self._rules.append((number_pattern, number_format))
+
     def highlightBlock(self, text):
         """ Reimplementation """
 
