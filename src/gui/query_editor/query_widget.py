@@ -21,7 +21,8 @@ from PyQt4.QtGui import (
     QDockWidget,
     QTabWidget,
     QWidget,
-    QColor
+    QColor,
+    QMessageBox
 )
 from PyQt4.QtCore import (
     SIGNAL,
@@ -116,5 +117,24 @@ class QueryWidget(QDockWidget):
         else:
             self.tab.tabBar().setTabTextColor(self.tab.currentIndex(),
                                               QColor(Qt.black))
+        editor = self.tab.currentWidget()
+        editor.modified = modified
+
+    def removeTab(self, index):
+        # Current editor instance
+        editor = self.tab.currentWidget()
+        if editor.modified:
+            flags = QMessageBox.Yes
+            flags |= QMessageBox.No
+            flags |= QMessageBox.Cancel
+            r = QMessageBox.information(self, self.tr("Modified"),
+                                        self.tr("lalalal"), flags)
+            if r == QMessageBox.Cancel:
+                return
+            if r == QMessageBox.Yes:
+                print("Guardando")
+            else:
+                print("Saliendo...")
+        self.tab.removeTab(index)
 
 query_widget = QueryWidget()

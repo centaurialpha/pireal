@@ -31,6 +31,7 @@ class Editor(QPlainTextEdit):
         super(Editor, self).__init__()
         # Filename
         self.__filename = ""
+        self.modified = False
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         self.setFont(settings.FONT)
