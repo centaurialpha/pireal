@@ -114,6 +114,9 @@ class Container(QWidget):
         name = os.path.splitext(os.path.basename(filename))[0]
         lateral.add_item_list(name)
 
+    def execute_queries(self):
+        print("RUN")
+
     def closeEvent(self, event):
         print("CLOSE")
 
