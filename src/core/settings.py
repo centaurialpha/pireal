@@ -17,16 +17,24 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import (
-    QPlainTextEdit
-)
-from src.gui.query_editor import highlighter
-from src.core import settings
+"""
+Pireal settings
+"""
+
+import sys
+from PyQt4.QtGui import QFont
 
 
-class Editor(QPlainTextEdit):
+# Operating System
+LINUX, WINDOWS = False, False
+if sys.platform.startswith('linux'):
+    LINUX = True
+else:
+    WINDOWS = True
 
-    def __init__(self):
-        super(Editor, self).__init__()
-        self._highlighter = highlighter.Highlighter(self.document())
-        self.setFont(settings.FONT)
+
+# Font
+if LINUX:
+    FONT = QFont('Monospace', 12)
+else:
+    FONT = QFont('Courier', 10)

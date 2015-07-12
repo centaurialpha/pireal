@@ -48,8 +48,9 @@ class Highlighter(QSyntaxHighlighter):
 
     def __init__(self, editor):
         super(Highlighter, self).__init__(editor)
+        # Keywords format
         keyword_format = QTextCharFormat()
-        keyword_format.setForeground(Qt.darkBlue)
+        keyword_format.setForeground(Qt.darkMagenta)
         keyword_format.setFontWeight(QFont.Bold)
 
         # Rules
