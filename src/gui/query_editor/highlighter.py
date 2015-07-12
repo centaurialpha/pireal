@@ -50,7 +50,7 @@ class Highlighter(QSyntaxHighlighter):
         super(Highlighter, self).__init__(editor)
         # Keywords format
         keyword_format = QTextCharFormat()
-        keyword_format.setForeground(Qt.darkMagenta)
+        keyword_format.setForeground(Qt.darkBlue)
         keyword_format.setFontWeight(QFont.Bold)
 
         # Rules
@@ -61,8 +61,21 @@ class Highlighter(QSyntaxHighlighter):
         number_format = QTextCharFormat()
         number_pattern = QRegExp("[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?")
         number_pattern.setMinimal(True)
-        number_format.setForeground(Qt.orange)
+        number_format.setForeground(Qt.darkCyan)
         self._rules.append((number_pattern, number_format))
+
+        # String format
+        string_format = QTextCharFormat()
+        string_pattern = QRegExp("\".*\"|\'.*\'")
+        string_pattern.setMinimal(True)
+        string_format.setForeground(Qt.darkMagenta)
+        self._rules.append((string_pattern, string_format))
+
+        # Comment format
+        comment_format = QTextCharFormat()
+        comment_pattern = QRegExp("--[^\n]*")
+        comment_format.setForeground(Qt.darkGreen)
+        self._rules.append((comment_pattern, comment_format))
 
     def highlightBlock(self, text):
         """ Reimplementation """
