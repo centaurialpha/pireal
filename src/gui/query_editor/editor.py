@@ -20,6 +20,7 @@
 from PyQt4.QtGui import (
     QPlainTextEdit
 )
+#from PyQt4.QtCore import SIGNAL
 from src.gui.query_editor import highlighter
 from src.core import settings
 
@@ -28,5 +29,26 @@ class Editor(QPlainTextEdit):
 
     def __init__(self):
         super(Editor, self).__init__()
+        # Filename
+        self.__filename = ""
+        # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         self.setFont(settings.FONT)
+
+    def __get_filename(self):
+        """ Private method.
+
+        :returns: Return the filename
+        """
+
+        return self.__filename
+
+    def __set_filename(self, filename):
+        """ Private method
+
+        :param filename: path of filename
+        """
+
+        self.__filename = filename
+
+    filename = property(__get_filename, __set_filename)

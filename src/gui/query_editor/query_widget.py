@@ -20,9 +20,13 @@
 from PyQt4.QtGui import (
     QDockWidget,
     QTabWidget,
-    QWidget
+    QWidget,
+    QColor
 )
-from PyQt4.QtCore import SIGNAL
+from PyQt4.QtCore import (
+    SIGNAL,
+    Qt
+)
 from src.gui.query_editor import editor
 from src.gui.main_window import Pireal
 from src.core import parser
@@ -74,6 +78,9 @@ class QueryWidget(QDockWidget):
         self.tab.setCurrentIndex(index)
         self.__nquery += 1
 
+        self.connect(qeditor, SIGNAL("modificationChanged(bool)"),
+                     self.__editor_modified)
+
     def execute_queries(self):
         import re
         # Editor instance
@@ -96,5 +103,18 @@ class QueryWidget(QDockWidget):
             table.add_new_table(rel, relation_name)
             table.relations[relation_name] = rel
 
+    def __editor_modified(self, modified):
+        """ This function changes the text color of the tab when
+        it receives the signal *modificationChanged(bool)*
+
+        :param modified: Boolean value sent by the signal
+        """
+
+        if modified:
+            self.tab.tabBar().setTabTextColor(self.tab.currentIndex(),
+                                              QColor(Qt.red))
+        else:
+            self.tab.tabBar().setTabTextColor(self.tab.currentIndex(),
+                                              QColor(Qt.black))
 
 query_widget = QueryWidget()
