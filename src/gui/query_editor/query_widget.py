@@ -51,6 +51,11 @@ class QueryWidget(QDockWidget):
         self.connect(self.tab, SIGNAL("tabCloseRequested(int)"),
                      self._check_count)
 
+    def resizeEvent(self, event):
+        height = Pireal.get_service("pireal").height()
+        height = height / 3
+        self.setMinimumHeight(height)
+
     def _check_count(self):
         """ Hide dock if count = 0 """
 
