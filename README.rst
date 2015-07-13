@@ -1,6 +1,7 @@
 *****
-πreal
+πreal .. image:: https://travis-ci.org/centaurialpha/pireal.svg?branch=master
+            :target: https://travis-ci.org/centaurialpha/pireal
 *****
-|
-.. image:: https://travis-ci.org/centaurialpha/pireal.svg?branch=master
-    :target: https://travis-ci.org/centaurialpha/pireal
+
+
+    
