@@ -49,3 +49,12 @@ The operations are defined in this `file <https://github.com/centaurialpha/pirea
 * **Natural Join**
 * Intersection
 * Division
+
+Author
+######
+
+Gabriel Acosta
+
+* e-mail: acostadariogabriel at gmail
+* web: `centaurialpha.githib.io <http://centaurialpha.github.io>`_
+* twitter: `@_alfacentauri <http://twitter.com/_alfacentauri>`_
