@@ -39,6 +39,8 @@ class Highlighter(QSyntaxHighlighter):
     KEYWORDS = [
         "select",
         "project",
+        "rename",
+        "product",
         "njoin",
         "difference",
         "union",
