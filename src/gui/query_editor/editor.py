@@ -30,10 +30,9 @@ from src.core import settings
 
 class Editor(QPlainTextEdit):
 
-    def __init__(self):
+    def __init__(self, rfile):
         super(Editor, self).__init__()
-        # Filename
-        self.__filename = ""
+        self.rfile = rfile
         self.modified = False
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
@@ -44,23 +43,14 @@ class Editor(QPlainTextEdit):
         self.connect(self, SIGNAL("updateRequest(const QRect&, int)"),
                      self._sidebar.update_area)
 
-    def __get_filename(self):
-        """ Private method.
+    @property
+    def filename(self):
+        """ This function returns the filename of RFile object
 
-        :returns: Return the filename
+        :returns: filename of RFile
         """
 
-        return self.__filename
-
-    def __set_filename(self, filename):
-        """ Private method
-
-        :param filename: path of filename
-        """
-
-        self.__filename = filename
-
-    filename = property(__get_filename, __set_filename)
+        return self.rfile.filename
 
     def resizeEvent(self, event):
         super(Editor, self).resizeEvent(event)

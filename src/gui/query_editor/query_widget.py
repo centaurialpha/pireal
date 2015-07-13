@@ -30,7 +30,10 @@ from PyQt4.QtCore import (
 )
 from src.gui.query_editor import editor
 from src.gui.main_window import Pireal
-from src.core import parser
+from src.core import (
+    parser,
+    rfile
+)
 
 
 class QueryWidget(QDockWidget):
@@ -73,9 +76,11 @@ class QueryWidget(QDockWidget):
     def new_query(self):
         """ Add new query editor in QTabWidget """
 
-        qeditor = editor.Editor()
-        index = self.tab.addTab(qeditor,
-                                self.tr("consulta_{}".format(self.__nquery)))
+        # Query file
+        qfile = rfile.RFile()
+        qeditor = editor.Editor(qfile)
+        qfile.filename = qfile.filename + str(self.__nquery)
+        index = self.tab.addTab(qeditor, self.tr(qfile.filename))
         self.tab.setCurrentIndex(index)
         self.__nquery += 1
 
