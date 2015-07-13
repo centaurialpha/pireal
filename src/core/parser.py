@@ -28,6 +28,15 @@ class Node(object):
         if len(expression) == 1:
             self._name = expression[0]
             return
+
+        for i in range(len(expression) - 1, -1, -1):
+            if expression[i] in ('product', 'njoin'):
+                self._name = expression[i]
+
+                self.left = Node(expression[:i])
+                self.right = Node(expression[i + 1:])
+                return
+
         for i in range(len(expression) - 1, -1, -1):
             if expression[i] in ('select', 'project'):
                 self._name = expression[i]
@@ -44,6 +53,12 @@ class Node(object):
                 prop = '\"{}"'.format(prop)
             return '{0}.{1}({2})'.format(self._child.to_python(),
                                          self._name, prop)
+        elif self._name in ('product', 'njoin'):
+            left_node = self.left.to_python()
+            right_node = self.right.to_python()
+            expression = "{0}.{1}({2})".format(left_node,
+                                               'product', right_node)
+            return expression
         else:
             return self._name
 
@@ -78,13 +93,19 @@ def parse(query):
             par_end = query.find('(')
             tokens.append(query[:par_end].strip())
             query = query[par_end:].strip()
+        elif query.startswith(('product', 'njoin')):
+            operator = query.split()[0].strip()
+            tokens.append(operator)
+            query = query[len(operator):].strip()
+
         elif query.startswith('('):
             par_end = _find_end_parenthesis(query)
             tokens.append(parse(query[1:par_end]))
             query = query[par_end + 1:].strip()
         else:
-            tokens.append(query)
-            query = ""
+            sp = query.split()[0]
+            tokens.append(sp)
+            query = query[len(sp):].strip()
     return tokens
 
 
@@ -94,5 +115,6 @@ def convert_to_python(query):
 
 if __name__ == "__main__":
     # Test
-    tokens = Node(parse("project name, age (select id == 1 (people))"))
+    #tokens = Node(parse("project name, age (select id == 1 (people))"))
+    tokens = Node(parse("people product skills"))
     print(tokens.to_python())
