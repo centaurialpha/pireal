@@ -127,8 +127,11 @@ class QueryWidget(QDockWidget):
             flags = QMessageBox.Yes
             flags |= QMessageBox.No
             flags |= QMessageBox.Cancel
-            r = QMessageBox.information(self, self.tr("Modified"),
-                                        self.tr("lalalal"), flags)
+            r = QMessageBox.information(self, self.tr("Archivo modificado"),
+                                        self.tr("El archivo <b>{}</b> "
+                                                "tiene cambios sin guardar. "
+                                                "Quieres guardarlos?").format(
+                                                    editor.filename), flags)
             if r == QMessageBox.Cancel:
                 return
             if r == QMessageBox.Yes:
