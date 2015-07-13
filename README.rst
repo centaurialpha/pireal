@@ -46,6 +46,6 @@ The operations are defined in this `file <https://github.com/centaurialpha/pirea
 * **Product**
 * Union
 * Difference
-* Natural Join
+* **Natural Join**
 * Intersection
 * Division
