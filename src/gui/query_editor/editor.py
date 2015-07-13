@@ -20,8 +20,11 @@
 from PyQt4.QtGui import (
     QPlainTextEdit
 )
-#from PyQt4.QtCore import SIGNAL
-from src.gui.query_editor import highlighter
+from PyQt4.QtCore import SIGNAL
+from src.gui.query_editor import (
+    highlighter,
+    sidebar
+)
 from src.core import settings
 
 
@@ -35,6 +38,11 @@ class Editor(QPlainTextEdit):
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         self.setFont(settings.FONT)
+        # Sidebar
+        self._sidebar = sidebar.Sidebar(self)
+
+        self.connect(self, SIGNAL("updateRequest(const QRect&, int)"),
+                     self._sidebar.update_area)
 
     def __get_filename(self):
         """ Private method.
@@ -53,3 +61,8 @@ class Editor(QPlainTextEdit):
         self.__filename = filename
 
     filename = property(__get_filename, __set_filename)
+
+    def resizeEvent(self, event):
+        super(Editor, self).resizeEvent(event)
+        # Fixed sidebar height
+        self._sidebar.setFixedHeight(self.height())
