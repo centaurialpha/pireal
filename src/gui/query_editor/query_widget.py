@@ -53,7 +53,7 @@ class QueryWidget(QDockWidget):
 
         # Connections
         self.connect(self.tab, SIGNAL("tabCloseRequested(int)"),
-                     self.tab.removeTab)
+                     self.removeTab)
         self.connect(self.tab, SIGNAL("tabCloseRequested(int)"),
                      self._check_count)
 

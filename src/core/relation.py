@@ -99,6 +99,32 @@ class Relation(object):
 
         return new_relation
 
+    def product(self, other_relation):
+        """ The cartesian producto is defined as: R x S, its outline
+        corresponds to a combination of all tuples in R with each S
+        tuples, and attributes corresponding to those of R followed by S.
+
+        This method throws an exception when you are duplicate field names
+
+        :param other_relation: Relation
+        :returns: A new relation
+        """
+
+        for i in other_relation.fields:
+            if i in self.fields:
+                raise Exception("Duplicate attribute \"{}\" in product "
+                                "operation.".format(i))
+            self.fields.append(i)
+
+        new_relation = Relation()
+        new_relation.fields = self.fields
+
+        for i in self.content:
+            for e in other_relation.content:
+                new_relation.insert(i + e)
+
+        return new_relation
+
     def __str__(self):
         """ Magic method. Returns a representation of the relation
 
@@ -125,25 +151,39 @@ class Relation(object):
 
 
 if __name__ == "__main__":
+    pass
     # Test
 
     # Fields
-    fields = ["id", "name", "skill"]
-    r = Relation()
-    r.fields = fields
+    #fields = ["id", "name", "skill"]
+    #r = Relation()
+    #r.fie-lds = fields
 
     # Data
-    data = {
-        ('1', 'Gabriel', 'Python'),
-        ('9', 'Rodrigo', 'Games'),
-        ("4", 'Mariela', 'Chef')
-    }
-    # Insert data
-    for reg in data:
-        r.insert(reg)
+    #data = {
+        #('1', 'Gabriel', 'Python'),
+        #('9', 'Rodrigo', 'Games'),
+        #("4", 'Mariela', 'Chef')
+    #}
+    #r1 = Relation()
+    #f1 = ['id', 'name']
+    #r1.fields = f1
+    #data1 = {('1', 'Gabriel'), ('32', 'Rodrigo')}
+    #for reg in data1:
+        #r1.insert(reg)
+
+    #r2 = Relation()
+    #f2 = ['ids', 'skill']
+    #r2.fields = f2
+    #data2 = {('1', 'Python'), ('32', 'C++')}
+    #for reg in data2:
+        #r2.insert(reg)
+
+    #r = r1.product(r2).select("id == 1 and ids == 1").project("name", "skill")
+    #print(r)
 
     # Relation
-    print(r)
+    #print(r)
 
     #r2 = r.project("skill", "name")
     # Project skill and name
