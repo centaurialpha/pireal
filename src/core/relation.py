@@ -69,6 +69,7 @@ class Relation(object):
                     d[attr] = register[e]
 
             # The expression is evaluated
+
             if eval(expression, d):
                 new_relation.insert(register)
 
@@ -100,7 +101,7 @@ class Relation(object):
         return new_relation
 
     def product(self, other_relation):
-        """ The cartesian producto is defined as: R x S, its outline
+        """ The cartesian product is defined as: R x S, its outline
         corresponds to a combination of all tuples in R with each S
         tuples, and attributes corresponding to those of R followed by S.
 
@@ -122,6 +123,32 @@ class Relation(object):
         for i in self.content:
             for e in other_relation.content:
                 new_relation.insert(i + e)
+
+        return new_relation
+
+    def njoin(self, other_relation):
+
+        sharedf = set(self.fields).intersection(set(other_relation.fields))
+        new_relation = Relation()
+
+        fields = [i for i in other_relation.fields if i not in self.fields]
+        new_relation.fields = self.fields + fields
+
+        sid = []
+        for i in sharedf:
+            sid.append(self.fields.index(i))
+
+        oid = []
+        for i in sharedf:
+            oid.append(other_relation.fields.index(i))
+
+        noid = [i for i in range(len(other_relation.fields)) if i not in oid]
+
+        for i in self.content:
+            for j in other_relation.content:
+                for k in range(len(sid)):
+                    if i[sid[k]] == j[oid[k]]:
+                        new_relation.insert(list(i) + list(j[l] for l in noid))
 
         return new_relation
 
@@ -165,20 +192,23 @@ if __name__ == "__main__":
         #('9', 'Rodrigo', 'Games'),
         #("4", 'Mariela', 'Chef')
     #}
-    #r1 = Relation()
-    #f1 = ['id', 'name']
-    #r1.fields = f1
-    #data1 = {('1', 'Gabriel'), ('32', 'Rodrigo')}
-    #for reg in data1:
-        #r1.insert(reg)
+    r1 = Relation()
+    f1 = ['id', 'name']
+    r1.fields = f1
+    data1 = {('1', 'Gabriel'), ('32', 'Rodrigo')}
+    for reg in data1:
+        r1.insert(reg)
 
-    #r2 = Relation()
-    #f2 = ['ids', 'skill']
-    #r2.fields = f2
-    #data2 = {('1', 'Python'), ('32', 'C++')}
-    #for reg in data2:
-        #r2.insert(reg)
+    r2 = Relation()
+    f2 = ['id', 'skill']
+    r2.fields = f2
+    data2 = {('1', 'Python'), ('32', 'C++')}
+    for reg in data2:
+        r2.insert(reg)
 
+    # Naturial Join
+    r = r1.njoin(r2)
+    print(r)
     #r = r1.product(r2).select("id == 1 and ids == 1").project("name", "skill")
     #print(r)
 
@@ -191,6 +221,3 @@ if __name__ == "__main__":
 
     #r3 = r.select("name == 'Gabriel'")
     #print(r3)
-
-    #rel = r.project("name").select("name == 'Gabriel'")
-    #print(rel)

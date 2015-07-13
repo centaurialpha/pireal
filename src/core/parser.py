@@ -21,6 +21,8 @@
 Parser based on Relation by ltworf http://ltworf.github.io/relational
 """
 
+from src.core import operators
+
 
 class Node(object):
 
@@ -30,7 +32,7 @@ class Node(object):
             return
 
         for i in range(len(expression) - 1, -1, -1):
-            if expression[i] in ('product', 'njoin'):
+            if expression[i] in operators.BOPERATORS:
                 self._name = expression[i]
 
                 self.left = Node(expression[:i])
@@ -38,26 +40,27 @@ class Node(object):
                 return
 
         for i in range(len(expression) - 1, -1, -1):
-            if expression[i] in ('select', 'project'):
+            if expression[i] in operators.UOPERATORS:
                 self._name = expression[i]
                 self._attrs = expression[1 + i].strip()
                 self._child = Node(expression[2 + i])
 
     def to_python(self):
-        if self._name in ('select', 'project'):
+        if self._name in operators.UOPERATORS:
             prop = self._attrs
-            if self._name == 'project':
+            if self._name == operators.PROJECT:
                 prop = '\"{}"'.format(prop.replace(
                                       ' ', '').replace(',', '\", \"'))
             else:
                 prop = '\"{}"'.format(prop)
             return '{0}.{1}({2})'.format(self._child.to_python(),
                                          self._name, prop)
-        elif self._name in ('product', 'njoin'):
+        elif self._name in operators.BOPERATORS:
             left_node = self.left.to_python()
             right_node = self.right.to_python()
             expression = "{0}.{1}({2})".format(left_node,
-                                               'product', right_node)
+                                               operators.OPERATORS[self._name],
+                                               right_node)
             return expression
         else:
             return self._name
@@ -84,7 +87,7 @@ def parse(query):
     tokens = []
 
     while query:
-        if query.startswith(('select', 'project')):
+        if query.startswith(operators.UOPERATORS):
             length_operator = len(query.split()[0])
             operator = query[:length_operator]
             tokens.append(operator)
@@ -93,7 +96,7 @@ def parse(query):
             par_end = query.find('(')
             tokens.append(query[:par_end].strip())
             query = query[par_end:].strip()
-        elif query.startswith(('product', 'njoin')):
+        elif query.startswith(operators.BOPERATORS):
             operator = query.split()[0].strip()
             tokens.append(operator)
             query = query[len(operator):].strip()
@@ -116,5 +119,5 @@ def convert_to_python(query):
 if __name__ == "__main__":
     # Test
     #tokens = Node(parse("project name, age (select id == 1 (people))"))
-    tokens = Node(parse("people product skills"))
+    tokens = Node(parse("people njoin skills"))
     print(tokens.to_python())
