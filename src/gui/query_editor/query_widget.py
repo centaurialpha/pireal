@@ -65,6 +65,25 @@ class QueryWidget(QDockWidget):
         height = height / 3
         self.setMinimumHeight(height)
 
+    def get_active_editor(self):
+        weditor = self.tab.currentWidget()
+        return weditor
+
+    def undo(self):
+        self.get_active_editor().undo()
+
+    def redo(self):
+        self.get_active_editor().redo()
+
+    def cut(self):
+        self.get_active_editor().cut()
+
+    def copy(self):
+        self.get_active_editor().copy()
+
+    def paste(self):
+        self.get_active_editor().paste()
+
     def _check_count(self):
         """ Hide dock if count = 0 """
 

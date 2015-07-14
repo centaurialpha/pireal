@@ -142,6 +142,26 @@ class Container(QWidget):
         query_widget = Pireal.get_service("query_widget")
         query_widget.execute_queries()
 
+    def undo_action(self):
+        query_widget = Pireal.get_service("query_widget")
+        query_widget.undo()
+
+    def redo_action(self):
+        query_widget = Pireal.get_service("query_widget")
+        query_widget.redo()
+
+    def cut_action(self):
+        query_widget = Pireal.get_service("query_widget")
+        query_widget.cut()
+
+    def copy_action(self):
+        query_widget = Pireal.get_service("query_widget")
+        query_widget.copy()
+
+    def paste_action(self):
+        query_widget = Pireal.get_service("query_widget")
+        query_widget.paste()
+
     def closeEvent(self, event):
         print("CLOSE")
 
