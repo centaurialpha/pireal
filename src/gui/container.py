@@ -22,7 +22,8 @@ from PyQt4.QtGui import (
     QVBoxLayout,
     QStackedWidget,
     QInputDialog,
-    QFileDialog
+    QFileDialog,
+    QMessageBox
 )
 from src.gui.main_window import Pireal
 from src.gui import (
@@ -39,6 +40,7 @@ class Container(QWidget):
         self.__filename = ""
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
+        self.__created = False
         # Stacked
         self.stacked = QStackedWidget()
         vbox.addWidget(self.stacked)
@@ -49,9 +51,15 @@ class Container(QWidget):
         Pireal.load_service("container", self)
 
     def create_data_base(self):
+        if self.__created:
+            QMessageBox.critical(self, self.tr("Error"),
+                                 self.tr("Solo puede tener una base de datos "
+                                         "abierta a la vez."))
+            return
         db_name, ok = QInputDialog.getText(self, self.tr("Nueva DB"),
                                            self.tr("Nombre:"))
         if ok:
+            self.__created = True
             # Remove the start page
             self.stacked.removeWidget(self.stacked.widget(0))
             self.stacked.addWidget(self.table_widget)
