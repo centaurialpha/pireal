@@ -52,6 +52,12 @@ The operations are defined in this `file <https://github.com/centaurialpha/pirea
 * Intersection
 * Division
 
+Demo
+####
+
+.. embedly:: https://www.youtube.com/watch?v=gZg2m0qOHoA
+    :width: 600
+    
 Author
 ######
 
