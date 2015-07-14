@@ -246,3 +246,10 @@ class Pireal(QMainWindow):
         """ Show about qt dialog """
 
         QMessageBox.aboutQt(self)
+
+    def about_pireal(self):
+        """ Show the bout Pireal dialog """
+
+        from src.gui import about_dialog
+        dialog = about_dialog.AboutDialog(self)
+        dialog.exec_()

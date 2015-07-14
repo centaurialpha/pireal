@@ -18,5 +18,6 @@
         <file alias="save_file">images/save.png</file>
         <file alias="undo_action">images/undo.png</file>
         <file alias="logo">images/logo.png</file>
+        <file alias="banner">images/pireal_banner.png</file>
     </qresource>
 </RCC>
