@@ -7,8 +7,8 @@ Rectangle {
         id: logo
 
         anchors.centerIn: parent
-        opacity: 0.3
-        source: "../images/logo.png"
+        opacity: 0.1
+        source: "../images/pireal_banner.png"
     }
 
     Text {
