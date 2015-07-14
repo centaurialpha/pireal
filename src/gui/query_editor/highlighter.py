@@ -61,7 +61,7 @@ class Highlighter(QSyntaxHighlighter):
 
         # Number format
         number_format = QTextCharFormat()
-        number_pattern = QRegExp("[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?")
+        number_pattern = QRegExp(r"\b([A-Z0-9]+)(?:[ _-](\d+))?\b")
         number_pattern.setMinimal(True)
         number_format.setForeground(Qt.darkCyan)
         self._rules.append((number_pattern, number_format))
