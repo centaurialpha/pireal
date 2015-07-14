@@ -55,10 +55,8 @@ The operations are defined in this `file <https://github.com/centaurialpha/pirea
 Demo
 ####
 
-.. image:: https://i.ytimg.com/vi/gZg2m0qOHoA/2.jpg?time=1436890458544
+.. image:: http://img.youtube.com/vi/gZg2m0qOHoA/0.jpg
     :target: https://www.youtube.com/watch?v=gZg2m0qOHoA
-    :width: 400px
-    :height: 400px
     
 Author
 ######
