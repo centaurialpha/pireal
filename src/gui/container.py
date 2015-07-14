@@ -31,6 +31,7 @@ from src.gui import (
     table_widget,
     new_relation_dialog
 )
+from src.core import settings
 
 
 class Container(QWidget):
@@ -98,8 +99,16 @@ class Container(QWidget):
         from PyQt4.QtGui import QTableWidgetItem, QTableWidget
         from src.core import relation
 
+        native_dialog = QFileDialog.DontUseNativeDialog
+        directory = os.path.expanduser("~")
         filenames = QFileDialog.getOpenFileNames(self,
-                                                 self.tr("Abrir Archivo"))
+                                                 self.tr("Abrir Archivo"),
+                                                 directory,
+                                                 self.tr("Relaciones "
+                                                 "{}").format(settings.RFILES),
+                                                 native_dialog)
+        if not filenames:
+            return
         lateral = Pireal.get_service("lateral")
         for filename in filenames:
             rel = relation.Relation(filename)

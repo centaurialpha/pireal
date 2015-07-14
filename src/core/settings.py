@@ -38,3 +38,6 @@ if LINUX:
     FONT = QFont('Monospace', 12)
 else:
     FONT = QFont('Courier', 10)
+
+# Supported relation files
+RFILES = "(*.csv *.prf)"
