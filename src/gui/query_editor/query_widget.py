@@ -127,7 +127,8 @@ class QueryWidget(QDockWidget):
 
     def removeTab(self, index):
         # Current editor instance
-        editor = self.tab.currentWidget()
+        editor = self.tab.widget(index)
+        #editor = self.tab.currentWidget()
         if editor.modified:
             flags = QMessageBox.Yes
             flags |= QMessageBox.No
