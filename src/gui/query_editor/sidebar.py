@@ -50,7 +50,7 @@ class Sidebar(QFrame):
         #current_line = self.editor.document().findBlock(
             #self.editor.textCursor().position())
         painter = QPainter(self)
-        painter.fillRect(self.rect(), QColor("gray"))
+        painter.fillRect(self.rect(), QColor("#D0D0D0"))
         block = self.editor.firstVisibleBlock()
         vpoffset = self.editor.contentOffset()
         line = block.blockNumber()
@@ -65,7 +65,8 @@ class Sidebar(QFrame):
             if block.isVisible():
                 fm_ascent = font_metrics.ascent()
                 fm_descent = font_metrics.descent()
-                painter.drawText(self.width() - font_metrics.width(str(line)),
+                painter.drawText(self.width() -
+                                 font_metrics.width(str(line)) - 7,
                                  pos.y() + fm_ascent + fm_descent, str(line))
 
             block = block.next()
@@ -75,7 +76,9 @@ class Sidebar(QFrame):
     def update_area(self):
         """ This method adjust the width of the sidebar """
 
-        width = self.fontMetrics().width(str('00'))
+        # Length number, for example: 120 = 3
+        line = len(str(self.editor.blockCount())) + 1
+        width = self.fontMetrics().width('0' * line)
         if self.width() != width:
             self.setFixedWidth(width)
             self.editor.setViewportMargins(width, 0, 0, 0)
