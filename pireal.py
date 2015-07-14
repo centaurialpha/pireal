@@ -34,7 +34,8 @@ def __get_versions():
     if sys.platform.startswith('linux'):
         system, name = platform.uname()[:2]
     else:
-        system, name = "Windows", platform.uname().release
+        system = platform.uname()[0]
+        name = platform.uname()[2]
     # Python version
     python_version = platform.python_version()
 
