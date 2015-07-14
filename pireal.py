@@ -20,7 +20,8 @@
 import sys
 from PyQt4.QtGui import (
     QApplication,
-    QStyleFactory
+    QStyleFactory,
+    QIcon
 )
 
 
@@ -58,7 +59,7 @@ if __name__ == "__main__":
     from src import resources  # lint:ok
 
     qapp = QApplication(sys.argv)
-
+    qapp.setWindowIcon(QIcon(":img/logo"))
     from src.gui.main_window import Pireal
     from src.gui import container  # lint:ok
     from src.gui import table_widget  # lint:ok
