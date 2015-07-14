@@ -29,7 +29,7 @@ from PyQt4.QtGui import (
 from PyQt4.QtDeclarative import QDeclarativeView
 from PyQt4.QtCore import (
     QUrl,
-    QDir
+    QDir,
 )
 
 
