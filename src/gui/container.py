@@ -95,16 +95,28 @@ class Container(QSplitter):
             self.close()
 
     def save_query(self):
+        query_widget = Pireal.get_service("query_widget")
+        # Editor instance
+        editor = query_widget.get_active_editor()
+        if editor.rfile.is_new:
+            return self.save_query_as(editor)
+        content = editor.toPlainText()
+        editor.rfile.write(content)
+        editor.document().setModified(False)
+
+    def save_query_as(self, editor=None):
+        if editor is None:
+            query_widget = Pireal.get_service("query_widget")
+            editor = query_widget.get_active_editor()
         directory = os.path.expanduser("~")
         filename = QFileDialog.getSaveFileName(self,
                                                self.tr("Guardar Archivo"),
                                                directory)
         if not filename:
             return
-        query_widget = Pireal.get_service("query_widget")
-        editor = query_widget.get_active_editor()
         content = editor.toPlainText()
         editor.rfile.write(content, filename)
+        editor.document().setModified(False)
 
     def load_relation(self):
         """ Load relation from file """

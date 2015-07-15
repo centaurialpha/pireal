@@ -196,7 +196,7 @@ class Pireal(QMainWindow):
         actions = [
             'new_query',
             'save_query',
-            'save_file_as',
+            'save_query_as',
             'create_new_relation',
             'remove_relation',
             'load_relation'

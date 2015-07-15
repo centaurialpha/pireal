@@ -50,7 +50,7 @@ MENU['file'] = {
         'slot': "container:save_query"
     }, {
         'name': translate("PIREAL", "Guardar como..."),
-        'slot': "container:save_file_as"
+        'slot': "container:save_query_as"
     }, "-", {
         'name': translate("PIREAL", "Cerrar"),
         'slot': "container:close_db"
