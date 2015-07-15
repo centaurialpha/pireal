@@ -24,6 +24,10 @@ from PyQt4.QtCore import (
 )
 
 
+class PirealIOError(Exception):
+    """ IO Exception """
+
+
 class RFile(object):
     """ This class represents a file
 
@@ -90,6 +94,6 @@ class RFile(object):
             self._is_new = False
         _file = QFile(self.filename)
         if not _file.open(QIODevice.WriteOnly | QIODevice.Truncate):
-            raise
+            raise PirealIOError
         out_file = QTextStream(_file)
         out_file << content
