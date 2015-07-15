@@ -176,14 +176,14 @@ class Pireal(QMainWindow):
         container = Pireal.get_service("container")
         container.show_start_page()
         # Query Widget
-        query_widget = Pireal.get_service("query_widget")
-        query_widget.hide()
+        #query_widget = Pireal.get_service("query_widget")
+        #query_widget.hide()
         # Lateral Widget
         lateral = Pireal.get_service("lateral")
         lateral.hide()
 
         self.addDockWidget(Qt.LeftDockWidgetArea, lateral)
-        self.addDockWidget(Qt.BottomDockWidgetArea, query_widget)
+        #self.addDockWidget(Qt.BottomDockWidgetArea, query_widget)
 
         return container
 

@@ -18,13 +18,14 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4.QtGui import (
-    QWidget,
     QVBoxLayout,
     QStackedWidget,
     QInputDialog,
     QFileDialog,
-    QMessageBox
+    QMessageBox,
+    QSplitter
 )
+from PyQt4.QtCore import Qt
 from src.gui.main_window import Pireal
 from src.gui import (
     start_page,
@@ -34,10 +35,10 @@ from src.gui import (
 from src.core import settings
 
 
-class Container(QWidget):
+class Container(QSplitter):
 
-    def __init__(self):
-        super(Container, self).__init__()
+    def __init__(self, orientation=Qt.Vertical):
+        super(Container, self).__init__(orientation)
         self.__filename = ""
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
@@ -76,10 +77,11 @@ class Container(QWidget):
 
     def new_query(self):
         query_widget = Pireal.get_service("query_widget")
+        self.addWidget(query_widget)
         if not query_widget.isVisible():
             query_widget.show()
-            pireal = Pireal.get_service("pireal")
-            pireal.enable_disable_query_actions()
+        pireal = Pireal.get_service("pireal")
+        pireal.enable_disable_query_actions()
         query_widget.new_query()
 
     def show_start_page(self):

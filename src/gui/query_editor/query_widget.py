@@ -18,11 +18,12 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4.QtGui import (
-    QDockWidget,
+    #QDockWidget,
     QTabWidget,
     QWidget,
     QColor,
-    QMessageBox
+    QMessageBox,
+    QVBoxLayout
 )
 from PyQt4.QtCore import (
     SIGNAL,
@@ -36,21 +37,17 @@ from src.core import (
 )
 
 
-class QueryWidget(QDockWidget):
+class QueryWidget(QWidget):
 
     def __init__(self):
         super(QueryWidget, self).__init__()
-        # Remove title bar widget
-        title_bar = self.titleBarWidget()
-        empty = QWidget()
-        self.setTitleBarWidget(empty)
-        del title_bar
-
         self.__nquery = 1
+        box = QVBoxLayout(self)
         # Tabs
         self.tab = QTabWidget()
         self.tab.setTabsClosable(True)
-        self.setWidget(self.tab)
+        self.tab.setMovable(True)
+        box.addWidget(self.tab)
 
         Pireal.load_service("query_widget", self)
 
@@ -60,10 +57,9 @@ class QueryWidget(QDockWidget):
         self.connect(self.tab, SIGNAL("tabCloseRequested(int)"),
                      self._check_count)
 
-    def resizeEvent(self, event):
-        height = Pireal.get_service("pireal").height()
-        height = height / 3
-        self.setMinimumHeight(height)
+    def showEvent(self, event):
+        container = Pireal.get_service("container")
+        self.setMinimumHeight(container.height() / 3)
 
     def get_active_editor(self):
         weditor = self.tab.currentWidget()
