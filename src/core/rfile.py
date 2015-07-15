@@ -17,6 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+from PyQt4.QtCore import (
+    QFile,
+    QIODevice,
+    QTextStream
+)
+
 
 class RFile(object):
     """ This class represents a file
@@ -50,6 +56,7 @@ class RFile(object):
 
     filename = property(__get_filename, __set_filename)
 
+    @property
     def is_new(self):
         """ This function returns True if the file is new, false otherwise
 
@@ -72,4 +79,17 @@ class RFile(object):
             raise Exception(reason)
 
     def write(self, content, new_filename=''):
-        pass
+        """ This function write the file
+
+        :param content: Text of the Editor
+        :param new_filename: Filename path
+        """
+
+        if self.is_new:
+            self.__filename = new_filename
+            self._is_new = False
+        _file = QFile(self.filename)
+        if not _file.open(QIODevice.WriteOnly | QIODevice.Truncate):
+            raise
+        out_file = QTextStream(_file)
+        out_file << content

@@ -47,7 +47,7 @@ MENU['file'] = {
         'slot': "container:open_file"
     }, {
         'name': translate("PIREAL", "Guardar"),
-        'slot': "container:save_file"
+        'slot': "container:save_query"
     }, {
         'name': translate("PIREAL", "Guardar como..."),
         'slot': "container:save_file_as"

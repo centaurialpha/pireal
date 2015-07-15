@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import os
 from PyQt4.QtGui import (
     QVBoxLayout,
     QStackedWidget,
@@ -93,11 +94,22 @@ class Container(QSplitter):
         if isinstance(widget, table_widget.TableWidget):
             self.close()
 
+    def save_query(self):
+        directory = os.path.expanduser("~")
+        filename = QFileDialog.getSaveFileName(self,
+                                               self.tr("Guardar Archivo"),
+                                               directory)
+        if not filename:
+            return
+        query_widget = Pireal.get_service("query_widget")
+        editor = query_widget.get_active_editor()
+        content = editor.toPlainText()
+        editor.rfile.write(content, filename)
+
     def load_relation(self):
         """ Load relation from file """
 
         import csv
-        import os
         from PyQt4.QtGui import QTableWidgetItem, QTableWidget
         from src.core import relation
 
