@@ -20,6 +20,13 @@
 import csv
 
 
+class DuplicateFieldsError(Exception):
+
+    def __init__(self, msg):
+        super(DuplicateFieldsError, self).__init__()
+        self.msg = msg
+
+
 class Relation(object):
     """
     This class represents a relation/table as a set of tuples.
@@ -113,8 +120,8 @@ class Relation(object):
 
         for i in other_relation.fields:
             if i in self.fields:
-                raise Exception("Duplicate attribute \"{}\" in product "
-                                "operation.".format(i))
+                raise DuplicateFieldsError("Duplicate attribute \"{}\" in "
+                                           "product operation.".format(i))
             self.fields.append(i)
 
         new_relation = Relation()
