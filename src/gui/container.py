@@ -33,7 +33,10 @@ from src.gui import (
     table_widget,
     new_relation_dialog
 )
-from src.core import settings
+from src.core import (
+    settings,
+    file_manager
+)
 
 
 class Container(QSplitter):
@@ -109,7 +112,10 @@ class Container(QSplitter):
         filename = QFileDialog.getOpenFileName(self, self.tr("Abrir Archivo"),
                                                directory, settings.RFILES,
                                                QFileDialog.DontUseNativeDialog)
-        self.new_query(filename)
+
+        ext = file_manager.get_extension(filename)
+        if ext in ('.pqf'):
+            self.new_query(filename)
 
     def save_query_as(self, editor=None):
         if editor is None:
