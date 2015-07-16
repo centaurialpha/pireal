@@ -76,9 +76,12 @@ class Relation(object):
                     d[attr] = register[e]
 
             # The expression is evaluated
-
-            if eval(expression, d):
-                new_relation.insert(register)
+            try:
+                if eval(expression, d):
+                    new_relation.insert(register)
+            except SyntaxError:
+                raise Exception("Error de Sintáxis\nNo se pudo evaluar la "
+                                "expresión \"{}\"".format(expression))
 
         return new_relation
 
@@ -93,8 +96,11 @@ class Relation(object):
 
         indexes = []
         for arg in args:
-            indexes.append(self.fields.index(arg))
-
+            try:
+                indexes.append(self.fields.index(arg))
+            except ValueError as reason:
+                field = reason.__str__().split()[0]
+                raise Exception("Campo inválido: {}".format(field))
         # New fields
         fields = [self.fields[i] for i in indexes]
 
@@ -185,20 +191,8 @@ class Relation(object):
 
 
 if __name__ == "__main__":
-    pass
     # Test
 
-    # Fields
-    #fields = ["id", "name", "skill"]
-    #r = Relation()
-    #r.fie-lds = fields
-
-    # Data
-    #data = {
-        #('1', 'Gabriel', 'Python'),
-        #('9', 'Rodrigo', 'Games'),
-        #("4", 'Mariela', 'Chef')
-    #}
     r1 = Relation()
     f1 = ['id', 'name']
     r1.fields = f1
@@ -212,19 +206,3 @@ if __name__ == "__main__":
     data2 = {('1', 'Python'), ('32', 'C++')}
     for reg in data2:
         r2.insert(reg)
-
-    # Naturial Join
-    r = r1.njoin(r2)
-    print(r)
-    #r = r1.product(r2).select("id == 1 and ids == 1").project("name", "skill")
-    #print(r)
-
-    # Relation
-    #print(r)
-
-    #r2 = r.project("skill", "name")
-    # Project skill and name
-    #print(r2)
-
-    #r3 = r.select("name == 'Gabriel'")
-    #print(r3)

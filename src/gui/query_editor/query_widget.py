@@ -41,6 +41,7 @@ class QueryWidget(QWidget):
 
     def __init__(self):
         super(QueryWidget, self).__init__()
+        self.__nrelation = 1
         self.__nquery = 1
         box = QVBoxLayout(self)
         # Tabs
@@ -126,9 +127,15 @@ class QueryWidget(QWidget):
             if re.match(r'^[_a-zA-Z]+[_a-zA-Z0-9]*$', parts[0]):
                 relation_name, line = parts
             else:
-                relation_name = 'rel'
+                relation_name = 'rel_{}'.format(self.__nrelation)
+                self.__nrelation += 1
             expression = parser.convert_to_python(line.strip())
-            rel = eval(expression, table.relations)
+            try:
+                rel = eval(expression, table.relations)
+            except Exception as reason:
+                QMessageBox.critical(self, self.tr("Error en consulta"),
+                                     reason.__str__())
+                return
             table.add_new_table(rel, relation_name)
             table.relations[relation_name] = rel
 
