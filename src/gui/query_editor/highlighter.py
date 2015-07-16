@@ -56,7 +56,7 @@ class Highlighter(QSyntaxHighlighter):
         keyword_format.setFontWeight(QFont.Bold)
 
         # Rules
-        self._rules = [(QRegExp(pattern), keyword_format)
+        self._rules = [(QRegExp("\\b" + pattern + "\\b"), keyword_format)
                        for pattern in Highlighter.KEYWORDS]
 
         # Number format
