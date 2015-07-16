@@ -116,7 +116,7 @@ class QueryWidget(QWidget):
                      self.__editor_modified)
         self.connect(qeditor, SIGNAL("cursorPositionChanged(int, int)"),
                      self._update_cursor_position)
-        self.setFocus()
+        qeditor.setFocus()
 
     def execute_queries(self):
         import re
