@@ -15,7 +15,7 @@
         <file alias="remove_relation">images/remove-relation.png</file>
         <file alias="remove_tuple">images/remove-tuple.png</file>
         <file alias="execute_queries">images/run.png</file>
-        <file alias="save_file">images/save.png</file>
+        <file alias="save_query">images/save.png</file>
         <file alias="undo_action">images/undo.png</file>
         <file alias="logo">images/logo.png</file>
         <file alias="banner">images/pireal_banner.png</file>

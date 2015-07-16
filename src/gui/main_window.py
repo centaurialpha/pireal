@@ -52,7 +52,7 @@ class Pireal(QMainWindow):
         'new_query',
         '',  # Is a separator!
         'open_file',
-        'save_file',
+        'save_query',
         '',
         'undo_action',
         'redo_action',
