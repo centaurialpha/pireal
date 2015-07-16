@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+
 import os
 from PyQt4.QtGui import (
     QVBoxLayout,
@@ -37,12 +38,14 @@ from src.core import (
     settings,
     file_manager
 )
+#FIXME: refactoring
 
 
 class Container(QSplitter):
 
     def __init__(self, orientation=Qt.Vertical):
         super(Container, self).__init__(orientation)
+        self._data_bases = []
         self.__filename = ""
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
@@ -56,24 +59,39 @@ class Container(QSplitter):
 
         Pireal.load_service("container", self)
 
-    def create_data_base(self):
+    def create_data_base(self, filename=''):
         if self.__created:
             QMessageBox.critical(self, self.tr("Error"),
                                  self.tr("Solo puede tener una base de datos "
                                          "abierta a la vez."))
             return
-        db_name, ok = QInputDialog.getText(self, self.tr("Nueva DB"),
-                                           self.tr("Nombre:"))
-        if ok:
-            self.__created = True
-            # Remove the start page
-            self.stacked.removeWidget(self.stacked.widget(0))
-            self.stacked.addWidget(self.table_widget)
-            # Enable QAction's
-            pireal = Pireal.get_service("pireal")
-            pireal.enable_disable_db_actions()
-            # Title
-            pireal.change_title(db_name)
+        from_file = False
+        if not filename:
+            db_name, ok = QInputDialog.getText(self, self.tr("Nueva DB"),
+                                               self.tr("Nombre:"))
+            if not ok:
+                return
+        else:
+            from_file = True
+            with open(filename, mode='r') as f:
+                content = f.read()
+            files = []
+            for e, i in enumerate(content.splitlines()):
+                if e == 0:
+                    db_name = i
+                else:
+                    files.append(i)
+        # Remove the start page
+        self.stacked.removeWidget(self.stacked.widget(0))
+        self.stacked.addWidget(self.table_widget)
+        pireal = Pireal.get_service("pireal")
+        # Title
+        pireal.change_title(db_name)
+        if from_file:
+            self.load_relation(files)
+        # Enable QAction's
+        pireal.enable_disable_db_actions()
+        self.__created = True
 
     def create_new_relation(self):
         dialog = new_relation_dialog.NewRelationDialog(self)
@@ -112,10 +130,14 @@ class Container(QSplitter):
         filename = QFileDialog.getOpenFileName(self, self.tr("Abrir Archivo"),
                                                directory, settings.RFILES,
                                                QFileDialog.DontUseNativeDialog)
-
+        if not filename:
+            return
         ext = file_manager.get_extension(filename)
-        if ext in ('.pqf'):
+        if ext == '.pqf':
+            # Query file
             self.new_query(filename)
+        else:
+            self.create_data_base(filename)
 
     def save_query_as(self, editor=None):
         if editor is None:
@@ -131,23 +153,25 @@ class Container(QSplitter):
         editor.rfile.write(content, filename)
         editor.document().setModified(False)
 
-    def load_relation(self):
+    def load_relation(self, filenames=[]):
         """ Load relation from file """
 
         import csv
         from PyQt4.QtGui import QTableWidgetItem, QTableWidget
         from src.core import relation
 
-        native_dialog = QFileDialog.DontUseNativeDialog
-        directory = os.path.expanduser("~")
-        filenames = QFileDialog.getOpenFileNames(self,
-                                                 self.tr("Abrir Archivo"),
-                                                 directory,
-                                                 self.tr("Relaciones "
-                                                 "{}").format(settings.RFILES),
-                                                 native_dialog)
         if not filenames:
-            return
+            native_dialog = QFileDialog.DontUseNativeDialog
+            directory = os.path.expanduser("~")
+            filenames = QFileDialog.getOpenFileNames(self,
+                                                     self.tr("Abrir Archivo"),
+                                                     directory,
+                                                     self.tr("Relaciones "
+                                                     "{}").format(
+                                                         settings.RFILES),
+                                                     native_dialog)
+            if not filenames:
+                return
         lateral = Pireal.get_service("lateral")
         for filename in filenames:
             rel = relation.Relation(filename)

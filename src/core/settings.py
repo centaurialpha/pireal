@@ -43,4 +43,4 @@ else:
 #RFILES = "(*.csv *.prf)"
 
 # Supported files
-RFILES = "Pireal files (*.pdb *.pqf *.csv *.prf *.txt)"
+RFILES = "Pireal Data Base File (*.pdb);; Pireal Query File (*.pqf)"
