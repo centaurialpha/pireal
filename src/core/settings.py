@@ -39,8 +39,6 @@ if LINUX:
 else:
     FONT = QFont('Courier', 10)
 
-# Supported relation files
-#RFILES = "(*.csv *.prf)"
-
 # Supported files
-RFILES = "Pireal Data Base File (*.pdb);; Pireal Query File (*.pqf)"
+RFILES = "Pireal Relation File (*.prf *.csv *.txt)"
+DBFILE = "Pireal Data Base File (*.pdb);;Pireal Query File (*.pqf)"

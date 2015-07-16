@@ -135,7 +135,7 @@ class Container(QSplitter):
     def open_file(self):
         directory = os.path.expanduser("~")
         filename = QFileDialog.getOpenFileName(self, self.tr("Abrir Archivo"),
-                                               directory, settings.RFILES,
+                                               directory, settings.DBFILE,
                                                QFileDialog.DontUseNativeDialog)
         if not filename:
             return
@@ -170,12 +170,10 @@ class Container(QSplitter):
         if not filenames:
             native_dialog = QFileDialog.DontUseNativeDialog
             directory = os.path.expanduser("~")
+            ffilter = settings.RFILES.split(';;')[-1]
             filenames = QFileDialog.getOpenFileNames(self,
                                                      self.tr("Abrir Archivo"),
-                                                     directory,
-                                                     self.tr("Relaciones "
-                                                     "{}").format(
-                                                         settings.RFILES),
+                                                     directory, ffilter,
                                                      native_dialog)
             if not filenames:
                 return
