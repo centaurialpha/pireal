@@ -42,6 +42,8 @@ class Editor(QPlainTextEdit):
 
         self.connect(self, SIGNAL("updateRequest(const QRect&, int)"),
                      self._sidebar.update_area)
+        self.connect(self, SIGNAL("cursorPositionChanged()"),
+                     self._emit_cursor_position)
 
     @property
     def filename(self):
@@ -56,3 +58,8 @@ class Editor(QPlainTextEdit):
         super(Editor, self).resizeEvent(event)
         # Fixed sidebar height
         self._sidebar.setFixedHeight(self.height())
+
+    def _emit_cursor_position(self):
+        line = self.blockCount()
+        col = self.textCursor().columnNumber() + 1
+        self.emit(SIGNAL("cursorPositionChanged(int, int)"), line, col)

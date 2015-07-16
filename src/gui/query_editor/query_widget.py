@@ -18,7 +18,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4.QtGui import (
-    #QDockWidget,
+    QLabel,
     QTabWidget,
     QWidget,
     QColor,
@@ -43,9 +43,13 @@ class QueryWidget(QWidget):
         super(QueryWidget, self).__init__()
         self.__nrelation = 1
         self.__nquery = 1
+        self._cursor_position = "Lin: %s, Col: %s"
+        self._cursor_position_widget = QLabel(self._cursor_position % (0, 0))
+
         box = QVBoxLayout(self)
         # Tabs
         self.tab = QTabWidget()
+        self.tab.setCornerWidget(self._cursor_position_widget)
         self.tab.setTabsClosable(True)
         self.tab.setMovable(True)
         box.addWidget(self.tab)
@@ -110,6 +114,8 @@ class QueryWidget(QWidget):
 
         self.connect(qeditor, SIGNAL("modificationChanged(bool)"),
                      self.__editor_modified)
+        self.connect(qeditor, SIGNAL("cursorPositionChanged(int, int)"),
+                     self._update_cursor_position)
 
     def execute_queries(self):
         import re
@@ -175,5 +181,9 @@ class QueryWidget(QWidget):
             else:
                 print("Saliendo...")
         self.tab.removeTab(index)
+
+    def _update_cursor_position(self, li, co):
+        self._cursor_position_widget.setText(self._cursor_position % (li, co))
+
 
 query_widget = QueryWidget()
