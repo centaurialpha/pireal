@@ -18,6 +18,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import json
 
 
 def get_extension(filename):
@@ -28,3 +29,20 @@ def get_extension(filename):
     """
 
     return os.path.splitext(filename)[-1]
+
+
+def write_database(filename, data):
+    try:
+        with open(filename, mode='w') as f:
+            json.dump(data, f)
+    except Exception:
+        raise Exception("Directory not found: {}".format(filename))
+
+
+def open_database(filename):
+    try:
+        with open(filename, mode='r') as f:
+            data = json.load(f)
+        return data
+    except Exception:
+        raise Exception("File not found: {}".format(filename))

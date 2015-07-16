@@ -60,6 +60,11 @@ class Container(QSplitter):
         Pireal.load_service("container", self)
 
     def create_data_base(self, filename=''):
+        """ This function opens or creates a database
+
+        :param filename: Database filename
+        """
+
         if self.__created:
             QMessageBox.critical(self, self.tr("Error"),
                                  self.tr("Solo puede tener una base de datos "
@@ -73,14 +78,16 @@ class Container(QSplitter):
                 return
         else:
             from_file = True
-            with open(filename, mode='r') as f:
-                content = f.read()
-            files = []
-            for e, i in enumerate(content.splitlines()):
-                if e == 0:
-                    db_name = i
-                else:
-                    files.append(i)
+            # Read database from file
+            try:
+                data = file_manager.open_database(filename)
+            except Exception as reason:
+                QMessageBox.critical(self, self.tr("Error!"),
+                                     reason.__str__())
+                return
+            # This is intended to give support multiple database
+            for name, files in data.items():
+                db_name = name
         # Remove the start page
         self.stacked.removeWidget(self.stacked.widget(0))
         self.stacked.addWidget(self.table_widget)
