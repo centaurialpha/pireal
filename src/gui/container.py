@@ -232,7 +232,9 @@ class Container(QSplitter):
         query_widget = Pireal.get_service("query_widget")
         query_widget.paste()
 
-    def closeEvent(self, event):
-        print("CLOSE")
+    def check_opened_query_files(self):
+        query_widget = Pireal.get_service("query_widget")
+        return query_widget.opened_files()
+
 
 container = Container()

@@ -253,3 +253,8 @@ class Pireal(QMainWindow):
         from src.gui import about_dialog
         dialog = about_dialog.AboutDialog(self)
         dialog.exec_()
+
+    def closeEvent(self, event):
+        container = Pireal.get_service("container")
+        if not container.check_opened_query_files():
+            event.ignore()

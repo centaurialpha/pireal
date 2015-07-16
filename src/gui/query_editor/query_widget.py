@@ -106,7 +106,8 @@ class QueryWidget(QWidget):
             name = qfile.get_name
         else:
             qfile = rfile.RFile()
-            name = qfile.filename + str(self.__nquery)
+            qfile.filename = qfile.filename + str(self.__nquery)
+            name = qfile.filename
             self.__nquery += 1
         qeditor.rfile = qfile
         index = self.tab.addTab(qeditor, name)
@@ -167,14 +168,7 @@ class QueryWidget(QWidget):
         editor = self.tab.widget(index)
         #editor = self.tab.currentWidget()
         if editor.modified:
-            flags = QMessageBox.Yes
-            flags |= QMessageBox.No
-            flags |= QMessageBox.Cancel
-            r = QMessageBox.information(self, self.tr("Archivo modificado"),
-                                        self.tr("El archivo <b>{}</b> "
-                                                "tiene cambios sin guardar. "
-                                                "Quieres guardarlos?").format(
-                                                    editor.filename), flags)
+            r = self.__file_modified_message(editor.filename)
             if r == QMessageBox.Cancel:
                 return
             if r == QMessageBox.Yes:
@@ -186,5 +180,28 @@ class QueryWidget(QWidget):
     def _update_cursor_position(self, li, co):
         self._cursor_position_widget.setText(self._cursor_position % (li, co))
 
+    def __file_modified_message(self, filename):
+        flags = QMessageBox.Yes
+        flags |= QMessageBox.No
+        flags |= QMessageBox.Cancel
+        r = QMessageBox.information(self, self.tr("Archivo modificado"),
+                                        self.tr("El archivo <b>{}</b> "
+                                                "tiene cambios sin guardar. "
+                                                "Quieres guardarlos?").format(
+                                                    filename), flags)
+        return r
+
+    def opened_files(self):
+        for i in range(self.tab.count()):
+            weditor = self.tab.widget(i)
+            if weditor.modified:
+                r = self.__file_modified_message(weditor.filename)
+                if r == QMessageBox.Cancel:
+                    return False
+                if r == QMessageBox.Yes:
+                    print("Guardando")
+                else:
+                    print("Saliendo sin guardar")
+        return True
 
 query_widget = QueryWidget()
