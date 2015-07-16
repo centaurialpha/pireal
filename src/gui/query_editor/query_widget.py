@@ -88,16 +88,24 @@ class QueryWidget(QWidget):
             pireal.enable_disable_query_actions(False)
             self.hide()
 
-    def new_query(self):
+    def new_query(self, filename=''):
         """ Add new query editor in QTabWidget """
 
-        # Query file
-        qfile = rfile.RFile()
-        qeditor = editor.Editor(qfile)
-        qfile.filename = qfile.filename + str(self.__nquery)
-        index = self.tab.addTab(qeditor, self.tr(qfile.filename))
+        # New Editor instance
+        qeditor = editor.Editor()
+        if filename:
+            # RFile
+            qfile = rfile.RFile(filename)
+            content = qfile.read()
+            qeditor.setPlainText(content)
+            name = qfile.get_name
+        else:
+            qfile = rfile.RFile()
+            name = qfile.filename + str(self.__nquery)
+            self.__nquery += 1
+        qeditor.rfile = qfile
+        index = self.tab.addTab(qeditor, name)
         self.tab.setCurrentIndex(index)
-        self.__nquery += 1
 
         self.connect(qeditor, SIGNAL("modificationChanged(bool)"),
                      self.__editor_modified)

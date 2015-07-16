@@ -30,7 +30,7 @@ from src.core import settings
 
 class Editor(QPlainTextEdit):
 
-    def __init__(self, rfile):
+    def __init__(self, rfile=None):
         super(Editor, self).__init__()
         self.rfile = rfile
         self.modified = False

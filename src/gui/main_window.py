@@ -194,7 +194,7 @@ class Pireal(QMainWindow):
         """ Public method. Enables or disables db QAction """
 
         actions = [
-            'new_query',
+            #'open_file',
             'save_query',
             'save_query_as',
             'create_new_relation',

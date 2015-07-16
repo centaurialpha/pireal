@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import os
 from PyQt4.QtCore import (
     QFile,
     QIODevice,
@@ -59,6 +60,15 @@ class RFile(object):
         self.__filename = filename
 
     filename = property(__get_filename, __set_filename)
+
+    @property
+    def get_name(self):
+        """ This function returns the display name
+
+        :returns: Base name of filename
+        """
+
+        return os.path.basename(self.filename)
 
     @property
     def is_new(self):

@@ -76,14 +76,14 @@ class Container(QSplitter):
         dialog = new_relation_dialog.NewRelationDialog(self)
         dialog.show()
 
-    def new_query(self):
+    def new_query(self, filename=''):
         query_widget = Pireal.get_service("query_widget")
         self.addWidget(query_widget)
         if not query_widget.isVisible():
             query_widget.show()
         pireal = Pireal.get_service("pireal")
         pireal.enable_disable_query_actions()
-        query_widget.new_query()
+        query_widget.new_query(filename)
 
     def show_start_page(self):
         sp = start_page.StartPage()
@@ -103,6 +103,13 @@ class Container(QSplitter):
         content = editor.toPlainText()
         editor.rfile.write(content)
         editor.document().setModified(False)
+
+    def open_file(self):
+        directory = os.path.expanduser("~")
+        filename = QFileDialog.getOpenFileName(self, self.tr("Abrir Archivo"),
+                                               directory, settings.RFILES,
+                                               QFileDialog.DontUseNativeDialog)
+        self.new_query(filename)
 
     def save_query_as(self, editor=None):
         if editor is None:

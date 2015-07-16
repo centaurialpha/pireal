@@ -40,4 +40,7 @@ else:
     FONT = QFont('Courier', 10)
 
 # Supported relation files
-RFILES = "(*.csv *.prf)"
+#RFILES = "(*.csv *.prf)"
+
+# Supported files
+RFILES = "Pireal files (*.pdb *.pqf *.csv *.prf *.txt)"
