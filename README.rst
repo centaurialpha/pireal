@@ -1,8 +1,12 @@
 .. |test| image:: https://travis-ci.org/centaurialpha/pireal.svg?branch=master
     :target: https://travis-ci.org/centaurialpha/pireal
+
+.. |issues| image:: https://img.shields.io/github/issues/centaurialpha/pireal.svg?
+    :target: https://github.com/centaurialpha/pireal/issues
+    :alt: GitHub issues for pireal
     
 *****
-πreal |test|
+πreal |test| |issues|
 *****
 
 **Pireal** is an educational tool for working with relational database using the query language of relational algebra. *Currently under development*.
