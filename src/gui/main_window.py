@@ -78,8 +78,11 @@ class Pireal(QMainWindow):
         # Central widget
         central_widget = self.__load_ui()
         self.setCentralWidget(central_widget)
-        #mdi = Pireal.get_service("mdi")
-        #self.setCentralWidget(mdi)
+
+        # Status bar
+        status_bar = Pireal.get_service("status")
+        status_bar.hide()
+        self.setStatusBar(status_bar)
 
         # Install service
         Pireal.load_service("pireal", self)

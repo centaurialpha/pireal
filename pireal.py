@@ -70,6 +70,7 @@ if __name__ == "__main__":
     qapp = QApplication(sys.argv)
     qapp.setWindowIcon(QIcon(":img/logo"))
     from src.gui.main_window import Pireal
+    from src.gui import status_bar  # lint:ok
     from src.gui import container  # lint:ok
     from src.gui import table_widget  # lint:ok
     from src.gui.query_editor import query_widget  # lint:ok
