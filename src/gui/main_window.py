@@ -188,7 +188,14 @@ class Pireal(QMainWindow):
         self.addDockWidget(Qt.LeftDockWidgetArea, lateral)
         #self.addDockWidget(Qt.BottomDockWidgetArea, query_widget)
 
+        self.connect(container, SIGNAL("currentFileSaved(QString)"),
+                     self.__show_status_message)
+
         return container
+
+    def __show_status_message(self, msg):
+        status = Pireal.get_service("status")
+        status.show_message(msg)
 
     def change_title(self, title):
         self.setWindowTitle(title + " - Pireal")

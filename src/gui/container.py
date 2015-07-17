@@ -27,7 +27,10 @@ from PyQt4.QtGui import (
     QMessageBox,
     QSplitter
 )
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import (
+    Qt,
+    SIGNAL
+)
 from src.gui.main_window import Pireal
 from src.gui import (
     start_page,
@@ -117,6 +120,10 @@ class Container(QSplitter):
         pireal.enable_disable_query_actions()
         query_widget.new_query(filename)
 
+        self.connect(query_widget,
+                     SIGNAL("currentEditorSaved(QPlainTextEdit)"),
+                     self.save_query)
+
     def show_start_page(self):
         sp = start_page.StartPage()
         self.stacked.addWidget(sp)
@@ -126,15 +133,19 @@ class Container(QSplitter):
         if isinstance(widget, table_widget.TableWidget):
             self.close()
 
-    def save_query(self):
-        query_widget = Pireal.get_service("query_widget")
-        # Editor instance
-        editor = query_widget.get_active_editor()
-        if editor.rfile.is_new:
-            return self.save_query_as(editor)
-        content = editor.toPlainText()
-        editor.rfile.write(content)
-        editor.document().setModified(False)
+    def save_query(self, weditor=None):
+        if weditor is None:
+            query_widget = Pireal.get_service("query_widget")
+            # Editor instance
+            weditor = query_widget.get_active_editor()
+        if weditor.rfile.is_new:
+            return self.save_query_as(weditor)
+        content = weditor.toPlainText()
+        weditor.rfile.write(content)
+        weditor.document().setModified(False)
+
+        self.emit(SIGNAL("currentFileSaved(QString)"),
+                  self.tr("Archivo guardado: {}").format(weditor.filename))
 
     def open_file(self):
 

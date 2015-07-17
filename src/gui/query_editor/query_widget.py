@@ -173,7 +173,8 @@ class QueryWidget(QWidget):
             if r == QMessageBox.Cancel:
                 return
             if r == QMessageBox.Yes:
-                print("Guardando")
+                self.emit(SIGNAL("currentEditorSaved(QPlainTextEdit)"),
+                          editor)
             else:
                 print("Saliendo...")
         self.tab.removeTab(index)
