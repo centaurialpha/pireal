@@ -36,9 +36,13 @@ from src.gui import (
 )
 from src.core import (
     settings,
-    file_manager
+    file_manager,
+    logger
 )
 #FIXME: refactoring
+log = logger.get_logger(__name__)
+DEBUG = log.debug
+ERROR = log.error
 
 
 class Container(QSplitter):
@@ -133,6 +137,7 @@ class Container(QSplitter):
         editor.document().setModified(False)
 
     def open_file(self):
+
         directory = os.path.expanduser("~")
         filename = QFileDialog.getOpenFileName(self, self.tr("Abrir Archivo"),
                                                directory, settings.DBFILE,

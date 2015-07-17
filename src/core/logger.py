@@ -22,16 +22,79 @@ Logging
 """
 
 import logging
+import sys
+from src.core import settings
+
+LOG_FORMAT = "[%(asctime)s]:%(levelname)-7s:%(name)s:%(message)s"
+TIME_FORMAT = "%H:%M:%S"
 
 
-FORMAT = "%(asctime)s %(name)10s:%(funcName)s:%(lineno)s " \
-         "%(levelname)10s %(message)10s"
+class CustomFormatter(logging.Formatter):
+    """ Custom Formatter with colors """
 
-TIME_FORMAT = "%y-%m-%d %H:%M:%S"
+    RESET = '\x1b[0m'
+    YELLOW = '\x1b[33m'
+    RED = '\x1b[31m'
+    GREEN = '\x1b[32m'
+    BLUE = '\x1b[34m'
+
+    def format(self, record, colour=False):
+        msg = super().format(record)
+
+        if not colour:
+            return msg
+
+        level = record.levelno
+        if level >= logging.CRITICAL:
+            colour = self.RED
+        elif level >= logging.ERROR:
+            colour = self.RED
+        elif level >= logging.WARNING:
+            colour = self.YELLOW
+        elif level >= logging.INFO:
+            colour = self.BLUE
+        elif level >= logging.DEBUG:
+            colour = self.GREEN
+        else:
+            colour = self.RESET
+
+        return colour + msg + self.RESET
+
+
+class CustomHandler(logging.StreamHandler):
+
+    def __init__(self, stream=sys.stdout):
+        super(CustomHandler, self).__init__(stream)
+
+    def format(self, record, colour=False):
+        if not isinstance(self.formatter, CustomFormatter):
+            self.formatter = CustomFormatter()
+
+        return self.formatter.format(record, colour)
+
+    def emit(self, record):
+        stream = self.stream
+        try:
+            msg = self.format(record, stream.isatty())
+            stream.write(msg)
+            stream.write(self.terminator)
+            self.flush()
+        except Exception:
+            self.handlerError(record)
 
 
 def get_logger(name):
-    logging.basicConfig()
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
+    if settings.LINUX:
+        # Handler
+        handler = CustomHandler()
+        # Formatter
+        formatter = CustomFormatter(LOG_FORMAT, TIME_FORMAT)
+    else:
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter(LOG_FORMAT, TIME_FORMAT)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     return logger

@@ -23,6 +23,13 @@ from PyQt4.QtGui import (
     QStyleFactory,
     QIcon
 )
+from src.core import (
+    settings,
+    logger
+)
+log = logger.get_logger(__name__)
+DEBUG = log.debug
+INFO = log.info
 
 
 def __get_versions():
@@ -50,10 +57,12 @@ def __get_versions():
 
 if __name__ == "__main__":
 
+    # Create dir
+    settings.create_dir()
     info = __get_versions()
-    print("Executing Pireal from source")
-    print("01. Python {0} - Qt {1} on {2} {3}".format(
-          info['python'], info['qt'], info['os'], info['name']))
+    DEBUG("Executing Pireal from source")
+    INFO("Python {0} - Qt {1} on {2} {3}".format(
+         info['python'], info['qt'], info['os'], info['name']))
 
     # Import resources
     from src import resources  # lint:ok
@@ -65,14 +74,12 @@ if __name__ == "__main__":
     from src.gui import table_widget  # lint:ok
     from src.gui.query_editor import query_widget  # lint:ok
     from src.gui import lateral_widget  # lint:ok
-    #from src.gui import mdi_area  # lint:ok
-    #from src.gui import actions  # lint:ok
 
     # Style
     qapp.setStyle(QStyleFactory.create("gtk"))
-    print("02. Loading GUI...")
+    INFO("Loading GUI...")
     gui = Pireal()
     gui.show()
     gui.showMaximized()
-    print("Ok.")
+    INFO("Pireal ready!")
     sys.exit(qapp.exec_())

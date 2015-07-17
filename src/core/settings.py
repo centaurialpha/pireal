@@ -22,6 +22,7 @@ Pireal settings
 """
 
 import sys
+import os
 from PyQt4.QtGui import QFont
 
 
@@ -42,3 +43,14 @@ else:
 # Supported files
 RFILES = "Pireal Relation File (*.prf *.csv *.txt)"
 DBFILE = "Pireal Data Base File (*.pdb);;Pireal Query File (*.pqf)"
+
+# Create folder (settings and logging)
+# Create folder (settings and logging)
+HOME = os.path.expanduser("~")
+PIREAL_DIR = os.path.join(HOME, ".pireal")
+LOG_FILE = os.path.join(PIREAL_DIR, "pireal_logging.log")
+
+
+def create_dir():
+    if not os.path.isdir(PIREAL_DIR):
+        os.mkdir(PIREAL_DIR)
