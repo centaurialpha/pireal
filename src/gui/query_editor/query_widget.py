@@ -47,6 +47,7 @@ class QueryWidget(QWidget):
         self._cursor_position_widget = QLabel(self._cursor_position % (0, 0))
 
         box = QVBoxLayout(self)
+        box.setContentsMargins(0, 0, 5, 0)
         # Tabs
         self.tab = QTabWidget()
         self.tab.setCornerWidget(self._cursor_position_widget)

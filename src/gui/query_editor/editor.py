@@ -18,9 +18,16 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4.QtGui import (
-    QPlainTextEdit
+    QPlainTextEdit,
+    QTextEdit,
+    QTextCharFormat,
+    QTextCursor,
+    QColor,
 )
-from PyQt4.QtCore import SIGNAL
+from PyQt4.QtCore import (
+    SIGNAL,
+    Qt
+)
 from src.gui.query_editor import (
     highlighter,
     sidebar
@@ -40,10 +47,11 @@ class Editor(QPlainTextEdit):
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
 
+        # Connection
         self.connect(self, SIGNAL("updateRequest(const QRect&, int)"),
                      self._sidebar.update_area)
         self.connect(self, SIGNAL("cursorPositionChanged()"),
-                     self._emit_cursor_position)
+                     self.__cursor_position_changed)
 
     @property
     def filename(self):
@@ -59,7 +67,122 @@ class Editor(QPlainTextEdit):
         # Fixed sidebar height
         self._sidebar.setFixedHeight(self.height())
 
-    def _emit_cursor_position(self):
+    def __cursor_position_changed(self):
+        # Paren matching
+        _selection = QTextEdit.ExtraSelection()
+        extra_selection = []
+        extra_selection.append(_selection)
+
+        extras = self.__check_brackets()
+        if extras:
+            extra_selection.extend(extras)
+        self.setExtraSelections(extra_selection)
+
+        # Emit line and column signal
         line = self.blockCount()
         col = self.textCursor().columnNumber() + 1
         self.emit(SIGNAL("cursorPositionChanged(int, int)"), line, col)
+
+    def __check_brackets(self):
+        left, right = QTextEdit.ExtraSelection(), QTextEdit.ExtraSelection()
+        cursor = self.textCursor()
+        block = cursor.block()
+        data = block.userData()
+        previous, _next = None, None
+
+        if data is not None:
+            position = cursor.position()
+            block_pos = cursor.block().position()
+            paren = data.paren
+            n = len(paren)
+
+            for k in range(0, n):
+                if paren[k].position == position - block_pos or \
+                paren[k].position == position - block_pos - 1:
+                    previous = paren[k].position + block_pos
+                    if paren[k].character == '(':
+                        _next = self.__match_left(block,
+                                                  paren[k].character,
+                                                  k + 1, 0)
+                    elif paren[k].character == ')':
+                        _next = self.__match_right(block,
+                                                   paren[k].character,
+                                                   k, 0)
+
+        if _next is not None and _next > 0:
+            if previous is not None and previous > 0:
+                _format = QTextCharFormat()
+
+                cursor.setPosition(previous)
+                cursor.movePosition(QTextCursor.NextCharacter,
+                                    QTextCursor.KeepAnchor)
+
+                green = QColor("green")
+                green.setAlpha(155)
+                _format.setForeground(Qt.white)
+                _format.setBackground(green)
+                left.format = _format
+                left.cursor = cursor
+
+                cursor.setPosition(_next)
+                cursor.movePosition(QTextCursor.NextCharacter,
+                                    QTextCursor.KeepAnchor)
+
+                _format.setForeground(Qt.white)
+                _format.setBackground(Qt.darkGreen)
+                right.format = _format
+                right.cursor = cursor
+
+                return left, right
+
+        elif previous is not None:
+            _format = QTextCharFormat()
+
+            cursor.setPosition(previous)
+            cursor.movePosition(QTextCursor.NextCharacter,
+                                QTextCursor.KeepAnchor)
+
+            _format.setForeground(QColor("white"))
+            _format.setBackground(QColor("red"))
+            left.format = _format
+            left.cursor = cursor
+            return (left,)
+
+    def __match_left(self, block, char, start, found):
+        while block.isValid():
+            data = block.userData()
+            if data is not None:
+                paren = data.paren
+                n = len(paren)
+                for i in range(start, n):
+                    if paren[i].character == char:
+                        found += 1
+
+                    if paren[i].character == ')':
+                        if not found:
+                            return paren[i].position + block.position()
+                        else:
+                            found -= 1
+
+                block = block.next()
+                start = 0
+
+    def __match_right(self, block, char, start, found):
+        while block.isValid():
+            data = block.userData()
+
+            if data is not None:
+                paren = data.paren
+
+                if start is None:
+                    start = len(paren)
+                for i in range(start - 1, -1, -1):
+                    if paren[i].character == char:
+                        found += 1
+                    if paren[i].character == '(':
+                        if found == 0:
+                            return paren[i].position + block.position()
+                        else:
+                            found -= 1
+            block = block.previous()
+            start = None

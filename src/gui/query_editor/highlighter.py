@@ -20,7 +20,8 @@
 from PyQt4.QtGui import (
     QSyntaxHighlighter,
     QTextCharFormat,
-    QFont
+    QFont,
+    QTextBlockUserData
 )
 from PyQt4.QtCore import (
     Qt,
@@ -79,8 +80,22 @@ class Highlighter(QSyntaxHighlighter):
         comment_format.setForeground(Qt.darkGreen)
         self._rules.append((comment_pattern, comment_format))
 
+        # Paren
+        self.paren = QRegExp('\(|\)')
+
     def highlightBlock(self, text):
         """ Reimplementation """
+
+        block_data = TextBlockData()
+        # Paren
+        index = self.paren.indexIn(text, 0)
+        while index >= 0:
+            matched_paren = str(self.paren.capturedTexts()[0])
+            info = ParenInfo(matched_paren, index)
+            block_data.insert_paren_info(info)
+            index = self.paren.indexIn(text, index + 1)
+
+        self.setCurrentBlockUserData(block_data)
 
         for pattern, _format in self._rules:
             expression = QRegExp(pattern)
@@ -91,3 +106,26 @@ class Highlighter(QSyntaxHighlighter):
                 index = expression.indexIn(text, index + length)
 
         self.setCurrentBlockState(0)
+
+
+class TextBlockData(QTextBlockUserData):
+
+    def __init__(self):
+        super(TextBlockData, self).__init__()
+        self.paren = []
+        self.__valid = False
+
+    def insert_paren_info(self, info):
+        self.__valid = True
+        self.paren.append(info)
+
+    @property
+    def isValid(self):
+        return self.__valid
+
+
+class ParenInfo(object):
+
+    def __init__(self, char, pos):
+        self.character = char
+        self.position = pos
