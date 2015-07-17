@@ -21,8 +21,7 @@ from PyQt4.QtGui import (
     QPlainTextEdit,
     QTextEdit,
     QTextCharFormat,
-    QTextCursor,
-    QColor,
+    QTextCursor
 )
 from PyQt4.QtCore import (
     SIGNAL,
@@ -117,10 +116,8 @@ class Editor(QPlainTextEdit):
                 cursor.movePosition(QTextCursor.NextCharacter,
                                     QTextCursor.KeepAnchor)
 
-                green = QColor("green")
-                green.setAlpha(155)
-                _format.setForeground(Qt.white)
-                _format.setBackground(green)
+                _format.setForeground(Qt.blue)
+                _format.setBackground(Qt.white)
                 left.format = _format
                 left.cursor = cursor
 
@@ -129,7 +126,7 @@ class Editor(QPlainTextEdit):
                                     QTextCursor.KeepAnchor)
 
                 _format.setForeground(Qt.white)
-                _format.setBackground(Qt.darkGreen)
+                _format.setBackground(Qt.blue)
                 right.format = _format
                 right.cursor = cursor
 
@@ -142,8 +139,8 @@ class Editor(QPlainTextEdit):
             cursor.movePosition(QTextCursor.NextCharacter,
                                 QTextCursor.KeepAnchor)
 
-            _format.setForeground(QColor("white"))
-            _format.setBackground(QColor("red"))
+            _format.setForeground(Qt.white)
+            _format.setBackground(Qt.red)
             left.format = _format
             left.cursor = cursor
             return (left,)
