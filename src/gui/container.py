@@ -111,6 +111,10 @@ class Container(QSplitter):
         dialog = new_relation_dialog.NewRelationDialog(self)
         dialog.show()
 
+    def remove_relation(self):
+        lateral = Pireal.get_service("lateral")
+        lateral.remove_table()
+
     def new_query(self, filename=''):
         query_widget = Pireal.get_service("query_widget")
         self.addWidget(query_widget)

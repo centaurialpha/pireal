@@ -111,6 +111,10 @@ class TableWidget(QWidget):
         lateral = Pireal.get_service("lateral")
         lateral.add_item_list([name])
 
+    def remove_table(self, index):
+        table = self.stacked.widget(index)
+        self.stacked.removeWidget(table)
+
     def add_table_from_file(self):
         pass
 

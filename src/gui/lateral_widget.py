@@ -51,4 +51,10 @@ class LateralWidget(QDockWidget):
             item.setTextAlignment(Qt.AlignHCenter)
             self._list_widget.addItem(item)
 
+    def remove_table(self):
+        table_widget = Pireal.get_service("container").table_widget
+        current_index = self._list_widget.currentRow()
+        table_widget.remove_table(current_index)
+        self._list_widget.takeItem(current_index)
+
 lateral = LateralWidget()
