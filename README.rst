@@ -42,6 +42,31 @@ or download the .zip file and running:
     cd pireal
     python pireal.py
     
+Syntax
+######
+
+- Semicolon at the end of each line is not necessary
+- SQL style comments
+
+.. code-block:: sql
+
+    -- This is a comment on Pireal
+    -- Other comment
+
+- Valid queries
+
+::
+
+    q1 = people njoin skills
+    q2 = select age > 25 (q1)
+    q3 = project id, name, skill (q2)
+
+or
+
+::
+
+    project id, name, skill (select age > 25 (people njoin skills))
+
 Implemented Operators
 #####################
 The operations are defined in this `file <https://github.com/centaurialpha/pireal/blob/master/src/core/relation.py>`_.
