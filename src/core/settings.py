@@ -42,7 +42,8 @@ else:
 
 # Supported files
 RFILES = "Pireal Relation File (*.prf *.csv *.txt)"
-DBFILE = "Pireal Data Base File (*.pdb);;Pireal Query File (*.pqf)"
+DBFILE = "Pireal Data Base File (*.pdb);;Pireal Query File (*.pqf);;" \
+         "WinRDBI Data Base (*.rdb)"
 
 # Create folder (settings and logging)
 # Create folder (settings and logging)

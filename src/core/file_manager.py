@@ -19,6 +19,7 @@
 
 import os
 import json
+import codecs
 
 
 def get_extension(filename):
@@ -46,3 +47,8 @@ def open_database(filename):
         return data
     except Exception:
         raise Exception("File not found: {}".format(filename))
+
+
+def read_rdb_file(filename):
+    content = codecs.open(filename, 'r', 'iso-8859-1').read()
+    return content

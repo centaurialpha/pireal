@@ -19,19 +19,15 @@
 
 from PyQt4.QtGui import (
     QWidget,
-    QMdiSubWindow,
     QVBoxLayout,
-    QSplitter,
-    QListWidget,
-    QListWidgetItem,
     QStackedWidget,
     QTableWidget,
     QTableWidgetItem
 )
-from PyQt4.QtCore import (
-    Qt,
-    SIGNAL
-)
+#from PyQt4.QtCore import (
+    #Qt,
+    #SIGNAL
+#)
 from src.gui.main_window import Pireal
 
 
@@ -115,24 +111,23 @@ class TableWidget(QWidget):
         table = self.stacked.widget(index)
         self.stacked.removeWidget(table)
 
-    def add_table_from_file(self):
-        pass
-
-    #def showEvent(self, event):
-        #QWidget.showEvent(self, event)
-        #self._splitter.setSizes([self.height(), self.width()])
-
-
-#class MdiDB(QMdiSubWindow):
-
-    #def __init__(self):
-        #super(MdiDB, self).__init__()
-        #self.table_widget = TableWidget()
-        #self.setWidget(self.table_widget)
-
-        #Pireal.load_service("db", self.table_widget)
-
-    #def closeEvent(self, event):
-        ## Disable QAction's
-        #pireal = Pireal.get_service("pireal")
-        #pireal.enable_disable_db_actions(False)
+    def add_table_from_rdb_content(self, content):
+        lateral = Pireal.get_service("lateral")
+        lateral.show()
+        for line in content.splitlines():
+            if line.startswith('@'):
+                table = QTableWidget()
+                #table.setRowCount(0)
+                name = line.split(':')[0][1:]
+                lateral.add_item_list([name])
+                fields = line.split(':')[-1].split(',')[:-1]
+                table.setColumnCount(len(fields))
+                table.setHorizontalHeaderLabels(fields)
+                self.stacked.addWidget(table)
+            else:
+                row = table.rowCount()
+                for e, i in enumerate(line.split(',')):
+                    item = QTableWidgetItem()
+                    item.setText(i)
+                    table.setItem(row - 1, e, item)
+                table.insertRow(row)
