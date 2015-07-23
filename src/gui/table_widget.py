@@ -22,7 +22,8 @@ from PyQt4.QtGui import (
     QVBoxLayout,
     QStackedWidget,
     QTableWidget,
-    QTableWidgetItem
+    QTableWidgetItem,
+    QHeaderView
 )
 #from PyQt4.QtCore import (
     #Qt,
@@ -41,29 +42,15 @@ class TableWidget(QWidget):
 
         self.relations = {}
 
-        ## Splitter
-        #self._splitter = QSplitter()
-
-        ## List of names of tables/relations
-        #self._list_tables = QListWidget()
-        #self._splitter.addWidget(self._list_tables)
-        ## Stack
+        # Stack
         self.stacked = QStackedWidget()
         vbox.addWidget(self.stacked)
-
-        #vbox.addWidget(self._splitter)
-
-        #self.connect(self._list_tables, SIGNAL("currentRowChanged(int)"),
-                     #self.__change_table)
-
-    #def __change_table(self, index):
-        #self.stacked.setCurrentIndex(index)
 
     def count(self):
         return self.stacked.count()
 
     def add_table(self, rows, columns, name, data):
-        table = QTableWidget()
+        table = Table()
         table.setRowCount(rows)
         table.setColumnCount(columns)
 
@@ -84,7 +71,7 @@ class TableWidget(QWidget):
     def add_new_table(self, rel, name):
         import itertools
 
-        table = QTableWidget()
+        table = Table()
         table.setRowCount(0)
         table.setColumnCount(0)
 
@@ -116,8 +103,7 @@ class TableWidget(QWidget):
         lateral.show()
         for line in content.splitlines():
             if line.startswith('@'):
-                table = QTableWidget()
-                #table.setRowCount(0)
+                table = Table()
                 name = line.split(':')[0][1:]
                 lateral.add_item_list([name])
                 fields = line.split(':')[-1].split(',')[:-1]
@@ -131,3 +117,10 @@ class TableWidget(QWidget):
                     item.setText(i)
                     table.setItem(row - 1, e, item)
                 table.insertRow(row)
+
+
+class Table(QTableWidget):
+
+    def __init__(self, parent=None):
+        super(Table, self).__init__(parent)
+        self.horizontalHeader().setResizeMode(QHeaderView.ResizeToContents)
