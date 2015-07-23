@@ -65,6 +65,8 @@ class LateralWidget(QDockWidget):
         table.stacked.setCurrentIndex(index)
 
     def add_item_list(self, items):
+        if not self.isVisible():
+            self.show()
         for i in items:
             item = QListWidgetItem(i)
             item.setTextAlignment(Qt.AlignHCenter)

@@ -49,24 +49,21 @@ class TableWidget(QWidget):
     def count(self):
         return self.stacked.count()
 
-    def add_table(self, rows, columns, name, data):
+    def add_table(self, rows, columns, name, data, fields):
         table = Table()
         table.setRowCount(rows)
         table.setColumnCount(columns)
+        table.setHorizontalHeaderLabels(fields)
 
         for k, v in list(data.items()):
             item = QTableWidgetItem()
             item.setText(v)
-            if k[0] == 0:
-                table.setHorizontalHeaderItem(k[1], item)
-            else:
-                table.setItem(k[0] - 1, k[1], item)
-        #ntuples = " [ " + str(rows) + " ]"
-        #item_list = QListWidgetItem(name + ntuples)
-        #item_list.setTextAlignment(Qt.AlignHCenter)
-        #self._list_tables.addItem(item_list)
+            table.setItem(k[0] - 1, k[1], item)
+
         self.stacked.addWidget(table)
         self.stacked.setCurrentIndex(self.stacked.count() - 1)
+        lateral = Pireal.get_service("lateral")
+        lateral.add_item_list([name])
 
     def add_new_table(self, rel, name):
         import itertools
