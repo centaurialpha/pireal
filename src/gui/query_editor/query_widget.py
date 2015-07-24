@@ -26,7 +26,6 @@ from PyQt4.QtGui import (
 )
 from PyQt4.QtCore import (
     SIGNAL,
-    #Qt
 )
 from src.gui.query_editor import editor
 from src.gui.main_window import Pireal
@@ -111,6 +110,7 @@ class QueryWidget(QWidget):
             self.__nquery += 1
         qeditor.rfile = qfile
         index = self.tab.addTab(qeditor, name)
+        self.tab.setTabToolTip(index, qfile.filename)
         self.tab.setCurrentIndex(index)
 
         self.connect(qeditor, SIGNAL("modificationChanged(bool)"),
@@ -167,7 +167,6 @@ class QueryWidget(QWidget):
     def removeTab(self, index):
         # Current editor instance
         editor = self.tab.widget(index)
-        #editor = self.tab.currentWidget()
         if editor.modified:
             r = self.__file_modified_message(editor.filename)
             if r == QMessageBox.Cancel:
@@ -187,10 +186,10 @@ class QueryWidget(QWidget):
         flags |= QMessageBox.No
         flags |= QMessageBox.Cancel
         r = QMessageBox.information(self, self.tr("Archivo modificado"),
-                                        self.tr("El archivo <b>{}</b> "
-                                                "tiene cambios sin guardar. "
-                                                "Quieres guardarlos?").format(
-                                                    filename), flags)
+                                    self.tr("El archivo <b>{}</b> "
+                                            "tiene cambios sin guardar. "
+                                            "Quieres guardarlos?").format(
+                                                filename), flags)
         return r
 
     def opened_files(self):

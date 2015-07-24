@@ -42,7 +42,7 @@ from src.core import (
     file_manager,
     logger
 )
-#FIXME: refactoring
+# FIXME: refactoring
 log = logger.get_logger(__name__)
 DEBUG = log.debug
 ERROR = log.error
@@ -185,7 +185,7 @@ class Container(QSplitter):
                     continue
                 csv_content += line
             csv_content += '\n'
-        #print(csv_content)
+
         self.table_widget.add_table_from_rdb_content(csv_content)
 
     def save_query_as(self, editor=None):
@@ -242,7 +242,7 @@ class Container(QSplitter):
                     table.insertRow(row)
                 table.removeRow(table.rowCount() - 1)
             self.table_widget.stacked.addWidget(table)
-        #FIXME: names
+        # FIXME: names
         names = [os.path.splitext(os.path.basename(i))[0]
                  for i in filenames]
         lateral.add_item_list(names)
