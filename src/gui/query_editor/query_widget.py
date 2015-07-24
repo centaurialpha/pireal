@@ -21,13 +21,12 @@ from PyQt4.QtGui import (
     QLabel,
     QTabWidget,
     QWidget,
-    QColor,
     QMessageBox,
     QVBoxLayout
 )
 from PyQt4.QtCore import (
     SIGNAL,
-    Qt
+    #Qt
 )
 from src.gui.query_editor import editor
 from src.gui.main_window import Pireal
@@ -155,13 +154,14 @@ class QueryWidget(QWidget):
         :param modified: Boolean value sent by the signal
         """
 
-        if modified:
-            self.tab.tabBar().setTabTextColor(self.tab.currentIndex(),
-                                              QColor(Qt.red))
-        else:
-            self.tab.tabBar().setTabTextColor(self.tab.currentIndex(),
-                                              QColor(Qt.black))
         editor = self.tab.currentWidget()
+        editor_name = editor.rfile.get_name
+        index = self.tab.currentIndex()
+        if modified:
+            text = "{} \u2022".format(editor_name)
+            self.tab.setTabText(index, text)
+        else:
+            self.tab.setTabText(index, editor_name)
         editor.modified = modified
 
     def removeTab(self, index):

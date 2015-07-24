@@ -46,7 +46,6 @@ DBFILE = "Pireal Data Base File (*.pdb);;Pireal Query File (*.pqf);;" \
          "WinRDBI Data Base (*.rdb)"
 
 # Create folder (settings and logging)
-# Create folder (settings and logging)
 HOME = os.path.expanduser("~")
 PIREAL_DIR = os.path.join(HOME, ".pireal")
 LOG_FILE = os.path.join(PIREAL_DIR, "pireal_logging.log")
