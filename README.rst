@@ -84,8 +84,9 @@ The operations are defined in this `file <https://github.com/centaurialpha/pirea
 Demo
 ####
 
-.. image:: http://img.youtube.com/vi/gZg2m0qOHoA/0.jpg
-    :target: https://www.youtube.com/watch?v=gZg2m0qOHoA
+.. image:: https://github.com/centaurialpha/pireal/blob/gh-pages/img/demo.gif
+    :width: 300
+    :height: 300
     
 Author
 ######
