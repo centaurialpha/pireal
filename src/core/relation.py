@@ -165,6 +165,26 @@ class Relation(object):
 
         return new_relation
 
+    def intersect(self, other_relation):
+        """ The intersection is defined as: R ∩ S. corresponds to the set of
+        all tuples in R and S, R and S compatible unions.
+
+        :param other_relation: Relation object
+        :returns: A new relation
+        """
+
+        if self.fields != other_relation.fields:
+            raise Exception("Not union compatible")
+
+        new_relation = Relation()
+        new_relation.fields = self.fields
+        content = self.content.intersection(other_relation.content)
+        if not content:
+            return new_relation
+        new_relation.insert(*content)
+
+        return new_relation
+
     def __str__(self):
         """ Magic method. Returns a representation of the relation
 
