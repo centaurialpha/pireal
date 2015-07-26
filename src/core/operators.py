@@ -28,13 +28,15 @@ PROJECT = 'project'
 # Binary
 PRODUCT = 'product'
 NJOIN = 'njoin'
+INTERSECT = 'intersect'
 
 UOPERATORS = (SELECT, PROJECT)
-BOPERATORS = (PRODUCT, NJOIN)
+BOPERATORS = (PRODUCT, NJOIN, INTERSECT)
 
 OPERATORS = {
     'select': SELECT,
     'project': PROJECT,
     'njoin': NJOIN,
-    'product': PRODUCT
+    'product': PRODUCT,
+    'intersect': INTERSECT
 }

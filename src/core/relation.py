@@ -179,9 +179,12 @@ class Relation(object):
         new_relation = Relation()
         new_relation.fields = self.fields
         content = self.content.intersection(other_relation.content)
+
         if not content:
             return new_relation
-        new_relation.insert(*content)
+
+        for i in content:
+            new_relation.insert(i)
 
         return new_relation
 

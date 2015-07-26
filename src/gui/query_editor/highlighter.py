@@ -44,6 +44,7 @@ class Highlighter(QSyntaxHighlighter):
         "product",
         "njoin",
         "difference",
+        "intersect",
         "union",
         "and",
         "or"
