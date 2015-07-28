@@ -96,3 +96,11 @@ class RelationTestCase(unittest.TestCase):
         rjoin = self.r1.njoin(self.r2)
         njoin = rjoin.content
         self.assertEqual(expected, njoin)
+
+    def test_intersection(self):
+        project_idr1 = self.r1.project("id")
+        project_idr2 = self.r2.project("id")
+        expected = {('1',)}
+        # project_idr1 ∩ project_idr2
+        intersection = project_idr1.intersect(project_idr2).content
+        self.assertEqual(expected, intersection)
