@@ -188,6 +188,26 @@ class Relation(object):
 
         return new_relation
 
+    def difference(self, other_relation):
+        """ The difference is defined as: R - S. It is the set of all tuples
+        in R, but not in S. R and S must be compatible unions
+
+        :param other_relation: Relation object
+        :returns: A new relation
+        """
+
+        if self.fields != other_relation.fields:
+            raise Exception("Not union compatible")
+
+        new_relation = Relation()
+        new_relation.fields = self.fields
+        content = self.content.difference(other_relation.content)
+
+        for i in content:
+            new_relation.insert(i)
+
+        return new_relation
+
     def __str__(self):
         """ Magic method. Returns a representation of the relation
 
