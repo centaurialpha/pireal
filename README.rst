@@ -76,7 +76,7 @@ The operations are defined in this `file <https://github.com/centaurialpha/pirea
 * Rename
 * **Product**
 * Union
-* Difference
+* **Difference**
 * **Natural Join**
 * **Intersection**
 * Division
