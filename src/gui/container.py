@@ -25,7 +25,8 @@ from PyQt4.QtGui import (
     QInputDialog,
     QFileDialog,
     QMessageBox,
-    QSplitter
+    QSplitter,
+    QTableWidgetItem
 )
 from PyQt4.QtCore import (
     Qt,
@@ -206,7 +207,7 @@ class Container(QSplitter):
         """ Load relation from file """
 
         import csv
-        from PyQt4.QtGui import QTableWidgetItem, QTableWidget
+        from PyQt4.QtGui import QTableWidget
         from src.core import relation
 
         if not filenames:
@@ -233,7 +234,7 @@ class Container(QSplitter):
                     row = table.rowCount()
                     table.setColumnCount(len(row_data))
                     for column, data in enumerate(row_data):
-                        item = QTableWidgetItem()
+                        item = Item()
                         item.setText(data)
                         if row == 0:
                             table.setHorizontalHeaderItem(column, item)
@@ -275,6 +276,13 @@ class Container(QSplitter):
     def check_opened_query_files(self):
         query_widget = Pireal.get_service("query_widget")
         return query_widget.opened_files()
+
+
+class Item(QTableWidgetItem):
+
+    def __init__(self, parent=None):
+        super(Item, self).__init__(parent)
+        self.setFlags(self.flags() ^ Qt.ItemIsEditable)
 
 
 container = Container()
