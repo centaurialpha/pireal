@@ -93,9 +93,11 @@ def parse(query):
             tokens.append(operator)
             query = query[length_operator:].strip()
 
-            par_end = query.find('(')
-            tokens.append(query[:par_end].strip())
-            query = query[par_end:].strip()
+            par_start = query.find('(')
+            if par_start == -1:
+                raise Exception("Missing start parenthesis")
+            tokens.append(query[:par_start].strip())
+            query = query[par_start:].strip()
         elif query.startswith(operators.BOPERATORS):
             operator = query.split()[0].strip()
             tokens.append(operator)
@@ -103,6 +105,8 @@ def parse(query):
 
         elif query.startswith('('):
             par_end = _find_end_parenthesis(query)
+            if par_end is None:
+                raise Exception("Missing end parenthesis")
             tokens.append(parse(query[1:par_end]))
             query = query[par_end + 1:].strip()
         else:

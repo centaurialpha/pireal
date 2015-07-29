@@ -137,10 +137,13 @@ class QueryWidget(QWidget):
             else:
                 relation_name = 'rel_{}'.format(self.__nrelation)
                 self.__nrelation += 1
-            expression = parser.convert_to_python(line.strip())
             try:
+                expression = parser.convert_to_python(line.strip())
                 rel = eval(expression, table.relations)
             except Exception as reason:
+
+            #try:
+            #except Exception as reason:
                 QMessageBox.critical(self, self.tr("Error en consulta"),
                                      reason.__str__())
                 return
