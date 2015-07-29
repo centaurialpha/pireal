@@ -30,9 +30,10 @@ PRODUCT = 'product'
 NJOIN = 'njoin'
 INTERSECT = 'intersect'
 DIFFERENCE = 'difference'
+UNION = 'union'
 
 UOPERATORS = (SELECT, PROJECT)
-BOPERATORS = (PRODUCT, NJOIN, INTERSECT, DIFFERENCE)
+BOPERATORS = (PRODUCT, NJOIN, INTERSECT, DIFFERENCE, UNION)
 
 OPERATORS = {
     'select': SELECT,
@@ -40,5 +41,6 @@ OPERATORS = {
     'njoin': NJOIN,
     'product': PRODUCT,
     'intersect': INTERSECT,
-    'difference': DIFFERENCE
+    'difference': DIFFERENCE,
+    'union': UNION
 }
