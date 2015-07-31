@@ -20,6 +20,7 @@
 import os
 import json
 import codecs
+import csv
 
 
 def get_extension(filename):
@@ -43,10 +44,15 @@ def write_database(filename, data):
 def open_database(filename):
     try:
         with open(filename, mode='r') as f:
-            data = json.load(f)
-        return data
+            return f.read()
     except Exception:
-        raise Exception("File not found: {}".format(filename))
+        raise
+    #try:
+        #with open(filename, mode='r') as f:
+            #data = json.load(f)
+        #return data
+    #except Exception:
+        #raise Exception("File not found: {}".format(filename))
 
 
 def read_rdb_file(filename):
