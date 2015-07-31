@@ -1,0 +1,12 @@
+QMenuBar {
+    background-color: #232227;
+    color: #FFFFFF
+}
+
+QMenuBar::item {
+    background: #232227
+}
+
+QMenuBar::item:selected {
+    background: #2E3336;
+}

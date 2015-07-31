@@ -80,6 +80,9 @@ if __name__ == "__main__":
     qapp.setStyle(QStyleFactory.create("gtk"))
     INFO("Loading GUI...")
     gui = Pireal()
+    # Style sheet
+    with open('src/gui/style.qss') as f:
+        qapp.setStyleSheet(f.read())
     gui.show()
     gui.showMaximized()
     INFO("Pireal ready!")
