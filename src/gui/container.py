@@ -43,7 +43,7 @@ from src.core import (
     settings,
     file_manager,
     logger,
-    relation
+    #relation
 )
 # FIXME: refactoring
 log = logger.get_logger(__name__)
@@ -80,74 +80,28 @@ class Container(QSplitter):
                                  self.tr("Solo puede tener una base de datos "
                                          "abierta a la vez."))
             return
-        #from_file = False
         if not filename:
             db_name, ok = QInputDialog.getText(self, self.tr("Nueva DB"),
                                                self.tr("Nombre:"))
             if not ok:
                 return
         else:
-            #from_file = True
-            # Read database from file
+            # From file
             try:
-                data = file_manager.open_database(filename)
+                name, data = file_manager.open_database(filename)
             except Exception as reason:
                 QMessageBox.critical(self, self.tr("Error!"),
                                      reason.__str__())
                 return
 
+            self.table_widget.add_data_base(data)
+            # Remove Start Page widget
             self.stacked.removeWidget(self.stacked.widget(0))
             self.stacked.addWidget(self.table_widget)
 
-            #for row_data in csv_reader:
-                    #row = table.rowCount()
-                    #table.setColumnCount(len(row_data))
-                    #for column, data in enumerate(row_data):
-                        #item = Item()
-                        #item.setText(data)
-                        #if row == 0:
-                            #table.setHorizontalHeaderItem(column, item)
-                        #else:
-                            #table.setItem(row - 1, column, item)
-                    #table.insertRow(row)
-                #table.removeRow(table.rowCount() - 1)
-            #self.table_widget.stacked.addWidget(table)
-            #
-            rel = None
-            lateral = Pireal.get_service("lateral")
-            for part in data.split('@'):
-                for e, line in enumerate(part.splitlines()):
-                    if e == 0:
-                        name = line.split(':')[0]
-                        rel = relation.Relation()
-                        rel.fields = line.split(':')[-1].split(',')
-                    else:
-                        rel.insert(line.split(','))
-                if rel is not None:
-                    table = QTableWidget()
-                    table.setRowCount(1)
-                    table.setColumnCount(0)
-                    self.table_widget.relations[name] = rel
-                    for tup in rel.content:
-                        row = table.rowCount()
-                        table.setColumnCount(len(rel.fields))
-                        for column, dat in enumerate(tup):
-                            item = Item()
-                            item.setText(dat)
-                            table.setItem(row - 1, column, item)
-                        #FIXME: row
-                        table.insertRow(row)
-                    table.setHorizontalHeaderLabels(rel.fields)
-                    table.removeRow(table.rowCount() - 1)
-                    self.table_widget.stacked.addWidget(table)
-                    lateral.add_item_list([name])
-
-        # Remove the start page
-        self.stacked.removeWidget(self.stacked.widget(0))
-        self.stacked.addWidget(self.table_widget)
         pireal = Pireal.get_service("pireal")
         # Title
-        #pireal.change_title()
+        pireal.change_title(name)
         # Enable QAction's
         pireal.enable_disable_db_actions()
         self.__created = True

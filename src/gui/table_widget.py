@@ -23,12 +23,14 @@ from PyQt4.QtGui import (
     QStackedWidget,
     QTableWidget,
     QTableWidgetItem,
-    QHeaderView
+    QHeaderView,
+    QAbstractItemView
 )
-#from PyQt4.QtCore import (
+from PyQt4.QtCore import Qt
     #Qt,
     #SIGNAL
 #)
+from src.core import relation
 from src.gui.main_window import Pireal
 
 
@@ -48,6 +50,36 @@ class TableWidget(QWidget):
 
     def count(self):
         return self.stacked.count()
+
+    def add_data_base(self, data):
+        lateral = Pireal.get_service("lateral")
+        rel = None
+        for part in data.split('@'):
+            for e, line in enumerate(part.splitlines()):
+                if e == 0:
+                    name = line.split(':')[0]
+                    rel = relation.Relation()
+                    rel.fields = line.split(':')[-1].split(',')
+                else:
+                    rel.insert(line.split(','))
+            if rel is not None:
+                table = Table()
+                table.setRowCount(1)
+                table.setColumnCount(0)
+                self.relations[name] = rel
+
+                for _tuple in rel.content:
+                    row = table.rowCount()
+                    table.setColumnCount(len(rel.fields))
+                    for column, text in enumerate(_tuple):
+                        item = Item()
+                        item.setText(text)
+                        table.setItem(row - 1, column, item)
+                    table.insertRow(row)
+                table.setHorizontalHeaderLabels(rel.fields)
+                self.stacked.addWidget(table)
+                table.removeRow(table.rowCount() - 1)
+                lateral.add_item_list([name])
 
     def add_table(self, rows, columns, name, data, fields):
         table = Table()
@@ -120,4 +152,12 @@ class Table(QTableWidget):
 
     def __init__(self, parent=None):
         super(Table, self).__init__(parent)
-        self.horizontalHeader().setResizeMode(QHeaderView.ResizeToContents)
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.horizontalHeader().setResizeMode(QHeaderView.Stretch)
+
+
+class Item(QTableWidgetItem):
+
+    def __init__(self, parent=None):
+        super(Item, self).__init__(parent)
+        self.setFlags(self.flags() ^ Qt.ItemIsEditable)
