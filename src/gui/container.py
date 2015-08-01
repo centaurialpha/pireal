@@ -26,8 +26,6 @@ from PyQt4.QtGui import (
     QFileDialog,
     QMessageBox,
     QSplitter,
-    QTableWidget,
-    QTableWidgetItem
 )
 from PyQt4.QtCore import (
     Qt,
@@ -204,9 +202,6 @@ class Container(QSplitter):
     def load_relation(self, filenames=[]):
         """ Load relation from file """
 
-        import csv
-        from src.core import relation
-
         if not filenames:
             native_dialog = QFileDialog.DontUseNativeDialog
             directory = os.path.expanduser("~")
@@ -217,34 +212,7 @@ class Container(QSplitter):
                                                      native_dialog)
             if not filenames:
                 return
-        lateral = Pireal.get_service("lateral")
-        for filename in filenames:
-            rel = relation.Relation(filename)
-            relation_name = os.path.splitext(os.path.basename(filename))[0]
-            self.table_widget.relations[relation_name] = rel
-            table = QTableWidget()
-            with open(filename, newline='') as f:
-                table.setRowCount(0)
-                table.setColumnCount(0)
-                csv_reader = csv.reader(f)
-                for row_data in csv_reader:
-                    row = table.rowCount()
-                    table.setColumnCount(len(row_data))
-                    for column, data in enumerate(row_data):
-                        item = Item()
-                        item.setText(data)
-                        if row == 0:
-                            table.setHorizontalHeaderItem(column, item)
-                        else:
-                            table.setItem(row - 1, column, item)
-                    table.insertRow(row)
-                table.removeRow(table.rowCount() - 1)
-            self.table_widget.stacked.addWidget(table)
-        # FIXME: names
-        names = [os.path.splitext(os.path.basename(i))[0]
-                 for i in filenames]
-        lateral.add_item_list(names)
-        lateral.show()
+        self.table_widget.load_relation(filenames)
 
     def execute_queries(self):
         query_widget = Pireal.get_service("query_widget")
@@ -273,13 +241,6 @@ class Container(QSplitter):
     def check_opened_query_files(self):
         query_widget = Pireal.get_service("query_widget")
         return query_widget.opened_files()
-
-
-class Item(QTableWidgetItem):
-
-    def __init__(self, parent=None):
-        super(Item, self).__init__(parent)
-        self.setFlags(self.flags() ^ Qt.ItemIsEditable)
 
 
 container = Container()

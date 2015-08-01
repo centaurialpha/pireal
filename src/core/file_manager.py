@@ -41,10 +41,9 @@ def write_database(filename, data):
 
 
 def open_database(filename):
-    name = os.path.basename(filename)
     try:
         with open(filename, mode='r') as f:
-            return name, f.read()
+            return get_basename(filename), f.read()
     except Exception:
         raise
 
@@ -52,3 +51,8 @@ def open_database(filename):
 def read_rdb_file(filename):
     content = codecs.open(filename, 'r', 'iso-8859-1').read()
     return content
+
+
+def get_basename(filename):
+
+    return os.path.basename(filename)

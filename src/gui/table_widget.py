@@ -30,7 +30,10 @@ from PyQt4.QtCore import Qt
     #Qt,
     #SIGNAL
 #)
-from src.core import relation
+from src.core import (
+    relation,
+    file_manager
+)
 from src.gui.main_window import Pireal
 
 
@@ -80,6 +83,29 @@ class TableWidget(QWidget):
                 self.stacked.addWidget(table)
                 table.removeRow(table.rowCount() - 1)
                 lateral.add_item_list([name])
+
+    def load_relation(self, filenames):
+        lateral = Pireal.get_service("lateral")
+        for filename in filenames:
+            rel = relation.Relation(filename)
+            rel_name = file_manager.get_basename(filename)
+            self.relations[rel_name] = rel
+            table = Table()
+            table.setRowCount(1)
+            table.setColumnCount(0)
+
+            for _tuple in rel.content:
+                row = table.rowCount()
+                table.setColumnCount(len(rel.fields))
+                for column, text in enumerate(_tuple):
+                    item = Item()
+                    item.setText(text)
+                    table.setItem(row - 1, column, item)
+                table.insertRow(row)
+            table.removeRow(table.rowCount() - 1)
+            table.setHorizontalHeaderLabels(rel.fields)
+            self.stacked.addWidget(table)
+            lateral.add_item_list([rel_name])
 
     def add_table(self, rows, columns, name, data, fields):
         table = Table()
