@@ -74,7 +74,7 @@ class Sidebar(QFrame):
                 fm_ascent = font_metrics.ascent()
                 fm_descent = font_metrics.descent()
                 painter.drawText(self.width() -
-                                 font_metrics.width(str(line)) - 7,
+                                 font_metrics.width(str(line)) + 1,
                                  pos.y() + fm_ascent + fm_descent, str(line))
 
             block = block.next()
