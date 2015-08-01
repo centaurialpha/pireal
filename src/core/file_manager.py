@@ -54,5 +54,10 @@ def read_rdb_file(filename):
 
 
 def get_basename(filename):
+    """ This function returns the base name of filename
 
-    return os.path.basename(filename)
+    :param filename: Filename, for example: "/home/gabo/file.rpf"
+    :returns: The base name, for example: "file"
+     """
+
+    return os.path.splitext(os.path.basename(filename))[0]
