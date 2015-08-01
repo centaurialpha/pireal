@@ -88,20 +88,20 @@ class Container(QSplitter):
         else:
             # From file
             try:
-                name, data = file_manager.open_database(filename)
+                db_name, data = file_manager.open_database(filename)
             except Exception as reason:
                 QMessageBox.critical(self, self.tr("Error!"),
                                      reason.__str__())
                 return
 
             self.table_widget.add_data_base(data)
-            # Remove Start Page widget
-            self.stacked.removeWidget(self.stacked.widget(0))
-            self.stacked.addWidget(self.table_widget)
 
-        pireal = Pireal.get_service("pireal")
+        # Remove Start Page widget
+        self.stacked.removeWidget(self.stacked.widget(0))
+        self.stacked.addWidget(self.table_widget)
         # Title
-        pireal.change_title(name)
+        pireal = Pireal.get_service("pireal")
+        pireal.change_title(db_name)
         # Enable QAction's
         pireal.enable_disable_db_actions()
         self.__created = True
