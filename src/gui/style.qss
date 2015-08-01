@@ -15,3 +15,10 @@ QTableWidget {
     gridline-color: #aaaaaa;
     font-size: 13pt;
 }
+
+QHeaderView::section {
+    background-color: #646464;
+    padding: 4px;
+    border: 1px solid #fffff8;
+    font-size: 14pt;
+}
