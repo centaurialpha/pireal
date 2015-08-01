@@ -18,11 +18,12 @@ QTableWidget {
 
 QHeaderView::section {
     background-color: #646464;
-    font-size: 13pt;
+    font-size: 12pt;
+    border: 0px;
+    padding: 5px 10px 5px 5px;
     color: white
 }
 
 QTableWidget QTableCornerButton::section {
     background-color: #646464;
-    border: 1px solid #fffff8;
 }
