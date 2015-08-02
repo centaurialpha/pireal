@@ -108,6 +108,10 @@ class NewRelationDialog(QDialog):
 
     def __create_table(self):
         name = self._line_relation_name.text()
+        if not name.strip():
+            QMessageBox.critical(self, self.tr("Error"),
+                                 self.tr("Nombre de relación no especificado"))
+            return
         rows = self._table.rowCount()
         columns = self._table.columnCount()
 
@@ -120,7 +124,7 @@ class NewRelationDialog(QDialog):
             reg = []
             for column in range(columns):
                 item = self._table.item(row, column)
-                if item is None or not item.text():
+                if item is None or not item.text().strip():
                     QMessageBox.critical(self, self.tr("Campo vacío"),
                                          self.tr("El campo {0}:{1} está "
                                          "vacío").format(row + 1, column + 1))
