@@ -211,7 +211,10 @@ class Container(QSplitter):
 
         if not filenames:
             native_dialog = QFileDialog.DontUseNativeDialog
-            directory = os.path.expanduser("~")
+            if self.__last_folder_opened is None:
+                directory = os.path.expanduser("~")
+            else:
+                directory = self.__last_folder_opened
             ffilter = settings.RFILES.split(';;')[-1]
             filenames = QFileDialog.getOpenFileNames(self,
                                                      self.tr("Abrir Archivo"),
@@ -219,6 +222,10 @@ class Container(QSplitter):
                                                      native_dialog)
             if not filenames:
                 return
+            # Save folder
+            self.__last_folder_opened = file_manager.get_path(filenames[0])
+
+        # Load tables
         self.table_widget.load_relation(filenames)
 
     def execute_queries(self):
