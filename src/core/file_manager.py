@@ -61,3 +61,8 @@ def get_basename(filename):
      """
 
     return os.path.splitext(os.path.basename(filename))[0]
+
+
+def get_path(filename):
+
+    return os.path.dirname(filename)

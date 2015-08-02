@@ -54,6 +54,7 @@ class Container(QSplitter):
     def __init__(self, orientation=Qt.Vertical):
         super(Container, self).__init__(orientation)
         self._data_bases = []
+        self.__last_folder_opened = None
         self.__filename = ""
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
@@ -150,12 +151,18 @@ class Container(QSplitter):
 
     def open_file(self):
 
-        directory = os.path.expanduser("~")
+        if self.__last_folder_opened is None:
+            directory = os.path.expanduser("~")
+        else:
+            directory = self.__last_folder_opened
         filename = QFileDialog.getOpenFileName(self, self.tr("Abrir Archivo"),
                                                directory, settings.DBFILE,
                                                QFileDialog.DontUseNativeDialog)
         if not filename:
             return
+        # Save folder
+        self.__last_folder_opened = file_manager.get_path(filename)
+
         ext = file_manager.get_extension(filename)
         if ext == '.pqf':
             # Query file
