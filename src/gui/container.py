@@ -54,7 +54,7 @@ class Container(QSplitter):
     def __init__(self, orientation=Qt.Vertical):
         super(Container, self).__init__(orientation)
         self._data_bases = []
-        self.__last_folder_opened = None
+        self.__last_open_folder = None
         self.__filename = ""
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
@@ -151,17 +151,17 @@ class Container(QSplitter):
 
     def open_file(self):
 
-        if self.__last_folder_opened is None:
+        if self.__last_open_folder is None:
             directory = os.path.expanduser("~")
         else:
-            directory = self.__last_folder_opened
+            directory = self.__last_open_folder
         filename = QFileDialog.getOpenFileName(self, self.tr("Abrir Archivo"),
                                                directory, settings.DBFILE,
                                                QFileDialog.DontUseNativeDialog)
         if not filename:
             return
         # Save folder
-        self.__last_folder_opened = file_manager.get_path(filename)
+        self.__last_open_folder = file_manager.get_path(filename)
 
         ext = file_manager.get_extension(filename)
         if ext == '.pqf':
@@ -211,10 +211,10 @@ class Container(QSplitter):
 
         if not filenames:
             native_dialog = QFileDialog.DontUseNativeDialog
-            if self.__last_folder_opened is None:
+            if self.__last_open_folder is None:
                 directory = os.path.expanduser("~")
             else:
-                directory = self.__last_folder_opened
+                directory = self.__last_open_folder
             ffilter = settings.RFILES.split(';;')[-1]
             filenames = QFileDialog.getOpenFileNames(self,
                                                      self.tr("Abrir Archivo"),
@@ -223,7 +223,7 @@ class Container(QSplitter):
             if not filenames:
                 return
             # Save folder
-            self.__last_folder_opened = file_manager.get_path(filenames[0])
+            self.__last_open_folder = file_manager.get_path(filenames[0])
 
         # Load tables
         self.table_widget.load_relation(filenames)
