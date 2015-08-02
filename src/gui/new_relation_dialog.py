@@ -107,6 +107,7 @@ class NewRelationDialog(QDialog):
         self._table.removeRow(current)
 
     def __create_table(self):
+        # Name of relation
         name = self._line_relation_name.text()
         if not name.strip():
             QMessageBox.critical(self, self.tr("Error"),
@@ -116,6 +117,7 @@ class NewRelationDialog(QDialog):
         columns = self._table.columnCount()
 
         rel = relation.Relation()
+        # Header of relation
         fields = []
         for i in range(columns):
             text = self._table.item(0, i).text()
@@ -124,9 +126,10 @@ class NewRelationDialog(QDialog):
                                      self.tr("Nombre de campo inválido"))
                 return
             fields.append(text)
-        #fields = [self._table.item(0, i).text() for i in range(columns)]
+
         rel.fields = fields
 
+        # Data
         data = {}
         for row in range(1, rows):
             reg = []
@@ -140,6 +143,7 @@ class NewRelationDialog(QDialog):
                 reg.append(self._table.item(row, column).text())
                 data[row, column] = self._table.item(row, column).text()
             rel.insert(reg)
+        # Add table and relation
         table_widget = Pireal.get_service("container").table_widget
         table_widget.add_table(rows - 1, columns, name, data, fields)
         table_widget.relations[name] = rel
