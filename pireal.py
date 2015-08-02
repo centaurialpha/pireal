@@ -23,6 +23,11 @@ from PyQt4.QtGui import (
     QStyleFactory,
     QIcon
 )
+from PyQt4.QtCore import (
+    QLocale,
+    QTranslator,
+    QLibraryInfo
+)
 from src.core import (
     settings,
     logger
@@ -69,6 +74,13 @@ if __name__ == "__main__":
 
     qapp = QApplication(sys.argv)
     qapp.setWindowIcon(QIcon(":img/logo"))
+    # System language
+    local = QLocale.system().name()
+    translator = QTranslator()
+    translator.load("qt_" + local, QLibraryInfo.location(
+                    QLibraryInfo.TranslationsPath))
+    qapp.installTranslator(translator)
+    # Load services
     from src.gui.main_window import Pireal
     from src.gui import status_bar  # lint:ok
     from src.gui import container  # lint:ok
