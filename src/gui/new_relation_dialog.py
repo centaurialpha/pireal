@@ -116,12 +116,15 @@ class NewRelationDialog(QDialog):
         columns = self._table.columnCount()
 
         rel = relation.Relation()
-        #for i in range(columns):
-            #text = self._table.item(0, i).text()
-            #if not text.strip():
-                #QMessageBox.critical(self, self.tr("Error"),
-                                     #self.tr(""))
-        fields = [self._table.item(0, i).text() for i in range(columns)]
+        fields = []
+        for i in range(columns):
+            text = self._table.item(0, i).text()
+            if not text.strip():
+                QMessageBox.critical(self, self.tr("Error"),
+                                     self.tr("Nombre de campo inválido"))
+                return
+            fields.append(text)
+        #fields = [self._table.item(0, i).text() for i in range(columns)]
         rel.fields = fields
 
         data = {}
