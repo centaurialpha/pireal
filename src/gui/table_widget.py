@@ -180,6 +180,8 @@ class Table(QTableWidget):
         super(Table, self).__init__(parent)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.horizontalHeader().setResizeMode(QHeaderView.Stretch)
+        #FIXME: Configurable
+        self.verticalHeader().setVisible(False)
 
 
 class Item(QTableWidgetItem):

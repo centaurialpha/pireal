@@ -81,8 +81,8 @@ if __name__ == "__main__":
     INFO("Loading GUI...")
     gui = Pireal()
     # Style sheet
-    #with open('src/gui/style.qss') as f:
-        #qapp.setStyleSheet(f.read())
+    with open('src/gui/style.qss') as f:
+        qapp.setStyleSheet(f.read())
     gui.show()
     gui.showMaximized()
     INFO("Pireal ready!")

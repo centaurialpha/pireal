@@ -1,4 +1,4 @@
-QMenuBar {
+/*QMenuBar {
     background-color: #232227;
     color: #FFFFFF
 }
@@ -10,7 +10,7 @@ QMenuBar::item {
 QMenuBar::item:selected {
     background: #2E3336;
 }
-
+*/
 QTableWidget {
     gridline-color: #aaaaaa;
     font-size: 13pt;
