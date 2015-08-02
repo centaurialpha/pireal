@@ -27,7 +27,8 @@ from PyQt4.QtGui import (
     QTableWidget,
     QTableWidgetItem,
     QSpacerItem,
-    QSizePolicy
+    QSizePolicy,
+    QMessageBox
 )
 from PyQt4.QtCore import SIGNAL
 from src.gui.main_window import Pireal
@@ -118,6 +119,12 @@ class NewRelationDialog(QDialog):
         for row in range(1, rows):
             reg = []
             for column in range(columns):
+                item = self._table.item(row, column)
+                if item is None or not item.text():
+                    QMessageBox.critical(self, self.tr("Campo vacío"),
+                                         self.tr("El campo {0}:{1} está "
+                                         "vacío").format(row + 1, column + 1))
+                    return
                 reg.append(self._table.item(row, column).text())
                 data[row, column] = self._table.item(row, column).text()
             rel.insert(reg)
