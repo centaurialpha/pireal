@@ -78,4 +78,10 @@ class LateralWidget(QDockWidget):
         table_widget.remove_table(current_index)
         self._list_widget.takeItem(current_index)
 
+    def clear_items(self):
+        """ Remove all items and selections in the view """
+
+        self._list_widget.clear()
+
+
 lateral = LateralWidget()

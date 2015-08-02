@@ -96,7 +96,8 @@ class Container(QSplitter):
             self.table_widget.add_data_base(data)
 
         # Remove Start Page widget
-        self.stacked.removeWidget(self.stacked.widget(0))
+        if isinstance(self.stacked.widget(0), start_page.StartPage):
+            self.stacked.removeWidget(self.stacked.widget(0))
         self.stacked.addWidget(self.table_widget)
         # Title
         pireal = Pireal.get_service("pireal")
@@ -131,9 +132,20 @@ class Container(QSplitter):
         self.stacked.addWidget(sp)
 
     def close_db(self):
+        """ Close data base """
+
         widget = self.stacked.currentWidget()
         if isinstance(widget, table_widget.TableWidget):
-            self.close()
+            # Clear list of relations
+            lateral = Pireal.get_service("lateral")
+            lateral.clear_items()
+            lateral.hide()
+            # Close table widget
+            self.stacked.removeWidget(widget)
+            # Add start page
+            self.show_start_page()
+
+            self.__created = False
 
     def save_query(self, weditor=None):
         if weditor is None:
