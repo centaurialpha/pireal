@@ -53,12 +53,12 @@ class Container(QSplitter):
 
     def __init__(self, orientation=Qt.Vertical):
         super(Container, self).__init__(orientation)
-        self._data_bases = []
         self.__last_open_folder = None
         self.__filename = ""
+        self.__created = False
+        self.__modified = False
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
-        self.__created = False
         # Stacked
         self.stacked = QStackedWidget()
         vbox.addWidget(self.stacked)
@@ -112,7 +112,18 @@ class Container(QSplitter):
 
     def remove_relation(self):
         lateral = Pireal.get_service("lateral")
-        lateral.remove_table()
+        rname = lateral.get_relation_name()
+        r = QMessageBox.question(self, self.tr("Confirmación"),
+                                 self.tr("Seguro que quieres eliminar la "
+                                         "relación <b>{}</b>").format(rname),
+                                             QMessageBox.Yes | QMessageBox.No)
+        if r == QMessageBox.No:
+            return
+        index = lateral.current_index()
+        # Remove table
+        self.table_widget.remove_table(index)
+        # Remove item from list widget
+        lateral.remove_item(index)
 
     def new_query(self, filename=''):
         query_widget = Pireal.get_service("query_widget")
@@ -126,6 +137,10 @@ class Container(QSplitter):
         self.connect(query_widget,
                      SIGNAL("currentEditorSaved(QPlainTextEdit)"),
                      self.save_query)
+
+    @property
+    def modified(self):
+        return self.__modified
 
     def show_start_page(self):
         sp = start_page.StartPage()
@@ -236,6 +251,7 @@ class Container(QSplitter):
                 return
             # Save folder
             self.__last_open_folder = file_manager.get_path(filenames[0])
+            self.__modified = True
 
         # Load tables
         self.table_widget.load_relation(filenames)

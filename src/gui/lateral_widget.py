@@ -73,15 +73,28 @@ class LateralWidget(QDockWidget):
             self._list_widget.addItem(item)
 
     def remove_table(self):
-        table_widget = Pireal.get_service("container").table_widget
-        current_index = self._list_widget.currentRow()
-        table_widget.remove_table(current_index)
-        self._list_widget.takeItem(current_index)
+        container = Pireal.get_service("container")
+        container.remove_relation()
 
     def clear_items(self):
         """ Remove all items and selections in the view """
 
         self._list_widget.clear()
 
+    def get_relation_name(self):
+        """ Returns the text of the item """
+
+        item = self._list_widget.currentItem()
+        return item.text()
+
+    def current_index(self):
+        """ Returns the current index """
+
+        return self._list_widget.currentRow()
+
+    def remove_item(self, index):
+        """ Removes the item from the given index in the list widget"""
+
+        self._list_widget.takeItem(index)
 
 lateral = LateralWidget()
