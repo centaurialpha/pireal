@@ -113,6 +113,11 @@ class Container(QSplitter):
     def remove_relation(self):
         lateral = Pireal.get_service("lateral")
         rname = lateral.get_relation_name()
+        if not rname:
+            QMessageBox.critical(self, self.tr("Error"),
+                                 self.tr("No se ha seleccionado ninguna "
+                                         "relación."))
+            return
         r = QMessageBox.question(self, self.tr("Confirmación"),
                                  self.tr("Seguro que quieres eliminar la "
                                          "relación <b>{}</b>").format(rname),

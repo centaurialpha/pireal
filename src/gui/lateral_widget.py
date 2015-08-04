@@ -85,6 +85,8 @@ class LateralWidget(QDockWidget):
         """ Returns the text of the item """
 
         item = self._list_widget.currentItem()
+        if item is None:
+            return False
         return item.text()
 
     def current_index(self):
