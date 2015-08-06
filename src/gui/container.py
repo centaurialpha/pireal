@@ -22,7 +22,7 @@ import os
 from PyQt4.QtGui import (
     QVBoxLayout,
     QStackedWidget,
-    QInputDialog,
+    #QInputDialog,
     QFileDialog,
     QMessageBox,
     QSplitter,
@@ -41,6 +41,7 @@ from src.core import (
     settings,
     file_manager,
     logger,
+    pfile
     #relation
 )
 # FIXME: refactoring
@@ -54,6 +55,8 @@ class Container(QSplitter):
     def __init__(self, orientation=Qt.Vertical):
         super(Container, self).__init__(orientation)
         self.__last_open_folder = None
+        self.db_file = None
+        self.__ndata_base = 1
         self.__filename = ""
         self.__created = False
         self.__modified = False
@@ -79,21 +82,39 @@ class Container(QSplitter):
                                  self.tr("Solo puede tener una base de datos "
                                          "abierta a la vez."))
             return
-        if not filename:
-            db_name, ok = QInputDialog.getText(self, self.tr("Nueva DB"),
-                                               self.tr("Nombre:"))
-            if not ok:
-                return
-        else:
+        # Pireal File
+        _file = pfile.PFile(filename)
+        #if not filename:
+            #_file.
+            #db_name, ok = QInputDialog.getText(self, self.tr("Nueva DB"),
+                                               #self.tr("Nombre:"))
+            #if not ok:
+                #return
+            #if not db_name:
+                #_file.filename = "untitled_{}.pdb".format(self.__ndata_base)
+            #else:
+                #_file.filename = db_name + '.pdb'
+        #else:
             # From file
+            #try:
+                # Try read file
+                #data = _file.read()
+            #except Exception as reason:
+                #QMessageBox.critical(self, self.tr("Error!"),
+                                     #reason.__str__())
+                #return
+        if filename:
             try:
-                db_name, data = file_manager.open_database(filename)
+                data = _file.read()
             except Exception as reason:
                 QMessageBox.critical(self, self.tr("Error!"),
                                      reason.__str__())
                 return
-
+            db_name = _file.name
+            # Add data base
             self.table_widget.add_data_base(data)
+        else:
+            db_name = "untitled_{}.pdb".format(self.__ndata_base)
 
         # Remove Start Page widget
         if isinstance(self.stacked.widget(0), start_page.StartPage):
@@ -104,7 +125,9 @@ class Container(QSplitter):
         pireal.change_title(db_name)
         # Enable QAction's
         pireal.enable_disable_db_actions()
+        self.db_file = _file
         self.__created = True
+        self.__ndata_base += 1
 
     def create_new_relation(self):
         dialog = new_relation_dialog.NewRelationDialog(self)
@@ -181,6 +204,39 @@ class Container(QSplitter):
         self.emit(SIGNAL("currentFileSaved(QString)"),
                   self.tr("Archivo guardado: {}").format(weditor.filename))
 
+    def save_query_as(self, editor=None):
+        if editor is None:
+            query_widget = Pireal.get_service("query_widget")
+            editor = query_widget.get_active_editor()
+        directory = os.path.expanduser("~")
+        filename = QFileDialog.getSaveFileName(self,
+                                               self.tr("Guardar Archivo"),
+                                               directory)
+        if not filename:
+            return
+        content = editor.toPlainText()
+        editor.rfile.write(content, filename)
+        editor.document().setModified(False)
+
+    def save_data_base(self):
+
+        directory = os.path.expanduser("~")
+        filename = QFileDialog.getSaveFileName(self,
+                                               self.tr("Guardar Base de Datos"),
+                                               directory)
+        if not filename:
+            return
+
+        # Generate content
+        content = ""
+        for rname, rel in list(self.table_widget.relations.items()):
+            content += "@" + rname
+            content += ':' + ','.join(rel.fields) + '\n'
+            for i in rel.content:
+                content += ','.join(i) + '\n'
+
+        self.db_file.write(content, filename + '.pdb')
+
     def open_file(self):
 
         if self.__last_open_folder is None:
@@ -223,20 +279,6 @@ class Container(QSplitter):
             csv_content += '\n'
 
         self.table_widget.add_table_from_rdb_content(csv_content)
-
-    def save_query_as(self, editor=None):
-        if editor is None:
-            query_widget = Pireal.get_service("query_widget")
-            editor = query_widget.get_active_editor()
-        directory = os.path.expanduser("~")
-        filename = QFileDialog.getSaveFileName(self,
-                                               self.tr("Guardar Archivo"),
-                                               directory)
-        if not filename:
-            return
-        content = editor.toPlainText()
-        editor.rfile.write(content, filename)
-        editor.document().setModified(False)
 
     def load_relation(self, filenames=[]):
         """ Load relation from file """

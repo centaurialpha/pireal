@@ -46,6 +46,9 @@ MENU['file'] = {
         'name': translate("PIREAL", "Abrir"),
         'slot': "container:open_file"
     }, {
+        'name': translate("PIREAL", "Guardar base de datos"),
+        'slot': "container:save_data_base"
+    }, {
         'name': translate("PIREAL", "Guardar"),
         'slot': "container:save_query"
     }, {
