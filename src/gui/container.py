@@ -82,27 +82,10 @@ class Container(QSplitter):
                                  self.tr("Solo puede tener una base de datos "
                                          "abierta a la vez."))
             return
+
         # Pireal File
         _file = pfile.PFile(filename)
-        #if not filename:
-            #_file.
-            #db_name, ok = QInputDialog.getText(self, self.tr("Nueva DB"),
-                                               #self.tr("Nombre:"))
-            #if not ok:
-                #return
-            #if not db_name:
-                #_file.filename = "untitled_{}.pdb".format(self.__ndata_base)
-            #else:
-                #_file.filename = db_name + '.pdb'
-        #else:
-            # From file
-            #try:
-                # Try read file
-                #data = _file.read()
-            #except Exception as reason:
-                #QMessageBox.critical(self, self.tr("Error!"),
-                                     #reason.__str__())
-                #return
+
         if filename:
             try:
                 data = _file.read()
@@ -228,13 +211,8 @@ class Container(QSplitter):
             return
 
         # Generate content
-        content = ""
-        for rname, rel in list(self.table_widget.relations.items()):
-            content += "@" + rname
-            content += ':' + ','.join(rel.fields) + '\n'
-            for i in rel.content:
-                content += ','.join(i) + '\n'
-
+        content = file_manager.generate_database(self.table_widget.relations)
+        # Create the database on a pdb file
         self.db_file.write(content, filename + '.pdb')
 
     def open_file(self):

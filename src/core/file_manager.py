@@ -66,3 +66,19 @@ def get_basename(filename):
 def get_path(filename):
 
     return os.path.dirname(filename)
+
+
+def generate_database(relations):
+    """ This function generates the content of the database
+
+    :param relations: Dictionary with relations
+    :returns: The content of the database
+    """
+
+    content = ""
+    for relation_name, relation in list(relations.items()):
+        content += '@' + relation_name
+        content += ':' + ','.join(relation.fields) + '\n'
+        for i in relation.content:
+            content += ','.join(i) + '\n'
+    return content
