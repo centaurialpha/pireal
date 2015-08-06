@@ -74,8 +74,8 @@ class Sidebar(QFrame):
                 painter.setPen(QColor("#9A9A9A"))
                 fm_ascent = font_metrics.ascent()
                 fm_descent = font_metrics.descent()
-                painter.drawText(self.width() +
-                                 font_metrics.width(str(line)) + 1,
+                painter.drawText(self.width() -
+                                 font_metrics.width(str(line)) - 3,
                                  pos.y() + fm_ascent + fm_descent, str(line))
 
             block = block.next()
@@ -87,7 +87,7 @@ class Sidebar(QFrame):
 
         # Length number, for example: 120 = 3
         line = len(str(self.editor.blockCount())) + 1
-        width = self.fontMetrics().width('0' * line)
+        width = self.fontMetrics().width('0' * line) + 5
         if self.width() != width:
             self.setFixedWidth(width)
             self.editor.setViewportMargins(width, 0, 0, 0)
