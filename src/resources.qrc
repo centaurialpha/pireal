@@ -1,23 +1,23 @@
 <RCC>
     <qresource prefix="/img">
-        <file alias="add">images/add.png</file>
-        <file alias="create_data_base">images/add-db.png</file>
+        <file alias="logo">images/logo.png</file>
+        <file alias="banner">images/pireal_banner.png</file>
+        <file alias="create_data_base">images/database.png</file>
         <file alias="create_new_relation">images/add-relation.png</file>
-        <file alias="insert_tuple">images/add-tuple.png</file>
         <file alias="close">images/close.png</file>
         <file alias="preferences">images/configuration.png</file>
         <file alias="copy_action">images/copy.png</file>
         <file alias="cut_action">images/cut.png</file>
-        <file alias="open_file">images/open.png</file>
+        <file alias="open_file">images/open-folder.png</file>
         <file alias="paste_action">images/paste.png</file>
-        <file alias="new_query">images/query.png</file>
         <file alias="redo_action">images/redo.png</file>
-        <file alias="remove_relation">images/remove-relation.png</file>
-        <file alias="remove_tuple">images/remove-tuple.png</file>
         <file alias="execute_queries">images/run.png</file>
         <file alias="save_query">images/save.png</file>
         <file alias="undo_action">images/undo.png</file>
-        <file alias="logo">images/logo.png</file>
-        <file alias="banner">images/pireal_banner.png</file>
+        <file alias="insert_tuple">images/add-row.png</file>
+        <file alias="remove_relation">images/remove-relation.png</file>
+        <file alias="remove_tuple">images/remove-row.png</file>
+        <file alias="new_query">images/query.png</file>
+        <file alias="save_data_base">images/database-save.png</file>
     </qresource>
 </RCC>

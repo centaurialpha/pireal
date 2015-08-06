@@ -49,6 +49,7 @@ class Pireal(QMainWindow):
     # The name of items is the connection text
     TOOLBAR_ITEMS = [
         'create_data_base',
+        'save_data_base',
         'new_query',
         '',  # Is a separator!
         'open_file',
@@ -205,6 +206,7 @@ class Pireal(QMainWindow):
 
         actions = [
             'new_query',
+            'save_data_base',
             'save_query',
             'save_query_as',
             'create_new_relation',

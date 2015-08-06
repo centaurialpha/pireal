@@ -1,16 +1,32 @@
-/*QMenuBar {
-    background-color: #232227;
+/*QWidget{
+    background: #282828;
+    color: white;
+    border: 0px solid transparent;
+}
+
+QMenuBar {
+    background-color: #3e403d;
     color: #FFFFFF
 }
 
 QMenuBar::item {
-    background: #232227
+    background: #3e403d;
 }
 
-QMenuBar::item:selected {
-    background: #2E3336;
+QMenu {
+    border: 1px solid lightblue;
+    border-radius: 2px;
+}*/
+
+QMenu::item {
+    padding: 2px 25px 2px 20px;
+    border: 1px solid transparent;
 }
-*/
+
+QMenu::item:selected {
+    background: rgba(52, 101, 164, 90);;
+}
+
 QTableWidget {
     gridline-color: #aaaaaa;
     font-size: 13pt;
