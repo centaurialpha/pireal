@@ -34,9 +34,9 @@ from PyQt4.QtCore import (
 from src.gui.main_window import Pireal
 from src.gui import (
     start_page,
-    table_widget,
-    new_relation_dialog
+    table_widget
 )
+from src.gui.dialogs import new_relation_dialog
 from src.core import (
     settings,
     file_manager,
