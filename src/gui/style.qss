@@ -64,3 +64,37 @@ QPushButton:pressed {
 QPushButton:focus {
     background-color: #F0F0F0;
 }
+
+QTabBar::tab {
+    background: #EDEDED;
+    padding: 4px 8px;
+    border: 1px solid transparent;
+}
+
+QTabBar::tab:hover {
+    border-left: 1px solid #478fd7;
+}
+
+QTabBar::tab:selected {
+    border-left: 2px solid #478fd7;
+    border-top: 1px solid #C9C9C9;
+    border-right: 1px solid #C9C9C9;
+    border-bottom: 1px solid transparent;
+    border-radius: 1px;
+}
+
+QTabBar::close-button {
+    image: none
+}
+
+QTabBar::close-button:hover {
+    image: url(:img/close-tab);
+}
+
+QTabWidget::pane {
+    border-color: #555;
+    border-style: solid;
+    border-width: 0px;
+    position: absolute;
+    top: -2px;
+}

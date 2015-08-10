@@ -19,5 +19,6 @@
         <file alias="remove_tuple">images/remove-row.png</file>
         <file alias="new_query">images/query.png</file>
         <file alias="save_data_base">images/database-save.png</file>
+        <file alias="close-tab">images/close-tab.png</file>
     </qresource>
 </RCC>
