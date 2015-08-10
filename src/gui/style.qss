@@ -21,6 +21,7 @@ QMenu {
 QMenu::item {
     padding: 2px 25px 2px 20px;
     border: 1px solid transparent;
+    margin-left: 0px;
 }
 
 QMenu::item:selected {
@@ -42,4 +43,24 @@ QHeaderView::section {
 
 QTableWidget QTableCornerButton::section {
     background-color: #646464;
+}
+
+QPushButton {
+    background-color: #F9F9F9;
+    color: #555555;
+    border: 1px solid #C9C9C9;
+    border-radius: 3px;
+    padding: 6px 10px;
+}
+
+QPushButton:hover {
+    background-color: #EDEDED;
+}
+
+QPushButton:pressed {
+    border: 1px solid gray;
+}
+
+QPushButton:focus {
+    background-color: #F0F0F0;
 }
