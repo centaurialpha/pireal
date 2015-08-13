@@ -7,8 +7,15 @@ Rectangle {
         id: logo
 
         anchors.centerIn: parent
-        opacity: 0.1
+        opacity: 0.2
         source: "../images/pireal_banner.png"
+
+        SequentialAnimation on opacity {
+            loops: Animation.Infinite
+            PropertyAnimation { to: 0; duration: 2000 }
+            PropertyAnimation { to: 0.2; duration: 2000 }
+
+        }
     }
 
     Text {
