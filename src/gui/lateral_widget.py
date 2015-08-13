@@ -18,7 +18,9 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4.QtGui import (
-    QDockWidget,
+    #QDockWidget,
+    QVBoxLayout,
+    QWidget,
     QListWidget,
     QListWidgetItem,
     QIcon,
@@ -31,12 +33,15 @@ from PyQt4.QtCore import (
 from src.gui.main_window import Pireal
 
 
-class LateralWidget(QDockWidget):
+class LateralWidget(QWidget):
 
     def __init__(self):
         super(LateralWidget, self).__init__()
+        vbox = QVBoxLayout(self)
+        vbox.setContentsMargins(0, 0, 0, 0)
         self._list_widget = QListWidget()
-        self.setWidget(self._list_widget)
+        #self.setWidget(self._list_widget)
+        vbox.addWidget(self._list_widget)
 
         Pireal.load_service("lateral", self)
 

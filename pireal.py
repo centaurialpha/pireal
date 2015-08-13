@@ -81,6 +81,7 @@ if __name__ == "__main__":
                     QLibraryInfo.TranslationsPath))
     qapp.installTranslator(translator)
     # Load services
+    from src.gui import central_widget  # lint:ok
     from src.gui.main_window import Pireal
     from src.gui import status_bar  # lint:ok
     from src.gui import container  # lint:ok

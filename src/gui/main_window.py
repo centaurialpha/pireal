@@ -28,7 +28,7 @@ from PyQt4.QtGui import (
 )
 from PyQt4.QtCore import (
     SIGNAL,
-    Qt
+    #Qt
 )
 
 
@@ -178,21 +178,22 @@ class Pireal(QMainWindow):
 
     def __load_ui(self):
         container = Pireal.get_service("container")
-        container.show_start_page()
-        # Query Widget
-        #query_widget = Pireal.get_service("query_widget")
-        #query_widget.hide()
-        # Lateral Widget
         lateral = Pireal.get_service("lateral")
         lateral.hide()
+        query_widget = Pireal.get_service("query_widget")
+        query_widget.hide()
 
-        self.addDockWidget(Qt.LeftDockWidgetArea, lateral)
-        #self.addDockWidget(Qt.BottomDockWidgetArea, query_widget)
+        container.show_start_page()
+
+        central_widget = Pireal.get_service("central")
+        central_widget.load_lateral_widget(lateral)
+        central_widget.load_table_widget(container)
+        central_widget.load_editor_widget(query_widget)
 
         self.connect(container, SIGNAL("currentFileSaved(QString)"),
                      self.__show_status_message)
 
-        return container
+        return central_widget
 
     def __show_status_message(self, msg):
         status = Pireal.get_service("status")
