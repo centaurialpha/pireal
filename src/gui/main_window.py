@@ -28,8 +28,9 @@ from PyQt4.QtGui import (
 )
 from PyQt4.QtCore import (
     SIGNAL,
-    #Qt
+    QFileInfo
 )
+from src.core import settings
 
 
 class Pireal(QMainWindow):
@@ -141,8 +142,20 @@ class Pireal(QMainWindow):
                     action = menu_item['name']
                     obj, connection = menu_item['slot'].split(':')
                     obj = self if obj.startswith("pireal") else container
+                    # Load recent files
+                    if action is None:
+                        files = settings.get_setting('recentFiles', [])
+                        nrfiles = min(len(files), settings.MAX_RECENT_FILES)
+                        for i in range(nrfiles):
+                            name = QFileInfo(files[i]).fileName()
+                            text = "&%d %s" % (i + 1, name)
+                            qaction = menu.addAction(text)
+                            qaction.setData(files[i])
+                            self.connect(qaction,
+                                         SIGNAL("triggered()"),
+                                         container.open_recent_file)
+                        continue
                     qaction = menu.addAction(action)
-
                     # Icon name is connection
                     icon = QIcon(":img/%s" % connection)
                     qaction.setIcon(icon)

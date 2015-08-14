@@ -24,6 +24,7 @@ Pireal settings
 import sys
 import os
 from PyQt4.QtGui import QFont
+from PyQt4.QtCore import QSettings
 
 
 # Operating System
@@ -49,8 +50,22 @@ DBFILE = "Pireal Data Base File (*.pdb);;Pireal Query File (*.pqf);;" \
 HOME = os.path.expanduser("~")
 PIREAL_DIR = os.path.join(HOME, ".pireal")
 LOG_FILE = os.path.join(PIREAL_DIR, "pireal_logging.log")
+SETTINGS_PATH = os.path.join(PIREAL_DIR, "pireal_settings.ini")
+
+# Max Recent Files
+MAX_RECENT_FILES = 5
 
 
 def create_dir():
     if not os.path.isdir(PIREAL_DIR):
         os.mkdir(PIREAL_DIR)
+
+
+def get_setting(key, default):
+    psettings = QSettings(SETTINGS_PATH, QSettings.IniFormat)
+    return psettings.value(key, default)
+
+
+def set_setting(key, value):
+    psettings = QSettings(SETTINGS_PATH, QSettings.IniFormat)
+    psettings.setValue(key, value)

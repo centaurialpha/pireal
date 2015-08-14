@@ -111,6 +111,19 @@ class Container(QSplitter):
         self.db_file = _file
         self.__created = True
         self.__ndata_base += 1
+        # Add to recent files
+        self.__add_to_recent(_file.filename)
+
+    def __add_to_recent(self, filename):
+        files = settings.get_setting('recentFiles', [])
+        if filename not in files:
+            files.insert(0, filename)
+            del files[settings.MAX_RECENT_FILES:]
+            settings.set_setting('recentFiles', files)
+
+    def open_recent_file(self):
+        filename = self.sender().data()
+        self.create_data_base(filename)
 
     def create_new_relation(self):
         dialog = new_relation_dialog.NewRelationDialog(self)

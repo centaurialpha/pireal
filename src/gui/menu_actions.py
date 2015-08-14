@@ -55,6 +55,9 @@ MENU['file'] = {
         'name': translate("PIREAL", "Guardar como..."),
         'slot': "container:save_query_as"
     }, "-", {
+        'name': None,
+        'slot': "container:open_recent_file"
+    }, "-", {
         'name': translate("PIREAL", "Cerrar"),
         'slot': "container:close_db"
     }, "-", {
