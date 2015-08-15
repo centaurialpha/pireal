@@ -28,7 +28,8 @@ from PyQt4.QtGui import (
 )
 from PyQt4.QtCore import (
     SIGNAL,
-    QFileInfo
+    QFileInfo,
+    QSize
 )
 from src.core import settings
 
@@ -64,8 +65,8 @@ class Pireal(QMainWindow):
         '',
         'create_new_relation',
         'remove_relation',
-        'insert_tuple',
-        'remove_tuple',
+        #'insert_tuple',
+        #'remove_tuple',
         '',
         'execute_queries'
     ]
@@ -74,6 +75,12 @@ class Pireal(QMainWindow):
         QMainWindow.__init__(self)
         self.setWindowTitle(self.tr("Pireal"))
 
+        # Toolbar
+        self.toolbar = QToolBar(self)
+        self.toolbar.setIconSize(QSize(32, 32))
+        self.toolbar.setMovable(False)
+        self.addToolBar(self.toolbar)
+        # Menu bar
         menubar = self.menuBar()
         self.__load_menubar(menubar)
 
@@ -157,7 +164,12 @@ class Pireal(QMainWindow):
                         continue
                     qaction = menu.addAction(action)
                     # Icon name is connection
-                    icon = QIcon(":img/%s" % connection)
+                    #icon = QIcon(":img/%s" % connection)
+                    icon = QIcon()
+                    #FIXME: que dependa del tema
+                    icon.addFile(":img/%s" % connection)
+                    icon.addFile(":imgoff/%s" % connection,
+                                 mode=QIcon.Disabled)
                     qaction.setIcon(icon)
 
                     # Install shortcuts
@@ -176,14 +188,12 @@ class Pireal(QMainWindow):
                         self.connect(qaction, SIGNAL("triggered()"), slot)
 
         # Install toolbar
-        toolbar = QToolBar(self)
         for action in Pireal.TOOLBAR_ITEMS:
             qaction = toolbar_items.get(action, None)
             if qaction is not None:
-                toolbar.addAction(qaction)
+                self.toolbar.addAction(qaction)
             else:
-                toolbar.addSeparator()
-        self.addToolBar(toolbar)
+                self.toolbar.addSeparator()
 
         self.enable_disable_db_actions(False)
         self.enable_disable_relation_actions(False)

@@ -24,15 +24,24 @@ from PyQt4.QtGui import (
     QMessageBox,
     QVBoxLayout
 )
-from PyQt4.QtCore import (
-    SIGNAL,
-)
+from PyQt4.QtCore import SIGNAL
 from src.gui.query_editor import editor
 from src.gui.main_window import Pireal
 from src.core import (
     parser,
     rfile
 )
+
+
+class Tab(QTabWidget):
+
+    def __init__(self):
+        super(Tab, self).__init__()
+        self.currentChanged[int].connect(self._resize)
+
+    def _resize(self, v):
+        width = self.size().width() / self.count() - 18
+        self.setStyleSheet("QTabBar::tab { width: %spx; }" % width)
 
 
 class QueryWidget(QWidget):
@@ -47,8 +56,8 @@ class QueryWidget(QWidget):
         box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 5, 0)
         # Tabs
-        self.tab = QTabWidget()
-        self.tab.setCornerWidget(self._cursor_position_widget)
+        self.tab = Tab()
+        #self.tab.setCornerWidget(self._cursor_position_widget)
         self.tab.setTabsClosable(True)
         self.tab.setMovable(True)
         box.addWidget(self.tab)

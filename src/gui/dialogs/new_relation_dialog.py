@@ -24,14 +24,14 @@ from PyQt4.QtGui import (
     QLabel,
     QLineEdit,
     QPushButton,
-    QTableWidget,
     QTableWidgetItem,
     QSpacerItem,
     QSizePolicy,
     QMessageBox
 )
-from PyQt4.QtCore import SIGNAL
+from PyQt4.QtCore import SIGNAL, Qt
 from src.gui.main_window import Pireal
+from src.gui import table_widget
 from src.core import relation
 
 
@@ -39,11 +39,15 @@ class NewRelationDialog(QDialog):
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
+        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.setWindowTitle(self.tr("Nueva Relación"))
         vbox = QVBoxLayout(self)
         hbox = QHBoxLayout()
         self._line_relation_name = QLineEdit()
-        hbox.addWidget(QLabel(self.tr("Nombre:")))
+        self.setFocusPolicy(Qt.TabFocus)
+        self.setFocus()
+        self._line_relation_name.setPlaceholderText(
+            self.tr("Nombre de la relación"))
         hbox.addWidget(self._line_relation_name)
         vbox.addLayout(hbox)
 
@@ -61,7 +65,7 @@ class NewRelationDialog(QDialog):
         hbox.addWidget(btn_remove_tuple)
         vbox.addLayout(hbox)
 
-        self._table = QTableWidget()
+        self._table = table_widget.Table()
         vbox.addWidget(self._table)
         self._table.setRowCount(1)
         self._table.setColumnCount(2)
