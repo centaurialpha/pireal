@@ -120,3 +120,14 @@ MENU['help'] = {
     }, {
         'name': translate("PIREAL", "Acerca de Qt"),
         'slot': "pireal:about_qt"}]}
+
+TR_NEW_RELATION_FIELDS = translate("Pireal",
+                                   "La primera fila corresponde a los campos")
+TR_NEW_RELATION_TITLE = translate("Pireal", "Nueva Relación")
+TR_NEW_RELATION_NAME = translate("Pireal", "Nombre de la relación")
+TR_NEW_RELATION_ADD_COL = translate("Pireal", "Agregar Columna")
+TR_NEW_RELATION_ADD_ROW = translate("Pireal", "Agregar Tupla")
+TR_NEW_RELATION_REMOVE_COL = translate("Pireal", "Eliminar Columna")
+TR_NEW_RELATION_REMOVE_ROW = translate("Pireal", "Eliminar Tupla")
+TR_NEW_RELATION_BTN_OK = translate("Pireal", "Aceptar")
+TR_NEW_RELATION_BTN_CANCEL = translate("Pireal", "Cancelar")

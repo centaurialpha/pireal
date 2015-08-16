@@ -31,7 +31,7 @@ from PyQt4.QtGui import (
 )
 from PyQt4.QtCore import SIGNAL, Qt
 from src.gui.main_window import Pireal
-from src.gui import table_widget
+from src.gui import table_widget, menu_actions as tr
 from src.core import relation
 
 
@@ -40,28 +40,26 @@ class NewRelationDialog(QDialog):
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
-        self.setWindowTitle(self.tr("Nueva Relación"))
+        #self.setWindowTitle(translations.TR_NEW_RELATION_TITLE)
         vbox = QVBoxLayout(self)
         hbox = QHBoxLayout()
         self._line_relation_name = QLineEdit()
         self.setFocusPolicy(Qt.TabFocus)
         self.setFocus()
-        self._line_relation_name.setPlaceholderText(
-            self.tr("Nombre de la relación"))
+        self._line_relation_name.setPlaceholderText(tr.TR_NEW_RELATION_NAME)
         hbox.addWidget(self._line_relation_name)
         vbox.addLayout(hbox)
 
-        vbox.addWidget(QLabel(
-            self.tr("La primera fila corresponde a los campos")))
+        vbox.addWidget(QLabel(tr.TR_NEW_RELATION_FIELDS))
 
         hbox = QHBoxLayout()
-        btn_add_column = QPushButton(self.tr("Agregar Columna"))
+        btn_add_column = QPushButton(tr.TR_NEW_RELATION_ADD_COL)
         hbox.addWidget(btn_add_column)
-        btn_add_tuple = QPushButton(self.tr("Agregar Tupla"))
+        btn_add_tuple = QPushButton(tr.TR_NEW_RELATION_ADD_ROW)
         hbox.addWidget(btn_add_tuple)
-        btn_remove_column = QPushButton(self.tr("Eliminar Columna"))
+        btn_remove_column = QPushButton(tr.TR_NEW_RELATION_REMOVE_COL)
         hbox.addWidget(btn_remove_column)
-        btn_remove_tuple = QPushButton(self.tr("Eliminar Tupla"))
+        btn_remove_tuple = QPushButton(tr.TR_NEW_RELATION_REMOVE_ROW)
         hbox.addWidget(btn_remove_tuple)
         vbox.addLayout(hbox)
 
@@ -74,9 +72,9 @@ class NewRelationDialog(QDialog):
 
         hbox = QHBoxLayout()
         hbox.addItem(QSpacerItem(1, 0, QSizePolicy.Expanding))
-        btn_ok = QPushButton(self.tr("Aceptar"))
+        btn_ok = QPushButton(tr.TR_NEW_RELATION_BTN_OK)
         hbox.addWidget(btn_ok)
-        btn_cancel = QPushButton(self.tr("Cancelar"))
+        btn_cancel = QPushButton(tr.TR_NEW_RELATION_BTN_CANCEL)
         hbox.addWidget(btn_cancel)
         vbox.addLayout(hbox)
 
