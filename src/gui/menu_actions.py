@@ -121,8 +121,7 @@ MENU['help'] = {
         'name': translate("PIREAL", "Acerca de Qt"),
         'slot': "pireal:about_qt"}]}
 
-TR_NEW_RELATION_FIELDS = translate("Pireal",
-                                   "La primera fila corresponde a los campos")
+TR_NEW_RELATION_FIELDS = translate("Pireal", "Campos:")
 TR_NEW_RELATION_TITLE = translate("Pireal", "Nueva Relación")
 TR_NEW_RELATION_NAME = translate("Pireal", "Nombre de la relación")
 TR_NEW_RELATION_ADD_COL = translate("Pireal", "Agregar Columna")

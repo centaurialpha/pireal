@@ -27,7 +27,7 @@ from PyQt4.QtGui import (
     QTableWidgetItem,
     QSpacerItem,
     QSizePolicy,
-    QMessageBox
+    QMessageBox,
 )
 from PyQt4.QtCore import SIGNAL, Qt
 from src.gui.main_window import Pireal
@@ -40,12 +40,12 @@ class NewRelationDialog(QDialog):
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
-        #self.setWindowTitle(translations.TR_NEW_RELATION_TITLE)
+        self.setFocusPolicy(Qt.TabFocus)
+        self.setFocus()
+        self.setWindowTitle(tr.TR_NEW_RELATION_TITLE)
         vbox = QVBoxLayout(self)
         hbox = QHBoxLayout()
         self._line_relation_name = QLineEdit()
-        self.setFocusPolicy(Qt.TabFocus)
-        self.setFocus()
         self._line_relation_name.setPlaceholderText(tr.TR_NEW_RELATION_NAME)
         hbox.addWidget(self._line_relation_name)
         vbox.addLayout(hbox)
