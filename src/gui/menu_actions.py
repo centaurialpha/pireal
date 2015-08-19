@@ -25,9 +25,7 @@ slot for each item in a menu, by default, strings they are in Spanish.
 """
 
 from collections import OrderedDict
-from PyQt4.QtGui import QApplication
-
-translate = QApplication.translate
+from src import translations as tr
 
 
 MENU = OrderedDict()
@@ -35,98 +33,85 @@ MENU = OrderedDict()
 
 # Menu File
 MENU['file'] = {
-    'name': translate("PIREAL", "&Archivo"),
+    'name': tr.TR_MENU_FILE,
     'items': [{
-        'name': translate("PIREAL", "Nueva Base de Datos"),
+        'name': tr.TR_MENU_FILE_NEW_DB,
         'slot': "container:create_data_base"
     }, {
-        'name': translate("PIREAL", "Nueva Consulta"),
+        'name': tr.TR_MENU_FILE_NEW_QUERY,
         'slot': "container:new_query"
     }, "-", {
-        'name': translate("PIREAL", "Abrir"),
+        'name': tr.TR_MENU_FILE_OPEN,
         'slot': "container:open_file"
     }, {
-        'name': translate("PIREAL", "Guardar base de datos"),
+        'name': tr.TR_MENU_FILE_SAVE_DB,
         'slot': "container:save_data_base"
     }, {
-        'name': translate("PIREAL", "Guardar"),
+        'name': tr.TR_MENU_FILE_SAVE,
         'slot': "container:save_query"
     }, {
-        'name': translate("PIREAL", "Guardar como..."),
+        'name': tr.TR_MENU_FILE_SAVE_AS,
         'slot': "container:save_query_as"
     }, "-", {
         'name': None,
         'slot': "container:open_recent_file"
     }, "-", {
-        'name': translate("PIREAL", "Cerrar"),
-        'slot': "container:close_db"
-    }, "-", {
-        'name': translate("PIREAL", "Salir"),
+        'name': tr.TR_MENU_FILE_EXIT,
         'slot': "pireal:close"}]}
 
 
 # Menu Edit
 MENU['edit'] = {
-    'name': translate("PIREAL", "&Editar"),
+    'name': tr.TR_MENU_EDIT,
     'items': [{
-        'name': translate("PIREAL", "Deshacer"),
+        'name': tr.TR_MENU_EDIT_UNDO,
         'slot': "container:undo_action"
     }, {
-        'name': translate("PIREAL", "Rehacer"),
+        'name': tr.TR_MENU_EDIT_REDO,
         'slot': "container:redo_action"
     }, "-", {
-        'name': translate("PIREAL", "Cortar"),
+        'name': tr.TR_MENU_EDIT_CUT,
         'slot': "container:cut_action"
     }, {
-        'name': translate("PIREAL", "Copiar"),
+        'name': tr.TR_MENU_EDIT_COPY,
         'slot': "container:copy_action"
     }, {
-        'name': translate("PIREAL", "Pegar"),
+        'name': tr.TR_MENU_EDIT_PASTE,
         'slot': "container:paste_action"
     }, "-", {
-        'name': translate("PIREAL", "Preferencias"),
+        'name': tr.TR_MENU_EDIT_PREFERENCES,
         'slot': 'container:preferences'}]}
 
 
 # Menu Relation
 MENU['relation'] = {
-    'name': translate("PIREAL", "&Relación"),
+    'name': tr.TR_MENU_RELATION,
     'items': [{
-        'name': translate("PIREAL", "Nueva Relación"),
+        'name': tr.TR_MENU_RELATION_NEW_RELATION,
         'slot': "container:create_new_relation"
     }, {
-        'name': translate("PIREAL", "Eliminar Relación"),
+        'name': tr.TR_MENU_RELATION_DELETE_RELATION,
         'slot': "container:remove_relation"
     }, {
-        'name': translate("PIREAL", "Cargar Relación"),
+        'name': tr.TR_MENU_RELATION_LOAD_RELATION,
         'slot': "container:load_relation"
     }, "-", {
-        'name': translate("PIREAL", "Agregar Registro"),
+        'name': tr.TR_MENU_RELATION_ADD_ROW,
         'slot': "container:insert_tuple"
     }, {
-        'name': translate("PIREAL", "Eliminar Registro"),
+        'name': tr.TR_MENU_RELATION_DELETE_ROW,
         'slot': "container:remove_tuple",
     }, "-", {
-        'name': translate("PIREAL", "Ejecutar Consultas"),
+        'name': tr.TR_MENU_RELATION_EXECUTE,
         'slot': "container:execute_queries"}]}
 
 
 # Menu Help
 MENU['help'] = {
-    'name': translate("PIREAL", "A&yuda"),
+    'name': tr.TR_MENU_HELP,
     'items': [{
-        'name': translate("PIREAL", "Acerca de Pireal"),
+        'name': tr.TR_MENU_HELP_ABOUT_PIREAL,
         'slot': "pireal:about_pireal"
     }, {
-        'name': translate("PIREAL", "Acerca de Qt"),
+        'name': tr.TR_MENU_HELP_ABOUT_QT,
         'slot': "pireal:about_qt"}]}
-
-TR_NEW_RELATION_FIELDS = translate("Pireal", "Campos:")
-TR_NEW_RELATION_TITLE = translate("Pireal", "Nueva Relación")
-TR_NEW_RELATION_NAME = translate("Pireal", "Nombre de la relación")
-TR_NEW_RELATION_ADD_COL = translate("Pireal", "Agregar Columna")
-TR_NEW_RELATION_ADD_ROW = translate("Pireal", "Agregar Tupla")
-TR_NEW_RELATION_REMOVE_COL = translate("Pireal", "Eliminar Columna")
-TR_NEW_RELATION_REMOVE_ROW = translate("Pireal", "Eliminar Tupla")
-TR_NEW_RELATION_BTN_OK = translate("Pireal", "Aceptar")
-TR_NEW_RELATION_BTN_CANCEL = translate("Pireal", "Cancelar")

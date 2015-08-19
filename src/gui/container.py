@@ -31,6 +31,7 @@ from PyQt4.QtCore import (
     Qt,
     SIGNAL
 )
+from src import translations as tr
 from src.gui.main_window import Pireal
 from src.gui import (
     start_page,
@@ -78,9 +79,7 @@ class Container(QSplitter):
         """
 
         if self.__created:
-            QMessageBox.critical(self, self.tr("Error"),
-                                 self.tr("Solo puede tener una base de datos "
-                                         "abierta a la vez."))
+            QMessageBox.critical(self, "Error", tr.TR_CONTAINER_ERROR_DB)
             return
 
         # Pireal File
@@ -90,8 +89,7 @@ class Container(QSplitter):
             try:
                 data = _file.read()
             except Exception as reason:
-                QMessageBox.critical(self, self.tr("Error!"),
-                                     reason.__str__())
+                QMessageBox.critical(self, "Error!", reason.__str__())
                 return
             db_name = _file.name
             # Add data base
@@ -133,14 +131,12 @@ class Container(QSplitter):
         lateral = Pireal.get_service("lateral")
         rname = lateral.get_relation_name()
         if not rname:
-            QMessageBox.critical(self, self.tr("Error"),
-                                 self.tr("No se ha seleccionado ninguna "
-                                         "relación."))
+            QMessageBox.critical(self, "Error",
+                                 tr.TR_CONTAINER_UNSELECTED_RELATIONSHIP)
             return
-        r = QMessageBox.question(self, self.tr("Confirmación"),
-                                 self.tr("Seguro que quieres eliminar la "
-                                         "relación <b>{}</b>").format(rname),
-                                             QMessageBox.Yes | QMessageBox.No)
+        r = QMessageBox.question(self, tr.TR_CONTAINER_CONFIRM_DELETE_REL_TITLE,
+                                 tr.TR_CONTAINER_CONFIRM_DELETE_REL.format(
+                                     rname), QMessageBox.Yes | QMessageBox.No)
         if r == QMessageBox.No:
             return
         index = lateral.current_index()
@@ -198,7 +194,7 @@ class Container(QSplitter):
         weditor.document().setModified(False)
 
         self.emit(SIGNAL("currentFileSaved(QString)"),
-                  self.tr("Archivo guardado: {}").format(weditor.filename))
+                  tr.TR_CONTAINER_FILE_SAVED.format(weditor.filename))
 
     def save_query_as(self, editor=None):
         if editor is None:
@@ -206,7 +202,7 @@ class Container(QSplitter):
             editor = query_widget.get_active_editor()
         directory = os.path.expanduser("~")
         filename = QFileDialog.getSaveFileName(self,
-                                               self.tr("Guardar Archivo"),
+                                               tr.TR_CONTAINER_SAVE_FILE,
                                                directory)
         if not filename:
             return
@@ -218,7 +214,7 @@ class Container(QSplitter):
 
         directory = os.path.expanduser("~")
         filename = QFileDialog.getSaveFileName(self,
-                                               self.tr("Guardar Base de Datos"),
+                                               tr.TR_CONTAINER_SAVE_DB,
                                                directory)
         if not filename:
             return
@@ -234,7 +230,7 @@ class Container(QSplitter):
             directory = os.path.expanduser("~")
         else:
             directory = self.__last_open_folder
-        filename = QFileDialog.getOpenFileName(self, self.tr("Abrir Archivo"),
+        filename = QFileDialog.getOpenFileName(self, tr.TR_CONTAINER_OPEN_FILE,
                                                directory, settings.DBFILE,
                                                QFileDialog.DontUseNativeDialog)
         if not filename:
@@ -282,7 +278,7 @@ class Container(QSplitter):
                 directory = self.__last_open_folder
             ffilter = settings.RFILES.split(';;')[-1]
             filenames = QFileDialog.getOpenFileNames(self,
-                                                     self.tr("Abrir Archivo"),
+                                                     tr.TR_CONTAINER_OPEN_FILE,
                                                      directory, ffilter,
                                                      native_dialog)
             if not filenames:

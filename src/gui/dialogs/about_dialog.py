@@ -32,14 +32,17 @@ from PyQt4.QtCore import (
     Qt,
     SIGNAL
 )
-from src import gui
+from src import (
+    gui,
+    translations as tr
+)
 
 
 class AboutDialog(QDialog):
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
-        self.setWindowTitle(self.tr("Acerca de Pireal"))
+        self.setWindowTitle(tr.TR_ABOUT_DIALOG)
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         vbox = QVBoxLayout(self)
         # Banner
@@ -49,31 +52,26 @@ class AboutDialog(QDialog):
         vbox.addWidget(banner)
 
         # Description
-        description = QLabel(self.tr("<b>Pireal</b> es una herramienta "
-                                     "educativa para trabajar con Álgebra "
-                                     "Relacional.<br>"))
+        description = QLabel(tr.TR_ABOUT_DIALOG_DESC)
         vbox.addWidget(description)
 
         # Links, author, source
-        vbox.addWidget(QLabel(self.tr("<b>Versión:</b> {}").format(
-            gui.__version__)))
-        source = QLabel(self.tr("<b>Código fuente:</b> <a href="
-                                "'{0}'>{1}</a>").format(gui.__source_code__,
-                                                        gui.__source_code__))
+        vbox.addWidget(QLabel(tr.TR_ABOUT_DIALOG_VERSION.format(
+                              gui.__version__)))
+        source = QLabel(tr.TR_ABOUT_DIALOG_SOURCE.format(gui.__source_code__,
+                                                          gui.__source_code__))
         vbox.addWidget(source)
         lname, llink = gui.__license__.split()
-        _license = QLabel(self.tr("<b>Licencia:</b> <a href="
-                                  "'{0}'>{1}</a>").format(llink, lname))
+        _license = QLabel(tr.TR_ABOUT_DIALOG_LICENSE.format(llink, lname))
         vbox.addWidget(_license)
-        vbox.addWidget(QLabel(self.tr("<b>Autor:</b> {}").format(
+        vbox.addWidget(QLabel(tr.TR_ABOUT_DIALOG_AUTHOR.format(
             gui.__author__)))
-        vbox.addWidget(QLabel(self.tr("<b>e-mail:</b> {}").format(
-            gui.__email__)))
+        vbox.addWidget(QLabel("<b>e-mail:</b> {}".format(gui.__email__)))
 
         # Button ok
         hbox = QHBoxLayout()
         hbox.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
-        btn_ok = QPushButton("Ok")
+        btn_ok = QPushButton(tr.TR_ABOUT_DIALOG_BTN_OK)
         hbox.addWidget(btn_ok)
         vbox.addLayout(hbox)
 

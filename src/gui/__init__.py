@@ -23,6 +23,6 @@ Metadata
 
 __author__ = "Gabriel Acosta"
 __email__ = "acostadariogabriel at gmail"
-__version__ = "0.1"
+__version__ = "1.0-beta"
 __source_code__ = "https://github.com/centaurialpha/pireal"
 __license__ = "GPLv3+ http://www.gnu.org/licenses/gpl-3.0.en.html"
