@@ -18,6 +18,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+#import os
 from PyQt4.QtGui import (
     QApplication,
     QStyleFactory,
@@ -60,6 +61,11 @@ def __get_versions():
     }
 
 
+def detect_language(system_lang):
+    languages = {'es': 'Spanish'}
+    return languages[system_lang]
+
+
 if __name__ == "__main__":
 
     # Create dir
@@ -73,6 +79,9 @@ if __name__ == "__main__":
     from src import resources  # lint:ok
 
     qapp = QApplication(sys.argv)
+    # Style sheet
+    with open('src/gui/style.qss') as f:
+        qapp.setStyleSheet(f.read())
     qapp.setWindowIcon(QIcon(":img/logo"))
     # System language
     local = QLocale.system().name()
@@ -80,6 +89,10 @@ if __name__ == "__main__":
     translator.load("qt_" + local, QLibraryInfo.location(
                     QLibraryInfo.TranslationsPath))
     qapp.installTranslator(translator)
+    # App language
+    #ptranslator = QTranslator()
+    #ptranslator.load(os.path.join(settings.LANGUAGES, "Spanish.qm"))
+    #qapp.installTranslator(ptranslator)
     # Load services
     from src.gui import central_widget  # lint:ok
     from src.gui.main_window import Pireal
@@ -93,9 +106,7 @@ if __name__ == "__main__":
     qapp.setStyle(QStyleFactory.create("gtk"))
     INFO("Loading GUI...")
     gui = Pireal()
-    # Style sheet
-    with open('src/gui/style.qss') as f:
-        qapp.setStyleSheet(f.read())
+
     gui.show()
     gui.showMaximized()
     INFO("Pireal ready!")

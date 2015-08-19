@@ -47,10 +47,12 @@ DBFILE = "Pireal Data Base File (*.pdb);;Pireal Query File (*.pqf);;" \
          "WinRDBI Data Base (*.rdb)"
 
 # Create folder (settings and logging)
+PATH = os.path.realpath(os.path.dirname(sys.argv[0]))
 HOME = os.path.expanduser("~")
 PIREAL_DIR = os.path.join(HOME, ".pireal")
 LOG_FILE = os.path.join(PIREAL_DIR, "pireal_logging.log")
 SETTINGS_PATH = os.path.join(PIREAL_DIR, "pireal_settings.ini")
+LANGUAGES = os.path.join(PATH, "src", "extensions", "languages")
 
 # Max Recent Files
 MAX_RECENT_FILES = 5
