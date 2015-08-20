@@ -145,10 +145,10 @@ class QueryWidget(QWidget):
                 relation_name, line = parts
             else:
                 relation_name = 'rel_{}'.format(self.__nrelation)
-                self.__nrelation += 1
             try:
                 expression = parser.convert_to_python(line.strip())
                 rel = eval(expression, table.relations)
+                self.__nrelation += 1
             except Exception as reason:
 
             #try:
