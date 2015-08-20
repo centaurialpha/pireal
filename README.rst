@@ -71,15 +71,27 @@ Implemented Operators
 #####################
 The operations are defined in this `file <https://github.com/centaurialpha/pireal/blob/master/src/core/relation.py>`_.
 
-* **Selection**
-* **Projection**
-* Rename
-* **Product**
-* **Union**
-* **Difference**
-* **Natural Join**
-* **Intersection**
-* Division
++--------------+-----------+
+| Operator     | Supported |
++==============+===========+
+| Selection    |    Yes    |
++--------------+-----------+
+| Projection   |    Yes    |
++--------------+-----------+
+| Rename       |    No     |
++--------------+-----------+
+| Product      |    Yes    |
++--------------+-----------+
+| Union        |    Yes    |
++--------------+-----------+
+| Difference   |    Yes    |
++--------------+-----------+
+| Natural Join |    Yes    |
++--------------+-----------+
+| Intersection |    Yes    |
++--------------+-----------+
+| Division     |    No     |
++--------------+-----------+
 
 Demo
 ####
