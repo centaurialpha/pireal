@@ -98,3 +98,10 @@ TR_CONTAINER_FILE_SAVED = translate("Pireal", "File Saved: {}")
 TR_CONTAINER_SAVE_FILE = translate("Pireal", "Save File")
 TR_CONTAINER_SAVE_DB = translate("Pireal", "Save Database")
 TR_CONTAINER_OPEN_FILE = translate("Pireal", "Open File")
+
+# Query widget
+TR_QUERY_ERROR = translate("Pireal", "Query error")
+TR_QUERY_FILE_MODIFIED = translate("Pireal", "File modified")
+TR_QUERY_FILE_MODIFIED_MSG = translate("Pireal", ("The file <b>{}</b> has "
+                                       "unsaved changes. You want "
+                                       "to keep them?"))

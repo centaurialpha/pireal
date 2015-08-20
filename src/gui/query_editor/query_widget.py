@@ -31,6 +31,7 @@ from src.core import (
     parser,
     rfile
 )
+from src import translations as tr
 
 
 class Tab(QTabWidget):
@@ -153,8 +154,7 @@ class QueryWidget(QWidget):
 
             #try:
             #except Exception as reason:
-                QMessageBox.critical(self, self.tr("Error en consulta"),
-                                     reason.__str__())
+                QMessageBox.critical(self, tr.TR_QUERY_ERROR, reason.__str__())
                 return
             table.add_new_table(rel, relation_name)
             table.relations[relation_name] = rel
@@ -197,11 +197,9 @@ class QueryWidget(QWidget):
         flags = QMessageBox.Yes
         flags |= QMessageBox.No
         flags |= QMessageBox.Cancel
-        r = QMessageBox.information(self, self.tr("Archivo modificado"),
-                                    self.tr("El archivo <b>{}</b> "
-                                            "tiene cambios sin guardar. "
-                                            "Quieres guardarlos?").format(
-                                                filename), flags)
+        r = QMessageBox.information(self, tr.TR_QUERY_FILE_MODIFIED,
+                                    tr.TR_QUERY_FILE_MODIFIED_MSG.format(
+                                        filename), flags)
         return r
 
     def opened_files(self):
