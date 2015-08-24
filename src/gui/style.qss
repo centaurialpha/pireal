@@ -93,6 +93,10 @@ QPushButton:disabled {
     border-radius: 3px;
 }
 
+QPushButton#cancel {
+    background-color: #DA6352;
+}
+
 QTabBar {
     border: none;
 }

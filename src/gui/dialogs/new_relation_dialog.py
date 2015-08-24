@@ -76,6 +76,7 @@ class NewRelationDialog(QDialog):
         btn_ok = QPushButton(tr.TR_RELATION_DIALOG_BTN_OK)
         hbox.addWidget(btn_ok)
         btn_cancel = QPushButton(tr.TR_RELATION_DIALOG_BTN_CANCEL)
+        btn_cancel.setObjectName("cancel")
         hbox.addWidget(btn_cancel)
         vbox.addLayout(hbox)
 
