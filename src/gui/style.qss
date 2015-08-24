@@ -265,3 +265,42 @@ QGroupBox::title {
     padding: 5 10px;
     color: #333;
 }
+
+QScrollBar:vertical {
+    background: transparent;
+    width: 8px;
+}
+
+QScrollBar:horizontal {
+    background: transparent;
+    height: 10px;
+}
+
+QScrollBar::handle:vertical {
+    border-radius: 1px;
+    background: #CCCCCC;
+    min-height: 50px;
+
+}
+
+QScrollBar::handle:horizontal {
+    border-radius: 1px;
+    background: #CCCCCC;
+    min-width: 50px;
+}
+
+QScrollBar::handle:vertical:hover,
+QScrollBar::handle:horizontal:hover {
+    background: #666;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical,
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical,
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal,
+QScrollBar::add-page:horizontal,
+QScrollBar::sub-page:horizontal{
+    background: #CCCCCC;
+}
