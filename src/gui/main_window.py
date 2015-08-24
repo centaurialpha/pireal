@@ -290,6 +290,11 @@ class Pireal(QMainWindow):
         dialog = about_dialog.AboutDialog(self)
         dialog.exec_()
 
+    def show_preferences(self):
+        from src.gui.dialogs import preferences
+        dialog = preferences.Preferences(self)
+        dialog.show()
+
     def closeEvent(self, event):
         container = Pireal.get_service("container")
         if not container.check_opened_query_files():

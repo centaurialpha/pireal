@@ -80,7 +80,7 @@ MENU['edit'] = {
         'slot': "container:paste_action"
     }, "-", {
         'name': tr.TR_MENU_EDIT_PREFERENCES,
-        'slot': 'container:preferences'}]}
+        'slot': 'pireal:show_preferences'}]}
 
 
 # Menu Relation

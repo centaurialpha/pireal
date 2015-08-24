@@ -4,19 +4,19 @@ QWidget {
 }
 
 QMenuBar {
-    background-color: #212121;
+    background-color: #6389A8;
     border: 0px solid transparent;
     padding: 8px;
 }
 
 QMenuBar::item {
-    background-color: #212121;
-    color: #EFEFEF;
+    background-color: #6389A8;
+    color: #E3E3E3;
     padding: 3px 10px 3px 10px;
 }
 
 QMenuBar::item:selected {
-    background: #333333;
+    color: white;
     border-radius: 1px;
 }
 
@@ -27,7 +27,7 @@ QMenu::item {
 }
 
 QMenu::item:selected {
-    background: #4f9bd7;
+    background: #6389A8;
 }
 
 QMenu {
@@ -174,20 +174,20 @@ QLineEdit, QLineEdit:hover {
     background-color:rgba(0,0,0,0);
 }
 
-QLineEdit:editable{
+QLineEdit:editable {
     border: none;
     padding-bottom: 2px;
     border-bottom: 2px solid #b2dfdb;
     font-size: 20px;
 }
 
-QLineEdit:disabled{
+QLineEdit:disabled {
     border: 0px solid white;
     padding-bottom: 2px;
     border-bottom: 2px solid #eeeeee;
 }
 
-QLineEdit:focus{
+QLineEdit:focus {
     border: 0px solid white;
     padding-bottom: 2px;
     border-bottom: 2px solid #00695c;
@@ -222,4 +222,41 @@ QPlainTextEdit:selected {
     padding-bottom: 5px;
     border-bottom: 3px solid #00695c;
     color: #111111;
+}
+
+QComboBox {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #3b363c, stop: 1.0 #222021);
+    color: #9c9da2;
+    padding: 1px 18px 1px 20px;
+    border: 1px solid #333;
+    border-radius: 2px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 5px;
+    border-left-width: 1px;
+}
+
+QComboBox:item:selected {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #222021, stop: 1 #444);
+    border: 1px solid #333;
+    border-radius: 2px;
+}
+
+QGroupBox {
+    font-size: 18px;
+    color: #c7cacc;
+    margin-top: 20px;
+    padding: 5px;
+    background: white;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    padding: 5 10px;
+    color: #333;
 }

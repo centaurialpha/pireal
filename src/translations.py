@@ -105,3 +105,6 @@ TR_QUERY_FILE_MODIFIED = translate("Pireal", "File modified")
 TR_QUERY_FILE_MODIFIED_MSG = translate("Pireal", ("The file <b>{}</b> has "
                                        "unsaved changes. You want "
                                        "to keep them?"))
+
+# Preferences
+TR_PREFERENCES_GROUP_LANG = translate("Pireal", "Language")
