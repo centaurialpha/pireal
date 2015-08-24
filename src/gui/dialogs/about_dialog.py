@@ -51,23 +51,46 @@ class AboutDialog(QDialog):
         banner.setAlignment(Qt.AlignHCenter)
         vbox.addWidget(banner)
 
+        # Version
+        label_version = QLabel(tr.TR_ABOUT_DIALOG_VERSION.format(
+                               gui.__source_code__, gui.__version__))
+        label_version.setAlignment(Qt.AlignHCenter)
+        font = label_version.font()
+        font.setPointSize(13)
+        label_version.setFont(font)
+        vbox.addWidget(label_version)
+
         # Description
         description = QLabel(tr.TR_ABOUT_DIALOG_DESC)
+        description.setAlignment(Qt.AlignHCenter)
+        font = description.font()
+        font.setPointSize(13)
+        description.setFont(font)
         vbox.addWidget(description)
 
-        # Links, author, source
-        vbox.addWidget(QLabel(tr.TR_ABOUT_DIALOG_VERSION.format(
-                              gui.__version__)))
-        source = QLabel(tr.TR_ABOUT_DIALOG_SOURCE.format(gui.__source_code__,
-                                                          gui.__source_code__))
-        vbox.addWidget(source)
-        lname, llink = gui.__license__.split()
-        _license = QLabel(tr.TR_ABOUT_DIALOG_LICENSE.format(llink, lname))
-        vbox.addWidget(_license)
-        vbox.addWidget(QLabel(tr.TR_ABOUT_DIALOG_AUTHOR.format(
-            gui.__author__)))
-        vbox.addWidget(QLabel("<b>e-mail:</b> {}".format(gui.__email__)))
+        # License and source
+        lbl_license_source = QLabel(tr.TR_ABOUT_DIALOG_LICENSE_SOURCE.format(
+                                    gui.__license__, gui.__source_code__))
+        lbl_license_source.setAlignment(Qt.AlignHCenter)
+        font = lbl_license_source.font()
+        font.setPointSize(13)
+        lbl_license_source.setFont(font)
+        vbox.addWidget(lbl_license_source)
 
+        ## Links, author, source
+        #vbox.addWidget(QLabel(tr.TR_ABOUT_DIALOG_VERSION.format(
+                              #gui.__version__)))
+        #source = QLabel(tr.TR_ABOUT_DIALOG_SOURCE.format(gui.__source_code__,
+                                                          #gui.__source_code__))
+        #vbox.addWidget(source)
+        #lname, llink = gui.__license__.split()
+        #_license = QLabel(tr.TR_ABOUT_DIALOG_LICENSE.format(llink, lname))
+        #vbox.addWidget(_license)
+        #vbox.addWidget(QLabel(tr.TR_ABOUT_DIALOG_AUTHOR.format(
+            #gui.__author__)))
+        #vbox.addWidget(QLabel("<b>e-mail:</b> {}".format(gui.__email__)))
+        #vbox.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
+                     #QSizePolicy.Expanding))
         # Button ok
         hbox = QHBoxLayout()
         hbox.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
@@ -76,7 +99,7 @@ class AboutDialog(QDialog):
         vbox.addLayout(hbox)
 
         self.connect(btn_ok, SIGNAL("clicked()"), self.close)
-        self.connect(source, SIGNAL("linkActivated(QString)"),
-                     lambda link: webbrowser.open_new(link))
-        self.connect(_license, SIGNAL("linkActivated(QString)"),
-                     lambda link: webbrowser.open_new(link))
+        #self.connect(source, SIGNAL("linkActivated(QString)"),
+                     #lambda link: webbrowser.open_new(link))
+        #self.connect(_license, SIGNAL("linkActivated(QString)"),
+                     #lambda link: webbrowser.open_new(link))
