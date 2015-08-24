@@ -68,21 +68,22 @@ QTableWidget QTableCornerButton::section {
     background-color: #646464;
 }
 
-QPushButton,QPushButton:hover,QPushButton:focus,QPushButton:hover:focus {
+QPushButton {
   border: none;
   color: white;
-  background-color: #2196f3;
-  border-radius: 3px;
+  background-color: #2FA9E2;
+  border-radius: 2px;
   padding: 6px 10px;
 }
 
+QPushButton:hover {
+    background-color: #2A99CC;
+}
 
 QPushButton:pressed,
 QPushButton:pressed:focus {
   border: none;
   color: white;
-  background-color: gray;
-  border-radius: 3px;
   margin: 1 1 1 1px;
 }
 
