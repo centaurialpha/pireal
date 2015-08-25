@@ -205,9 +205,14 @@ QLineEdit:pressed {
     border-bottom: 2px solid #00695c;
 }
 
-QLabel,
+QLabel {
+    background: #FFFFFF;
+}
+
 QDialog {
     background: #FFFFFF;
+    border: 1px solid #e0e0e0;
+    border-radius: 3px;
 }
 
 QPlainTextEdit {

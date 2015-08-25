@@ -3,6 +3,8 @@ import QtQuick 1.1
 Rectangle {
     id: root
 
+    color: "#F9F9F9";
+
     Image {
         id: logo
 
