@@ -164,7 +164,6 @@ class Pireal(QMainWindow):
                         continue
                     qaction = menu.addAction(action)
                     # Icon name is connection
-                    #icon = QIcon(":img/%s" % connection)
                     icon = QIcon(":img/%s" % connection)
                     qaction.setIcon(icon)
 
