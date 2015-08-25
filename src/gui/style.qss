@@ -135,20 +135,21 @@ QTabWidget::pane {
 }
 
 QToolBar {
-    background-color: #353535;
+    background-color: #EEEEEE;
     border: 0px solid #333333;
     spacing: 10px;
 }
 
 QToolBar::separator {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+    /*background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop:0 #333333, stop: 0.5 #404040,
-                                stop: 0.6 #404040, stop:1 #333333);
-    width: 2px;
+                                stop: 0.6 #404040, stop:1 #333333);*/
+    background: #e0e0e0;
+    width: 1px;
 }
 
 QToolButton {
-    background: #353535;
+    background: #EEEEEE;
 }
 
 QToolButton:hover {

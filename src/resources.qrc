@@ -15,17 +15,4 @@
         <file alias="execute_queries">images/run.png</file>
         <file alias="banner">images/pireal_banner.png</file>
     </qresource>
-    <qresource prefix="/imgoff">
-        <file alias="save_data_base">images/save-db-off.png</file>
-        <file alias="save_query">images/save-off.png</file>
-        <file alias="new_query">images/query-off.png</file>
-        <file alias="undo_action">images/undo-off.png</file>
-        <file alias="redo_action">images/redo-off.png</file>
-        <file alias="copy_action">images/copy-off.png</file>
-        <file alias="cut_action">images/cut-off.png</file>
-        <file alias="paste_action">images/paste-off.png</file>
-        <file alias="create_new_relation">images/table-off.png</file>
-        <file alias="remove_relation">images/delete-table-off.png</file>
-        <file alias="execute_queries">images/run-off.png</file>
-    </qresource>
 </RCC>
