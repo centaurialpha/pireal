@@ -165,11 +165,7 @@ class Pireal(QMainWindow):
                     qaction = menu.addAction(action)
                     # Icon name is connection
                     #icon = QIcon(":img/%s" % connection)
-                    icon = QIcon()
-                    #FIXME: que dependa del tema
-                    icon.addFile(":img/%s" % connection)
-                    icon.addFile(":imgoff/%s" % connection,
-                                 mode=QIcon.Disabled)
+                    icon = QIcon(":img/%s" % connection)
                     qaction.setIcon(icon)
 
                     # Install shortcuts
