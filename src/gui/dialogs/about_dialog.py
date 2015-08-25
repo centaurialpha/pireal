@@ -77,21 +77,7 @@ class AboutDialog(QDialog):
         lbl_license_source.setFont(font)
         vbox.addWidget(lbl_license_source)
 
-        ## Links, author, source
-        #vbox.addWidget(QLabel(tr.TR_ABOUT_DIALOG_VERSION.format(
-                              #gui.__version__)))
-        #source = QLabel(tr.TR_ABOUT_DIALOG_SOURCE.format(gui.__source_code__,
-                                                          #gui.__source_code__))
-        #vbox.addWidget(source)
-        #lname, llink = gui.__license__.split()
-        #_license = QLabel(tr.TR_ABOUT_DIALOG_LICENSE.format(llink, lname))
-        #vbox.addWidget(_license)
-        #vbox.addWidget(QLabel(tr.TR_ABOUT_DIALOG_AUTHOR.format(
-            #gui.__author__)))
-        #vbox.addWidget(QLabel("<b>e-mail:</b> {}".format(gui.__email__)))
-        #vbox.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
-                     #QSizePolicy.Expanding))
-        # Button ok
+        # Buttons
         hbox = QHBoxLayout()
         hbox.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
         btn_ok = QPushButton(tr.TR_ABOUT_DIALOG_BTN_OK)
@@ -99,7 +85,7 @@ class AboutDialog(QDialog):
         vbox.addLayout(hbox)
 
         self.connect(btn_ok, SIGNAL("clicked()"), self.close)
-        #self.connect(source, SIGNAL("linkActivated(QString)"),
-                     #lambda link: webbrowser.open_new(link))
-        #self.connect(_license, SIGNAL("linkActivated(QString)"),
-                     #lambda link: webbrowser.open_new(link))
+        self.connect(label_version, SIGNAL("linkActivated(QString)"),
+                     lambda link: webbrowser.open_new(link))
+        self.connect(lbl_license_source, SIGNAL("linkActivated(QString)"),
+                     lambda link: webbrowser.open_new(link))
