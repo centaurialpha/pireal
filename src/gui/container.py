@@ -318,5 +318,8 @@ class Container(QSplitter):
         query_widget = Pireal.get_service("query_widget")
         return query_widget.opened_files()
 
+    def show_dialog(self, widget):
+        print(self.stacked.count())
+
 
 container = Container()

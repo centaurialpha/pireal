@@ -282,8 +282,10 @@ class Pireal(QMainWindow):
         """ Show the bout Pireal dialog """
 
         from src.gui.dialogs import about_dialog
+        container = Pireal.get_service("container")
         dialog = about_dialog.AboutDialog(self)
-        dialog.exec_()
+        container.show_dialog(dialog)
+        #dialog.exec_()
 
     def show_preferences(self):
         from src.gui.dialogs import preferences
