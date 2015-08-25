@@ -154,8 +154,7 @@ QToolButton {
 }
 
 QToolButton:hover {
-    background: rgba(79, 155, 215, 130);
-    border-radius: 2px;
+    background: #C1C1C1;
 }
 
 QListWidget {
