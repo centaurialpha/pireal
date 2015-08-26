@@ -98,6 +98,10 @@ QPushButton#cancel {
     background-color: #DA6352;
 }
 
+QPushButton#cancel:hover {
+    background: #C25849;
+}
+
 QTabBar {
     border: none;
 }
