@@ -319,7 +319,8 @@ class Container(QSplitter):
         return query_widget.opened_files()
 
     def show_dialog(self, widget):
-        print(self.stacked.count())
+        index = self.stacked.addWidget(widget)
+        self.stacked.setCurrentIndex(index)
 
 
 container = Container()

@@ -23,9 +23,18 @@ from PyQt4.QtGui import (
     QVBoxLayout,
     QComboBox,
     QSpacerItem,
-    QSizePolicy
+    QSizePolicy,
+    QGraphicsOpacityEffect
 )
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import (
+    #Qt,
+    QPropertyAnimation,
+    QParallelAnimationGroup,
+    #QAbstractAnimation,
+    #QEasingCurve,
+    SIGNAL,
+    QRect
+)
 from src import translations as tr
 
 
@@ -33,8 +42,6 @@ class Preferences(QDialog):
 
     def __init__(self, parent=None):
         super(Preferences, self).__init__(parent)
-        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
-        #self.setWindowTitle(self.tr("Preferencias"))
 
         container = QVBoxLayout(self)
         container.setContentsMargins(0, 0, 0, 0)
@@ -48,3 +55,56 @@ class Preferences(QDialog):
         container.addWidget(group_language)
         container.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
                           QSizePolicy.Expanding))
+
+        self.effect = QGraphicsOpacityEffect()
+        self.setGraphicsEffect(self.effect)
+        # Animation start
+        # Opacity animation
+        self.opacity_animation_s = QPropertyAnimation(self.effect, "opacity")
+        self.opacity_animation_s.setDuration(400)
+        self.opacity_animation_s.setStartValue(0.0)
+        self.opacity_animation_s.setEndValue(1.0)
+        # X animation
+        self.x_animation_s = QPropertyAnimation(self, "geometry")
+        self.x_animation_s.setDuration(200)
+        self.x_animation_s.setStartValue(QRect(300, 0, parent.width(),
+                                       parent.height()))
+        self.x_animation_s.setEndValue(QRect(0, 0, parent.width(),
+                                     parent.height()))
+        # Animation end
+        # Opacity animation
+        self.opacity_animation_e = QPropertyAnimation(self.effect, "opacity")
+        self.opacity_animation_e.setDuration(200)
+        self.opacity_animation_e.setStartValue(1.0)
+        self.opacity_animation_e.setEndValue(0.0)
+        # X animation
+        self.x_animation_e = QPropertyAnimation(self, "geometry")
+        self.x_animation_e.setDuration(200)
+        self.x_animation_e.setStartValue(QRect(0, 0, parent.width(),
+                                         parent.height()))
+        self.x_animation_e.setEndValue(QRect(200, 0, parent.width(),
+                                       parent.height()))
+
+        # Group animation start
+        self.group_animation_s = QParallelAnimationGroup()
+        self.group_animation_s.addAnimation(self.opacity_animation_s)
+        self.group_animation_s.addAnimation(self.x_animation_s)
+
+        # Group animation end
+        self.group_animation_e = QParallelAnimationGroup()
+        self.group_animation_e.addAnimation(self.opacity_animation_e)
+        self.group_animation_e.addAnimation(self.x_animation_e)
+
+        self.connect(self.group_animation_e, SIGNAL("finished()"),
+                    self._on_group_animation_finished)
+
+    def showEvent(self, event):
+        super(Preferences, self).showEvent(event)
+        self.group_animation_s.start()
+
+    def done(self, result):
+        self.res = result
+        self.group_animation_e.start()
+
+    def _on_group_animation_finished(self):
+        super(Preferences, self).done(self.res)
