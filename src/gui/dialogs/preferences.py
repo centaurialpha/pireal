@@ -21,19 +21,20 @@ from PyQt4.QtGui import (
     QDialog,
     QGroupBox,
     QVBoxLayout,
+    QHBoxLayout,
     QComboBox,
     QSpacerItem,
     QSizePolicy,
-    QGraphicsOpacityEffect
+    QGraphicsOpacityEffect,
+    QIcon,
+    QToolButton
 )
 from PyQt4.QtCore import (
-    #Qt,
     QPropertyAnimation,
     QParallelAnimationGroup,
-    #QAbstractAnimation,
-    #QEasingCurve,
     SIGNAL,
-    QRect
+    QRect,
+    QSize
 )
 from src import translations as tr
 
@@ -43,7 +44,18 @@ class Preferences(QDialog):
     def __init__(self, parent=None):
         super(Preferences, self).__init__(parent)
 
-        container = QVBoxLayout(self)
+        hbox = QHBoxLayout(self)
+        hbox.setContentsMargins(50, 50, 500, 0)
+        vbox = QVBoxLayout()
+        btn_back = QToolButton()
+        btn_back.setIconSize(QSize(32, 32))
+        btn_back.setIcon(QIcon(":img/arrow-left"))
+        vbox.addWidget(btn_back)
+        hbox.addLayout(vbox)
+        vbox.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
+                     QSizePolicy.Expanding))
+
+        container = QVBoxLayout()
         container.setContentsMargins(0, 0, 0, 0)
 
         group_language = QGroupBox(tr.TR_PREFERENCES_GROUP_LANG)
@@ -56,6 +68,7 @@ class Preferences(QDialog):
         container.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
                           QSizePolicy.Expanding))
 
+        hbox.addLayout(container)
         self.effect = QGraphicsOpacityEffect()
         self.setGraphicsEffect(self.effect)
         # Animation start
@@ -95,8 +108,11 @@ class Preferences(QDialog):
         self.group_animation_e.addAnimation(self.opacity_animation_e)
         self.group_animation_e.addAnimation(self.x_animation_e)
 
+        # Connections
         self.connect(self.group_animation_e, SIGNAL("finished()"),
                     self._on_group_animation_finished)
+        self.connect(btn_back, SIGNAL("clicked()"),
+                     self.close)
 
     def showEvent(self, event):
         super(Preferences, self).showEvent(event)

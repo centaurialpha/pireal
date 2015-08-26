@@ -77,7 +77,7 @@ class Pireal(QMainWindow):
 
         # Toolbar
         self.toolbar = QToolBar(self)
-        self.toolbar.setIconSize(QSize(32, 32))
+        self.toolbar.setIconSize(QSize(36, 36))
         self.toolbar.setMovable(False)
         self.addToolBar(self.toolbar)
         # Menu bar
