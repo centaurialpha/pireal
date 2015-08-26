@@ -282,9 +282,7 @@ class Pireal(QMainWindow):
         """ Show the bout Pireal dialog """
 
         from src.gui.dialogs import about_dialog
-        container = Pireal.get_service("container")
         dialog = about_dialog.AboutDialog(self)
-        container.show_dialog(dialog)
         dialog.exec_()
 
     def show_preferences(self):
@@ -292,7 +290,6 @@ class Pireal(QMainWindow):
         container = Pireal.get_service("container")
         dialog = preferences.Preferences(self)
         container.show_dialog(dialog)
-        #dialog.exec_()
 
     def closeEvent(self, event):
         container = Pireal.get_service("container")
