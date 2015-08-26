@@ -108,3 +108,8 @@ TR_QUERY_FILE_MODIFIED_MSG = translate("Pireal", ("The file <b>{}</b> has "
 
 # Preferences
 TR_PREFERENCES_GROUP_LANG = translate("Pireal", "Language")
+TR_PREFERENCES_GROUP_GRAL = translate("Pireal", "General")
+TR_PREFERENCES_CHECK_START_PAGE = translate("Pireal", "Show Start Page")
+TR_PREFERENCES_CHECK_UPDATES = translate("Pireal", "Notify me of new updates")
+TR_PREFERENCES_BTN_CHECK_FOR_UPDATES = translate("Pireal", "Check for updates")
+TR_PREFERENCES_BTN_RESET = translate("Pireal", "Reset preferences")

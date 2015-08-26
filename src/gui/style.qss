@@ -205,8 +205,36 @@ QLineEdit:pressed {
     border-bottom: 2px solid #00695c;
 }
 
+QCheckBox,
+QRadioButton,
 QLabel {
     background: #FFFFFF;
+    font-size: 14px;
+}
+
+QRadioButton::indicator {
+    background: white;
+    border: 2px solid #2FA9E2;
+
+}
+
+QRadioButton::indicator:unchecked {
+    background: white;
+    border: 2px solid #D9D9D9;
+}
+
+QRadioButton::indicator:hover {
+    border: 2px solid #2FA9E2;
+}
+
+QCheckBox::indicator:unchecked {
+    background: white;
+    border: 2px solid #2FA9E2;
+}
+
+QCheckBox::indicator:checked {
+    background: white;
+    border: 6px solid #2FA9E2;
 }
 
 QDialog {
@@ -235,31 +263,8 @@ QPlainTextEdit:selected {
     color: #111111;
 }
 
-QComboBox {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 #3b363c, stop: 1.0 #222021);
-    color: #9c9da2;
-    padding: 1px 18px 1px 20px;
-    border: 1px solid #333;
-    border-radius: 2px;
-}
-
-QComboBox::drop-down {
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 5px;
-    border-left-width: 1px;
-}
-
-QComboBox:item:selected {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0 #222021, stop: 1 #444);
-    border: 1px solid #333;
-    border-radius: 2px;
-}
-
 QGroupBox {
-    font-size: 18px;
+    font-size: 22px;
     color: #c7cacc;
     margin-top: 20px;
     padding: 5px;

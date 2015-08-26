@@ -22,12 +22,14 @@ from PyQt4.QtGui import (
     QGroupBox,
     QVBoxLayout,
     QHBoxLayout,
-    QComboBox,
+    QRadioButton,
     QSpacerItem,
     QSizePolicy,
     QGraphicsOpacityEffect,
     QIcon,
-    QToolButton
+    QToolButton,
+    QPushButton,
+    QCheckBox
 )
 from PyQt4.QtCore import (
     QPropertyAnimation,
@@ -58,17 +60,43 @@ class Preferences(QDialog):
         container = QVBoxLayout()
         container.setContentsMargins(0, 0, 0, 0)
 
+        # General
+        group_gral = QGroupBox(tr.TR_PREFERENCES_GROUP_GRAL)
+        box = QVBoxLayout(group_gral)
+        # Start Page
+        self._check_start_page = QCheckBox(tr.TR_PREFERENCES_CHECK_START_PAGE)
+        box.addWidget(self._check_start_page)
+        # Updates
+        hhbox = QHBoxLayout()
+        self._check_updates = QCheckBox(tr.TR_PREFERENCES_CHECK_UPDATES)
+        hhbox.addWidget(self._check_updates)
+        btn_updates = QPushButton(tr.TR_PREFERENCES_BTN_CHECK_FOR_UPDATES)
+        hhbox.addWidget(btn_updates)
+        box.addLayout(hhbox)
+
+        # Language
         group_language = QGroupBox(tr.TR_PREFERENCES_GROUP_LANG)
         box = QVBoxLayout(group_language)
-        self._combo_lang = QComboBox()
-        self._combo_lang.addItems(['English', 'Spanish'])
-        box.addWidget(self._combo_lang)
+        languages = ["English", "Spanish"]
+        for lang in languages:
+            radio = QRadioButton()
+            radio.setText(lang)
+            box.addWidget(radio)
 
+        # Add widgets
+        container.addWidget(group_gral)
         container.addWidget(group_language)
+        container.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
+                          QSizePolicy.Expanding))
+        btn_reset = QPushButton(tr.TR_PREFERENCES_BTN_RESET)
+        btn_reset.setObjectName("cancel")
+        container.addWidget(btn_reset)
         container.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
                           QSizePolicy.Expanding))
 
         hbox.addLayout(container)
+
+        # Effect and animations
         self.effect = QGraphicsOpacityEffect()
         self.setGraphicsEffect(self.effect)
         # Animation start
