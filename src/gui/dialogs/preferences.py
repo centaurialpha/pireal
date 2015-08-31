@@ -39,6 +39,7 @@ from PyQt4.QtCore import (
     QSize
 )
 from src import translations as tr
+from src.core import settings
 
 
 class Preferences(QDialog):
@@ -64,11 +65,12 @@ class Preferences(QDialog):
         group_gral = QGroupBox(tr.TR_PREFERENCES_GROUP_GRAL)
         box = QVBoxLayout(group_gral)
         # Start Page
-        self._check_start_page = QCheckBox(tr.TR_PREFERENCES_CHECK_START_PAGE)
+        self._check_start_page = CheckBox(tr.TR_PREFERENCES_CHECK_START_PAGE)
+        self._check_start_page.setChecked(settings.PSettings.SHOW_START_PAGE)
         box.addWidget(self._check_start_page)
         # Updates
         hhbox = QHBoxLayout()
-        self._check_updates = QCheckBox(tr.TR_PREFERENCES_CHECK_UPDATES)
+        self._check_updates = CheckBox(tr.TR_PREFERENCES_CHECK_UPDATES)
         hhbox.addWidget(self._check_updates)
         btn_updates = QPushButton(tr.TR_PREFERENCES_BTN_CHECK_FOR_UPDATES)
         hhbox.addWidget(btn_updates)
@@ -138,9 +140,13 @@ class Preferences(QDialog):
 
         # Connections
         self.connect(self.group_animation_e, SIGNAL("finished()"),
-                    self._on_group_animation_finished)
+                     self._on_group_animation_finished)
         self.connect(btn_back, SIGNAL("clicked()"),
                      self.close)
+        self.connect(self._check_start_page,
+                     SIGNAL("valueChanged(QString, PyQt_PyObject)"),
+                     lambda v, k: self.emit(
+                         SIGNAL("valueChanged(QString, PyQt_PyObject)"), v, k))
 
     def showEvent(self, event):
         super(Preferences, self).showEvent(event)
@@ -152,3 +158,14 @@ class Preferences(QDialog):
 
     def _on_group_animation_finished(self):
         super(Preferences, self).done(self.res)
+
+
+class CheckBox(QCheckBox):
+
+    def __init__(self, text, parent=None):
+        super(CheckBox, self).__init__(text, parent)
+        self.connect(self, SIGNAL("stateChanged(int)"), self._state_changed)
+
+    def _state_changed(self, value):
+        key = "show-start-page"
+        self.emit(SIGNAL("valueChanged(QString, PyQt_PyObject)"), key, value)

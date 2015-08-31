@@ -74,6 +74,8 @@ if __name__ == "__main__":
     DEBUG("Executing Pireal from source")
     INFO("Python {0} - Qt {1} on {2} {3}".format(
          info['python'], info['qt'], info['os'], info['name']))
+    DEBUG("Loading settings...")
+    settings.load_settings()
 
     # Import resources
     from src import resources  # lint:ok

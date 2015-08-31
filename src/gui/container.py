@@ -116,7 +116,7 @@ class Container(QSplitter):
         files = settings.get_setting('recentFiles', [])
         if filename not in files:
             files.insert(0, filename)
-            del files[settings.MAX_RECENT_FILES:]
+            del files[settings.PSettings.MAX_RECENT_FILES:]
             settings.set_setting('recentFiles', files)
 
     def open_recent_file(self):

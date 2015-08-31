@@ -54,8 +54,10 @@ LOG_FILE = os.path.join(PIREAL_DIR, "pireal_logging.log")
 SETTINGS_PATH = os.path.join(PIREAL_DIR, "pireal_settings.ini")
 LANGUAGES = os.path.join(PATH, "src", "extensions", "languages")
 
-# Max Recent Files
-MAX_RECENT_FILES = 5
+
+class PSettings:
+    SHOW_START_PAGE = True
+    MAX_RECENT_FILES = 5
 
 
 def create_dir():
@@ -71,3 +73,11 @@ def get_setting(key, default):
 def set_setting(key, value):
     psettings = QSettings(SETTINGS_PATH, QSettings.IniFormat)
     psettings.setValue(key, value)
+
+
+def load_settings():
+    """ Load settings from .ini file """
+
+    settings = QSettings(SETTINGS_PATH, QSettings.IniFormat)
+    PSettings.SHOW_START_PAGE = settings.value('show-start-page',
+                                               True, type=bool)

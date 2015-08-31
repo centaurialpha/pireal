@@ -27,6 +27,7 @@ from PyQt4.QtGui import (
     QIcon,
 )
 from PyQt4.QtCore import (
+    #QSettings,
     SIGNAL,
     QFileInfo,
     QSize
@@ -152,7 +153,8 @@ class Pireal(QMainWindow):
                     # Load recent files
                     if action is None:
                         files = settings.get_setting('recentFiles', [])
-                        nrfiles = min(len(files), settings.MAX_RECENT_FILES)
+                        nrfiles = min(len(files),
+                                      settings.PSettings.MAX_RECENT_FILES)
                         for i in range(nrfiles):
                             name = QFileInfo(files[i]).fileName()
                             text = "&%d %s" % (i + 1, name)
@@ -290,6 +292,12 @@ class Pireal(QMainWindow):
         container = Pireal.get_service("container")
         dialog = preferences.Preferences(self)
         container.show_dialog(dialog)
+
+        self.connect(dialog, SIGNAL("valueChanged(QString, PyQt_PyObject)"),
+                     self._update_settings)
+
+    def _update_settings(self, key, value):
+        pass
 
     def closeEvent(self, event):
         container = Pireal.get_service("container")
