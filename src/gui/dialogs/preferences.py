@@ -101,31 +101,33 @@ class Preferences(QDialog):
         # Effect and animations
         self.effect = QGraphicsOpacityEffect()
         self.setGraphicsEffect(self.effect)
+        duration = 180  # 1.8 s
+        x = 150
         # Animation start
         # Opacity animation
         self.opacity_animation_s = QPropertyAnimation(self.effect, "opacity")
-        self.opacity_animation_s.setDuration(400)
+        self.opacity_animation_s.setDuration(duration)
         self.opacity_animation_s.setStartValue(0.0)
         self.opacity_animation_s.setEndValue(1.0)
         # X animation
         self.x_animation_s = QPropertyAnimation(self, "geometry")
-        self.x_animation_s.setDuration(200)
-        self.x_animation_s.setStartValue(QRect(300, 0, parent.width(),
+        self.x_animation_s.setDuration(duration)
+        self.x_animation_s.setStartValue(QRect(x, 0, parent.width(),
                                        parent.height()))
         self.x_animation_s.setEndValue(QRect(0, 0, parent.width(),
                                      parent.height()))
         # Animation end
         # Opacity animation
         self.opacity_animation_e = QPropertyAnimation(self.effect, "opacity")
-        self.opacity_animation_e.setDuration(200)
+        self.opacity_animation_e.setDuration(duration)
         self.opacity_animation_e.setStartValue(1.0)
         self.opacity_animation_e.setEndValue(0.0)
         # X animation
         self.x_animation_e = QPropertyAnimation(self, "geometry")
-        self.x_animation_e.setDuration(200)
+        self.x_animation_e.setDuration(duration)
         self.x_animation_e.setStartValue(QRect(0, 0, parent.width(),
                                          parent.height()))
-        self.x_animation_e.setEndValue(QRect(200, 0, parent.width(),
+        self.x_animation_e.setEndValue(QRect(-x, 0, parent.width(),
                                        parent.height()))
 
         # Group animation start
@@ -158,6 +160,7 @@ class Preferences(QDialog):
 
     def _on_group_animation_finished(self):
         super(Preferences, self).done(self.res)
+        self.emit(SIGNAL("settingsClosed()"))
 
 
 class CheckBox(QCheckBox):

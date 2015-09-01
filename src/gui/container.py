@@ -163,8 +163,11 @@ class Container(QSplitter):
         return self.__modified
 
     def show_start_page(self):
-        sp = start_page.StartPage()
-        self.stacked.addWidget(sp)
+        if settings.PSettings.SHOW_START_PAGE:
+            # Add Start Page on stacked, index = 0
+            sp = start_page.StartPage()
+            self.stacked.insertWidget(0, sp)
+            self.stacked.setCurrentIndex(0)
 
     def close_db(self):
         """ Close data base """
@@ -319,9 +322,14 @@ class Container(QSplitter):
         return query_widget.opened_files()
 
     def show_dialog(self, widget):
-        index = self.stacked.addWidget(widget)
-        self.stacked.setCurrentIndex(index)
-        print(self.stacked.count())
+        self.stacked.insertWidget(1, widget)
+        self.stacked.setCurrentIndex(1)
+
+        self.connect(widget, SIGNAL("settingsClosed()"), self._settings_closed)
+
+    def _settings_closed(self):
+        self.stacked.removeWidget(self.stacked.widget(1))
+        self.stacked.setCurrentWidget(self.stacked.currentWidget())
 
 
 container = Container()
