@@ -33,6 +33,7 @@ from PyQt4.QtCore import (
     QSize
 )
 from src.core import settings
+from src import translations as tr
 
 
 class Pireal(QMainWindow):
@@ -137,6 +138,11 @@ class Pireal(QMainWindow):
         # Actions
         container = Pireal.get_service("container")
 
+        # Settings action on menu bar
+        qaction = menubar.addAction(tr.TR_SETTINGS_MENUBAR)
+        self.connect(qaction, SIGNAL("triggered()"), self.show_settings)
+
+        # Load menu bar
         for item in menu_actions.MENU:
             menubar_item = menu_actions.MENU[item]
             menu_name = menubar_item['name']
@@ -287,7 +293,7 @@ class Pireal(QMainWindow):
         dialog = about_dialog.AboutDialog(self)
         dialog.exec_()
 
-    def show_preferences(self):
+    def show_settings(self):
         from src.gui.dialogs import preferences
         container = Pireal.get_service("container")
         dialog = preferences.Preferences(self)

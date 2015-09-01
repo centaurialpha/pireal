@@ -22,6 +22,8 @@ from PyQt4.QtGui import QApplication
 translate = QApplication.translate
 
 
+TR_SETTINGS_MENUBAR = translate("Pireal", "Settings")
+
 # Menu File
 TR_MENU_FILE = translate("Pireal", "&File")
 TR_MENU_FILE_NEW_DB = translate("Pireal", "New Database")
@@ -39,7 +41,6 @@ TR_MENU_EDIT_REDO = translate("Pireal", "Redo")
 TR_MENU_EDIT_CUT = translate("Pireal", "Cut")
 TR_MENU_EDIT_COPY = translate("Pireal", "Copy")
 TR_MENU_EDIT_PASTE = translate("Pireal", "Paste")
-TR_MENU_EDIT_PREFERENCES = translate("Pireal", "Preferences")
 
 # Menu Relation
 TR_MENU_RELATION = translate("Pireal", "&Relation")
