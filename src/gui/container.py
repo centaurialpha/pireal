@@ -37,7 +37,7 @@ from src.gui import (
     start_page,
     table_widget
 )
-from src.gui.dialogs import new_relation_dialog
+from src.gui.dialogs import new_relation_dialog, preferences
 from src.core import (
     settings,
     file_manager,
@@ -322,8 +322,11 @@ class Container(QSplitter):
         return query_widget.opened_files()
 
     def show_dialog(self, widget):
-        self.stacked.insertWidget(1, widget)
-        self.stacked.setCurrentIndex(1)
+        if isinstance(self.stacked.widget(1), preferences.Preferences):
+            self.stacked.widget(1).close()
+        else:
+            self.stacked.insertWidget(1, widget)
+            self.stacked.setCurrentIndex(1)
 
         self.connect(widget, SIGNAL("settingsClosed()"), self._settings_closed)
 
