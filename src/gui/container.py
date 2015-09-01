@@ -321,6 +321,7 @@ class Container(QSplitter):
     def show_dialog(self, widget):
         index = self.stacked.addWidget(widget)
         self.stacked.setCurrentIndex(index)
+        print(self.stacked.count())
 
 
 container = Container()
