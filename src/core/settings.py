@@ -52,7 +52,7 @@ HOME = os.path.expanduser("~")
 PIREAL_DIR = os.path.join(HOME, ".pireal")
 LOG_FILE = os.path.join(PIREAL_DIR, "pireal_logging.log")
 SETTINGS_PATH = os.path.join(PIREAL_DIR, "pireal_settings.ini")
-LANG_PATH = os.path.join(PATH, "src", "langs")
+LANG_PATH = os.path.join(PATH, "src", "lang")
 
 
 class PSettings:
