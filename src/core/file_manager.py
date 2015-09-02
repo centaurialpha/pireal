@@ -82,3 +82,8 @@ def generate_database(relations):
         for i in relation.content:
             content += ','.join(i) + '\n'
     return content
+
+
+def get_files_from_folder(path):
+    return [os.path.splitext(f)[0] for f in os.listdir(path)
+            if os.path.isfile(os.path.join(path, f))]

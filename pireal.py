@@ -18,7 +18,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-#import os
+import os
 from PyQt4.QtGui import (
     QApplication,
     QStyleFactory,
@@ -92,9 +92,10 @@ if __name__ == "__main__":
                     QLibraryInfo.TranslationsPath))
     qapp.installTranslator(translator)
     # App language
-    #ptranslator = QTranslator()
-    #ptranslator.load(os.path.join(settings.LANGUAGES, "Spanish.qm"))
-    #qapp.installTranslator(ptranslator)
+    ptranslator = QTranslator()
+    language = settings.PSettings.LANGUAGE
+    ptranslator.load(os.path.join(settings.LANG_PATH, language + '.qm'))
+    qapp.installTranslator(ptranslator)
     # Load services
     from src.gui import central_widget  # lint:ok
     from src.gui.main_window import Pireal

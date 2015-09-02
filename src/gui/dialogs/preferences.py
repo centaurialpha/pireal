@@ -39,7 +39,10 @@ from PyQt4.QtCore import (
     QSize
 )
 from src import translations as tr
-from src.core import settings
+from src.core import (
+    settings,
+    file_manager
+)
 
 
 class Preferences(QDialog):
@@ -65,12 +68,13 @@ class Preferences(QDialog):
         group_gral = QGroupBox(tr.TR_PREFERENCES_GROUP_GRAL)
         box = QVBoxLayout(group_gral)
         # Start Page
-        self._check_start_page = CheckBox(tr.TR_PREFERENCES_CHECK_START_PAGE)
+        self._check_start_page = QCheckBox(tr.TR_PREFERENCES_CHECK_START_PAGE)
         self._check_start_page.setChecked(settings.PSettings.SHOW_START_PAGE)
         box.addWidget(self._check_start_page)
         # Updates
         hhbox = QHBoxLayout()
-        self._check_updates = CheckBox(tr.TR_PREFERENCES_CHECK_UPDATES)
+        self._check_updates = QCheckBox(tr.TR_PREFERENCES_CHECK_UPDATES)
+        self._check_updates.setChecked(settings.PSettings.CHECK_UPDATES)
         hhbox.addWidget(self._check_updates)
         btn_updates = QPushButton(tr.TR_PREFERENCES_BTN_CHECK_FOR_UPDATES)
         hhbox.addWidget(btn_updates)
@@ -79,12 +83,27 @@ class Preferences(QDialog):
         # Language
         group_language = QGroupBox(tr.TR_PREFERENCES_GROUP_LANG)
         box = QVBoxLayout(group_language)
-        languages = ["English", "Spanish"]
+        # Find .qm files in language path
+        available_langs = file_manager.get_files_from_folder(settings.LANG_PATH)
+
+        languages = ["English"] + available_langs
+        self._radio_buttons = []
         for lang in languages:
             radio = QRadioButton()
+            self._radio_buttons.append(radio)
             radio.setText(lang)
             box.addWidget(radio)
+        index = 0
+        if settings.PSettings.LANGUAGE:
+            for i in range(len(self._radio_buttons)):
+                text = self._radio_buttons[i].text()
+                if text == settings.PSettings.LANGUAGE:
+                    index = i
+        self._radio_buttons[index].setChecked(True)
 
+        # Connect radio buttons
+        for radiob in self._radio_buttons:
+            self.connect(radiob, SIGNAL("clicked()"), self._change_lang)
         # Add widgets
         container.addWidget(group_gral)
         container.addWidget(group_language)
@@ -145,10 +164,10 @@ class Preferences(QDialog):
                      self._on_group_animation_finished)
         self.connect(btn_back, SIGNAL("clicked()"),
                      self.close)
-        self.connect(self._check_start_page,
-                     SIGNAL("valueChanged(QString, PyQt_PyObject)"),
-                     lambda v, k: self.emit(
-                         SIGNAL("valueChanged(QString, PyQt_PyObject)"), v, k))
+        #self.connect(self._check_start_page,
+                     #SIGNAL("valueChanged(QString, PyQt_PyObject)"),
+                     #lambda v, k: self.emit(
+                         #SIGNAL("valueChanged(QString, PyQt_PyObject)"), v, k))
 
     def showEvent(self, event):
         super(Preferences, self).showEvent(event)
@@ -162,13 +181,19 @@ class Preferences(QDialog):
         super(Preferences, self).done(self.res)
         self.emit(SIGNAL("settingsClosed()"))
 
+    def _change_lang(self):
+        for radiob in self._radio_buttons:
+            if radiob.isChecked():
+                settings.set_setting('language', radiob.text())
+                settings.PSettings.LANGUAGE = radiob.text()
 
-class CheckBox(QCheckBox):
 
-    def __init__(self, text, parent=None):
-        super(CheckBox, self).__init__(text, parent)
-        self.connect(self, SIGNAL("stateChanged(int)"), self._state_changed)
+#class CheckBox(QCheckBox):
 
-    def _state_changed(self, value):
-        key = "show-start-page"
-        self.emit(SIGNAL("valueChanged(QString, PyQt_PyObject)"), key, value)
+    #def __init__(self, text, parent=None):
+        #super(CheckBox, self).__init__(text, parent)
+        #self.connect(self, SIGNAL("stateChanged(int)"), self._state_changed)
+
+    #def _state_changed(self, value):
+        #key = "show-start-page"
+        #self.emit(SIGNAL("valueChanged(QString, PyQt_PyObject)"), key, value)
