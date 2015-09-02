@@ -114,3 +114,6 @@ TR_PREFERENCES_CHECK_START_PAGE = translate("Pireal", "Show Start Page")
 TR_PREFERENCES_CHECK_UPDATES = translate("Pireal", "Notify me of new updates")
 TR_PREFERENCES_BTN_CHECK_FOR_UPDATES = translate("Pireal", "Check for updates")
 TR_PREFERENCES_BTN_RESET = translate("Pireal", "Reset preferences")
+TR_PREFERENCES_RESET_MSG = translate("Pireal", ("Are you sure you want"
+                                                " to clear all settings?"))
+TR_PREFERENCES_RESET_TITLE = translate("Pireal", "Reset settings?")

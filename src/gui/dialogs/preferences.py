@@ -29,14 +29,16 @@ from PyQt4.QtGui import (
     QIcon,
     QToolButton,
     QPushButton,
-    QCheckBox
+    QCheckBox,
+    QMessageBox
 )
 from PyQt4.QtCore import (
     QPropertyAnimation,
     QParallelAnimationGroup,
     SIGNAL,
     QRect,
-    QSize
+    QSize,
+    QSettings
 )
 from src import translations as tr
 from src.core import (
@@ -164,6 +166,8 @@ class Preferences(QDialog):
                      self._on_group_animation_finished)
         self.connect(btn_back, SIGNAL("clicked()"),
                      self.close)
+        self.connect(btn_reset, SIGNAL("clicked()"),
+                     self._reset_settings)
         #self.connect(self._check_start_page,
                      #SIGNAL("valueChanged(QString, PyQt_PyObject)"),
                      #lambda v, k: self.emit(
@@ -181,12 +185,23 @@ class Preferences(QDialog):
         super(Preferences, self).done(self.res)
         self.emit(SIGNAL("settingsClosed()"))
 
+    def _reset_settings(self):
+        """ Remove all settings """
+
+        flags = QMessageBox.Yes
+        flags |= QMessageBox.No
+        result = QMessageBox.question(self, tr.TR_PREFERENCES_RESET_TITLE,
+                                      tr.TR_PREFERENCES_RESET_MSG, flags)
+
+        if result == QMessageBox.Yes:
+            QSettings(settings.SETTINGS_PATH, QSettings.IniFormat).clear()
+            self.close()
+
     def _change_lang(self):
         for radiob in self._radio_buttons:
             if radiob.isChecked():
                 settings.set_setting('language', radiob.text())
                 settings.PSettings.LANGUAGE = radiob.text()
-
 
 #class CheckBox(QCheckBox):
 
