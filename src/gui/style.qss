@@ -271,7 +271,7 @@ QGroupBox {
     font-size: 22px;
     color: #c7cacc;
     margin-top: 20px;
-    padding: 5px 10px;
+    padding: 5px 15px;
     background: white;
 }
 
