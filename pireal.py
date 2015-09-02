@@ -109,7 +109,7 @@ if __name__ == "__main__":
     qapp.setStyle(QStyleFactory.create("gtk"))
     INFO("Loading GUI...")
     gui = Pireal()
-
+    print(qapp.instance())
     gui.show()
     gui.showMaximized()
     INFO("Pireal ready!")
