@@ -30,7 +30,9 @@ from PyQt4.QtGui import (
     QToolButton,
     QPushButton,
     QCheckBox,
-    QMessageBox
+    QMessageBox,
+    #QLabel,
+    #QMovie
 )
 from PyQt4.QtCore import (
     QPropertyAnimation,
@@ -45,12 +47,16 @@ from src.core import (
     settings,
     file_manager
 )
+from src.gui import overlay_widget, updates
 
 
 class Preferences(QDialog):
 
     def __init__(self, parent=None):
         super(Preferences, self).__init__(parent)
+
+        # Thread updates
+        self.thread = updates.Updates()
 
         hbox = QHBoxLayout(self)
         hbox.setContentsMargins(50, 50, 500, 0)
@@ -68,11 +74,11 @@ class Preferences(QDialog):
 
         # General
         group_gral = QGroupBox(tr.TR_PREFERENCES_GROUP_GRAL)
-        box = QVBoxLayout(group_gral)
+        box_gral = QVBoxLayout(group_gral)
         # Start Page
         self._check_start_page = QCheckBox(tr.TR_PREFERENCES_CHECK_START_PAGE)
         self._check_start_page.setChecked(settings.PSettings.SHOW_START_PAGE)
-        box.addWidget(self._check_start_page)
+        box_gral.addWidget(self._check_start_page)
         # Updates
         hhbox = QHBoxLayout()
         self._check_updates = QCheckBox(tr.TR_PREFERENCES_CHECK_UPDATES)
@@ -80,7 +86,7 @@ class Preferences(QDialog):
         hhbox.addWidget(self._check_updates)
         btn_updates = QPushButton(tr.TR_PREFERENCES_BTN_CHECK_FOR_UPDATES)
         hhbox.addWidget(btn_updates)
-        box.addLayout(hhbox)
+        box_gral.addLayout(hhbox)
 
         # Language
         group_language = QGroupBox(tr.TR_PREFERENCES_GROUP_LANG)
@@ -119,11 +125,14 @@ class Preferences(QDialog):
 
         hbox.addLayout(container)
 
+        # Overlay
+        self.overlay = overlay_widget.OverlayWidget(self)
+        self.overlay.hide()
+
         # Effect and animations
         self.effect = QGraphicsOpacityEffect()
         self.setGraphicsEffect(self.effect)
-        duration = 180  # 1.8 s
-        x = 150
+        duration, x = 180, 150  # Animation duration
         # Animation start
         # Opacity animation
         self.opacity_animation_s = QPropertyAnimation(self.effect, "opacity")
@@ -168,14 +177,18 @@ class Preferences(QDialog):
                      self.close)
         self.connect(btn_reset, SIGNAL("clicked()"),
                      self._reset_settings)
-        #self.connect(self._check_start_page,
-                     #SIGNAL("valueChanged(QString, PyQt_PyObject)"),
-                     #lambda v, k: self.emit(
-                         #SIGNAL("valueChanged(QString, PyQt_PyObject)"), v, k))
+        self.connect(btn_updates, SIGNAL("clicked()"),
+                     self._check_for_updates)
+        self.connect(self.thread, SIGNAL("finished()"),
+                     self._on_thread_finished)
 
     def showEvent(self, event):
         super(Preferences, self).showEvent(event)
         self.group_animation_s.start()
+
+    def resizeEvent(self, event):
+        self.overlay.resize(self.size())
+        event.accept()
 
     def done(self, result):
         self.res = result
@@ -184,6 +197,13 @@ class Preferences(QDialog):
     def _on_group_animation_finished(self):
         super(Preferences, self).done(self.res)
         self.emit(SIGNAL("settingsClosed()"))
+
+    def _check_for_updates(self):
+        self.overlay.show()
+        self.thread.start()
+
+    def _on_thread_finished(self):
+        self.overlay.hide()
 
     def _reset_settings(self):
         """ Remove all settings """
@@ -202,13 +222,3 @@ class Preferences(QDialog):
             if radiob.isChecked():
                 settings.set_setting('language', radiob.text())
                 settings.PSettings.LANGUAGE = radiob.text()
-
-#class CheckBox(QCheckBox):
-
-    #def __init__(self, text, parent=None):
-        #super(CheckBox, self).__init__(text, parent)
-        #self.connect(self, SIGNAL("stateChanged(int)"), self._state_changed)
-
-    #def _state_changed(self, value):
-        #key = "show-start-page"
-        #self.emit(SIGNAL("valueChanged(QString, PyQt_PyObject)"), key, value)

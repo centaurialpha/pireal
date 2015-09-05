@@ -17,14 +17,25 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Metadata
-"""
+import json
+from urllib.request import urlopen
+from PyQt4.QtCore import (
+    QThread,
+    SIGNAL
+)
+from src import gui
 
-__author__ = "Gabriel Acosta"
-__email__ = "acostadariogabriel at gmail"
-__version__ = "1.0"
-__source_code__ = "https://github.com/centaurialpha/pireal"
-__license__ = "http://www.gnu.org/licenses/gpl-3.0"
-__updates__ = \
-"https://raw.githubusercontent.com/centaurialpha/pireal/gh-pages/version.json"
+
+class Updates(QThread):
+    """ This thread checks for a new version of Pireal """
+
+    def __init__(self):
+        super(Updates, self).__init__()
+
+    def run(self):
+        try:
+            response = urlopen(gui.__updates__).read().decode('utf8')
+            data = json.loads(response)
+        except:
+            data = {}
+        self.emit(SIGNAL("updatesFound(QString)"), data.get('version', ''))
