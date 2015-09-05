@@ -69,7 +69,7 @@ or
 
 Implemented Operators
 #####################
-The operations are defined in this `file <https://github.com/centaurialpha/pireal/blob/master/src/core/relation.py>`_.
+The operations are implemented in the relation.py `file <https://github.com/centaurialpha/pireal/blob/master/src/core/relation.py>`_.
 
 +--------------+-----------+
 | Operator     | Supported |
