@@ -93,6 +93,91 @@ The operations are implemented in `relation.py <https://github.com/centaurialpha
 | Division     |    No     |
 +--------------+-----------+
 
+Tutorial
+########
+
+How to create a database
+************************
+
+The database files have the extension ``.pdb (Pireal DataBase)``.
+
+Syntax
+******
+
+- The name of the database is the name of ``.pdb`` file.
+- To define a table, in the first row must place the name followed fields, like this: ``@relation_name:field1,field2``.
+- The tuples separated by commas.
+
+Example of a ``database.pdb`` file:
+
+::
+
+    @people:id,name,age
+    001,Mike,15
+    002,Gabriel,24
+    003,Linus,45
+    @skills:id,skill
+    002,Python
+    003,Linux
+
+The result:
+
+**people**
+
++---------+---------+---------+
+| id      | name    |     age |
++=========+=========+=========+
+| 001     | Mike    | 15      |
++---------+---------+---------+
+| 002     | Gabriel | 24      |
++---------+---------+---------+
+| 003     | Linus   | 45      |
++---------+---------+---------+
+
+
+**skills**
+
++-------+-------+
+| id    | skill |
++=======+=======+
+| 002   | Python|
++-------+-------+
+| 003   | Linux |
++-------+-------+
+
+How to create a table/relation
+******************************
+
+The table files have the extension ``.prf``, ``csv`` or ``txt``.
+
+Syntax
+******
+
+- In ``CSV (comma-separated-values)`` format.
+- The first row corresponds to the fields.
+
+There are two ways to create a relationship or table:
+
+- From the menu: ``Relation/Create a Relation`` (Previously created database).
+- Or creating a file.
+
+
+Example:
+
+**skills.prf**
+
+::
+
+    id,skill
+    23,Linux
+    7,GNU
+    6,Gamer
+    1,Python
+    9,Chef
+
+
+Now you can load the relation from the menu ``Relation/Load Relation``.
+
 Demo
 ####
 
