@@ -63,7 +63,7 @@ def __get_versions():
 
 def detect_language(system_lang):
     languages = {'es': 'Spanish'}
-    return languages[system_lang]
+    return languages.get(system_lang, None)
 
 
 if __name__ == "__main__":
@@ -87,6 +87,7 @@ if __name__ == "__main__":
     qapp.setWindowIcon(QIcon(":img/logo"))
     # System language
     local = QLocale.system().name()
+
     translator = QTranslator()
     translator.load("qt_" + local, QLibraryInfo.location(
                     QLibraryInfo.TranslationsPath))
@@ -94,8 +95,11 @@ if __name__ == "__main__":
     # App language
     ptranslator = QTranslator()
     language = settings.PSettings.LANGUAGE
-    ptranslator.load(os.path.join(settings.LANG_PATH, language + '.qm'))
-    qapp.installTranslator(ptranslator)
+    if not language:
+        language = detect_language(local[:2])
+        if language is not None:
+            ptranslator.load(os.path.join(settings.LANG_PATH, language + '.qm'))
+            qapp.installTranslator(ptranslator)
     # Load services
     from src.gui import central_widget  # lint:ok
     from src.gui.main_window import Pireal
