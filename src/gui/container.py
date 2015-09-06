@@ -257,30 +257,18 @@ class Container(QSplitter):
         if ext == '.pqf':
             # Query file
             self.new_query(filename)
-        elif ext == '.rdb':
-            self.load_rdb_database(file_manager.read_rdb_file(filename))
         else:
             self.create_data_base(filename)
 
-    def load_rdb_database(self, content):
-        csv_content = ""
-        for line in content.splitlines():
-            if line.startswith('@'):
-                csv_content += '@'
-                portion = line.split('(')
-                name = portion[0][1:]
-                csv_content += name + ':'
-                for i in portion[1].split(','):
-                    if not i.startswith(' '):
-                        field = i.split('/')[0].strip()
-                        csv_content += field + ','
-            else:
-                if not line:
-                    continue
-                csv_content += line
-            csv_content += '\n'
-
-        self.table_widget.add_table_from_rdb_content(csv_content)
+    def convert_to_pdb(self):
+        pass
+        #directory = os.path.expanduser("~")
+        #rdb_file = QFileDialog.getOpenFileName(self,
+                                               #tr.TR_CONTAINER_OPEN_FILE,
+                                               #directory,
+                                               #"WinRDBI Database File (*.rdb)")
+        #rdb_content = file_manager.read_rdb_file(rdb_file)
+        #file_manager.convert_to_pdb(rdb_content)
 
     def load_relation(self, filenames=[]):
         """ Load relation from file """

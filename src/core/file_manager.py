@@ -53,6 +53,30 @@ def read_rdb_file(filename):
     return content
 
 
+def convert_to_pdb(rdb_content):
+    content = ""
+    for line in rdb_content.splitlines():
+        if line.startswith('@'):
+            content += "@"
+            portion = line.split('(')
+            name = portion[0][1:]
+            content += name + ':'
+            for i in portion[1].split(','):
+                if not i.startswith(' '):
+                    field = i.split('/')[0].strip()
+                    content += field + ','
+        else:
+            if not line:
+                continue
+
+            for lline in line.splitlines():
+                lline = lline.replace('\'', '')
+                line = lline
+            content += line
+        content += '\n'
+    return content
+
+
 def get_basename(filename):
     """ This function returns the base name of filename
 

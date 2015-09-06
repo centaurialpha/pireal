@@ -43,8 +43,7 @@ else:
 
 # Supported files
 RFILES = "Pireal Relation File (*.prf *.csv *.txt)"
-DBFILE = "Pireal Data Base File (*.pdb);;Pireal Query File (*.pqf);;" \
-         "WinRDBI Data Base (*.rdb)"
+DBFILE = "Pireal Data Base File (*.pdb);;Pireal Query File (*.pqf)"
 
 # Create folder (settings and logging)
 PATH = os.path.realpath(os.path.dirname(sys.argv[0]))

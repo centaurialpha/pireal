@@ -32,6 +32,7 @@ TR_MENU_FILE_OPEN = translate("Pireal", "Open")
 TR_MENU_FILE_SAVE_DB = translate("Pireal", "Save Database")
 TR_MENU_FILE_SAVE = translate("Pireal", "Save")
 TR_MENU_FILE_SAVE_AS = translate("Pireal", "Save As...")
+TR_MENU_FILE_CONVERT_TO_PDB = translate("Pireal", "Convert to PDB")
 TR_MENU_FILE_EXIT = translate("Pireal", "Exit")
 
 # Menu Edit

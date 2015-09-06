@@ -53,6 +53,9 @@ MENU['file'] = {
         'name': tr.TR_MENU_FILE_SAVE_AS,
         'slot': "container:save_query_as"
     }, "-", {
+        'name': tr.TR_MENU_FILE_CONVERT_TO_PDB,
+        'slot': "container:convert_to_pdb"
+    }, "-", {
         'name': None,
         'slot': "container:open_recent_file"
     }, "-", {

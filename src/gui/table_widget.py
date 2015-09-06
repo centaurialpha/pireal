@@ -60,7 +60,9 @@ class TableWidget(QWidget):
         for part in data.split('@'):
             for e, line in enumerate(part.splitlines()):
                 if e == 0:
+                    line = line[:-1]
                     name = line.split(':')[0]
+
                     rel = relation.Relation()
                     rel.fields = line.split(':')[-1].split(',')
                 else:
