@@ -99,6 +99,10 @@ TR_CONTAINER_FILE_SAVED = translate("Pireal", "File Saved: {}")
 TR_CONTAINER_SAVE_FILE = translate("Pireal", "Save File")
 TR_CONTAINER_SAVE_DB = translate("Pireal", "Save Database")
 TR_CONTAINER_OPEN_FILE = translate("Pireal", "Open File")
+TR_CONTAINER_DB_UNSAVED_TITLE = translate("Pireal", "Save Changes?")
+TR_CONTAINER_DB_UNSAVED = translate("Pireal", ("The <b>{}</b> database has "
+                                              "ben modified.<br>Do you want"
+                                              "save your changes?"))
 
 # Query widget
 TR_QUERY_ERROR = translate("Pireal", "Query error")

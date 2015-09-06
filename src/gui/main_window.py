@@ -309,3 +309,17 @@ class Pireal(QMainWindow):
         container = Pireal.get_service("container")
         if not container.check_opened_query_files():
             event.ignore()
+        if container.modified:
+            db_name = container.get_db_name()
+            flags = QMessageBox.Yes
+            flags |= QMessageBox.No
+            flags |= QMessageBox.Cancel
+
+            result = QMessageBox.question(self,
+                                          tr.TR_CONTAINER_DB_UNSAVED_TITLE,
+                                          tr.TR_CONTAINER_DB_UNSAVED.format(
+                                              db_name), flags)
+            if result == QMessageBox.Cancel:
+                event.ignore()
+            if result == QMessageBox.Yes:
+                container.save_data_base()

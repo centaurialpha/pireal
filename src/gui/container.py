@@ -72,6 +72,8 @@ class Container(QSplitter):
 
         Pireal.load_service("container", self)
 
+        self.connect(self, SIGNAL("dbModified(int)"), self._database_modified)
+
     def create_data_base(self, filename=''):
         """ This function opens or creates a database
 
@@ -104,6 +106,7 @@ class Container(QSplitter):
         # Title
         pireal = Pireal.get_service("pireal")
         pireal.change_title(db_name)
+        self.__db_name = db_name
         # Enable QAction's
         pireal.enable_disable_db_actions()
         self.db_file = _file
@@ -119,13 +122,22 @@ class Container(QSplitter):
             del files[settings.PSettings.MAX_RECENT_FILES:]
             settings.set_setting('recentFiles', files)
 
+    def get_db_name(self):
+        return self.__db_name
+
     def open_recent_file(self):
         filename = self.sender().data()
         self.create_data_base(filename)
 
     def create_new_relation(self):
         dialog = new_relation_dialog.NewRelationDialog(self)
+        self.connect(dialog, SIGNAL("dbModified(int)"),
+                     self._database_modified)
         dialog.show()
+
+    def _database_modified(self, value):
+        if value == 0:
+            self.__modified = True
 
     def remove_relation(self):
         lateral = Pireal.get_service("lateral")
@@ -288,10 +300,12 @@ class Container(QSplitter):
                 return
             # Save folder
             self.__last_open_folder = file_manager.get_path(filenames[0])
-            self.__modified = True
+            #self.__modified = True
 
         # Load tables
         self.table_widget.load_relation(filenames)
+        # Emit signal
+        self.emit(SIGNAL("dbModified(int)"), 0)
 
     def execute_queries(self):
         query_widget = Pireal.get_service("query_widget")

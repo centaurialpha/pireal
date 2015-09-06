@@ -28,6 +28,8 @@ from PyQt4.QtGui import (
     QSpacerItem,
     QSizePolicy,
     QMessageBox,
+    QShortcut,
+    QKeySequence
 )
 from PyQt4.QtCore import SIGNAL, Qt
 from src.gui.main_window import Pireal
@@ -81,6 +83,9 @@ class NewRelationDialog(QDialog):
         vbox.addLayout(hbox)
 
         # Connections
+        kescape = QShortcut(QKeySequence(Qt.Key_Escape), self)
+        self.connect(kescape, SIGNAL("activated()"),
+            lambda: self.done(1))
         self.connect(btn_add_column, SIGNAL("clicked()"),
             self.__add_column)
         self.connect(btn_remove_column, SIGNAL("clicked()"),
@@ -92,7 +97,12 @@ class NewRelationDialog(QDialog):
         self.connect(btn_ok, SIGNAL("clicked()"),
             self.__create_table)
         self.connect(btn_cancel, SIGNAL("clicked()"),
-            self.close)
+            lambda: self.done(1))
+
+    def done(self, result):
+        self.__result = result
+        super(NewRelationDialog, self).done(self.__result)
+        self.emit(SIGNAL("dbModified(int)"), self.__result)
 
     def __add_column(self):
         columns = self._table.columnCount()
