@@ -15,5 +15,6 @@
         <file alias="execute_queries">images/run.png</file>
         <file alias="banner">images/pireal_banner.png</file>
         <file alias="arrow-left">images/arrow-left.png</file>
+        <file alias="icon">images/icon.png</file>
     </qresource>
 </RCC>

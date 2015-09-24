@@ -84,7 +84,7 @@ if __name__ == "__main__":
     # Style sheet
     with open('src/gui/style.qss') as f:
         qapp.setStyleSheet(f.read())
-    qapp.setWindowIcon(QIcon(":img/logo"))
+    qapp.setWindowIcon(QIcon(":img/icon"))
     # System language
     local = QLocale.system().name()
 
