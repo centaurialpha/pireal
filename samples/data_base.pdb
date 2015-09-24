@@ -1,21 +1,21 @@
-@ALUMNO:id,nombre,ciudad,edad
+@ALUMNO:idalumno,nombrealumno,ciudad,edad
 01,Pedro,Santiago,14
 11,Juan,Buenos Aires,18
 21,Diego,Lima,12
 31,Rosita,Concepción,15
 41,Manuel,Lima,17
-@APODERADO:id,nombre,telefono,id_alumno
+@APODERADO:id,nombreapoderado,telefono,idalumno
 054,Víctor,654644,21
 457,José,454654,11
 354,María,997455,31
 444,Paz,747423,01
-@CURSO:cod,nombre,fecha_inicio,duración,valor
+@CURSO:codcurso,nombrecurso,fecha_inicio,duración,valor
 01142,Psicología,13-01,15,3000
 02145,Biología,15-02,12,2500
 03547,Matemáticas,01-03,30,4000
 04578,Música,05-04,10,1500
 05478,Física,20-04,15,3200
-@INSCRIPTO:id,id_alumno,cod
+@INSCRIPTO:id,idalumno,codcurso
 1,01,05478
 2,01,02145
 3,11,03547
