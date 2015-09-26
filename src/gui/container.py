@@ -19,17 +19,16 @@
 
 
 import os
-from PyQt4.QtGui import (
+from PyQt5.QtWidgets import (
     QVBoxLayout,
     QStackedWidget,
-    #QInputDialog,
     QFileDialog,
     QMessageBox,
     QSplitter,
 )
-from PyQt4.QtCore import (
+from PyQt5.QtCore import (
     Qt,
-    SIGNAL
+    pyqtSignal
 )
 from src import translations as tr
 from src.gui.main_window import Pireal
@@ -52,6 +51,8 @@ ERROR = log.error
 
 
 class Container(QSplitter):
+    dbModified = pyqtSignal(int)
+    currentFileSaved = pyqtSignal('QString')
 
     def __init__(self, orientation=Qt.Vertical):
         super(Container, self).__init__(orientation)
@@ -72,7 +73,8 @@ class Container(QSplitter):
 
         Pireal.load_service("container", self)
 
-        self.connect(self, SIGNAL("dbModified(int)"), self._database_modified)
+        # Connections
+        self.dbModified[int].connect(self._database_modified)
 
     def create_data_base(self, filename=''):
         """ This function opens or creates a database
@@ -131,8 +133,8 @@ class Container(QSplitter):
 
     def create_new_relation(self):
         dialog = new_relation_dialog.NewRelationDialog(self)
-        self.connect(dialog, SIGNAL("dbModified(int)"),
-                     self._database_modified)
+
+        dialog.dbModified[int].connect(self._database_modified)
         dialog.show()
 
     def _database_modified(self, value):
@@ -166,9 +168,8 @@ class Container(QSplitter):
         pireal.enable_disable_query_actions()
         query_widget.new_query(filename)
 
-        self.connect(query_widget,
-                     SIGNAL("currentEditorSaved(QPlainTextEdit)"),
-                     self.save_query)
+        query_widget.currentEditorSaved['PyQt_PyObject'].connect(
+            self.save_query)
 
     @property
     def modified(self):
@@ -208,8 +209,8 @@ class Container(QSplitter):
         weditor.rfile.write(content)
         weditor.document().setModified(False)
 
-        self.emit(SIGNAL("currentFileSaved(QString)"),
-                  tr.TR_CONTAINER_FILE_SAVED.format(weditor.filename))
+        self.currentFileSaved.emit(tr.TR_CONTAINER_FILE_SAVED.format(
+                                   weditor.filename))
 
     def save_query_as(self, editor=None):
         if editor is None:
@@ -246,8 +247,7 @@ class Container(QSplitter):
         else:
             directory = self.__last_open_folder
         filename = QFileDialog.getOpenFileName(self, tr.TR_CONTAINER_OPEN_FILE,
-                                               directory, settings.DBFILE,
-                                               QFileDialog.DontUseNativeDialog)
+                                               directory, settings.DBFILE)[0]
         if not filename:
             return
         # Save folder
@@ -293,7 +293,7 @@ class Container(QSplitter):
         # Load tables
         self.table_widget.load_relation(filenames)
         # Emit signal
-        self.emit(SIGNAL("dbModified(int)"), 0)
+        self.dbModified.emit(0)
 
     def execute_queries(self):
         query_widget = Pireal.get_service("query_widget")
@@ -330,7 +330,7 @@ class Container(QSplitter):
             self.stacked.insertWidget(1, widget)
             self.stacked.setCurrentIndex(1)
 
-        self.connect(widget, SIGNAL("settingsClosed()"), self._settings_closed)
+        widget.settingsClosed.connect(self._settings_closed)
 
     def _settings_closed(self):
         self.stacked.removeWidget(self.stacked.widget(1))

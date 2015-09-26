@@ -17,14 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import (
+from PyQt5.QtWidgets import (
     QLabel,
     QTabWidget,
     QWidget,
     QMessageBox,
     QVBoxLayout
 )
-from PyQt4.QtCore import SIGNAL
+from PyQt5.QtCore import pyqtSignal
 from src.gui.query_editor import editor
 from src.gui.main_window import Pireal
 from src.core import (
@@ -46,6 +46,7 @@ class Tab(QTabWidget):
 
 
 class QueryWidget(QWidget):
+    currentEditorSaved = pyqtSignal('PyQt_PyObject')
 
     def __init__(self):
         super(QueryWidget, self).__init__()
@@ -66,10 +67,8 @@ class QueryWidget(QWidget):
         Pireal.load_service("query_widget", self)
 
         # Connections
-        self.connect(self.tab, SIGNAL("tabCloseRequested(int)"),
-                     self.removeTab)
-        self.connect(self.tab, SIGNAL("tabCloseRequested(int)"),
-                     self._check_count)
+        self.tab.tabCloseRequested[int].connect(self.removeTab)
+        self.tab.tabCloseRequested[int].connect(self._check_count)
 
     def showEvent(self, event):
         container = Pireal.get_service("container")
@@ -123,10 +122,9 @@ class QueryWidget(QWidget):
         self.tab.setTabToolTip(index, qfile.filename)
         self.tab.setCurrentIndex(index)
 
-        self.connect(qeditor, SIGNAL("modificationChanged(bool)"),
-                     self.__editor_modified)
-        self.connect(qeditor, SIGNAL("cursorPositionChanged(int, int)"),
-                     self._update_cursor_position)
+        qeditor.modificationChanged[bool].connect(self.__editor_modified)
+        qeditor.cursorPositionChanged[int, int].connect(
+            self._update_cursor_position)
         qeditor.setFocus()
 
     def execute_queries(self):
@@ -184,8 +182,7 @@ class QueryWidget(QWidget):
             if r == QMessageBox.Cancel:
                 return
             if r == QMessageBox.Yes:
-                self.emit(SIGNAL("currentEditorSaved(QPlainTextEdit)"),
-                          editor)
+                self.currentEditorSaved.emit(editor)
             else:
                 print("Saliendo...")
         self.tab.removeTab(index)

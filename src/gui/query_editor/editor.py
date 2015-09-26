@@ -17,15 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import (
+from PyQt5.QtWidgets import (
     QPlainTextEdit,
-    QTextEdit,
+    QTextEdit
+)
+from PyQt5.QtGui import (
     QTextCharFormat,
     QTextCursor
 )
-from PyQt4.QtCore import (
-    SIGNAL,
-    Qt
+from PyQt5.QtCore import (
+    Qt,
+    pyqtSignal
 )
 from src.gui.query_editor import (
     highlighter,
@@ -35,6 +37,7 @@ from src.core import settings
 
 
 class Editor(QPlainTextEdit):
+    cursorPositionChanged = pyqtSignal(int, int)
 
     def __init__(self, rfile=None):
         super(Editor, self).__init__()
@@ -47,10 +50,9 @@ class Editor(QPlainTextEdit):
         self._sidebar = sidebar.Sidebar(self)
 
         # Connection
-        self.connect(self, SIGNAL("updateRequest(const QRect&, int)"),
-                     self._sidebar.update_area)
-        self.connect(self, SIGNAL("cursorPositionChanged()"),
-                     self.__cursor_position_changed)
+        self.updateRequest['const QRect&', int].connect(
+            self._sidebar.update_area)
+        self.cursorPositionChanged.connect(self.__cursor_position_changed)
 
     @property
     def filename(self):
@@ -80,7 +82,7 @@ class Editor(QPlainTextEdit):
         # Emit line and column signal
         line = self.blockCount()
         col = self.textCursor().columnNumber() + 1
-        self.emit(SIGNAL("cursorPositionChanged(int, int)"), line, col)
+        self.cursorPositionChanged.emit(line, col)
 
     def __check_brackets(self):
         left, right = QTextEdit.ExtraSelection(), QTextEdit.ExtraSelection()

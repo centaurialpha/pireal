@@ -18,7 +18,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from PyQt4.QtCore import (
+from PyQt5.QtCore import (
     QFile,
     QIODevice,
     QTextStream

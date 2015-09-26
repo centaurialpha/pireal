@@ -18,20 +18,17 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import webbrowser
-from PyQt4.QtGui import (
+from PyQt5.QtWidgets import (
     QDialog,
     QVBoxLayout,
     QLabel,
-    QPixmap,
     QHBoxLayout,
     QSpacerItem,
     QSizePolicy,
     QPushButton
 )
-from PyQt4.QtCore import (
-    Qt,
-    SIGNAL
-)
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
 from src import (
     gui,
     translations as tr
@@ -84,8 +81,8 @@ class AboutDialog(QDialog):
         hbox.addWidget(btn_ok)
         vbox.addLayout(hbox)
 
-        self.connect(btn_ok, SIGNAL("clicked()"), self.close)
-        self.connect(label_version, SIGNAL("linkActivated(QString)"),
-                     lambda link: webbrowser.open_new(link))
-        self.connect(lbl_license_source, SIGNAL("linkActivated(QString)"),
-                     lambda link: webbrowser.open_new(link))
+        btn_ok.clicked.connect(self.close)
+        label_version.linkActivated['QString'].connect(
+            lambda link: webbrowser.open_new(link))
+        lbl_license_source.linkActivated['QString'].connect(
+            lambda link: webbrowser.open_new(link))

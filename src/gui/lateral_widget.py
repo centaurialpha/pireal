@@ -17,19 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import (
-    #QDockWidget,
+from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
     QListWidget,
     QListWidgetItem,
-    QIcon,
     QMenu
 )
-from PyQt4.QtCore import (
-    Qt,
-    SIGNAL
-)
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
 from src.gui.main_window import Pireal
 
 
@@ -40,18 +36,16 @@ class LateralWidget(QWidget):
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         self._list_widget = QListWidget()
-        #self.setWidget(self._list_widget)
+
         vbox.addWidget(self._list_widget)
 
         Pireal.load_service("lateral", self)
 
         self._list_widget.setContextMenuPolicy(Qt.CustomContextMenu)
 
-        self.connect(self._list_widget, SIGNAL("currentRowChanged(int)"),
-                     self._change_item)
-        self.connect(self._list_widget,
-                     SIGNAL("customContextMenuRequested(const QPoint)"),
-                     self.__show_context_menu)
+        self._list_widget.currentRowChanged[int].connect(self._change_item)
+        self._list_widget.customContextMenuRequested['const QPoint'].connect(
+            self.__show_context_menu)
 
     def __show_context_menu(self, point):
         """ Context menu """
@@ -60,8 +54,7 @@ class LateralWidget(QWidget):
         remove_table_act = menu.addAction(QIcon(":img/remove-rel"),
                                           self.tr("Eliminar Relación"))
 
-        self.connect(remove_table_act, SIGNAL("triggered()"),
-                     self.remove_table)
+        remove_table_act.triggered.connect(self.remove_table)
 
         menu.exec_(self.mapToGlobal(point))
 

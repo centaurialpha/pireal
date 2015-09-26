@@ -20,15 +20,13 @@
 """ Pireal Main Window """
 
 from collections import Callable
-from PyQt4.QtGui import (
+from PyQt5.QtWidgets import (
     QMainWindow,
     QMessageBox,
-    QToolBar,
-    QIcon,
+    QToolBar
 )
-from PyQt4.QtCore import (
-    #QSettings,
-    SIGNAL,
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import (
     QFileInfo,
     QSize
 )
@@ -140,7 +138,7 @@ class Pireal(QMainWindow):
 
         # Settings action on menu bar
         qaction = menubar.addAction(tr.TR_SETTINGS_MENUBAR)
-        self.connect(qaction, SIGNAL("triggered()"), self.show_settings)
+        qaction.triggered.connect(self.show_settings)
 
         # Load menu bar
         for item in menu_actions.MENU:
@@ -166,9 +164,8 @@ class Pireal(QMainWindow):
                             text = "&%d %s" % (i + 1, name)
                             qaction = menu.addAction(text)
                             qaction.setData(files[i])
-                            self.connect(qaction,
-                                         SIGNAL("triggered()"),
-                                         container.open_recent_file)
+                            qaction.triggered.connect(
+                                container.open_recent_file)
                         continue
                     qaction = menu.addAction(action)
                     # Icon name is connection
@@ -188,7 +185,7 @@ class Pireal(QMainWindow):
                     Pireal.load_action(connection, qaction)
                     slot = getattr(obj, connection, None)
                     if isinstance(slot, Callable):
-                        self.connect(qaction, SIGNAL("triggered()"), slot)
+                        qaction.triggered.connect(slot)
 
         # Install toolbar
         for action in Pireal.TOOLBAR_ITEMS:
@@ -216,8 +213,8 @@ class Pireal(QMainWindow):
         central_widget.load_table_widget(container)
         central_widget.load_editor_widget(query_widget)
 
-        self.connect(container, SIGNAL("currentFileSaved(QString)"),
-                     self.__show_status_message)
+        container.currentFileSaved['QString'].connect(
+            self.__show_status_message)
 
         return central_widget
 
@@ -299,8 +296,8 @@ class Pireal(QMainWindow):
         dialog = preferences.Preferences(self)
         container.show_dialog(dialog)
 
-        self.connect(dialog, SIGNAL("valueChanged(QString, PyQt_PyObject)"),
-                     self._update_settings)
+        dialog.valueChanged['QString', 'PyQt_PyObject'].connect(
+            self._update_settings)
 
     def _update_settings(self, key, value):
         pass

@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import (
+from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QStackedWidget,
@@ -26,7 +26,7 @@ from PyQt4.QtGui import (
     QHeaderView,
     QAbstractItemView
 )
-from PyQt4.QtCore import Qt
+from PyQt5.QtCore import Qt
     #Qt,
     #SIGNAL
 #)
@@ -181,7 +181,7 @@ class Table(QTableWidget):
     def __init__(self, parent=None):
         super(Table, self).__init__(parent)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.horizontalHeader().setResizeMode(QHeaderView.Stretch)
+        self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         #FIXME: Configurable
         self.verticalHeader().setVisible(False)
 

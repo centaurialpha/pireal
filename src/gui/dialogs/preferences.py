@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import (
+from PyQt5.QtWidgets import (
     QDialog,
     QGroupBox,
     QVBoxLayout,
@@ -26,7 +26,6 @@ from PyQt4.QtGui import (
     QSpacerItem,
     QSizePolicy,
     QGraphicsOpacityEffect,
-    QIcon,
     QToolButton,
     QPushButton,
     QCheckBox,
@@ -34,10 +33,10 @@ from PyQt4.QtGui import (
     #QLabel,
     #QMovie
 )
-from PyQt4.QtCore import (
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import (
     QPropertyAnimation,
     QParallelAnimationGroup,
-    SIGNAL,
     QRect,
     QSize,
     QSettings
@@ -111,7 +110,8 @@ class Preferences(QDialog):
 
         # Connect radio buttons
         for radiob in self._radio_buttons:
-            self.connect(radiob, SIGNAL("clicked()"), self._change_lang)
+            #self.connect(radiob, SIGNAL("clicked()"), self._change_lang)
+            radiob.clicked.connect(self._change_lang)
         # Add widgets
         container.addWidget(group_gral)
         container.addWidget(group_language)
@@ -171,16 +171,16 @@ class Preferences(QDialog):
         self.group_animation_e.addAnimation(self.x_animation_e)
 
         # Connections
-        self.connect(self.group_animation_e, SIGNAL("finished()"),
-                     self._on_group_animation_finished)
-        self.connect(btn_back, SIGNAL("clicked()"),
-                     self.close)
-        self.connect(btn_reset, SIGNAL("clicked()"),
-                     self._reset_settings)
-        self.connect(btn_updates, SIGNAL("clicked()"),
-                     self._check_for_updates)
-        self.connect(self.thread, SIGNAL("finished()"),
-                     self._on_thread_finished)
+        #self.connect(self.group_animation_e, SIGNAL("finished()"),
+                     #self._on_group_animation_finished)
+        #self.connect(btn_back, SIGNAL("clicked()"),
+                     #self.close)
+        #self.connect(btn_reset, SIGNAL("clicked()"),
+                     #self._reset_settings)
+        #self.connect(btn_updates, SIGNAL("clicked()"),
+                     #self._check_for_updates)
+        #self.connect(self.thread, SIGNAL("finished()"),
+                     #self._on_thread_finished)
 
     def showEvent(self, event):
         super(Preferences, self).showEvent(event)
@@ -196,7 +196,7 @@ class Preferences(QDialog):
 
     def _on_group_animation_finished(self):
         super(Preferences, self).done(self.res)
-        self.emit(SIGNAL("settingsClosed()"))
+        #self.emit(SIGNAL("settingsClosed()"))
 
     def _check_for_updates(self):
         self.overlay.show()

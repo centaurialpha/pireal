@@ -19,15 +19,13 @@
 
 import sys
 import os
-from PyQt4.QtGui import (
-    QApplication,
-    QStyleFactory,
-    QIcon
-)
-from PyQt4.QtCore import (
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import (
     QLocale,
     QTranslator,
-    QLibraryInfo
+    QLibraryInfo,
+    QT_VERSION_STR
 )
 from src.core import (
     settings,
@@ -42,7 +40,6 @@ def __get_versions():
     """ Version information for components used by Pireal """
 
     import platform
-    from PyQt4.QtCore import QT_VERSION_STR
 
     # OS
     if sys.platform.startswith('linux'):
@@ -109,8 +106,6 @@ if __name__ == "__main__":
     from src.gui.query_editor import query_widget  # lint:ok
     from src.gui import lateral_widget  # lint:ok
 
-    # Style
-    qapp.setStyle(QStyleFactory.create("gtk"))
     INFO("Loading GUI...")
     gui = Pireal()
     gui.show()

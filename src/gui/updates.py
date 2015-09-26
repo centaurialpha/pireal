@@ -19,10 +19,7 @@
 
 import json
 from urllib.request import urlopen
-from PyQt4.QtCore import (
-    QThread,
-    SIGNAL
-)
+from PyQt5.QtCore import QThread
 from src import gui
 
 
@@ -38,4 +35,4 @@ class Updates(QThread):
             data = json.loads(response)
         except:
             data = {}
-        self.emit(SIGNAL("updatesFound(QString)"), data.get('version', ''))
+        #self.emit(SIGNAL("updatesFound(QString)"), data.get('version', ''))

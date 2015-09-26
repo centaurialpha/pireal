@@ -22,8 +22,8 @@ KEYMAP is a dictionary, the keys are the names of the
 slots of the QAction's, and values are the key sequence.
 """
 
-from PyQt4.QtGui import QKeySequence
-from PyQt4.QtCore import Qt
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtCore import Qt
 
 
 KEYMAP = {

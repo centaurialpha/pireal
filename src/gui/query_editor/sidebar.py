@@ -24,8 +24,8 @@ based on:
 john.nachtimwald.com/2009/08/19/better-qplaintextedit-with-line-numbers/
 """
 
-from PyQt4.QtGui import (
-    QFrame,
+from PyQt5.QtWidgets import QFrame
+from PyQt5.QtGui import (
     QFontMetrics,
     QPainter,
     QColor

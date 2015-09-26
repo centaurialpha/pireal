@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import (
+from PyQt5.QtWidgets import (
     QDialog,
     QVBoxLayout,
     QHBoxLayout,
@@ -28,10 +28,13 @@ from PyQt4.QtGui import (
     QSpacerItem,
     QSizePolicy,
     QMessageBox,
-    QShortcut,
-    QKeySequence
+    QShortcut
 )
-from PyQt4.QtCore import SIGNAL, Qt
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtCore import (
+    Qt,
+    pyqtSignal
+)
 from src.gui.main_window import Pireal
 from src.gui import table_widget
 from src import translations as tr
@@ -39,6 +42,7 @@ from src.core import relation
 
 
 class NewRelationDialog(QDialog):
+    dbModified = pyqtSignal(int)
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
@@ -84,25 +88,19 @@ class NewRelationDialog(QDialog):
 
         # Connections
         kescape = QShortcut(QKeySequence(Qt.Key_Escape), self)
-        self.connect(kescape, SIGNAL("activated()"),
-            lambda: self.done(1))
-        self.connect(btn_add_column, SIGNAL("clicked()"),
-            self.__add_column)
-        self.connect(btn_remove_column, SIGNAL("clicked()"),
-            self.__remove_column)
-        self.connect(btn_add_tuple, SIGNAL("clicked()"),
-            self.__add_tuple)
-        self.connect(btn_remove_tuple, SIGNAL("clicked()"),
-            self.__remove_tuple)
-        self.connect(btn_ok, SIGNAL("clicked()"),
-            self.__create_table)
-        self.connect(btn_cancel, SIGNAL("clicked()"),
-            lambda: self.done(1))
+        kescape.activated.connect(lambda: self.done(1))
+        btn_add_column.clicked.connect(self.__add_column)
+        btn_remove_column.clicked.connect(self.__remove_column)
+        btn_add_tuple.clicked.connect(self.__add_tuple)
+        btn_remove_tuple.clicked.connect(self.__remove_tuple)
+        btn_ok.clicked.connect(self.__create_table)
+        btn_cancel.clicked.connect(lambda: self.done(1))
 
     def done(self, result):
         self.__result = result
         super(NewRelationDialog, self).done(self.__result)
-        self.emit(SIGNAL("dbModified(int)"), self.__result)
+        #self.emit(SIGNAL("dbModified(int)"), self.__result)
+        self.dbModified.emit(self.__result)
 
     def __add_column(self):
         columns = self._table.columnCount()

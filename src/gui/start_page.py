@@ -22,15 +22,12 @@ QML interface
 """
 
 import os
-from PyQt4.QtGui import (
+from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout
 )
-from PyQt4.QtDeclarative import QDeclarativeView
-from PyQt4.QtCore import (
-    QUrl,
-    QDir,
-)
+from PyQt5.QtQuick import QQuickView
+from PyQt5.QtCore import QUrl
 
 
 class StartPage(QWidget):
@@ -39,10 +36,9 @@ class StartPage(QWidget):
         super(StartPage, self).__init__()
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
-        view = QDeclarativeView()
+        view = QQuickView()
         qml = os.path.join(os.path.dirname(__file__), "StartPage.qml")
-        path = QDir.fromNativeSeparators(qml)
-        view.setSource(QUrl.fromLocalFile(path))
-        view.setResizeMode(QDeclarativeView.SizeRootObjectToView)
-        self._root = view.rootObject()
-        vbox.addWidget(view)
+        view.setSource(QUrl.fromLocalFile(qml))
+        view.setResizeMode(QQuickView.SizeRootObjectToView)
+        widget = QWidget.createWindowContainer(view)
+        vbox.addWidget(widget)

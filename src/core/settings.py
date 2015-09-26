@@ -23,8 +23,8 @@ Pireal settings
 
 import sys
 import os
-from PyQt4.QtGui import QFont
-from PyQt4.QtCore import QSettings
+from PyQt5.QtGui import QFont
+from PyQt5.QtCore import QSettings
 
 
 # Operating System

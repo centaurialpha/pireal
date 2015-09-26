@@ -21,15 +21,15 @@
 # https://wiki.python.org/moin/PyQt
 
 import math
-from PyQt4.QtGui import (
-    QWidget,
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtGui import (
     QPalette,
     QPainter,
     QBrush,
     QColor,
     QPen
 )
-from PyQt4.QtCore import Qt
+from PyQt5.QtCore import Qt
 
 
 class OverlayWidget(QWidget):

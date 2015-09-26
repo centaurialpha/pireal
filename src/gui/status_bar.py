@@ -17,8 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import QStatusBar
-from PyQt4.QtCore import SIGNAL
+from PyQt5.QtWidgets import QStatusBar
 from src.gui.main_window import Pireal
 
 
@@ -29,8 +28,9 @@ class StatusBar(QStatusBar):
 
         Pireal.load_service("status", self)
 
-        self.connect(self, SIGNAL("messageChanged(QString)"),
-                     self.__message_end)
+        #self.connect(self, SIGNAL("messageChanged(QString)"),
+                     #self.__message_end)
+        self.messageChanged['QString'].connect(self.__message_end)
 
     def show_message(self, msg, timeout=4000):
         """ This function is a implementation of QStatusBar.showMessage

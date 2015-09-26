@@ -17,12 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import (
+from PyQt5.QtWidgets import (
     QWidget,
     QHBoxLayout,
     QSplitter
 )
-from PyQt4.QtCore import Qt
+from PyQt5.QtCore import Qt
 from src.gui.main_window import Pireal
 
 

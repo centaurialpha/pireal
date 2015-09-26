@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 
 translate = QApplication.translate
 
