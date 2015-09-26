@@ -29,7 +29,7 @@ Requirements
 ************
 
 * `Python 3.x <http://python.org>`_
-* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/intro>`_
+* `PyQt5 <http://www.riverbankcomputing.co.uk/software/pyqt/intro>`_
 
 Clone the repository:
 ::
