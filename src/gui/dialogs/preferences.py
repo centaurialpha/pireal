@@ -39,7 +39,8 @@ from PyQt5.QtCore import (
     QParallelAnimationGroup,
     QRect,
     QSize,
-    QSettings
+    QSettings,
+    pyqtSignal
 )
 from src import translations as tr
 from src.core import (
@@ -50,6 +51,7 @@ from src.gui import overlay_widget, updates
 
 
 class Preferences(QDialog):
+    settingsClosed = pyqtSignal()
 
     def __init__(self, parent=None):
         super(Preferences, self).__init__(parent)
@@ -110,7 +112,6 @@ class Preferences(QDialog):
 
         # Connect radio buttons
         for radiob in self._radio_buttons:
-            #self.connect(radiob, SIGNAL("clicked()"), self._change_lang)
             radiob.clicked.connect(self._change_lang)
         # Add widgets
         container.addWidget(group_gral)
@@ -171,16 +172,12 @@ class Preferences(QDialog):
         self.group_animation_e.addAnimation(self.x_animation_e)
 
         # Connections
-        #self.connect(self.group_animation_e, SIGNAL("finished()"),
-                     #self._on_group_animation_finished)
-        #self.connect(btn_back, SIGNAL("clicked()"),
-                     #self.close)
-        #self.connect(btn_reset, SIGNAL("clicked()"),
-                     #self._reset_settings)
-        #self.connect(btn_updates, SIGNAL("clicked()"),
-                     #self._check_for_updates)
-        #self.connect(self.thread, SIGNAL("finished()"),
-                     #self._on_thread_finished)
+        self.group_animation_e.finished.connect(
+            self._on_group_animation_finished)
+        btn_back.clicked.connect(self.close)
+        btn_reset.clicked.connect(self._reset_settings)
+        btn_updates.clicked.connect(self._check_for_updates)
+        self.thread.finished.connect(self._on_thread_finished)
 
     def showEvent(self, event):
         super(Preferences, self).showEvent(event)
@@ -196,7 +193,7 @@ class Preferences(QDialog):
 
     def _on_group_animation_finished(self):
         super(Preferences, self).done(self.res)
-        #self.emit(SIGNAL("settingsClosed()"))
+        self.settingsClosed.emit()
 
     def _check_for_updates(self):
         self.overlay.show()
