@@ -111,3 +111,11 @@ def generate_database(relations):
 def get_files_from_folder(path):
     return [os.path.splitext(f)[0] for f in os.listdir(path)
             if os.path.isfile(os.path.join(path, f))]
+
+
+def open_file(filename):
+    try:
+        with open(filename, mode='r') as f:
+            return f.read()
+    except Exception:
+        raise

@@ -38,11 +38,11 @@ class Tab(QTabWidget):
 
     def __init__(self):
         super(Tab, self).__init__()
-        self.currentChanged[int].connect(self._resize)
+        #self.currentChanged[int].connect(self._resize)
 
-    def _resize(self, v):
-        width = self.size().width() / self.count() - 18
-        self.setStyleSheet("QTabBar::tab { width: %spx; }" % width)
+    #def _resize(self, v):
+        #width = self.size().width() / self.count() - 18
+        #self.setStyleSheet("QTabBar::tab { width: %spx; }" % width)
 
 
 class QueryWidget(QWidget):

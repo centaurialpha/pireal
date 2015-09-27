@@ -78,9 +78,15 @@ if __name__ == "__main__":
     from src import resources  # lint:ok
 
     qapp = QApplication(sys.argv)
-    # Style sheet
-    with open('src/gui/style.qss') as f:
-        qapp.setStyleSheet(f.read())
+    # Stylesheet
+    stylesheet = settings.PSettings.THEME
+    if stylesheet:
+        with open(settings.STYLESHEET) as f:
+            style = f.read()
+    else:
+        style = None
+    qapp.setStyleSheet(style)
+    # Icon
     qapp.setWindowIcon(QIcon(":img/icon"))
     # System language
     local = QLocale.system().name()

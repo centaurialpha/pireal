@@ -52,6 +52,7 @@ PIREAL_DIR = os.path.join(HOME, ".pireal")
 LOG_FILE = os.path.join(PIREAL_DIR, "pireal_logging.log")
 SETTINGS_PATH = os.path.join(PIREAL_DIR, "pireal_settings.ini")
 LANG_PATH = os.path.join(PATH, "src", "lang")
+STYLESHEET = os.path.join(PATH, "src", "gui", "style.qss")
 
 
 class PSettings:
@@ -59,6 +60,7 @@ class PSettings:
     CHECK_UPDATES = True
     MAX_RECENT_FILES = 5
     LANGUAGE = ""
+    THEME = ""
 
 
 def create_dir():
@@ -83,3 +85,4 @@ def load_settings():
     PSettings.SHOW_START_PAGE = settings.value('show-start-page',
                                                True, type=bool)
     PSettings.LANGUAGE = settings.value('language', "", type='QString')
+    PSettings.THEME = settings.value('stylesheet', "", type='QString')

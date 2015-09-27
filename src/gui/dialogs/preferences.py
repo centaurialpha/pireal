@@ -18,6 +18,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt5.QtWidgets import (
+    QApplication,
     QDialog,
     QGroupBox,
     QVBoxLayout,
@@ -113,9 +114,33 @@ class Preferences(QDialog):
         # Connect radio buttons
         for radiob in self._radio_buttons:
             radiob.clicked.connect(self._change_lang)
+
+        # Stylesheet
+        group_style = QGroupBox("Theme")
+        box = QVBoxLayout(group_style)
+        self._radio_styles = []
+        for style in ["Default", "None"]:
+            radio = QRadioButton()
+            self._radio_styles.append(radio)
+            radio.setText(style)
+            box.addWidget(radio)
+        index = 0
+        #if settings.PSettings.THEME:
+        for i in range(len(self._radio_styles)):
+            text = self._radio_styles[i].text()
+            if text == 'None':
+                text = ""
+            if text == settings.PSettings.THEME:
+                index = i
+        self._radio_styles[index].setChecked(True)
+
+        for rad in self._radio_styles:
+            rad.clicked.connect(self._change_theme)
+
         # Add widgets
         container.addWidget(group_gral)
         container.addWidget(group_language)
+        container.addWidget(group_style)
         container.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
                           QSizePolicy.Expanding))
         btn_reset = QPushButton(tr.TR_PREFERENCES_BTN_RESET)
@@ -219,3 +244,14 @@ class Preferences(QDialog):
             if radiob.isChecked():
                 settings.set_setting('language', radiob.text())
                 settings.PSettings.LANGUAGE = radiob.text()
+
+    def _change_theme(self):
+        if self._radio_styles[0].isChecked():
+            name = 'Default'
+            style = file_manager.open_file(settings.STYLESHEET)
+        else:
+            style = None
+            name = ''
+        QApplication.instance().setStyleSheet(style)
+        settings.set_setting('stylesheet', name)
+        settings.PSettings.THEME = name
