@@ -29,7 +29,7 @@ from src.gui.query_editor import editor
 from src.gui.main_window import Pireal
 from src.core import (
     parser,
-    rfile
+    pfile
 )
 from src import translations as tr
 
@@ -108,16 +108,16 @@ class QueryWidget(QWidget):
         qeditor = editor.Editor()
         if filename:
             # RFile
-            qfile = rfile.RFile(filename)
+            qfile = pfile.PFile(filename)
             content = qfile.read()
             qeditor.setPlainText(content)
-            name = qfile.get_name
+            name = qfile.name
         else:
-            qfile = rfile.RFile()
+            qfile = pfile.PFile()
             qfile.filename = qfile.filename + str(self.__nquery)
             name = qfile.filename
             self.__nquery += 1
-        qeditor.rfile = qfile
+        qeditor.pfile = qfile
         index = self.tab.addTab(qeditor, name)
         self.tab.setTabToolTip(index, qfile.filename)
         self.tab.setCurrentIndex(index)
@@ -165,7 +165,7 @@ class QueryWidget(QWidget):
         """
 
         editor = self.tab.currentWidget()
-        editor_name = editor.rfile.get_name
+        editor_name = editor.pfile.name
         index = self.tab.currentIndex()
         if modified:
             text = "{} \u2022".format(editor_name)

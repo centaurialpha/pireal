@@ -17,93 +17,94 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import os
-from PyQt5.QtCore import (
-    QFile,
-    QIODevice,
-    QTextStream
-)
+#import os
+#from PyQt5.QtCore import (
+    #QFile,
+    #QIODevice,
+    #QTextStream
+#)
 
 
-class PirealIOError(Exception):
-    """ IO Exception """
+#class PirealIOError(Exception):
+    #""" IO Exception """
 
 
-class RFile(object):
-    """ This class represents a file
+#class RFile(object):
+    #""" This class represents a file
 
-    :param filename: Absolute file path
-     """
+    #:param filename: Absolute file path
+     #"""
 
-    def __init__(self, filename=""):
-        self.__is_new = True
-        if not filename:
-            self.__filename = "query_"
-        else:
-            self.__filename = filename
-            self.__is_new = False
+    #def __init__(self, filename=""):
+        #self.__is_new = True
+        #if not filename:
+            #self.__filename = "query_"
+        #else:
+            #self.__filename = filename
+            #self.__is_new = False
 
-    def __get_filename(self):
-        """ This function return the filename
+    #def __get_filename(self):
+        #""" This function return the filename
 
-        :returns: The filename
-        """
+        #:returns: The filename
+        #"""
 
-        return self.__filename
+        #return self.__filename
 
-    def __set_filename(self, filename):
-        """ This function set the filename
+    #def __set_filename(self, filename):
+        #""" This function set the filename
 
-        :param filename: Filename path
-        """
+        #:param filename: Filename path
+        #"""
 
-        self.__filename = filename
+        #self.__filename = filename
 
-    filename = property(__get_filename, __set_filename)
+    #filename = property(__get_filename, __set_filename)
 
-    @property
-    def get_name(self):
-        """ This function returns the display name
+    #@property
+    #def get_name(self):
+        #""" This function returns the display name
 
-        :returns: Base name of filename
-        """
+        #:returns: Base name of filename
+        #"""
 
-        return os.path.basename(self.filename)
+        #return os.path.basename(self.filename)
 
-    @property
-    def is_new(self):
-        """ This function returns True if the file is new, false otherwise
+    #@property
+    #def is_new(self):
+        #""" This function returns True if the file is new, false otherwise
 
-        :returns: Boolean value
-        """
+        #:returns: Boolean value
+        #"""
 
-        return self.__is_new
+        #return self.__is_new
 
-    def read(self):
-        """ This function reads the file and returns the contents
+    #def read(self):
+        #""" This function reads the file and returns the contents
 
-        :returns: Content file
-        """
+        #:returns: Content file
+        #"""
 
-        try:
-            with open(self.filename, mode='r') as f:
-                content = f.read()
-            return content
-        except IOError as reason:
-            raise Exception(reason)
+        #try:
+            #with open(self.filename, mode='r') as f:
+                #content = f.read()
+            #return content
+        #except IOError as reason:
+            #raise Exception(reason)
 
-    def write(self, content, new_filename=''):
-        """ This function write the file
+    #def write(self, content, new_filename=''):
+        #""" This function write the file
 
-        :param content: Text of the Editor
-        :param new_filename: Filename path
-        """
+        #:param content: Text of the Editor
+        #:param new_filename: Filename path
+        #"""
 
-        if self.is_new:
-            self.__filename = new_filename
-            self._is_new = False
-        _file = QFile(self.filename)
-        if not _file.open(QIODevice.WriteOnly | QIODevice.Truncate):
-            raise PirealIOError
-        out_file = QTextStream(_file)
-        out_file << content
+        #if self.is_new:
+            #self.__filename = new_filename
+            #self._is_new = False
+        #_file = QFile(self.filename)
+        #if not _file.open(QIODevice.WriteOnly | QIODevice.Truncate):
+            #raise PirealIOError
+        #out_file = QTextStream(_file)
+        #out_file << content
+#

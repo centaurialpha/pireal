@@ -199,14 +199,14 @@ class Container(QSplitter):
             self.__created = False
 
     def save_query(self, weditor=None):
-        if weditor is None:
+        if not weditor:
             query_widget = Pireal.get_service("query_widget")
             # Editor instance
             weditor = query_widget.get_active_editor()
-        if weditor.rfile.is_new:
+        if weditor.pfile.is_new:
             return self.save_query_as(weditor)
         content = weditor.toPlainText()
-        weditor.rfile.write(content)
+        weditor.pfile.write(content)
         weditor.document().setModified(False)
 
         self.currentFileSaved.emit(tr.TR_CONTAINER_FILE_SAVED.format(
@@ -223,7 +223,7 @@ class Container(QSplitter):
         if not filename:
             return
         content = editor.toPlainText()
-        editor.rfile.write(content, filename)
+        editor.pfile.write(content, filename)
         editor.document().setModified(False)
 
     def save_data_base(self):

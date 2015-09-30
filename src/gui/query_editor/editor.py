@@ -39,9 +39,9 @@ from src.core import settings
 class Editor(QPlainTextEdit):
     cursorPositionChanged = pyqtSignal(int, int)
 
-    def __init__(self, rfile=None):
+    def __init__(self, pfile=None):
         super(Editor, self).__init__()
-        self.rfile = rfile
+        self.pfile = pfile
         self.modified = False
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
@@ -61,7 +61,7 @@ class Editor(QPlainTextEdit):
         :returns: filename of RFile
         """
 
-        return self.rfile.filename
+        return self.pfile.filename
 
     def resizeEvent(self, event):
         super(Editor, self).resizeEvent(event)
