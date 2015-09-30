@@ -22,7 +22,8 @@ from PyQt5.QtWidgets import (
     QWidget,
     QListWidget,
     QListWidgetItem,
-    QMenu
+    QMenu,
+    QAbstractItemView
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
@@ -36,6 +37,8 @@ class LateralWidget(QWidget):
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         self._list_widget = QListWidget()
+        # Multiple selection
+        self._list_widget.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
         vbox.addWidget(self._list_widget)
 
@@ -72,7 +75,12 @@ class LateralWidget(QWidget):
 
     def remove_table(self):
         container = Pireal.get_service("container")
-        container.remove_relation()
+        items = self._list_widget.selectedItems()
+        for item in items:
+            index = self._list_widget.row(item)
+            container.table_widget.remove_table(index)
+            self.remove_item(index)
+        #container.remove_relation(items)
 
     def clear_items(self):
         """ Remove all items and selections in the view """

@@ -141,23 +141,26 @@ class Container(QSplitter):
         if value == 0:
             self.__modified = True
 
-    def remove_relation(self):
-        lateral = Pireal.get_service("lateral")
-        rname = lateral.get_relation_name()
-        if not rname:
-            QMessageBox.critical(self, "Error",
-                                 tr.TR_CONTAINER_UNSELECTED_RELATIONSHIP)
-            return
-        r = QMessageBox.question(self, tr.TR_CONTAINER_CONFIRM_DELETE_REL_TITLE,
-                                 tr.TR_CONTAINER_CONFIRM_DELETE_REL.format(
-                                     rname), QMessageBox.Yes | QMessageBox.No)
-        if r == QMessageBox.No:
-            return
-        index = lateral.current_index()
-        # Remove table
-        self.table_widget.remove_table(index)
-        # Remove item from list widget
-        lateral.remove_item(index)
+    def remove_relation(self, items):
+        pass
+        #lateral = Pireal.get_service("lateral")
+        #for item in items:
+            #index = row()
+        #rname = lateral.get_relation_name()
+        #if not rname:
+            #QMessageBox.critical(self, "Error",
+                                 #tr.TR_CONTAINER_UNSELECTED_RELATIONSHIP)
+            #return
+        #r =QMessageBox.question(self, tr.TR_CONTAINER_CONFIRM_DELETE_REL_TITLE,
+                                 #tr.TR_CONTAINER_CONFIRM_DELETE_REL.format(
+                                     #rname), QMessageBox.Yes | QMessageBox.No)
+        #if r == QMessageBox.No:
+            #return
+        #index = lateral.current_index()
+        ## Remove table
+        #self.table_widget.remove_table(index)
+        ## Remove item from list widget
+        #lateral.remove_item(index)
 
     def new_query(self, filename=''):
         query_widget = Pireal.get_service("query_widget")
