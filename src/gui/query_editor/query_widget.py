@@ -19,7 +19,6 @@
 
 from PyQt5.QtWidgets import (
     QLabel,
-    QTabWidget,
     QWidget,
     QMessageBox,
     QVBoxLayout
@@ -32,17 +31,6 @@ from src.core import (
     pfile
 )
 from src import translations as tr
-
-
-class Tab(QTabWidget):
-
-    def __init__(self):
-        super(Tab, self).__init__()
-        #self.currentChanged[int].connect(self._resize)
-
-    #def _resize(self, v):
-        #width = self.size().width() / self.count() - 18
-        #self.setStyleSheet("QTabBar::tab { width: %spx; }" % width)
 
 
 class QueryWidget(QWidget):
@@ -58,25 +46,25 @@ class QueryWidget(QWidget):
         box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 5, 0)
         # Tabs
-        self.tab = Tab()
-        #self.tab.setCornerWidget(self._cursor_position_widget)
-        self.tab.setTabsClosable(True)
-        self.tab.setMovable(True)
-        box.addWidget(self.tab)
+        #self.tab = Tab()
+        ##self.tab.setCornerWidget(self._cursor_position_widget)
+        #self.tab.setTabsClosable(True)
+        #self.tab.setMovable(True)
+        #box.addWidget(self.tab)
 
         Pireal.load_service("query_widget", self)
 
         # Connections
-        self.tab.tabCloseRequested[int].connect(self.removeTab)
-        self.tab.tabCloseRequested[int].connect(self._check_count)
+        #self.tab.tabCloseRequested[int].connect(self.removeTab)
+        #self.tab.tabCloseRequested[int].connect(self._check_count)
 
-    def showEvent(self, event):
-        container = Pireal.get_service("container")
-        self.setMinimumHeight(container.height() / 3)
+    #def showEvent(self, event):
+        #container = Pireal.get_service("central")
+        #self.setMinimumHeight(container.height() / 3)
 
-    def get_active_editor(self):
-        weditor = self.tab.currentWidget()
-        return weditor
+    #def get_active_editor(self):
+        #weditor = self.tab.currentWidget()
+        #return weditor
 
     def undo(self):
         self.get_active_editor().undo()
@@ -93,18 +81,17 @@ class QueryWidget(QWidget):
     def paste(self):
         self.get_active_editor().paste()
 
-    def _check_count(self):
-        """ Hide dock if count = 0 """
+    #def _check_count(self):
+        #""" Hide dock if count = 0 """
 
-        if self.tab.count() == 0:
-            pireal = Pireal.get_service("pireal")
-            pireal.enable_disable_query_actions(False)
-            self.hide()
+        #if self.tab.count() == 0:
+            #pireal = Pireal.get_service("pireal")
+            #pireal.enable_disable_query_actions(False)
+            #self.hide()
 
     def new_query(self, filename=''):
-        """ Add new query editor in QTabWidget """
 
-        # New Editor instance
+         # New Editor instance
         qeditor = editor.Editor()
         if filename:
             # RFile
@@ -118,74 +105,74 @@ class QueryWidget(QWidget):
             name = qfile.filename
             self.__nquery += 1
         qeditor.pfile = qfile
-        index = self.tab.addTab(qeditor, name)
-        self.tab.setTabToolTip(index, qfile.filename)
-        self.tab.setCurrentIndex(index)
+        #index = self.tab.addTab(qeditor, name)
+        #self.tab.setTabToolTip(index, qfile.filename)
+        #self.tab.setCurrentIndex(index)
 
-        qeditor.modificationChanged[bool].connect(self.__editor_modified)
-        qeditor.cursorPositionChanged[int, int].connect(
-            self._update_cursor_position)
+        #qeditor.modificationChanged[bool].connect(self.__editor_modified)
+        #qeditor.cursorPositionChanged[int, int].connect(
+            #self._update_cursor_position)
         qeditor.setFocus()
 
-    def execute_queries(self):
-        import re
-        # Editor instance
-        editor = self.tab.currentWidget()
-        # Text
-        text = editor.toPlainText()
-        # Ignore comments
-        table = Pireal.get_service("container").table_widget
-        for line in text.splitlines():
-            if line.startswith('--'):
-                continue
-            parts = line.split('=', 1)
-            parts[0] = parts[0].strip()
-            if re.match(r'^[_a-zA-Z]+[_a-zA-Z0-9]*$', parts[0]):
-                relation_name, line = parts
-            else:
-                relation_name = 'rel_{}'.format(self.__nrelation)
-            try:
-                expression = parser.convert_to_python(line.strip())
-                rel = eval(expression, table.relations)
-                self.__nrelation += 1
-            except Exception as reason:
-
+    #def execute_queries(self):
+        #import re
+        ## Editor instance
+        #editor = self.tab.currentWidget()
+        ## Text
+        #text = editor.toPlainText()
+        ## Ignore comments
+        #table = Pireal.get_service("container").table_widget
+        #for line in text.splitlines():
+            #if line.startswith('--'):
+                #continue
+            #parts = line.split('=', 1)
+            #parts[0] = parts[0].strip()
+            #if re.match(r'^[_a-zA-Z]+[_a-zA-Z0-9]*$', parts[0]):
+                #relation_name, line = parts
+            #else:
+                #relation_name = 'rel_{}'.format(self.__nrelation)
             #try:
+                #expression = parser.convert_to_python(line.strip())
+                #rel = eval(expression, table.relations)
+                #self.__nrelation += 1
             #except Exception as reason:
-                QMessageBox.critical(self, tr.TR_QUERY_ERROR, reason.__str__())
-                return
-            table.add_new_table(rel, relation_name)
-            table.relations[relation_name] = rel
 
-    def __editor_modified(self, modified):
-        """ This function changes the text color of the tab when
-        it receives the signal *modificationChanged(bool)*
+            ##try:
+            ##except Exception as reason:
+                #QMessageBox.critical(self, tr.TR_QUERY_ERROR, reason.__str__())
+                #return
+            #table.add_new_table(rel, relation_name)
+            #table.relations[relation_name] = rel
 
-        :param modified: Boolean value sent by the signal
-        """
+    #def __editor_modified(self, modified):
+        #""" This function changes the text color of the tab when
+        #it receives the signal *modificationChanged(bool)*
 
-        editor = self.tab.currentWidget()
-        editor_name = editor.pfile.name
-        index = self.tab.currentIndex()
-        if modified:
-            text = "{} \u2022".format(editor_name)
-            self.tab.setTabText(index, text)
-        else:
-            self.tab.setTabText(index, editor_name)
-        editor.modified = modified
+        #:param modified: Boolean value sent by the signal
+        #"""
 
-    def removeTab(self, index):
-        # Current editor instance
-        editor = self.tab.widget(index)
-        if editor.modified:
-            r = self.__file_modified_message(editor.filename)
-            if r == QMessageBox.Cancel:
-                return
-            if r == QMessageBox.Yes:
-                self.currentEditorSaved.emit(editor)
-            else:
-                print("Saliendo...")
-        self.tab.removeTab(index)
+        #editor = self.tab.currentWidget()
+        #editor_name = editor.pfile.name
+        #index = self.tab.currentIndex()
+        #if modified:
+            #text = "{} \u2022".format(editor_name)
+            #self.tab.setTabText(index, text)
+        #else:
+            #self.tab.setTabText(index, editor_name)
+        #editor.modified = modified
+
+    #def removeTab(self, index):
+        ## Current editor instance
+        #editor = self.tab.widget(index)
+        #if editor.modified:
+            #r = self.__file_modified_message(editor.filename)
+            #if r == QMessageBox.Cancel:
+                #return
+            #if r == QMessageBox.Yes:
+                #self.currentEditorSaved.emit(editor)
+            #else:
+                #print("Saliendo...")
+        #self.tab.removeTab(index)
 
     def _update_cursor_position(self, li, co):
         self._cursor_position_widget.setText(self._cursor_position % (li, co))
@@ -199,17 +186,17 @@ class QueryWidget(QWidget):
                                         filename), flags)
         return r
 
-    def opened_files(self):
-        for i in range(self.tab.count()):
-            weditor = self.tab.widget(i)
-            if weditor.modified:
-                r = self.__file_modified_message(weditor.filename)
-                if r == QMessageBox.Cancel:
-                    return False
-                if r == QMessageBox.Yes:
-                    print("Guardando")
-                else:
-                    print("Saliendo sin guardar")
-        return True
+    #def opened_files(self):
+        #for i in range(self.tab.count()):
+            #weditor = self.tab.widget(i)
+            #if weditor.modified:
+                #r = self.__file_modified_message(weditor.filename)
+                #if r == QMessageBox.Cancel:
+                    #return False
+                #if r == QMessageBox.Yes:
+                    #print("Guardando")
+                #else:
+                    #print("Saliendo sin guardar")
+        #return True
 
 query_widget = QueryWidget()

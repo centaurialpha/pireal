@@ -36,7 +36,7 @@ MENU['file'] = {
     'name': tr.TR_MENU_FILE,
     'items': [{
         'name': tr.TR_MENU_FILE_NEW_DB,
-        'slot': "container:create_data_base"
+        'slot': "container:new_database"
     }, {
         'name': tr.TR_MENU_FILE_NEW_QUERY,
         'slot': "container:new_query"

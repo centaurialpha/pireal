@@ -85,7 +85,7 @@ if __name__ == "__main__":
             style = f.read()
     else:
         style = None
-    qapp.setStyleSheet(style)
+    #qapp.setStyleSheet(style)
     # Icon
     qapp.setWindowIcon(QIcon(":img/icon"))
     # System language
@@ -104,17 +104,28 @@ if __name__ == "__main__":
             ptranslator.load(os.path.join(settings.LANG_PATH, language + '.qm'))
             qapp.installTranslator(ptranslator)
     # Load services
+    from src.gui import lateral_widget  # lint:ok
+    from src.gui import table_widget  # lint:ok
     from src.gui import central_widget  # lint:ok
     from src.gui.main_window import Pireal
-    from src.gui import status_bar  # lint:ok
-    from src.gui import container  # lint:ok
-    from src.gui import table_widget  # lint:ok
-    from src.gui.query_editor import query_widget  # lint:ok
-    from src.gui import lateral_widget  # lint:ok
+    #from src.gui import status_bar  # lint:ok
+    #from src.gui import container  # lint:ok
+    from src.gui.query_container import container  # lint:ok
 
     INFO("Loading GUI...")
     gui = Pireal()
     gui.show()
     gui.showMaximized()
+
+    # Console
+    from src.utils.console import console_widget
+    from PyQt5.QtWidgets import QDesktopWidget
+    console = console_widget.ConsoleWidget()
+    console.show()
+    console.resize(700, 150)
+    d = QDesktopWidget()
+    geo = d.screenGeometry()
+    console.move(geo.width() / 4, geo.height() / 1.5)
+
     INFO("Pireal ready!")
     sys.exit(qapp.exec_())

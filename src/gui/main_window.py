@@ -23,7 +23,8 @@ from collections import Callable
 from PyQt5.QtWidgets import (
     QMainWindow,
     QMessageBox,
-    QToolBar
+    QToolBar,
+    QMdiArea
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import (
@@ -89,9 +90,9 @@ class Pireal(QMainWindow):
         self.setCentralWidget(central_widget)
 
         # Status bar
-        status_bar = Pireal.get_service("status")
-        status_bar.hide()
-        self.setStatusBar(status_bar)
+        #status_bar = Pireal.get_service("status")
+        #status_bar.hide()
+        #self.setStatusBar(status_bar)
 
         # Install service
         Pireal.load_service("pireal", self)
@@ -134,7 +135,7 @@ class Pireal(QMainWindow):
         # Toolbar items
         toolbar_items = {}
         # Actions
-        container = Pireal.get_service("container")
+        central = Pireal.get_service("central")
 
         # Settings action on menu bar
         qaction = menubar.addAction(tr.TR_SETTINGS_MENUBAR)
@@ -153,7 +154,7 @@ class Pireal(QMainWindow):
                 else:
                     action = menu_item['name']
                     obj, connection = menu_item['slot'].split(':')
-                    obj = self if obj.startswith("pireal") else container
+                    obj = self if obj.startswith("pireal") else central
                     # Load recent files
                     if action is None:
                         files = settings.get_setting('recentFiles', [])
@@ -165,7 +166,7 @@ class Pireal(QMainWindow):
                             qaction = menu.addAction(text)
                             qaction.setData(files[i])
                             qaction.triggered.connect(
-                                container.open_recent_file)
+                                central.open_recent_file)
                         continue
                     qaction = menu.addAction(action)
                     # Icon name is connection
@@ -200,21 +201,19 @@ class Pireal(QMainWindow):
         self.enable_disable_query_actions(False)
 
     def __load_ui(self):
-        container = Pireal.get_service("container")
-        lateral = Pireal.get_service("lateral")
-        lateral.hide()
-        query_widget = Pireal.get_service("query_widget")
-        query_widget.hide()
-
-        container.show_start_page()
-
         central_widget = Pireal.get_service("central")
-        central_widget.load_lateral_widget(lateral)
-        central_widget.load_table_widget(container)
-        central_widget.load_editor_widget(query_widget)
 
-        container.currentFileSaved['QString'].connect(
-            self.__show_status_message)
+        self.mdi = QMdiArea()
+        Pireal.load_service("mdi", self.mdi)
+
+        if settings.PSettings.SHOW_START_PAGE:
+            central_widget.add_start_page()
+        #central_widget.load_lateral_widget(lateral)
+        #central_widget.load_table_widget(container)
+        #central_widget.load_editor_widget(query_widget)
+
+        #container.currentFileSaved['QString'].connect(
+            #self.__show_status_message)
 
         return central_widget
 

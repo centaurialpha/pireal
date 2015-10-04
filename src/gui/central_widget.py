@@ -19,43 +19,101 @@
 
 from PyQt5.QtWidgets import (
     QWidget,
-    QHBoxLayout,
-    QSplitter
+    QVBoxLayout,
+    QStackedWidget,
+    QFileDialog,
+    QMessageBox
 )
-from PyQt5.QtCore import Qt
 from src.gui.main_window import Pireal
+from src.gui import start_page
+from src.gui import database_widget
+from src import translations as tr
+from src.core import settings
 
 
 class CentralWidget(QWidget):
 
     def __init__(self):
-        super(CentralWidget, self).__init__()
-        box = QHBoxLayout(self)
+        QWidget.__init__(self)
+        box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 0, 0)
 
-        # Splitters
-        self._splitter_horizontal = QSplitter(Qt.Horizontal)
-        self._splitter_vertical = QSplitter(Qt.Vertical)
-        self._splitter_vertical.addWidget(self._splitter_horizontal)
+        # Stacked
+        self.stack = QStackedWidget()
+        box.addWidget(self.stack)
 
-        box.addWidget(self._splitter_vertical)
+        # Database widget
+        self.db_widget = database_widget.DBWidget()
+
+        self.__db_created = False
+        self.__n_database = 1
 
         # Load service
         Pireal.load_service("central", self)
 
-    def load_lateral_widget(self, lateral):
-        self._splitter_horizontal.addWidget(lateral)
+    def add_start_page(self):
+        """  """
 
-    def load_table_widget(self, table):
-        self._splitter_horizontal.addWidget(table)
+        startp = start_page.StartPage()
+        index = self.add_widget(startp)
+        self.stack.setCurrentIndex(index)
 
-    def load_editor_widget(self, editor):
-        self._splitter_vertical.addWidget(editor)
+    def add_widget(self, widget):
+        """ Add widget to stacked and return the index """
 
-    def showEvent(self, event):
-        QWidget.showEvent(self, event)
-        width = self.width() / 2
-        height = self.height() / 6
-        self._splitter_horizontal.setSizes([height, width])
+        index = self.stack.addWidget(widget)
+        return index
+
+    def new_database(self, name=''):
+        if self.__db_created:
+            QMessageBox.critical(self, "Error!", tr.TR_CONTAINER_ERROR_DB)
+            return
+        mdi = Pireal.get_service("mdi")
+        index = self.add_widget(mdi)
+        self.stack.setCurrentIndex(index)
+
+        # Create mdi child
+
+        sub_window = mdi.addSubWindow(self.db_widget)
+        sub_window.resize(self.width(), self.height() / 2)
+
+        window_title = self.db_widget.create_database(name)
+        if window_title.startswith('untitled'):
+            window_title = window_title.format(self.__n_database)
+        sub_window.setWindowTitle(window_title)
+        sub_window.show()
+
+        pireal = Pireal.get_service("pireal")
+        pireal.enable_disable_db_actions()
+
+        self.__db_created = True
+        self.__n_database += 1
+
+    def new_query(self):
+        query_widget = Pireal.get_service("query_container")
+        pireal = Pireal.get_service("pireal")
+        mdi_area = self.stack.currentWidget()
+        sub_window = mdi_area.addSubWindow(query_widget)
+        sub_window.resize(self.width() / 1.5, self.height() / 2)
+        sub_window.show()
+        sub_window.add_container()
+        pireal.enable_disable_relation_actions()
+
+    def open_file(self, filename=''):
+        if not filename:
+            filename = QFileDialog.getOpenFileName(self,
+                                                   tr.TR_CONTAINER_OPEN_FILE,
+                                                   "~", settings.DBFILE)[0]
+            if not filename:
+                return
+
+        self.new_database(filename)
+
+    def open_recent_file(self):
+        pass
+
+    def execute_queries(self):
+        query_container = Pireal.get_service("query_container")
+        query_container.execute_queries()
 
 central = CentralWidget()

@@ -29,7 +29,7 @@ from PyQt5.QtCore import (
     Qt,
     pyqtSignal
 )
-from src.gui.query_editor import (
+from src.gui.query_container import (
     highlighter,
     sidebar
 )
