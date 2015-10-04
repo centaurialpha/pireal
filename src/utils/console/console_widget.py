@@ -20,7 +20,10 @@
 from PyQt5.QtWidgets import QPlainTextEdit
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtCore import Qt
-from src.utils.console import console
+from src.utils.console import (
+    console,
+    highlighter
+)
 
 
 class ConsoleWidget(QPlainTextEdit):
@@ -30,6 +33,9 @@ class ConsoleWidget(QPlainTextEdit):
         self.setWindowTitle("Python Console for Pireal")
         self.setUndoRedoEnabled(False)
         self.moveCursor(QTextCursor.EndOfLine)
+
+        # Highligher
+        self.highlighter = highlighter.PythonHighlighter(self.document())
 
         self._prompt = 'pireal> '
         self._console = console.Console()
