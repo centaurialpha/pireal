@@ -59,7 +59,7 @@ class PythonHighlighter(QSyntaxHighlighter):
 
         # Prompt format
         fprompt = QTextCharFormat()
-        fprompt.setForeground(Qt.darkGray)
+        fprompt.setForeground(Qt.red)
         pprompt = QRegExp('pireal> ')
         self._rules.append((pprompt, fprompt))
 
