@@ -68,10 +68,8 @@ class Console(InteractiveConsole):
     def push(self, line):
         """Insert a command into the console."""
 
-        if line in ('exit()', 'help()'):
-            return
         self.get_output()
-        val = InteractiveConsole.push(self, line)
+        incomplete = super(Console, self).push(line)
         self.return_output()
         self.output = self._cache.flush()
-        return val
+        return incomplete
