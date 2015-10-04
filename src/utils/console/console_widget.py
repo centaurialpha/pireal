@@ -34,6 +34,8 @@ class ConsoleWidget(QPlainTextEdit):
         self._prompt = 'pireal> '
         self._console = console.Console()
 
+        self._cache = []
+
         self._set_stylesheet()
 
         self._console.push('from src.gui.main_window import Pireal;'
@@ -54,6 +56,9 @@ class ConsoleWidget(QPlainTextEdit):
             cursor_pos = self.textCursor().columnNumber() - len(self._prompt)
             if cursor_pos == 0:
                 return
+        if key == Qt.Key_Up:
+            self.appendPlainText(self._cache[-1])
+            return
         QPlainTextEdit.keyPressEvent(self, event)
 
     def _write_command(self):
@@ -62,6 +67,7 @@ class ConsoleWidget(QPlainTextEdit):
         self._console.push(command)
         self.appendPlainText(self._console.output)
         self._add_prompt()
+        self._cache.append(command)
 
     def _add_prompt(self):
         self.appendPlainText(self._prompt)
