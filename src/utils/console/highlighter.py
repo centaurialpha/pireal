@@ -68,7 +68,7 @@ class PythonHighlighter(QSyntaxHighlighter):
         fextra.setForeground(Qt.darkCyan)
 
         for pattern in EXTRAS:
-            self._rules.append((QRegExp(pattern), fextra))
+            self._rules.append((QRegExp("\\b" + pattern + "\\b"), fextra))
 
         for pattern in KEYWORDS:
             self._rules.append((QRegExp("\\b" + pattern + "\\b"), fkeyword))
