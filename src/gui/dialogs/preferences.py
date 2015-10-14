@@ -64,6 +64,7 @@ class Preferences(QDialog):
         hbox.setContentsMargins(50, 50, 500, 0)
         vbox = QVBoxLayout()
         btn_back = QToolButton()
+        btn_back.setAutoRaise(True)
         btn_back.setIconSize(QSize(32, 32))
         btn_back.setIcon(QIcon(":img/arrow-left"))
         vbox.addWidget(btn_back)

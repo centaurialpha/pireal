@@ -14,5 +14,6 @@
         <file alias="remove_relation">images/table_close.png</file>
         <file alias="execute_queries">images/execute.png</file>
         <file alias="save_file">images/save.png</file>
+        <file alias="arrow-left">images/arrow-left.png</file>
     </qresource>
 </RCC>
