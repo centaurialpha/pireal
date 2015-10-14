@@ -132,7 +132,7 @@ class QueryContainer(QWidget):
             #self._list_tables.addItem()
 
     def showEvent(self, event):
-        QSplitter.showEvent(self, event)
+        super(QueryContainer, self).showEvent(event)
         self.hsplitter.setSizes([1, self.width() / 3])
 
 

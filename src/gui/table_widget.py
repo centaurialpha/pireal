@@ -86,7 +86,8 @@ class TableWidget(QWidget):
                 table.setHorizontalHeaderLabels(rel.fields)
                 self.stacked.addWidget(table)
                 table.removeRow(table.rowCount() - 1)
-                lateral.add_item_list([name])
+                ntuples = ' [' + str(table.rowCount()) + ']'
+                lateral.add_item_list([name + ntuples])
 
     def load_relation(self, filenames):
         lateral = Pireal.get_service("lateral")
