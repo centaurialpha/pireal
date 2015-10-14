@@ -245,6 +245,7 @@ class Preferences(QDialog):
             if radiob.isChecked():
                 settings.set_setting('language', radiob.text())
                 settings.PSettings.LANGUAGE = radiob.text()
+        print(settings.PSettings.LANGUAGE)
 
     def _change_theme(self):
         if self._radio_styles[0].isChecked():

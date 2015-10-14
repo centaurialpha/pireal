@@ -84,30 +84,23 @@ if __name__ == "__main__":
     # Stylesheet
     # Fusion style
     QApplication.setStyle(list(QStyleFactory.keys()).pop())
-    #stylesheet = settings.PSettings.THEME
-    #if stylesheet:
-        #with open(settings.STYLESHEET) as f:
-            #style = f.read()
-    #else:
-        #style = None
-    #qapp.setStyleSheet(style)
+
     # Icon
     qapp.setWindowIcon(QIcon(":img/icon"))
-    # System language
-    local = QLocale.system().name()
 
+    # System and app language
+    local = QLocale.system().name()
+    lang = settings.get_setting('language', local)
     translator = QTranslator()
-    translator.load("qt_" + local, QLibraryInfo.location(
-                    QLibraryInfo.TranslationsPath))
-    qapp.installTranslator(translator)
-    # App language
-    ptranslator = QTranslator()
-    language = settings.PSettings.LANGUAGE
-    if not language:
-        language = detect_language(local[:2])
-        if language is not None:
-            ptranslator.load(os.path.join(settings.LANG_PATH, language + '.qm'))
-            qapp.installTranslator(ptranslator)
+    if settings.PSettings.LANGUAGE:
+        translator.load(os.path.join(settings.LANG_PATH, lang + '.qm'))
+        qapp.installTranslator(translator)
+
+        qtranslator = QTranslator()
+        qtranslator.load("qt_" + local, QLibraryInfo.location(
+                         QLibraryInfo.TranslationsPath))
+        qapp.installTranslator(qtranslator)
+
     # Load services
     #from src.gui import table_widget  # lint:ok
     from src.gui import central_widget  # lint:ok
