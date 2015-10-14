@@ -225,7 +225,7 @@ class Pireal(QMainWindow):
         status.show_message(msg)
 
     def change_title(self, title):
-        self.setWindowTitle(title + " - Pireal")
+        self.setWindowTitle("Pireal " + '[' + title + ']')
 
     def enable_disable_db_actions(self, enable=True):
         """ Public method. Enables or disables db QAction """
