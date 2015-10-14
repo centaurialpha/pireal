@@ -162,12 +162,12 @@ class Preferences(QDialog):
         duration, x = 180, 150  # Animation duration
         # Animation start
         # Opacity animation
-        self.opacity_animation_s = QPropertyAnimation(self.effect, "opacity")
+        self.opacity_animation_s = QPropertyAnimation(self.effect, b"opacity")
         self.opacity_animation_s.setDuration(duration)
         self.opacity_animation_s.setStartValue(0.0)
         self.opacity_animation_s.setEndValue(1.0)
         # X animation
-        self.x_animation_s = QPropertyAnimation(self, "geometry")
+        self.x_animation_s = QPropertyAnimation(self, b"geometry")
         self.x_animation_s.setDuration(duration)
         self.x_animation_s.setStartValue(QRect(x, 0, parent.width(),
                                        parent.height()))
@@ -175,12 +175,12 @@ class Preferences(QDialog):
                                      parent.height()))
         # Animation end
         # Opacity animation
-        self.opacity_animation_e = QPropertyAnimation(self.effect, "opacity")
+        self.opacity_animation_e = QPropertyAnimation(self.effect, b"opacity")
         self.opacity_animation_e.setDuration(duration)
         self.opacity_animation_e.setStartValue(1.0)
         self.opacity_animation_e.setEndValue(0.0)
         # X animation
-        self.x_animation_e = QPropertyAnimation(self, "geometry")
+        self.x_animation_e = QPropertyAnimation(self, b"geometry")
         self.x_animation_e.setDuration(duration)
         self.x_animation_e.setStartValue(QRect(0, 0, parent.width(),
                                          parent.height()))
