@@ -61,6 +61,7 @@ class PSettings:
     MAX_RECENT_FILES = 5
     LANGUAGE = ""
     THEME = ""
+    CONSOLE = False  # For dev
 
 
 def create_dir():
@@ -86,3 +87,4 @@ def load_settings():
                                                True, type=bool)
     PSettings.LANGUAGE = settings.value('language', "", type='QString')
     PSettings.THEME = settings.value('stylesheet', "", type='QString')
+    PSettings.CONSOLE = settings.value('console', True, type=bool)

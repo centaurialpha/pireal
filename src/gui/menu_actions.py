@@ -36,28 +36,28 @@ MENU['file'] = {
     'name': tr.TR_MENU_FILE,
     'items': [{
         'name': tr.TR_MENU_FILE_NEW_DB,
-        'slot': "container:new_database"
+        'slot': "main:create_database"
     }, {
         'name': tr.TR_MENU_FILE_NEW_QUERY,
-        'slot': "container:new_query"
+        'slot': "main:new_query"
     }, "-", {
         'name': tr.TR_MENU_FILE_OPEN,
-        'slot': "container:open_file"
+        'slot': "main:open_file"
     }, {
-        'name': tr.TR_MENU_FILE_SAVE_DB,
-        'slot': "container:save_data_base"
-    }, {
+        #'name': tr.TR_MENU_FILE_SAVE_DB,
+        #'slot': "container:save_data_base"
+    #}, {
         'name': tr.TR_MENU_FILE_SAVE,
-        'slot': "container:save_query"
-    }, {
-        'name': tr.TR_MENU_FILE_SAVE_AS,
-        'slot': "container:save_query_as"
-    }, "-", {
-        'name': tr.TR_MENU_FILE_CONVERT_TO_PDB,
-        'slot': "container:convert_to_pdb"
+        'slot': "container:save_file"
+    #}, {
+        #'name': tr.TR_MENU_FILE_SAVE_AS,
+        #'slot': "container:save_query_as"
+    #}, "-", {
+        #'name': tr.TR_MENU_FILE_CONVERT_TO_PDB,
+        #'slot': "container:convert_to_pdb"
     }, "-", {
         'name': None,
-        'slot': "container:open_recent_file"
+        'slot': "main:open_recent_file"
     }, "-", {
         'name': tr.TR_MENU_FILE_EXIT,
         'slot': "pireal:close"}]}
@@ -104,7 +104,7 @@ MENU['relation'] = {
         'slot': "container:insert_tuple"
     }, {
         'name': tr.TR_MENU_RELATION_DELETE_ROW,
-        'slot': "container:remove_tuple",
+        'slot': "container:remove_tuple"
     }, "-", {
         'name': tr.TR_MENU_RELATION_EXECUTE,
         'slot': "container:execute_queries"}]}

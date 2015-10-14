@@ -20,15 +20,11 @@
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QStackedWidget,
-    QFileDialog,
-    QMessageBox
+    QStackedWidget
 )
 from src.gui.main_window import Pireal
 from src.gui import start_page
-from src.gui import database_widget
-from src import translations as tr
-from src.core import settings
+from src.gui.dialogs import preferences
 
 
 class CentralWidget(QWidget):
@@ -38,82 +34,54 @@ class CentralWidget(QWidget):
         box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 0, 0)
 
-        # Stacked
-        self.stack = QStackedWidget()
-        box.addWidget(self.stack)
+        self.stacked = QStackedWidget()
+        box.addWidget(self.stacked)
 
-        # Database widget
-        self.db_widget = database_widget.DBWidget()
+        self.__created = False
 
-        self.__db_created = False
-        self.__n_database = 1
-
-        # Load service
         Pireal.load_service("central", self)
 
     def add_start_page(self):
-        """  """
+        sp = start_page.StartPage()
+        self.add_widget(sp)
 
-        startp = start_page.StartPage()
-        index = self.add_widget(startp)
-        self.stack.setCurrentIndex(index)
+    def add_main_container(self):
+        main = Pireal.get_service("main")
+        self.add_widget(main)
+
+    def __get_created(self):
+        return self.__created
+
+    def __set_created(self, value):
+        self.__created = value
+
+    created = property(__get_created, __set_created)
+
+    def show_settings(self):
+        preferences_dialog = preferences.Preferences(self)
+
+        if isinstance(self.widget(1), preferences.Preferences):
+            self.widget(1).close()
+        else:
+            self.stacked.insertWidget(1, preferences_dialog)
+            self.stacked.setCurrentIndex(1)
+
+        # Connect the closed signal
+        preferences_dialog.settingsClosed.connect(self._settings_closed)
+
+    def widget(self, index):
+        """ Returns the widget at the given index """
+
+        return self.stacked.widget(index)
 
     def add_widget(self, widget):
-        """ Add widget to stacked and return the index """
+        """ Appends and show the given widget to the Stacked """
 
-        index = self.stack.addWidget(widget)
-        return index
+        index = self.stacked.addWidget(widget)
+        self.stacked.setCurrentIndex(index)
 
-    def new_database(self, name=''):
-        if self.__db_created:
-            QMessageBox.critical(self, "Error!", tr.TR_CONTAINER_ERROR_DB)
-            return
-        mdi = Pireal.get_service("mdi")
-        index = self.add_widget(mdi)
-        self.stack.setCurrentIndex(index)
-
-        # Create mdi child
-
-        sub_window = mdi.addSubWindow(self.db_widget)
-        sub_window.resize(self.width(), self.height() / 2)
-
-        window_title = self.db_widget.create_database(name)
-        if window_title.startswith('untitled'):
-            window_title = window_title.format(self.__n_database)
-        sub_window.setWindowTitle(window_title)
-        sub_window.show()
-
-        pireal = Pireal.get_service("pireal")
-        pireal.enable_disable_db_actions()
-
-        self.__db_created = True
-        self.__n_database += 1
-
-    def new_query(self):
-        query_widget = Pireal.get_service("query_container")
-        pireal = Pireal.get_service("pireal")
-        mdi_area = self.stack.currentWidget()
-        sub_window = mdi_area.addSubWindow(query_widget)
-        sub_window.resize(self.width() / 1.5, self.height() / 2)
-        sub_window.show()
-        sub_window.add_container()
-        pireal.enable_disable_relation_actions()
-
-    def open_file(self, filename=''):
-        if not filename:
-            filename = QFileDialog.getOpenFileName(self,
-                                                   tr.TR_CONTAINER_OPEN_FILE,
-                                                   "~", settings.DBFILE)[0]
-            if not filename:
-                return
-
-        self.new_database(filename)
-
-    def open_recent_file(self):
-        pass
-
-    def execute_queries(self):
-        query_container = Pireal.get_service("query_container")
-        query_container.execute_queries()
+    def _settings_closed(self):
+        self.stacked.removeWidget(self.widget(1))
+        self.stacked.setCurrentWidget(self.stacked.currentWidget())
 
 central = CentralWidget()

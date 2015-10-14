@@ -30,7 +30,7 @@ class ConsoleWidget(QPlainTextEdit):
 
     def __init__(self):
         QPlainTextEdit.__init__(self, 'pireal> ')
-        self.setWindowTitle("Python Console for Pireal")
+        self.setWindowTitle("Python Console for Pireal Developers")
         self.setUndoRedoEnabled(False)
         self.moveCursor(QTextCursor.EndOfLine)
 

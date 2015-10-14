@@ -62,8 +62,8 @@ class LateralWidget(QWidget):
         menu.exec_(self.mapToGlobal(point))
 
     def _change_item(self, index):
-        table = Pireal.get_service("container").table_widget
-        table.stacked.setCurrentIndex(index)
+        table_widget = Pireal.get_service("main").db_widget.table_widget
+        table_widget.stacked.setCurrentIndex(index)
 
     def add_item_list(self, items):
         if not self.isVisible():

@@ -1,20 +1,18 @@
 <RCC>
     <qresource prefix="/img">
-        <file alias="new_query">images/query.png</file>
-        <file alias="create_data_base">images/add-db.png</file>
-        <file alias="save_data_base">images/save-db.png</file>
-        <file alias="open_file">images/folder.png</file>
-        <file alias="save_query">images/save.png</file>
-        <file alias="undo_action">images/undo.png</file>
-        <file alias="redo_action">images/redo.png</file>
+        <file alias="banner">images/pireal_banner.png</file>
+        <file alias="icon">images/icon.png</file>
+        <file alias="create_database">images/database.png</file>
         <file alias="copy_action">images/copy.png</file>
         <file alias="cut_action">images/cut.png</file>
         <file alias="paste_action">images/paste.png</file>
+        <file alias="redo_action">images/redo.png</file>
+        <file alias="undo_action">images/undo.png</file>
+        <file alias="open_file">images/open.png</file>
+        <file alias="new_query">images/query.png</file>
         <file alias="create_new_relation">images/table.png</file>
-        <file alias="remove_relation">images/delete-table.png</file>
-        <file alias="execute_queries">images/run.png</file>
-        <file alias="banner">images/pireal_banner.png</file>
-        <file alias="arrow-left">images/arrow-left.png</file>
-        <file alias="icon">images/icon.png</file>
+        <file alias="remove_relation">images/table_close.png</file>
+        <file alias="execute_queries">images/execute.png</file>
+        <file alias="save_file">images/save.png</file>
     </qresource>
 </RCC>

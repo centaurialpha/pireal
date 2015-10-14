@@ -23,8 +23,7 @@ from collections import Callable
 from PyQt5.QtWidgets import (
     QMainWindow,
     QMessageBox,
-    QToolBar,
-    QMdiArea
+    QToolBar
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import (
@@ -51,12 +50,12 @@ class Pireal(QMainWindow):
 
     # The name of items is the connection text
     TOOLBAR_ITEMS = [
-        'create_data_base',
+        'create_database',
         'save_data_base',
         'new_query',
         '',  # Is a separator!
         'open_file',
-        'save_query',
+        'save_file',
         '',
         'undo_action',
         'redo_action',
@@ -78,7 +77,7 @@ class Pireal(QMainWindow):
 
         # Toolbar
         self.toolbar = QToolBar(self)
-        self.toolbar.setIconSize(QSize(36, 36))
+        self.toolbar.setIconSize(QSize(22, 22))
         self.toolbar.setMovable(False)
         self.addToolBar(self.toolbar)
         # Menu bar
@@ -134,12 +133,13 @@ class Pireal(QMainWindow):
         kmap = keymap.KEYMAP
         # Toolbar items
         toolbar_items = {}
-        # Actions
+
         central = Pireal.get_service("central")
+        main = Pireal.get_service("main")
 
         # Settings action on menu bar
         qaction = menubar.addAction(tr.TR_SETTINGS_MENUBAR)
-        qaction.triggered.connect(self.show_settings)
+        qaction.triggered.connect(central.show_settings)
 
         # Load menu bar
         for item in menu_actions.MENU:
@@ -154,7 +154,13 @@ class Pireal(QMainWindow):
                 else:
                     action = menu_item['name']
                     obj, connection = menu_item['slot'].split(':')
-                    obj = self if obj.startswith("pireal") else central
+                    if obj.startswith('main'):
+                        obj = main
+                    elif obj.startswith('pireal'):
+                        obj = self
+                    else:
+                        obj = central
+
                     # Load recent files
                     if action is None:
                         files = settings.get_setting('recentFiles', [])
@@ -166,7 +172,7 @@ class Pireal(QMainWindow):
                             qaction = menu.addAction(text)
                             qaction.setData(files[i])
                             qaction.triggered.connect(
-                                central.open_recent_file)
+                                central.open_recent_database)
                         continue
                     qaction = menu.addAction(action)
                     # Icon name is connection
@@ -203,9 +209,6 @@ class Pireal(QMainWindow):
     def __load_ui(self):
         central_widget = Pireal.get_service("central")
 
-        self.mdi = QMdiArea()
-        Pireal.load_service("mdi", self.mdi)
-
         if settings.PSettings.SHOW_START_PAGE:
             central_widget.add_start_page()
         #central_widget.load_lateral_widget(lateral)
@@ -229,12 +232,16 @@ class Pireal(QMainWindow):
 
         actions = [
             'new_query',
-            'save_data_base',
-            'save_query',
-            'save_query_as',
+            'save_file',
+            #'close_database',
+            #'save_query',
+            #'save_query_as',
+            #'save_database_as',
+            #'close_query',
+            #'execute_queries',
             'create_new_relation',
             'remove_relation',
-            'load_relation'
+            #'load_relation'
         ]
 
         for action in actions:
@@ -247,7 +254,6 @@ class Pireal(QMainWindow):
         actions = [
             'insert_tuple',
             'remove_tuple',
-            'execute_queries'
         ]
 
         for action in actions:
@@ -301,21 +307,21 @@ class Pireal(QMainWindow):
     def _update_settings(self, key, value):
         pass
 
-    def closeEvent(self, event):
-        container = Pireal.get_service("container")
-        if not container.check_opened_query_files():
-            event.ignore()
-        if container.modified:
-            db_name = container.get_db_name()
-            flags = QMessageBox.Yes
-            flags |= QMessageBox.No
-            flags |= QMessageBox.Cancel
+    #def closeEvent(self, event):
+        #container = Pireal.get_service("container")
+        #if not container.check_opened_query_files():
+            #event.ignore()
+        #if container.modified:
+            #db_name = container.get_db_name()
+            #flags = QMessageBox.Yes
+            #flags |= QMessageBox.No
+            #flags |= QMessageBox.Cancel
 
-            result = QMessageBox.question(self,
-                                          tr.TR_CONTAINER_DB_UNSAVED_TITLE,
-                                          tr.TR_CONTAINER_DB_UNSAVED.format(
-                                              db_name), flags)
-            if result == QMessageBox.Cancel:
-                event.ignore()
-            if result == QMessageBox.Yes:
-                container.save_data_base()
+            #result = QMessageBox.question(self,
+                                          #tr.TR_CONTAINER_DB_UNSAVED_TITLE,
+                                          #tr.TR_CONTAINER_DB_UNSAVED.format(
+                                              #db_name), flags)
+            #if result == QMessageBox.Cancel:
+                #event.ignore()
+            #if result == QMessageBox.Yes:
+                #container.save_data_base()

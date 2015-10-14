@@ -22,8 +22,8 @@ from PyQt5.QtWidgets import (
     QMessageBox
 )
 from PyQt5.QtCore import Qt
-from src.gui.main_window import Pireal
-from src.gui import table_widget
+#from src.gui.main_window import Pireal
+from src.gui import table_widget, lateral_widget
 from src.core import pfile
 
 
@@ -31,8 +31,8 @@ class DBWidget(QSplitter):
 
     def __init__(self, orientation=Qt.Horizontal):
         QSplitter.__init__(self, orientation)
-        lateral_widget = Pireal.get_service("lateral")
-        self.addWidget(lateral_widget)
+        self.lateral_widget = lateral_widget.LateralWidget()
+        self.addWidget(self.lateral_widget)
         self.table_widget = table_widget.TableWidget()
         self.addWidget(self.table_widget)
 
