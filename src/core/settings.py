@@ -87,4 +87,3 @@ def load_settings():
                                                True, type=bool)
     PSettings.LANGUAGE = settings.value('language', "", type='QString')
     PSettings.THEME = settings.value('stylesheet', "", type='QString')
-    PSettings.CONSOLE = settings.value('console', True, type=bool)
