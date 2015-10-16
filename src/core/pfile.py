@@ -23,7 +23,6 @@ from PyQt5.QtCore import (
     QIODevice,
     QTextStream
 )
-from src.core import settings
 
 
 class PFile(object):
@@ -66,8 +65,7 @@ class PFile(object):
         if not _file.open(QIODevice.ReadOnly | QIODevice.Text):
             raise
         fstream = QTextStream(_file)
-        codec = 'iso-8859-1' if settings.LINUX else 'utf-8'
-        fstream.setCodec(codec)
+        fstream.setCodec('utf-8')
         return fstream.readAll()
 
     def write(self, content, new_fname=''):
