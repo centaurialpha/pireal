@@ -65,6 +65,8 @@ class TableWidget(QWidget):
         rel = None
         for part in data.split('@'):
             for e, line in enumerate(part.splitlines()):
+                # Remove whitespaces
+                line = ','.join(list(map(str.strip, line.split(','))))
                 if e == 0:
                     #line = line[:-1]
                     if line.endswith(','):
