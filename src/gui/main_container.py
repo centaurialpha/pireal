@@ -155,9 +155,9 @@ class MainContainer(QSplitter):
                 QMessageBox.critical(self, tr.TR_QUERY_ERROR, reason.__str__())
                 return
 
-            query_container.add_list_items([relation_name])
-            query_container.add_new_table(relation, relation_name)
-            table_widget.relations[relation_name] = relation
+            if table_widget.add_relation(relation_name, relation):
+                query_container.add_new_table(relation, relation_name)
+                query_container.add_list_items([relation_name])
 
 
 main = MainContainer()

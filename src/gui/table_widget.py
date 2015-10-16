@@ -54,6 +54,12 @@ class TableWidget(QWidget):
     def count(self):
         return self.stacked.count()
 
+    def add_relation(self, name, rela):
+        if self.relations.get(name, None) is None:
+            self.relations[name] = rela
+            return True
+        return False
+
     def add_data_base(self, data):
         lateral = Pireal.get_service("lateral")
         rel = None
