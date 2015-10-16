@@ -1,0 +1,14 @@
+@alumnos:matricula,nombrealumno,ciudad,edad
+01079,Flavio,Catamarca,22
+01033,Gabriel,Belén,24
+00966,Mercedes,Catamarca,21
+01170,Sebastian,Catamarca,22
+01233,Marcos,Andalgalá,23
+01087,José,Belén,24
+@inscripto:idinscripto,matricula,codmateria
+1,01033,01234
+2,1170,01222
+3,01079,02323
+@materia:codmateria,nombremateria
+01234,Base de Datos
+02323,Física
