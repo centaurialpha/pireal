@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import (
     QAbstractItemView,
     QStackedWidget
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QEvent, pyqtSignal
 from src.gui.main_window import Pireal
 from src.gui.query_container import (
     editor
@@ -60,6 +60,7 @@ class QueryTabContainer(QTabWidget):
 
 
 class QueryContainer(QWidget):
+    editorFocused = pyqtSignal(bool)
 
     def __init__(self, parent=None):
         super(QueryContainer, self).__init__(parent)
@@ -77,6 +78,7 @@ class QueryContainer(QWidget):
 
         self._weditor = editor.Editor()
         self.vsplitter.addWidget(self._weditor)
+        self._weditor.installEventFilter(self)
 
         self.vsplitter.addWidget(self.hsplitter)
         box.addWidget(self.vsplitter)
@@ -86,6 +88,13 @@ class QueryContainer(QWidget):
 
         self._list_tables.currentRowChanged[int].connect(
             lambda index: self._stack_tables.setCurrentIndex(index))
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.FocusIn:
+            self.editorFocused.emit(True)
+        elif event.type() == QEvent.FocusOut:
+            self.editorFocused.emit(False)
+        return QWidget.eventFilter(self, obj, event)
 
     def add_editor_text(self, text):
         self._weditor.setPlainText(text)

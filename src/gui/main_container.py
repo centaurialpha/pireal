@@ -110,8 +110,20 @@ class MainContainer(QSplitter):
         d = new_relation_dialog.NewRelationDialog()
         d.show()
 
+    def _change_state_actions(self, value):
+        qactions = [
+            'undo_action',
+            'redo_action',
+            'copy_action',
+            'cut_action',
+            'paste_action',
+        ]
+        for qaction in qactions:
+            Pireal.get_action(qaction).setEnabled(value)
+
     def new_query(self, filename=''):
         qcontainer = query_container.QueryContainer()
+        qcontainer.editorFocused.connect(self._change_state_actions)
 
         if not filename:
             ffile = pfile.PFile()
