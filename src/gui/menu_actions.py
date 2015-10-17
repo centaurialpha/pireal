@@ -92,7 +92,7 @@ MENU['relation'] = {
     'name': tr.TR_MENU_RELATION,
     'items': [{
         'name': tr.TR_MENU_RELATION_NEW_RELATION,
-        'slot': "container:create_new_relation"
+        'slot': "main:create_new_relation"
     }, {
         'name': tr.TR_MENU_RELATION_DELETE_RELATION,
         'slot': "container:remove_relation"

@@ -105,6 +105,11 @@ class MainContainer(QSplitter):
     def close_database(self):
         pass
 
+    def create_new_relation(self):
+        from src.gui.dialogs import new_relation_dialog
+        d = new_relation_dialog.NewRelationDialog()
+        d.show()
+
     def new_query(self, filename=''):
         qcontainer = query_container.QueryContainer()
 

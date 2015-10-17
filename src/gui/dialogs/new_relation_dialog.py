@@ -46,7 +46,7 @@ class NewRelationDialog(QDialog):
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
-        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
+        #self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.setFocusPolicy(Qt.TabFocus)
         self.setFocus()
         self.setWindowTitle(tr.TR_RELATION_DIALOG_TITLE)
@@ -156,7 +156,7 @@ class NewRelationDialog(QDialog):
                 data[row, column] = self._table.item(row, column).text()
             rel.insert(reg)
         # Add table and relation
-        table_widget = Pireal.get_service("container").table_widget
+        table_widget = Pireal.get_service("main").db_widget.table_widget
         table_widget.add_table(rows - 1, columns, name, data, fields)
         table_widget.relations[name] = rel
 
