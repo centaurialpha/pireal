@@ -58,9 +58,20 @@ class QueryTabContainer(QTabWidget):
         widget.set_focus()
         return inserted_index
 
+    def tab_modified(self, modified):
+        weditor = self.sender().editor()
+        if modified:
+            text = "{} \u2022".format(weditor.name)
+            self.setTabText(self.currentIndex(), text)
+        else:
+            self.setTabText(self.currentIndex(), weditor.name)
+
 
 class QueryContainer(QWidget):
+
+    # Signals
     editorFocused = pyqtSignal(bool)
+    editorModified = pyqtSignal(bool)
 
     def __init__(self, parent=None):
         super(QueryContainer, self).__init__(parent)
@@ -79,6 +90,7 @@ class QueryContainer(QWidget):
         self._weditor = editor.Editor()
         self.vsplitter.addWidget(self._weditor)
         self._weditor.installEventFilter(self)
+        self._weditor.modificationChanged[bool].connect(self._editor_modified)
 
         self.vsplitter.addWidget(self.hsplitter)
         box.addWidget(self.vsplitter)
@@ -88,6 +100,15 @@ class QueryContainer(QWidget):
 
         self._list_tables.currentRowChanged[int].connect(
             lambda index: self._stack_tables.setCurrentIndex(index))
+
+    def set_pfile(self, pfile):
+        self._weditor.pfile = pfile
+
+    def _editor_modified(self, modified):
+        self.editorModified.emit(modified)
+
+    def editor(self):
+        return self._weditor
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.FocusIn:

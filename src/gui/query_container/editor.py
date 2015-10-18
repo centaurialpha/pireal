@@ -58,10 +58,14 @@ class Editor(QPlainTextEdit):
     def filename(self):
         """ This function returns the filename of RFile object
 
-        :returns: filename of RFile
+        :returns: filename of PFile
         """
 
         return self.pfile.filename
+
+    @property
+    def name(self):
+        return self.pfile.name
 
     def resizeEvent(self, event):
         super(Editor, self).resizeEvent(event)

@@ -124,6 +124,7 @@ class MainContainer(QSplitter):
     def new_query(self, filename=''):
         qcontainer = query_container.QueryContainer()
         qcontainer.editorFocused.connect(self._change_state_actions)
+        qcontainer.editorModified.connect(self._editor_modified)
 
         if not filename:
             ffile = pfile.PFile()
@@ -133,6 +134,8 @@ class MainContainer(QSplitter):
         else:
             ffile = pfile.PFile(filename)
             qcontainer.add_editor_text(ffile.read())
+
+        qcontainer.set_pfile(ffile)
 
         if not self.query_tab_container.isVisible():
             self.query_tab_container.show()
@@ -147,6 +150,9 @@ class MainContainer(QSplitter):
 
     def _add_query_tab(self, widget, title):
         return self.query_tab_container.add_tab(widget, title)
+
+    def _editor_modified(self, modified):
+        self.query_tab_container.tab_modified(modified)
 
     def execute_queries(self):
         query_container = self.query_tab_container.currentWidget()
