@@ -28,13 +28,15 @@ from PyQt5.QtWidgets import (
     QTabWidget,
     QHeaderView,
     QAbstractItemView,
-    QStackedWidget
+    QStackedWidget,
+    QMessageBox
 )
 from PyQt5.QtCore import Qt, QEvent, pyqtSignal
 from src.gui.main_window import Pireal
 from src.gui.query_container import (
     editor
 )
+from src import translations as tr
 #from src.core import parser
     #pfile,
     #parser
@@ -49,7 +51,7 @@ class QueryTabContainer(QTabWidget):
         self.setTabsClosable(True)
         self.setMovable(True)
 
-        self.tabCloseRequested[int].connect(self.removeTab)
+        self.tabCloseRequested[int].connect(self.remove_tab)
 
     def add_tab(self, widget, title):
         inserted_index = self.addTab(widget, title)
@@ -65,6 +67,23 @@ class QueryTabContainer(QTabWidget):
             self.setTabText(self.currentIndex(), text)
         else:
             self.setTabText(self.currentIndex(), weditor.name)
+
+    def remove_tab(self, index):
+        weditor = self.currentWidget().editor()
+        if weditor.modified:
+            flags = QMessageBox.Yes
+            flags |= QMessageBox.No
+            flags |= QMessageBox.Cancel
+            r = QMessageBox.question(self, tr.TR_QUERY_FILE_MODIFIED,
+                                     tr.TR_QUERY_FILE_MODIFIED_MSG.format(
+                                         weditor.name), flags)
+
+            if r == QMessageBox.Cancel:
+                return
+            if r == QMessageBox.Yes:
+                print("Guardar")
+
+            QTabWidget.removeTab(self, index)
 
 
 class QueryContainer(QWidget):

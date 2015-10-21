@@ -153,6 +153,8 @@ class MainContainer(QSplitter):
 
     def _editor_modified(self, modified):
         self.query_tab_container.tab_modified(modified)
+        weditor = self.query_tab_container.currentWidget().editor()
+        weditor.modified = True
 
     def execute_queries(self):
         query_container = self.query_tab_container.currentWidget()
