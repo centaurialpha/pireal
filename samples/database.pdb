@@ -1,14 +1,16 @@
-@alumnos:matricula,nombrealumno,ciudad,edad
-01079,Flavio,Catamarca,22
-01033,Gabriel,Belén,24
-00966,Mercedes,Catamarca,21
-01170,Sebastian,Catamarca,22
-01233,Marcos,Andalgalá,23
-01087,José,Belén,24
-@inscripto:idinscripto,matricula,codmateria
-1,01033,01234
-2,1170,01222
-3,01079,02323
-@materia:codmateria,nombremateria
-01234,Base de Datos
-02323,Física
+@alumno:matricula,nombre_alumno,ciudad,edad
+1033, Gabriel, Belén, 24
+1079, Flavio, Catamarca, 22
+1160, Sebastian, Catamarca, 22
+@apoderado:id_apoderado,nombre_apoderado,telefono,matricula
+353, Mariela, 461064, 1033
+874, Víctor, 422321, 1160
+667, Samuel, 433232, 1079
+@curso:cod_curso,nombre_curso,fecha_inicio,duración,precio
+1143, Python, 10-01,15, 450
+3322, C, 01-03, 15, 300
+2311, Electrónica, 20-05, 20, 450
+@inscripto:id,matricula,cod_curso
+1, 1033, 1143
+2, 1160, 2311
+3, 1079, 1143

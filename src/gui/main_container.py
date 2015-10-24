@@ -18,6 +18,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import re
+import os
 from PyQt5.QtWidgets import (
     QSplitter,
     QFileDialog,
@@ -52,15 +53,25 @@ class MainContainer(QSplitter):
         self.addWidget(self.query_tab_container)
 
         self.__ndatabase, self.__nquery, self.__nrelation = 1, 1, 1
+        self.__last_open_folder = None  # To remember the last folder
 
         # Load service
         Pireal.load_service("main", self)
 
     def open_file(self, filename=''):
+        if self.__last_open_folder is None:
+            directory = os.path.expanduser("~")
+        else:
+            directory = self.__last_open_folder
+
         filename = QFileDialog.getOpenFileName(self, tr.TR_CONTAINER_OPEN_FILE,
-                                               "~", settings.DBFILE)[0]
+                                               directory, settings.DBFILE)[0]
         if not filename:
             return
+
+        # Save folder
+        self.__last_open_folder = file_manager.get_path(filename)
+
         extension = file_manager.get_extension(filename)
         if extension == '.pqf':
             central = Pireal.get_service("central")
