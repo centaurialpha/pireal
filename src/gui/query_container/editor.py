@@ -37,7 +37,7 @@ from src.core import settings
 
 
 class Editor(QPlainTextEdit):
-    cursorPositionChanged = pyqtSignal(int, int)
+    _cursorPositionChanged = pyqtSignal(int, int)
 
     def __init__(self, pfile=None):
         super(Editor, self).__init__()
@@ -86,7 +86,7 @@ class Editor(QPlainTextEdit):
         # Emit line and column signal
         line = self.blockCount()
         col = self.textCursor().columnNumber() + 1
-        self.cursorPositionChanged.emit(line, col)
+        self._cursorPositionChanged.emit(line, col)
 
     def __check_brackets(self):
         left, right = QTextEdit.ExtraSelection(), QTextEdit.ExtraSelection()
