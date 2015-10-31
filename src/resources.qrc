@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/img">
-        <file alias="banner">images/pireal_banner.png</file>
         <file alias="icon">images/icon.png</file>
         <file alias="create_database">images/database.png</file>
         <file alias="copy_action">images/copy.png</file>
@@ -15,5 +14,6 @@
         <file alias="execute_queries">images/execute.png</file>
         <file alias="save_file">images/save.png</file>
         <file alias="arrow-left">images/arrow-left.png</file>
+        <file alias="logo">images/pireal_logo.png</file>
     </qresource>
 </RCC>

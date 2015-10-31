@@ -10,7 +10,7 @@ Rectangle {
 
         anchors.centerIn: parent
         opacity: 0.2
-        source: "../images/pireal_banner.png"
+        source: "../images/pireal_logo.png"
 
         SequentialAnimation on opacity {
             loops: Animation.Infinite
