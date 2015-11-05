@@ -57,9 +57,9 @@ Syntax
 
 ::
 
-    q1 = people njoin skills
-    q2 = select age > 25 (q1)
-    q3 = project id, name, skill (q2)
+    q1 := people njoin skills
+    q2 := select age > 25 (q1)
+    q3 := project id, name, skill (q2)
 
 or
 
