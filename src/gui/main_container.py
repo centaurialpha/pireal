@@ -177,7 +177,12 @@ class MainContainer(QSplitter):
         for line in text.splitlines():
             if line.startswith('--'):
                 continue
-            parts = line.split('=', 1)
+
+            if line.split()[1] != ':=':
+                QMessageBox.critical(self, "Error", "Expected ':='")
+                return
+
+            parts = line.split(':=')
             parts[0] = parts[0].strip()
             if re.match(r'^[_a-zA-Z]+[_a-zA-Z0-9]*$', parts[0]):
                 relation_name, line = parts
