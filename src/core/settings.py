@@ -61,6 +61,7 @@ class PSettings:
     MAX_RECENT_FILES = 5
     LANGUAGE = ""
     THEME = ""
+    LAST_OPEN_FOLDER = ""
     CONSOLE = False  # For dev
 
 
@@ -87,3 +88,5 @@ def load_settings():
                                                True, type=bool)
     PSettings.LANGUAGE = settings.value('language', "", type='QString')
     PSettings.THEME = settings.value('stylesheet', "", type='QString')
+    PSettings.LAST_OPEN_FOLDER = settings.value("last_open_folder", "",
+                                                type='QString')

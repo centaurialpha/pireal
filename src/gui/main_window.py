@@ -307,7 +307,10 @@ class Pireal(QMainWindow):
     def _update_settings(self, key, value):
         pass
 
-    #def closeEvent(self, event):
+    def closeEvent(self, event):
+        main_container = Pireal.get_service("main")
+        last_open_folder = main_container.get_last_open_folder()
+        settings.set_setting("last_open_folder", last_open_folder)
         #container = Pireal.get_service("container")
         #if not container.check_opened_query_files():
             #event.ignore()

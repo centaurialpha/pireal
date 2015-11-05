@@ -53,7 +53,12 @@ class MainContainer(QSplitter):
         self.addWidget(self.query_tab_container)
 
         self.__ndatabase, self.__nquery, self.__nrelation = 1, 1, 1
-        self.__last_open_folder = None  # To remember the last folder
+
+        # To remember the last folder
+        if settings.PSettings.LAST_OPEN_FOLDER:
+            self.__last_open_folder = settings.PSettings.LAST_OPEN_FOLDER
+        else:
+            self.__last_open_folder = None
 
         # Load service
         Pireal.load_service("main", self)
@@ -84,6 +89,9 @@ class MainContainer(QSplitter):
         else:
             # Database file
             self.create_database(filename)
+
+    def get_last_open_folder(self):
+        return self.__last_open_folder
 
     def create_database(self, filename=''):
         """ This function opens or creates a database """
