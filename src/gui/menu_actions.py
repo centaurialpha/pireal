@@ -55,9 +55,9 @@ MENU['file'] = {
     #}, "-", {
         #'name': tr.TR_MENU_FILE_CONVERT_TO_PDB,
         #'slot': "container:convert_to_pdb"
-    }, "-", {
-        'name': None,
-        'slot': "main:open_recent_file"
+    #}, "-", {
+        #'name': None,
+        #'slot': "main:open_recent_file"
     }, "-", {
         'name': tr.TR_MENU_FILE_EXIT,
         'slot': "pireal:close"}]}

@@ -120,6 +120,18 @@ class MainContainer(QSplitter):
         pireal.enable_disable_db_actions()
         central.created = True
         self.__ndatabase += 1
+        # Add to recent databases
+        self.__add_to_recent(ffile.filename)
+
+    def __add_to_recent(self, filename):
+        files = settings.get_setting('recentDB', [])
+        if filename not in files:
+            files.insert(0, filename)
+            del files[settings.PSettings.MAX_RECENT_FILES:]
+            settings.set_setting('recentDB', files)
+
+    def get_recent_db(self):
+        return settings.PSettings.RECENT_DB
 
     def close_database(self):
         pass

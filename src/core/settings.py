@@ -63,6 +63,7 @@ class PSettings:
     THEME = ""
     LAST_OPEN_FOLDER = ""
     CONSOLE = False  # For dev
+    RECENT_DB = []
 
 
 def create_dir():
@@ -90,3 +91,4 @@ def load_settings():
     PSettings.THEME = settings.value('stylesheet', "", type='QString')
     PSettings.LAST_OPEN_FOLDER = settings.value("last_open_folder", "",
                                                 type='QString')
+    PSettings.RECENT_DB = settings.value("recentDB", [])

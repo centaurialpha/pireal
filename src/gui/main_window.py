@@ -162,18 +162,18 @@ class Pireal(QMainWindow):
                         obj = central
 
                     # Load recent files
-                    if action is None:
-                        files = settings.get_setting('recentFiles', [])
-                        nrfiles = min(len(files),
-                                      settings.PSettings.MAX_RECENT_FILES)
-                        for i in range(nrfiles):
-                            name = QFileInfo(files[i]).fileName()
-                            text = "&%d %s" % (i + 1, name)
-                            qaction = menu.addAction(text)
-                            qaction.setData(files[i])
-                            qaction.triggered.connect(
-                                central.open_recent_database)
-                        continue
+                    #if action is None:
+                        #files = settings.get_setting('recentFiles', [])
+                        #nrfiles = min(len(files),
+                                      #settings.PSettings.MAX_RECENT_FILES)
+                        #for i in range(nrfiles):
+                            #name = QFileInfo(files[i]).fileName()
+                            #text = "&%d %s" % (i + 1, name)
+                            #qaction = menu.addAction(text)
+                            #qaction.setData(files[i])
+                            #qaction.triggered.connect(
+                                #central.open_recent_database)
+                        #continue
                     qaction = menu.addAction(action)
                     # Icon name is connection
                     icon = QIcon(":img/%s" % connection)
