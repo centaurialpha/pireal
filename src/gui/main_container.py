@@ -191,18 +191,18 @@ class MainContainer(QSplitter):
         query_container = self.query_tab_container.currentWidget()
         text = query_container.text()
 
-        #widgets = mdi.subWindowList(1)
         table_widget = self.db_widget.table_widget
         # Ignore comments
         for line in text.splitlines():
             if line.startswith('--'):
                 continue
 
-            if line.split()[1] != ':=':
-                QMessageBox.critical(self, "Error", "Expected ':='")
-                return
+            #if line.split()[1] != ':=':
+                #QMessageBox.critical(self, "Error", "Expected ':='")
+                #return
 
             parts = line.split(':=')
+            #print(parts)
             parts[0] = parts[0].strip()
             if re.match(r'^[_a-zA-Z]+[_a-zA-Z0-9]*$', parts[0]):
                 relation_name, line = parts
