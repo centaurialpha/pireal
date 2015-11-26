@@ -19,10 +19,8 @@
 
 import sys
 import os
-from PyQt5.QtWidgets import (
-    QApplication,
-    QStyleFactory
-)
+
+from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import (
     QLocale,
@@ -30,10 +28,12 @@ from PyQt5.QtCore import (
     QLibraryInfo,
     QT_VERSION_STR
 )
+
 from src.core import (
     settings,
     logger
 )
+
 log = logger.get_logger(__name__)
 DEBUG = log.debug
 INFO = log.info
@@ -81,9 +81,11 @@ if __name__ == "__main__":
     from src import resources  # lint:ok
 
     qapp = QApplication(sys.argv)
-    # Stylesheet
-    # Fusion style
-    QApplication.setStyle(list(QStyleFactory.keys()).pop())
+
+    # Style
+    style = settings.PSettings.THEME
+    if style:
+        QApplication.instance().setStyle(style)
 
     # Icon
     qapp.setWindowIcon(QIcon(":img/icon"))

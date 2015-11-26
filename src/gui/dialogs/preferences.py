@@ -31,6 +31,8 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QCheckBox,
     QMessageBox,
+    QComboBox,
+    QStyleFactory
     #QLabel,
     #QMovie
 )
@@ -43,6 +45,7 @@ from PyQt5.QtCore import (
     QSettings,
     pyqtSignal
 )
+
 from src import translations as tr
 from src.core import (
     settings,
@@ -119,24 +122,16 @@ class Preferences(QDialog):
         # Stylesheet
         group_style = QGroupBox("Theme")
         box = QVBoxLayout(group_style)
-        self._radio_styles = []
-        for style in ["Default", "None"]:
-            radio = QRadioButton()
-            self._radio_styles.append(radio)
-            radio.setText(style)
-            box.addWidget(radio)
-        index = 0
-        #if settings.PSettings.THEME:
-        for i in range(len(self._radio_styles)):
-            text = self._radio_styles[i].text()
-            if text == 'None':
-                text = ""
-            if text == settings.PSettings.THEME:
-                index = i
-        self._radio_styles[index].setChecked(True)
-
-        for rad in self._radio_styles:
-            rad.clicked.connect(self._change_theme)
+        self.combo_themes = QComboBox()
+        styles = QStyleFactory.keys()
+        self.combo_themes.addItems(styles)
+        current_style = QApplication.instance().style().objectName()
+        try:
+            index = styles.index(current_style.upper())
+        except:
+            index = styles.index(current_style.title())
+        self.combo_themes.setCurrentIndex(index)
+        box.addWidget(self.combo_themes)
 
         # Add widgets
         container.addWidget(group_gral)
@@ -204,6 +199,8 @@ class Preferences(QDialog):
         btn_reset.clicked.connect(self._reset_settings)
         btn_updates.clicked.connect(self._check_for_updates)
         self.thread.finished.connect(self._on_thread_finished)
+        self.combo_themes.currentIndexChanged['QString'].connect(
+            self._change_theme)
 
     def showEvent(self, event):
         super(Preferences, self).showEvent(event)
@@ -247,13 +244,13 @@ class Preferences(QDialog):
                 settings.PSettings.LANGUAGE = radiob.text()
         print(settings.PSettings.LANGUAGE)
 
-    def _change_theme(self):
-        if self._radio_styles[0].isChecked():
-            name = 'Default'
-            style = file_manager.open_file(settings.STYLESHEET)
-        else:
-            style = None
-            name = ''
-        QApplication.instance().setStyleSheet(style)
-        settings.set_setting('stylesheet', name)
-        settings.PSettings.THEME = name
+    def _change_theme(self, style):
+        #if self._radio_styles[0].isChecked():
+            #name = 'Default'
+            #style = file_manager.open_file(settings.STYLESHEET)
+        #else:
+            #style = None
+            #name = ''
+        QApplication.setStyle(style)
+        settings.set_setting('stylesheet', style)
+        settings.PSettings.THEME = style
