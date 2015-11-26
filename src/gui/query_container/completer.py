@@ -35,9 +35,9 @@ class Completer(QCompleter):
         self.activated['const QString&'].connect(self._insert_completion)
 
     def _insert_completion(self, text):
-        extra = len(text) - len(self.completionPrefix())
+        #extra = len(text) - len(self.completionPrefix())
         cursor = self.__editor.textCursor()
-        cursor.insertText(text[extra:])
+        cursor.insertText(text)
 
     def complete(self, cursor_rect, list_texts):
         self.model().setStringList(list_texts)
