@@ -29,9 +29,11 @@ from PyQt5.QtCore import (
     Qt,
     pyqtSignal
 )
+from src.gui.main_window import Pireal
 from src.gui.query_container import (
     highlighter,
-    sidebar
+    sidebar,
+    completer
 )
 from src.core import settings
 
@@ -48,6 +50,8 @@ class Editor(QPlainTextEdit):
         self.setFont(settings.FONT)
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
+        # Completer
+        self._completer = completer.Completer(self)
 
         # Connection
         self.updateRequest['const QRect&', int].connect(
@@ -71,6 +75,36 @@ class Editor(QPlainTextEdit):
         super(Editor, self).resizeEvent(event)
         # Fixed sidebar height
         self._sidebar.setFixedHeight(self.height())
+
+    def keyPressEvent(self, event):
+        key = event.key()
+        if self._completer.popup().isVisible():
+            if key in (Qt.Key_Enter, Qt.Key_Return, Qt.Key_Tab):
+                event.ignore()
+                self._completer.popup().hide()
+                return
+            elif key in (Qt.Key_Space, Qt.Key_Escape, Qt.Key_Backspace):
+                self._completer.popup().hide()
+
+        QPlainTextEdit.keyPressEvent(self, event)
+
+        if key == Qt.Key_Period:
+            cursor = self.textCursor()
+            cursor.movePosition(QTextCursor.WordLeft,
+                                QTextCursor.KeepAnchor, 2)
+
+            text = cursor.selectedText()
+            text = text[:text.rfind('.')]
+            cursor_rect = self.cursorRect()
+
+            completions = self.__get_completions(text)
+
+            self._completer.complete(cursor_rect, completions)
+
+    def __get_completions(self, text):
+        table_widget = Pireal.get_service("main").db_widget.table_widget
+        relation = table_widget.relations.get(text)
+        return relation.fields
 
     def __cursor_position_changed(self):
         # Paren matching
