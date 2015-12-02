@@ -33,10 +33,10 @@ class CustomFormatter(logging.Formatter):
     """ Custom Formatter with colors """
 
     RESET = '\x1b[0m'
-    YELLOW = '\x1b[33m'
-    RED = '\x1b[31m'
-    GREEN = '\x1b[32m'
-    BLUE = '\x1b[34m'
+    #YELLOW = '\x1b[33m'
+    #RED = '\x1b[31m'
+    #GREEN = '\x1b[32m'
+    #BLUE = '\x1b[34m'
 
     def format(self, record, colour=False):
         msg = super().format(record)
