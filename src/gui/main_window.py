@@ -74,6 +74,7 @@ class Pireal(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         self.setWindowTitle(self.tr("Pireal"))
+        self.showMaximized()
 
         # Toolbar
         self.toolbar = QToolBar(self)

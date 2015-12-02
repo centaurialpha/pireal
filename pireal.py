@@ -116,7 +116,6 @@ if __name__ == "__main__":
     INFO("Loading GUI...")
     gui = Pireal()
     gui.show()
-    gui.showMaximized()
 
     # Console
     # Enable from settings file
