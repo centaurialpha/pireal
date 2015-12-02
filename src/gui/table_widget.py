@@ -30,6 +30,7 @@ from PyQt5.QtCore import Qt
     #Qt,
     #SIGNAL
 #)
+
 from src.core import (
     relation,
     file_manager
@@ -61,7 +62,9 @@ class TableWidget(QWidget):
         return False
 
     def add_data_base(self, data):
-        lateral = Pireal.get_service("lateral")
+        #FIXME: refactoring
+        #lateral = Pireal.get_service("lateral")
+        lateral = Pireal.get_service("main").lateral_widget
         rel = None
         for part in data.split('@'):
             for e, line in enumerate(part.splitlines()):

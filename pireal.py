@@ -107,8 +107,8 @@ if __name__ == "__main__":
     #from src.gui import table_widget  # lint:ok
     from src.gui import central_widget  # lint:ok
     from src.gui import main_container  # lint:ok
-    from src.gui import lateral_widget  # lint:ok
-    from src.gui.query_container import query_container  # lint:ok
+    #from src.gui import lateral_widget  # lint:ok
+    #from src.gui.query_container import query_container  # lint:ok
     from src.gui.main_window import Pireal
     #from src.gui import status_bar  # lint:ok
     #from src.gui import container  # lint:ok

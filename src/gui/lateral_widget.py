@@ -42,10 +42,9 @@ class LateralWidget(QWidget):
 
         vbox.addWidget(self._list_widget)
 
-        Pireal.load_service("lateral", self)
-
         self._list_widget.setContextMenuPolicy(Qt.CustomContextMenu)
 
+        # Connections
         self._list_widget.currentRowChanged[int].connect(self._change_item)
         self._list_widget.customContextMenuRequested['const QPoint'].connect(
             self.__show_context_menu)
@@ -62,7 +61,7 @@ class LateralWidget(QWidget):
         menu.exec_(self.mapToGlobal(point))
 
     def _change_item(self, index):
-        table_widget = Pireal.get_service("main").db_widget.table_widget
+        table_widget = Pireal.get_service("main").table_widget
         table_widget.stacked.setCurrentIndex(index)
 
     def add_item_list(self, items):
@@ -104,5 +103,3 @@ class LateralWidget(QWidget):
         """ Removes the item from the given index in the list widget"""
 
         self._list_widget.takeItem(index)
-
-lateral = LateralWidget()

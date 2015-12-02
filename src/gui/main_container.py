@@ -17,20 +17,25 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import re
 import os
+
 from PyQt5.QtWidgets import (
     QSplitter,
     QFileDialog,
     QMessageBox
 )
 from PyQt5.QtCore import Qt
+
 from src.gui.main_window import Pireal
-from src.gui import database_widget
+from src.gui import (
+    #database_widget
+    table_widget,
+    lateral_widget
+)
 from src.gui.query_container import query_container
 from src import translations as tr
 from src.core import (
-    parser,
+    #parser,
     pfile,
     settings,
     file_manager
@@ -45,12 +50,23 @@ class MainContainer(QSplitter):
     def __init__(self, orientation=Qt.Vertical):
         QSplitter.__init__(self, orientation)
 
-        self.db_widget = database_widget.DBWidget()
-        self.addWidget(self.db_widget)
+        self._hsplitter = QSplitter(Qt.Horizontal)
 
-        self.query_tab_container = query_container.QueryTabContainer()
-        self.query_tab_container.hide()
-        self.addWidget(self.query_tab_container)
+        self.lateral_widget = lateral_widget.LateralWidget()
+        self._hsplitter.addWidget(self.lateral_widget)
+        self.table_widget = table_widget.TableWidget()
+        self._hsplitter.addWidget(self.table_widget)
+
+        self.addWidget(self._hsplitter)
+
+        self.query_container = query_container.QueryContainer()
+        self.addWidget(self.query_container)
+        #self.db_widget = database_widget.DBWidget()
+        #self.addWidget(self.db_widget)
+
+        #self.query_tab_container = query_container.QueryTabContainer()
+        #self.query_tab_container.hide()
+        #self.addWidget(self.query_tab_container)
 
         self.__ndatabase, self.__nquery, self.__nrelation = 1, 1, 1
 
@@ -59,6 +75,8 @@ class MainContainer(QSplitter):
             self.__last_open_folder = settings.PSettings.LAST_OPEN_FOLDER
         else:
             self.__last_open_folder = None
+
+        self.setSizes([1, 1])
 
         # Load service
         Pireal.load_service("main", self)
@@ -110,7 +128,8 @@ class MainContainer(QSplitter):
                 QMessageBox.critical(self, "Error", reason.__str__())
                 return
             db_name = ffile.name
-            self.db_widget.table_widget.add_data_base(data)
+            #self.db_widget.table_widget.add_data_base(data)
+            self.table_widget.add_data_base(data)
         else:
             db_name = "database_{}.pdb".format(self.__ndatabase)
         pireal = Pireal.get_service("pireal")
@@ -121,25 +140,25 @@ class MainContainer(QSplitter):
         central.created = True
         self.__ndatabase += 1
         # Add to recent databases
-        self.__add_to_recent(ffile.filename)
+        #self.__add_to_recent(ffile.filename)
 
-    def __add_to_recent(self, filename):
-        files = settings.get_setting('recentDB', [])
-        if filename not in files:
-            files.insert(0, filename)
-            del files[settings.PSettings.MAX_RECENT_FILES:]
-            settings.set_setting('recentDB', files)
+    #def __add_to_recent(self, filename):
+        #files = settings.get_setting('recentDB', [])
+        #if filename not in files:
+            #files.insert(0, filename)
+            #del files[settings.PSettings.MAX_RECENT_FILES:]
+            #settings.set_setting('recentDB', files)
 
-    def get_recent_db(self):
-        return settings.PSettings.RECENT_DB
+    #def get_recent_db(self):
+        #return settings.PSettings.RECENT_DB
 
-    def close_database(self):
-        pass
+    #def close_database(self):
+        #pass
 
-    def create_new_relation(self):
-        from src.gui.dialogs import new_relation_dialog
-        d = new_relation_dialog.NewRelationDialog()
-        d.show()
+    #def create_new_relation(self):
+        #from src.gui.dialogs import new_relation_dialog
+        #d = new_relation_dialog.NewRelationDialog()
+        #d.show()
 
     def _change_state_actions(self, value):
         qactions = [
@@ -153,72 +172,46 @@ class MainContainer(QSplitter):
             Pireal.get_action(qaction).setEnabled(value)
 
     def new_query(self, filename=''):
-        qcontainer = query_container.QueryContainer()
-        qcontainer.editorFocused.connect(self._change_state_actions)
-        qcontainer.editorModified.connect(self._editor_modified)
+        self.query_container.add_tab()
+        #qcontainer = query_container.QueryContainer()
+        #qcontainer.editorFocused.connect(self._change_state_actions)
+        #qcontainer.editorModified.connect(self._editor_modified)
 
-        if not filename:
-            ffile = pfile.PFile()
-            filename = "New_query_{}.qpf".format(self.__nquery)
-            ffile.filename = filename
-            self.__nquery += 1
-        else:
-            ffile = pfile.PFile(filename)
-            qcontainer.add_editor_text(ffile.read())
+        #if not filename:
+            #ffile = pfile.PFile()
+            #filename = "New_query_{}.qpf".format(self.__nquery)
+            #ffile.filename = filename
+            #self.__nquery += 1
+        #else:
+            #ffile = pfile.PFile(filename)
+            #qcontainer.add_editor_text(ffile.read())
 
-        qcontainer.set_pfile(ffile)
+        #qcontainer.set_pfile(ffile)
 
-        if not self.query_tab_container.isVisible():
-            self.query_tab_container.show()
+        #if not self.query_tab_container.isVisible():
+            #self.query_tab_container.show()
 
         pireal = Pireal.get_service("pireal")
         pireal.enable_disable_query_actions()
 
-        index = self._add_query_tab(qcontainer, ffile.name)
-        self.query_tab_container.setTabToolTip(index, ffile.filename)
+        #index = self._add_query_tab(qcontainer, ffile.name)
+        #self.query_tab_container.setTabToolTip(index, ffile.filename)
 
-        self.setSizes([(self.height() / 5) * 2, 1])
+        #self.setSizes([(self.height() / 5) * 2, 1])
 
-    def _add_query_tab(self, widget, title):
-        return self.query_tab_container.add_tab(widget, title)
+    #def _add_query_tab(self, widget, title):
+        #return self.query_tab_container.add_tab(widget, title)
 
-    def _editor_modified(self, modified):
-        self.query_tab_container.tab_modified(modified)
-        weditor = self.query_tab_container.currentWidget().editor()
-        weditor.modified = True
+    #def _editor_modified(self, modified):
+        #self.query_tab_container.tab_modified(modified)
+        #weditor = self.query_tab_container.currentWidget().editor()
+        #weditor.modified = True
 
     def execute_queries(self):
-        query_container = self.query_tab_container.currentWidget()
-        text = query_container.text()
+        self.query_container.execute_queries()
 
-        table_widget = self.db_widget.table_widget
-        # Ignore comments
-        for line in text.splitlines():
-            if line.startswith('--'):
-                continue
-
-            #if line.split()[1] != ':=':
-                #QMessageBox.critical(self, "Error", "Expected ':='")
-                #return
-
-            parts = line.split(':=')
-            #print(parts)
-            parts[0] = parts[0].strip()
-            if re.match(r'^[_a-zA-Z]+[_a-zA-Z0-9]*$', parts[0]):
-                relation_name, line = parts
-            else:
-                relation_name = 'relation_{}'.format(self.__nrelation)
-                self.__nrelation += 1
-            try:
-                expression = parser.convert_to_python(line.strip())
-                relation = eval(expression, table_widget.relations)
-            except Exception as reason:
-                QMessageBox.critical(self, tr.TR_QUERY_ERROR, reason.__str__())
-                return
-
-            if table_widget.add_relation(relation_name, relation):
-                query_container.add_new_table(relation, relation_name)
-                query_container.add_list_items([relation_name])
-
+    def showEvent(self, event):
+        QSplitter.showEvent(self, event)
+        self._hsplitter.setSizes([1, self._hsplitter.width() / 3])
 
 main = MainContainer()

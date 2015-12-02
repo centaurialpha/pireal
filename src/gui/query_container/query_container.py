@@ -17,182 +17,178 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import itertools
+import re
+
+from collections import OrderedDict
+
 from PyQt5.QtWidgets import (
     QWidget,
-    QSplitter,
     QVBoxLayout,
-    QListWidget,
-    QTableWidget,
-    QTableWidgetItem,
-    QTabWidget,
-    QHeaderView,
-    QAbstractItemView,
+    QToolBar,
+    QSplitter,
     QStackedWidget,
-    QMessageBox
+    QListWidget,
+    QMessageBox,
+    QTableWidgetItem
 )
-from PyQt5.QtCore import Qt, QEvent, pyqtSignal
-from src.gui.main_window import Pireal
-from src.gui.query_container import (
-    editor
-)
+from PyQt5.QtCore import Qt
+
+from src.core import parser
+from src.gui import table, lateral_widget
 from src import translations as tr
-#from src.core import parser
-    #pfile,
-    #parser
-#)
+from src.gui.main_window import Pireal
+#from src.gui import lateral_widget
+from src.gui.query_container import (
+    editor,
+    tab_widget
+)
 
-
-class QueryTabContainer(QTabWidget):
-
-    def __init__(self):
-        super(QueryTabContainer, self).__init__()
-        self.setTabPosition(QTabWidget.South)
-        self.setTabsClosable(True)
-        self.setMovable(True)
-
-        self.tabCloseRequested[int].connect(self.remove_tab)
-
-    def add_tab(self, widget, title):
-        inserted_index = self.addTab(widget, title)
-        self.setCurrentIndex(inserted_index)
-        # Focus editor
-        widget.set_focus()
-        return inserted_index
-
-    def tab_modified(self, modified):
-        weditor = self.sender().editor()
-        if modified:
-            text = "{} \u2022".format(weditor.name)
-            self.setTabText(self.currentIndex(), text)
-        else:
-            self.setTabText(self.currentIndex(), weditor.name)
-
-    def remove_tab(self, index):
-        weditor = self.currentWidget().editor()
-        if weditor.modified:
-            flags = QMessageBox.Yes
-            flags |= QMessageBox.No
-            flags |= QMessageBox.Cancel
-            r = QMessageBox.question(self, tr.TR_QUERY_FILE_MODIFIED,
-                                     tr.TR_QUERY_FILE_MODIFIED_MSG.format(
-                                         weditor.name), flags)
-
-            if r == QMessageBox.Cancel:
-                return
-            if r == QMessageBox.Yes:
-                print("Guardar")
-
-            QTabWidget.removeTab(self, index)
+ITEMS_TOOLBAR_OPERATORS = OrderedDict(
+    [('select', ('Selection', 0x3c3)),
+    ('project', ('Projection', 0x3a0)),
+    ('njoin', ('Natural Join', 0x22c8)),
+    ('product', ('Product', 0x58)),
+    ('intersect', ('Intersection', 0x2229)),
+    ('union', ('Union', 0x222a)),
+    ('difference', ('Difference', 0x2d))]
+)
 
 
 class QueryContainer(QWidget):
 
-    # Signals
-    editorFocused = pyqtSignal(bool)
-    editorModified = pyqtSignal(bool)
-
-    def __init__(self, parent=None):
-        super(QueryContainer, self).__init__(parent)
+    def __init__(self):
+        super(QueryContainer, self).__init__()
         box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 0, 0)
 
-        self.vsplitter = QSplitter(Qt.Vertical)
-        self.hsplitter = QSplitter(Qt.Horizontal)
+        # Regex for validate variable name
+        self.__validName = re.compile(r'^[a-z_]\w*$')
+        self.__ntab = 1
 
-        self._list_tables = QListWidget()
-        self.hsplitter.addWidget(self._list_tables)
+        # Toolbar
+        self._toolbar = QToolBar(self)
+        for key, value in ITEMS_TOOLBAR_OPERATORS.items():
+            tooltip, action = value
+            qaction = self._toolbar.addAction(chr(action))
+            widget = self._toolbar.widgetForAction(qaction)
+            qaction.setData(key)
+            qaction.triggered.connect(self._add_operator_to_editor)
+            widget.setFixedSize(60, 30)
+            qaction.setToolTip(tooltip)
+
+        box.addWidget(self._toolbar)
+
+        # Tab
+        self._tabs = tab_widget.TabWidget()
+        box.addWidget(self._tabs)
+
+        if self.count() == 0:
+            self.hide()
+
+    def _add_operator_to_editor(self):
+        data = self.sender().data()
+        widget = self._tabs.currentWidget()
+        tc = widget.get_editor().textCursor()
+        tc.insertText(data + ' ')
+
+    def count(self):
+        return self._tabs.count()
+
+    def add_tab(self):
+        if not self.isVisible():
+            self.show()
+
+        widget = QueryWidget()
+        index = self._tabs.addTab(widget, "Untitled_{}".format(self.__ntab))
+        self._tabs.setCurrentIndex(index)
+        self.__ntab += 1
+
+    def currentWidget(self):
+        return self._tabs.currentWidget()
+
+    def execute_queries(self):
+        weditor = self.currentWidget().get_editor()
+        text = weditor.toPlainText()
+
+        table_widget = Pireal.get_service("main").table_widget
+
+        #FIXME: Move ignore comments to parser
+        for line in text.splitlines():
+            if line.startswith('--'):
+                continue
+
+            #FIXME: validate ':='
+            parts = line.split(':=')
+            parts[0] = parts[0].strip()
+            if len(parts) > 1:
+                if self.__validName.match(parts[0]):
+                    relation_name, line = parts
+                else:
+                    QMessageBox.critical(self, tr.TR_QUERY_ERROR,
+                                         "Nombre inválido")
+            else:
+                relation_name = "query_"
+            try:
+                expression = parser.convert_to_python(line.strip())
+                relation = eval(expression, table_widget.relations)
+            except Exception as reason:
+                QMessageBox.critical(self, tr.TR_QUERY_ERROR, reason.__str__())
+
+            if table_widget.add_relation(relation_name, relation):
+                self.__add_table(relation, relation_name)
+
+    def __add_table(self, rela, rname):
+        self.currentWidget().add_table(rela, rname)
+
+
+class QueryWidget(QWidget):
+
+    def __init__(self):
+        super(QueryWidget, self).__init__()
+        box = QVBoxLayout(self)
+        box.setContentsMargins(0, 0, 0, 0)
+
+        self._vsplitter = QSplitter(Qt.Vertical)
+        self._hsplitter = QSplitter(Qt.Horizontal)
+
+        self._result_list = lateral_widget.LateralWidget()
+        self._hsplitter.addWidget(self._result_list)
 
         self._stack_tables = QStackedWidget()
-        self.hsplitter.addWidget(self._stack_tables)
+        self._hsplitter.addWidget(self._stack_tables)
 
-        self._weditor = editor.Editor()
-        self.vsplitter.addWidget(self._weditor)
-        self._weditor.installEventFilter(self)
-        self._weditor.modificationChanged[bool].connect(self._editor_modified)
+        self._query_editor = editor.Editor()
+        self._vsplitter.addWidget(self._query_editor)
 
-        self.vsplitter.addWidget(self.hsplitter)
-        box.addWidget(self.vsplitter)
+        self._vsplitter.addWidget(self._hsplitter)
+        box.addWidget(self._vsplitter)
 
-        # Load service
-        Pireal.load_service("query_container", self)
+        # Connections
+        #self._result_list.currentRowChanged[int].connect(
+            #lambda index: self._stack_tables.setCurrentIndex(index))
 
-        self._list_tables.currentRowChanged[int].connect(
-            lambda index: self._stack_tables.setCurrentIndex(index))
-
-    def set_pfile(self, pfile):
-        self._weditor.pfile = pfile
-
-    def _editor_modified(self, modified):
-        self.editorModified.emit(modified)
-
-    def editor(self):
-        return self._weditor
-
-    def eventFilter(self, obj, event):
-        if event.type() == QEvent.FocusIn:
-            self.editorFocused.emit(True)
-        elif event.type() == QEvent.FocusOut:
-            self.editorFocused.emit(False)
-        return QWidget.eventFilter(self, obj, event)
-
-    def add_editor_text(self, text):
-        self._weditor.setPlainText(text)
-
-    def text(self):
-        return self._weditor.toPlainText()
-
-    def set_focus(self):
-        self._weditor.setFocus()
-
-    def add_list_items(self, items):
-        self._list_tables.addItems(items)
-
-    def add_new_table(self, rel, name):
-        table = Table()
-        table.setRowCount(0)
-        table.setColumnCount(0)
-
-        data = itertools.chain([rel.fields], rel.content)
-
-        for row_data in data:
-            row = table.rowCount()
-            table.setColumnCount(len(row_data))
-            for col, text in enumerate(row_data):
-                item = QTableWidgetItem()
-                item.setText(text)
-                if row == 0:
-                    table.setHorizontalHeaderItem(col, item)
-                else:
-                    table.setItem(row - 1, col, item)
-            table.insertRow(row)
-        table.removeRow(table.rowCount() - 1)
-        self._stack_tables.addWidget(table)
-        self._stack_tables.setCurrentIndex(self._stack_tables.count() - 1)
-
-    #def add_container(self, filename=''):
-        #if filename:
-            ## PFile
-            #_file = pfile.PFile(filename)
-            #self._weditor.setPlainText(_file.read())
-        #else:
-            #_file = pfile.PFile()
-
-            #self._list_tables.addItem()
+    def get_editor(self):
+        return self._query_editor
 
     def showEvent(self, event):
-        super(QueryContainer, self).showEvent(event)
-        self.hsplitter.setSizes([1, self.width() / 3])
+        super(QueryWidget, self).showEvent(event)
+        self._hsplitter.setSizes([1, self.width() / 3])
 
+    def add_table(self, rela, rname):
+        wtable = table.Table()
 
-#FIXME: a otro modulo
-class Table(QTableWidget):
+        wtable.setColumnCount(len(rela.fields))
+        wtable.setHorizontalHeaderLabels(rela.fields)
 
-    def __init__(self, parent=None):
-        super(Table, self).__init__(parent)
-        self.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        #FIXME: Configurable
-        self.verticalHeader().setVisible(False)
+        for data in rela.content:
+            nrow = wtable.rowCount()
+            wtable.insertRow(nrow)
+            for col, text in enumerate(data):
+                item = QTableWidgetItem()
+                item.setText(text)
+                wtable.setItem(nrow, col, item)
 
-#tab_container = QueryTabContainer()
+        index = self._stack_tables.addWidget(wtable)
+        self._stack_tables.setCurrentIndex(index)
+
+        self._result_list.addItem(rname)
