@@ -23,7 +23,6 @@ Logging
 
 import logging
 import sys
-from src.core import settings
 
 LOG_FORMAT = "[%(asctime)s]:%(levelname)-7s:%(name)s:%(message)s"
 TIME_FORMAT = "%H:%M:%S"
@@ -33,10 +32,10 @@ class CustomFormatter(logging.Formatter):
     """ Custom Formatter with colors """
 
     RESET = '\x1b[0m'
-    #YELLOW = '\x1b[33m'
-    #RED = '\x1b[31m'
-    #GREEN = '\x1b[32m'
-    #BLUE = '\x1b[34m'
+    YELLOW = '\x1b[33m'
+    RED = '\x1b[31m'
+    GREEN = '\x1b[32m'
+    BLUE = '\x1b[34m'
 
     def format(self, record, colour=False):
         msg = super().format(record)
@@ -86,15 +85,8 @@ class CustomHandler(logging.StreamHandler):
 def get_logger(name):
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
-    if settings.LINUX:
-        # Handler
-        handler = CustomHandler()
-        # Formatter
-        formatter = CustomFormatter(LOG_FORMAT, TIME_FORMAT)
-    else:
-        handler = logging.StreamHandler()
-        formatter = logging.Formatter(LOG_FORMAT, TIME_FORMAT)
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter(LOG_FORMAT, TIME_FORMAT)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-
     return logger
