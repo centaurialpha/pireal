@@ -3,7 +3,6 @@
 
 .. |issues| image:: https://img.shields.io/github/issues/centaurialpha/pireal.svg?
     :target: https://github.com/centaurialpha/pireal/issues
-    :alt: GitHub issues for pireal
     
 *****
 πreal |test| |issues|
