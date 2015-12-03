@@ -18,8 +18,6 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt5.QtWidgets import (
-    QVBoxLayout,
-    QWidget,
     QListWidget,
     QListWidgetItem,
     QMenu,
@@ -27,64 +25,68 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
-from src.gui.main_window import Pireal
+#from src.gui.main_window import Pireal
+from src import translations as tr
 
 
-class LateralWidget(QWidget):
+class LateralWidget(QListWidget):
 
     def __init__(self):
         super(LateralWidget, self).__init__()
-        vbox = QVBoxLayout(self)
-        vbox.setContentsMargins(0, 0, 0, 0)
-        self._list_widget = QListWidget()
         # Multiple selection
-        self._list_widget.setSelectionMode(QAbstractItemView.ExtendedSelection)
-
-        vbox.addWidget(self._list_widget)
-
-        self._list_widget.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
 
         # Connections
-        self._list_widget.currentRowChanged[int].connect(self._change_item)
-        self._list_widget.customContextMenuRequested['const QPoint'].connect(
+        self.customContextMenuRequested['const QPoint'].connect(
             self.__show_context_menu)
 
     def __show_context_menu(self, point):
         """ Context menu """
 
         menu = QMenu()
-        remove_table_act = menu.addAction(QIcon(":img/remove-rel"),
-                                          self.tr("Eliminar Relación"))
+        edit_action = menu.addAction(tr.TR_MENU_RELATION_EDIT_RELATION)
+        remove_action = menu.addAction(QIcon(":img/remove-rel"),
+                                        tr.TR_MENU_RELATION_DELETE_RELATION)
 
-        remove_table_act.triggered.connect(self.remove_table)
+        remove_action.triggered.connect(self._remove)
+        edit_action.triggered.connect(self._edit)
 
         menu.exec_(self.mapToGlobal(point))
 
-    def _change_item(self, index):
-        table_widget = Pireal.get_service("main").table_widget
-        table_widget.stacked.setCurrentIndex(index)
+    def _edit(self):
+        pass
 
-    def add_item_list(self, items):
-        if not self.isVisible():
-            self.show()
-        for i in items:
-            item = QListWidgetItem(i)
-            item.setTextAlignment(Qt.AlignHCenter)
-            self._list_widget.addItem(item)
+    #def _change_item(self, index):
+        #table_widget = Pireal.get_service("main").table_widget
+        #table_widget.stacked.setCurrentIndex(index)
 
-    def remove_table(self):
-        container = Pireal.get_service("container")
-        items = self._list_widget.selectedItems()
-        for item in items:
-            index = self._list_widget.row(item)
-            container.table_widget.remove_table(index)
-            self.remove_item(index)
+    #def add_item_list(self, items):
+        #if not self.isVisible():
+            #self.show()
+        #for i in items:
+            #item = QListWidgetItem(i)
+            #item.setTextAlignment(Qt.AlignHCenter)
+            #self._list_widget.addItem(item)
+    def add_item(self, text, nrow):
+        item = QListWidgetItem(text + ' [' + str(nrow) + ']')
+        item.setTextAlignment(Qt.AlignHCenter)
+        self.addItem(item)
+
+    def _remove(self):
+        #container = Pireal.get_service("container")
+        #items = self._list_widget.selectedItems()
+        #for item in items:
+            #index = self._list_widget.row(item)
+            #container.table_widget.remove_table(index)
+            #self.remove_item(index)
         #container.remove_relation(items)
+        pass
 
     def clear_items(self):
         """ Remove all items and selections in the view """
 
-        self._list_widget.clear()
+        self.clear()
 
     def get_relation_name(self):
         """ Returns the text of the item """

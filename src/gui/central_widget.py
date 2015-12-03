@@ -17,13 +17,24 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import os
+
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QStackedWidget
+    QStackedWidget,
+    QFileDialog,
+    QMessageBox
 )
+
+from src.core import (
+    settings,
+    file_manager,
+    pfile
+)
+from src import translations as tr
 from src.gui.main_window import Pireal
-from src.gui import start_page
+from src.gui import start_page, main_container
 from src.gui.dialogs import preferences
 
 
@@ -37,11 +48,83 @@ class CentralWidget(QWidget):
         self.stacked = QStackedWidget()
         box.addWidget(self.stacked)
 
+        self.__ndb = 1
         self.__created = False
+        self.__last_open_folder = None
 
         Pireal.load_service("central", self)
 
+    def open_file(self, filename=''):
+        if self.__last_open_folder is None:
+            directory = os.path.expanduser("~")
+        else:
+            directory = self.__last_open_folder
+
+        if not filename:
+            filename = QFileDialog.getOpenFileName(self,
+                                                   tr.TR_CENTRAL_OPEN_FILE,
+                                                   directory,
+                                                   settings.SUPPORTED_FILES)[0]
+            if not filename:
+                return
+
+        # Save folder
+        self.__last_open_folder = file_manager.get_path(filename)
+
+        extension = file_manager.get_extension(filename)
+        if extension == '.pqf':
+            if not self.created:
+                QMessageBox.information(self, tr.TR_CENTRAL_INFORMATION,
+                                        tr.TR_CENTRAL_FIRST_CREATE_DB)
+                return
+            # Open a query file
+        else:
+            # Open a database file
+            self.create_database(filename)
+
+    def create_database(self, filename=''):
+        """ This function opens or creates a database """
+
+        # Only one database
+        if self.created:
+            QMessageBox.critical(self, "Error", tr.TR_CENTRAL_ERROR_DB)
+            return
+
+        main = main_container.MainContainer()
+        self.add_widget(main)
+
+        # File
+        ffile = pfile.PFile(filename)
+        if not filename:
+            db_name = "database_{}.pdb".format(self.__ndb)
+        else:
+            try:
+                data = ffile.read()
+            except Exception as reason:
+                QMessageBox.critical(self, "Error", reason.__str__())
+                return
+
+            db_name = ffile.name
+            main.create_database(data)
+
+        pireal = Pireal.get_service("pireal")
+        pireal.change_title(db_name)
+        pireal.enable_disable_db_actions()
+        self.created = True
+        self.__ndb += 1
+
+    def close_database(self):
+        mcontainer = self.stacked.widget(self.stacked.count() - 1)
+        if isinstance(mcontainer, main_container.MainContainer):
+            self.stacked.removeWidget(mcontainer)
+
+        del mcontainer
+
+        self.created = False
+
     def add_start_page(self):
+        """ This function adds the Start Page to the stacked widget """
+
         sp = start_page.StartPage()
         self.add_widget(sp)
 

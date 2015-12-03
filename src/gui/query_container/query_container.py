@@ -34,7 +34,10 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 
 from src.core import parser
-from src.gui import table, lateral_widget
+from src.gui import (
+    table,
+    list_widget
+)
 from src import translations as tr
 from src.gui.main_window import Pireal
 #from src.gui import lateral_widget
@@ -151,7 +154,7 @@ class QueryWidget(QWidget):
         self._vsplitter = QSplitter(Qt.Vertical)
         self._hsplitter = QSplitter(Qt.Horizontal)
 
-        self._result_list = lateral_widget.LateralWidget()
+        self._result_list = list_widget.LateralWidget()
         self._hsplitter.addWidget(self._result_list)
 
         self._stack_tables = QStackedWidget()

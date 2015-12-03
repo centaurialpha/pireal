@@ -32,6 +32,7 @@ TR_MENU_FILE_OPEN = translate("Pireal", "Open...")
 TR_MENU_FILE_SAVE_DB = translate("Pireal", "Save Database")
 TR_MENU_FILE_SAVE = translate("Pireal", "Save")
 TR_MENU_FILE_SAVE_AS = translate("Pireal", "Save As...")
+TR_MENU_FILE_CLOSE_DB = translate("Pireal", "Close database")
 TR_MENU_FILE_CONVERT_TO_PDB = translate("Pireal", "Convert to PDB")
 TR_MENU_FILE_EXIT = translate("Pireal", "Exit")
 
@@ -46,6 +47,7 @@ TR_MENU_EDIT_PASTE = translate("Pireal", "Paste")
 # Menu Relation
 TR_MENU_RELATION = translate("Pireal", "&Relation")
 TR_MENU_RELATION_NEW_RELATION = translate("Pireal", "New Relation")
+TR_MENU_RELATION_EDIT_RELATION = translate("Pireal", "Edit Relation")
 TR_MENU_RELATION_DELETE_RELATION = translate("Pireal", "Delete Relation")
 TR_MENU_RELATION_LOAD_RELATION = translate("Pireal", "Load Relation")
 TR_MENU_RELATION_ADD_ROW = translate("Pireal", "Add Row")
@@ -87,8 +89,8 @@ TR_RELATION_DIALOG_FIELD_EMPTY = translate("Pireal", "Field {0}:{1} is empty!")
 TR_RELATION_DIALOG_F1 = translate("Pireal", "Field 1")
 TR_RELATION_DIALOG_F2 = translate("Pireal", "Field 2")
 
-# Container
-TR_CONTAINER_ERROR_DB = translate("Pireal", ("You can only have a database"
+# Central
+TR_CENTRAL_ERROR_DB = translate("Pireal", ("You can only have a database"
                                   "open at a time"))
 TR_CONTAINER_UNSELECTED_RELATIONSHIP = translate("Pireal",
                                                  "None selected relationship")
@@ -99,11 +101,14 @@ TR_CONTAINER_CONFIRM_DELETE_REL = translate("Pireal", ("Are you sure you want"
 TR_CONTAINER_FILE_SAVED = translate("Pireal", "File Saved: {}")
 TR_CONTAINER_SAVE_FILE = translate("Pireal", "Save File")
 TR_CONTAINER_SAVE_DB = translate("Pireal", "Save Database")
-TR_CONTAINER_OPEN_FILE = translate("Pireal", "Open File")
+TR_CENTRAL_OPEN_FILE = translate("Pireal", "Open File")
 TR_CONTAINER_DB_UNSAVED_TITLE = translate("Pireal", "Save Changes?")
 TR_CONTAINER_DB_UNSAVED = translate("Pireal", ("The <b>{}</b> database has "
                                               "ben modified.<br>Do you want"
                                               "save your changes?"))
+TR_CENTRAL_INFORMATION = translate("Pireal", "Information")
+TR_CENTRAL_FIRST_CREATE_DB = translate("Pireal",
+                                       "First create or open a database")
 
 # Query widget
 TR_QUERY_ERROR = translate("Pireal", "Query error")

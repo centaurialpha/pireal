@@ -2,9 +2,11 @@
 
 from PyQt5.QtWidgets import (
     QTableWidget,
+    QTableWidgetItem,
     QAbstractItemView,
     QHeaderView
 )
+from PyQt5.QtCore import Qt
 
 
 class Table(QTableWidget):
@@ -15,3 +17,10 @@ class Table(QTableWidget):
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         #FIXME: Configurable
         self.verticalHeader().setVisible(False)
+
+
+class Item(QTableWidgetItem):
+
+    def __init__(self, parent=None):
+        super(Item, self).__init__(parent)
+        self.setFlags(self.flags() ^ Qt.ItemIsEditable)

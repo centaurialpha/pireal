@@ -42,8 +42,11 @@ else:
     FONT = QFont('Courier', 10)
 
 # Supported files
-RFILES = "Pireal Relation File (*.prf *.csv *.txt)"
-DBFILE = "Pireal Data Base File (*.pdb);;Pireal Query File (*.pqf)"
+SUPPORTED_FILES = ("Pireal Files\t.PDB .PQF .CSV .PRF .TXT"
+                  "(*.pdb *.pqf *.csv *prf *.txt);;"
+                  "Pireal database files\t.PDB(*.pdb);;"
+                  "Pireal query files\t.PQF(*.pqf);;"
+                  "Pireal relation files\t.PRF .CSV(*.prf *.csv)")
 
 # Create folder (settings and logging)
 PATH = os.path.realpath(os.path.dirname(sys.argv[0]))
