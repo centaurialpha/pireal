@@ -64,6 +64,7 @@ class MainContainer(QSplitter):
         self.addWidget(self.query_container)
 
         self.modified = True
+        self.dbname = ""
 
         # Connections
         self.lateral_widget.currentRowChanged[int].connect(

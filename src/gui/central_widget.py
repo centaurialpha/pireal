@@ -107,6 +107,7 @@ class CentralWidget(QWidget):
             db_name = ffile.name
             main.create_database(data)
 
+        main.dbname = db_name
         pireal = Pireal.get_service("pireal")
         pireal.change_title(db_name)
         pireal.enable_disable_db_actions()
@@ -117,13 +118,22 @@ class CentralWidget(QWidget):
         mcontainer = self.stacked.widget(self.stacked.count() - 1)
         if isinstance(mcontainer, main_container.MainContainer):
             if mcontainer.modified:
-                QMessageBox.question(self, tr.TR_CENTRAL_DB_UNSAVED_TITLE,
-                                     tr.TR_CENTRAL_DB_UNSAVED_MSG)
+                flags = QMessageBox.No
+                flags |= QMessageBox.Yes
+                flags |= QMessageBox.Cancel
+                r = QMessageBox.question(self, tr.TR_CENTRAL_DB_UNSAVED_TITLE,
+                                         tr.TR_CENTRAL_DB_UNSAVED_MSG.format(
+                                             mcontainer.dbname), flags)
+                if r == QMessageBox.Cancel:
+                    return
+                if r == QMessageBox.Yes:
+                    print("Guardando")
+
             self.stacked.removeWidget(mcontainer)
 
-        del mcontainer
+            del mcontainer
 
-        self.created = False
+            self.created = False
 
     def add_start_page(self):
         """ This function adds the Start Page to the stacked widget """
