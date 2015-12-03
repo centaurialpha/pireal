@@ -35,7 +35,10 @@ from src.core import (
 from src import translations as tr
 from src.gui.main_window import Pireal
 from src.gui import start_page, main_container
-from src.gui.dialogs import preferences
+from src.gui.dialogs import (
+    preferences,
+    new_relation_dialog
+)
 
 
 class CentralWidget(QWidget):
@@ -118,15 +121,15 @@ class CentralWidget(QWidget):
         self.__ndb += 1
 
     def close_database(self):
-        mcontainer = self.stacked.widget(self.stacked.count() - 1)
-        if isinstance(mcontainer, main_container.MainContainer):
+        mcontainer = self.get_active_db()
+        if mcontainer is not None:
             if mcontainer.modified:
                 flags = QMessageBox.Cancel
                 flags |= QMessageBox.No
                 flags |= QMessageBox.Yes
                 r = QMessageBox.question(self, tr.TR_CENTRAL_DB_UNSAVED_TITLE,
                                          tr.TR_CENTRAL_DB_UNSAVED_MSG.format(
-                                             mcontainer.dbname), flags)
+                                             mcontainer.dbname()), flags)
                 if r == QMessageBox.Cancel:
                     return
                 if r == QMessageBox.Yes:
@@ -140,6 +143,10 @@ class CentralWidget(QWidget):
 
     def save_database(self):
         pass
+
+    def create_new_relation(self):
+        dialog = new_relation_dialog.NewRelationDialog(self)
+        dialog.show()
 
     def add_start_page(self):
         """ This function adds the Start Page to the stacked widget """
@@ -185,5 +192,17 @@ class CentralWidget(QWidget):
     def _settings_closed(self):
         self.stacked.removeWidget(self.widget(1))
         self.stacked.setCurrentWidget(self.stacked.currentWidget())
+
+    def get_active_db(self):
+        """ Return an instance of Main Conatainer widget if the
+        stacked contains an Main Container in last index or None if it's
+        not an instance of Main Container """
+
+        index = self.stacked.count() - 1
+        widget = self.widget(index)
+        if isinstance(widget, main_container.MainContainer):
+            return widget
+        return None
+
 
 central = CentralWidget()

@@ -36,7 +36,7 @@ from PyQt5.QtCore import (
     pyqtSignal
 )
 from src.gui.main_window import Pireal
-from src.gui import table_widget
+from src.gui import table
 from src import translations as tr
 from src.core import relation
 
@@ -70,7 +70,7 @@ class NewRelationDialog(QDialog):
         hbox.addWidget(btn_remove_tuple)
         vbox.addLayout(hbox)
 
-        self._table = table_widget.Table()
+        self._table = table.Table()
         vbox.addWidget(self._table)
         self._table.setRowCount(1)
         self._table.setColumnCount(2)
@@ -156,8 +156,15 @@ class NewRelationDialog(QDialog):
                 data[row, column] = self._table.item(row, column).text()
             rel.insert(reg)
         # Add table and relation
-        table_widget = Pireal.get_service("main").db_widget.table_widget
+        central = Pireal.get_service("central")
+        table_widget = central.get_active_db().table_widget
         table_widget.add_table(rows - 1, columns, name, data, fields)
-        table_widget.relations[name] = rel
+        table_widget.add_relation(name, rel)
+        list_relation = central.get_active_db().lateral_widget
+        list_relation.add_item(name, rows - 1)
 
         self.close()
+
+    def showEvent(self, event):
+        QDialog.showEvent(self, event)
+        self._line_relation_name.setFocus()
