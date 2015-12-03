@@ -111,7 +111,6 @@ class CentralWidget(QWidget):
             db_name = ffile.name
             main.create_database(data)
 
-        print(main.isnew(), main.dbname())
         pireal = Pireal.get_service("pireal")
         pireal.change_title(db_name)
         pireal.enable_disable_db_actions()
