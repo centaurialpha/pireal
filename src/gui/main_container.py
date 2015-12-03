@@ -63,88 +63,16 @@ class MainContainer(QSplitter):
         self.query_container = query_container.QueryContainer()
         self.addWidget(self.query_container)
 
+        self.modified = True
+
+        # Connections
         self.lateral_widget.currentRowChanged[int].connect(
             lambda i: self.table_widget.stacked.setCurrentIndex(i))
-        #self.db_widget = database_widget.DBWidget()
-        #self.addWidget(self.db_widget)
-
-        #self.query_tab_container = query_container.QueryTabContainer()
-        #self.query_tab_container.hide()
-        #self.addWidget(self.query_tab_container)
-
-        #self.__ndatabase, self.__nquery, self.__nrelation = 1, 1, 1
-
-        # To remember the last folder
-        #if settings.PSettings.LAST_OPEN_FOLDER:
-            #self.__last_open_folder = settings.PSettings.LAST_OPEN_FOLDER
-        #else:
-            #self.__last_open_folder = None
 
         self.setSizes([1, 1])
 
-        # Load service
-        #Pireal.load_service("main", self)
-
-    #def open_file(self, filename=''):
-        #if self.__last_open_folder is None:
-            #directory = os.path.expanduser("~")
-        #else:
-            #directory = self.__last_open_folder
-
-        #filename = QFileDialog.getOpenFileName(self, tr.TR_CONTAINER_OPEN_FILE,
-                                               #directory, settings.DBFILE)[0]
-        #if not filename:
-            #return
-
-        ## Save folder
-        #self.__last_open_folder = file_manager.get_path(filename)
-
-        #extension = file_manager.get_extension(filename)
-        #if extension == '.pqf':
-            #central = Pireal.get_service("central")
-            #if not central.created:
-                #QMessageBox.information(central, "Information",
-                                        #"First create or open a database")
-                #return
-            ## Query file
-            #self.new_query(filename)
-        #else:
-            ## Database file
-            #self.create_database(filename)
-
     #def get_last_open_folder(self):
         #return self.__last_open_folder
-
-    #def create_database(self, filename=''):
-        #""" This function opens or creates a database """
-
-        #central = Pireal.get_service("central")
-        #if central.created:
-            #QMessageBox.critical(self, "Error", tr.TR_CONTAINER_ERROR_DB)
-            #return
-        #central.add_main_container()
-        ## Pireal File
-        #ffile = pfile.PFile(filename)
-        #if filename:
-            #try:
-                #data = ffile.read()
-            #except Exception as reason:
-                #QMessageBox.critical(self, "Error", reason.__str__())
-                #return
-            #db_name = ffile.name
-            ##self.db_widget.table_widget.add_data_base(data)
-            #self.table_widget.add_data_base(data)
-        #else:
-            #db_name = "database_{}.pdb".format(self.__ndatabase)
-        #pireal = Pireal.get_service("pireal")
-        ## Title
-        #pireal.change_title(db_name)
-        ## Enable QAction's
-        #pireal.enable_disable_db_actions()
-        #central.created = True
-        #self.__ndatabase += 1
-        # Add to recent databases
-        #self.__add_to_recent(ffile.filename)
 
     def create_database(self, data):
         rel = None
@@ -185,9 +113,6 @@ class MainContainer(QSplitter):
 
     #def get_recent_db(self):
         #return settings.PSettings.RECENT_DB
-
-    #def close_database(self):
-        #pass
 
     #def create_new_relation(self):
         #from src.gui.dialogs import new_relation_dialog

@@ -102,10 +102,10 @@ TR_CONTAINER_FILE_SAVED = translate("Pireal", "File Saved: {}")
 TR_CONTAINER_SAVE_FILE = translate("Pireal", "Save File")
 TR_CONTAINER_SAVE_DB = translate("Pireal", "Save Database")
 TR_CENTRAL_OPEN_FILE = translate("Pireal", "Open File")
-TR_CONTAINER_DB_UNSAVED_TITLE = translate("Pireal", "Save Changes?")
-TR_CONTAINER_DB_UNSAVED = translate("Pireal", ("The <b>{}</b> database has "
-                                              "ben modified.<br>Do you want"
-                                              "save your changes?"))
+TR_CENTRAL_DB_UNSAVED_TITLE = translate("Pireal", "Save Changes?")
+TR_CENTRAL_DB_UNSAVED_MSG = translate("Pireal", ("The <b>{}</b> database has "
+                                                 "ben modified.<br>Do you want"
+                                                 "save your changes?"))
 TR_CENTRAL_INFORMATION = translate("Pireal", "Information")
 TR_CENTRAL_FIRST_CREATE_DB = translate("Pireal",
                                        "First create or open a database")

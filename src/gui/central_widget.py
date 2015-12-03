@@ -116,6 +116,9 @@ class CentralWidget(QWidget):
     def close_database(self):
         mcontainer = self.stacked.widget(self.stacked.count() - 1)
         if isinstance(mcontainer, main_container.MainContainer):
+            if mcontainer.modified:
+                QMessageBox.question(self, tr.TR_CENTRAL_DB_UNSAVED_TITLE,
+                                     tr.TR_CENTRAL_DB_UNSAVED_MSG)
             self.stacked.removeWidget(mcontainer)
 
         del mcontainer
