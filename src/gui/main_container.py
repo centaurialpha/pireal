@@ -48,9 +48,9 @@ from src.core import (
 
 class MainContainer(QSplitter):
 
-    def __init__(self, orientation=Qt.Vertical):
+    def __init__(self, pfile, orientation=Qt.Vertical):
         QSplitter.__init__(self, orientation)
-
+        self.__pfile = pfile
         self._hsplitter = QSplitter(Qt.Horizontal)
 
         self.lateral_widget = list_widget.LateralWidget()
@@ -63,8 +63,7 @@ class MainContainer(QSplitter):
         self.query_container = query_container.QueryContainer()
         self.addWidget(self.query_container)
 
-        self.modified = True
-        self.dbname = ""
+        self.modified = False
 
         # Connections
         self.lateral_widget.currentRowChanged[int].connect(
@@ -74,6 +73,14 @@ class MainContainer(QSplitter):
 
     #def get_last_open_folder(self):
         #return self.__last_open_folder
+
+    def dbname(self):
+        """ Return display name """
+
+        return self.__pfile.name
+
+    def isnew(self):
+        return self.__pfile.is_new
 
     def create_database(self, data):
         rel = None

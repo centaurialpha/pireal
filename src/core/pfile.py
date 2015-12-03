@@ -26,13 +26,19 @@ from PyQt5.QtCore import (
 
 
 class PFile(object):
-    """ This class represents a Pireal File, data base file or query file """
+    """ This class represents a Pireal File, database file or query file """
 
     def __init__(self, filename=''):
         self.__is_new = True
+        self.__filename = "untitled_{}.{}"
         if filename:
             self.__is_new = False
-        self.__filename = filename
+            self.__filename = filename
+
+    def complete_name(self, n, extension):
+        """ Adds number of new file and extension """
+
+        self.__filename = self.__filename.format(n, extension)
 
     def __get_filename(self):
         """ Returns the filename """

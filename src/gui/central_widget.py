@@ -90,13 +90,17 @@ class CentralWidget(QWidget):
             QMessageBox.critical(self, "Error", tr.TR_CENTRAL_ERROR_DB)
             return
 
-        main = main_container.MainContainer()
-        self.add_widget(main)
-
         # File
         ffile = pfile.PFile(filename)
+
+        main = main_container.MainContainer(ffile)
+        self.add_widget(main)
+
         if not filename:
-            db_name = "database_{}.pdb".format(self.__ndb)
+            ffile.complete_name(self.__ndb, 'pdb')
+            db_name = main.dbname()
+            #db_name = main.dbname().format(self.__ndb, 'pdb')
+
         else:
             try:
                 data = ffile.read()
@@ -107,7 +111,7 @@ class CentralWidget(QWidget):
             db_name = ffile.name
             main.create_database(data)
 
-        main.dbname = db_name
+        print(main.isnew(), main.dbname())
         pireal = Pireal.get_service("pireal")
         pireal.change_title(db_name)
         pireal.enable_disable_db_actions()
@@ -118,22 +122,25 @@ class CentralWidget(QWidget):
         mcontainer = self.stacked.widget(self.stacked.count() - 1)
         if isinstance(mcontainer, main_container.MainContainer):
             if mcontainer.modified:
-                flags = QMessageBox.No
+                flags = QMessageBox.Cancel
+                flags |= QMessageBox.No
                 flags |= QMessageBox.Yes
-                flags |= QMessageBox.Cancel
                 r = QMessageBox.question(self, tr.TR_CENTRAL_DB_UNSAVED_TITLE,
                                          tr.TR_CENTRAL_DB_UNSAVED_MSG.format(
                                              mcontainer.dbname), flags)
                 if r == QMessageBox.Cancel:
                     return
                 if r == QMessageBox.Yes:
-                    print("Guardando")
+                    self.save_database()
 
             self.stacked.removeWidget(mcontainer)
 
             del mcontainer
 
             self.created = False
+
+    def save_database(self):
+        pass
 
     def add_start_page(self):
         """ This function adds the Start Page to the stacked widget """
