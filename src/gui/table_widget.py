@@ -56,6 +56,11 @@ class TableWidget(QWidget):
     def count(self):
         return self.stacked.count()
 
+    def remove_table(self, index):
+        widget = self.stacked.widget(index)
+        self.stacked.removeWidget(widget)
+        del widget
+
     def add_relation(self, name, rela):
         if self.relations.get(name, None) is None:
             self.relations[name] = rela

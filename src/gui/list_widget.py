@@ -35,7 +35,7 @@ from src import translations as tr
 
 class LateralWidget(QListWidget):
 
-    itemRemoved = pyqtSignal()
+    itemRemoved = pyqtSignal(int)
 
     def __init__(self):
         super(LateralWidget, self).__init__()
@@ -89,7 +89,7 @@ class LateralWidget(QListWidget):
         else:
             index = self.currentRow()
             self.takeItem(index)
-            self.itemRemoved.emit()
+            self.itemRemoved.emit(index)
         #container = Pireal.get_service("container")
         #items = self._list_widget.selectedItems()
         #for item in items:
