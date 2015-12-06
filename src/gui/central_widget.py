@@ -139,6 +139,8 @@ class CentralWidget(QWidget):
 
             del mcontainer
 
+            pireal = Pireal.get_service("pireal")
+            pireal.enable_disable_db_actions(False)
             self.created = False
 
     def save_database(self):
