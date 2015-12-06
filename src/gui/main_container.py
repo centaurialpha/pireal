@@ -71,7 +71,8 @@ class MainContainer(QSplitter):
             lambda i: self.table_widget.stacked.setCurrentIndex(i))
         self.lateral_widget.itemRemoved[int].connect(
             lambda i: self.table_widget.remove_table(i))
-        self.lateral_widget.showEditRelation[int].connect(self.__edit_relation)
+        self.lateral_widget.showEditRelation.connect(self.__edit_relation)
+        self.lateral_widget.doubleClicked.connect(self.__edit_relation)
 
         self.setSizes([1, 1])
 
@@ -119,6 +120,7 @@ class MainContainer(QSplitter):
         print("Table modified")
 
     def __edit_relation(self, index):
+        index = index.row()
         item = self.table_widget.stacked.widget(index)
         dialog = edit_relation_dialog.EditRelationDialog(item, self)
         dialog.exec_()

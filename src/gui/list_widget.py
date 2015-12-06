@@ -36,7 +36,7 @@ from src import translations as tr
 class LateralWidget(QListWidget):
 
     itemRemoved = pyqtSignal(int)
-    showEditRelation = pyqtSignal(int)
+    showEditRelation = pyqtSignal('QModelIndex')
 
     def __init__(self):
         super(LateralWidget, self).__init__()
@@ -62,7 +62,8 @@ class LateralWidget(QListWidget):
         menu.exec_(self.mapToGlobal(point))
 
     def _edit(self):
-        index = self.currentRow()
+        item = self.currentItem()
+        index = self.indexFromItem(item)
         self.showEditRelation.emit(index)
 
     #def _change_item(self, index):
