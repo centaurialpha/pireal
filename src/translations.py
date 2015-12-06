@@ -94,8 +94,8 @@ TR_CENTRAL_ERROR_DB = translate("Pireal", ("You can only have a database"
                                   "open at a time"))
 TR_CONTAINER_UNSELECTED_RELATIONSHIP = translate("Pireal",
                                                  "None selected relationship")
-TR_CONTAINER_CONFIRM_DELETE_REL_TITLE = translate("Pireal", "Confirmation")
-TR_CONTAINER_CONFIRM_DELETE_REL = translate("Pireal", ("Are you sure you want"
+TR_CENTRAL_CONFIRM_DELETE_REL_TITLE = translate("Pireal", "Confirmation")
+TR_CENTRAL_CONFIRM_DELETE_REL = translate("Pireal", ("Are you sure you want"
                                             "to delete the"
                                             "relationship <b>{}</b>?"))
 TR_CONTAINER_FILE_SAVED = translate("Pireal", "File Saved: {}")

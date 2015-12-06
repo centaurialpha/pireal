@@ -21,15 +21,21 @@ from PyQt5.QtWidgets import (
     QListWidget,
     QListWidgetItem,
     QMenu,
-    QAbstractItemView
+    QAbstractItemView,
+    QMessageBox
 )
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import (
+    Qt,
+    pyqtSignal
+)
 #from src.gui.main_window import Pireal
 from src import translations as tr
 
 
 class LateralWidget(QListWidget):
+
+    itemRemoved = pyqtSignal()
 
     def __init__(self):
         super(LateralWidget, self).__init__()
@@ -74,6 +80,16 @@ class LateralWidget(QListWidget):
         self.addItem(item)
 
     def _remove(self):
+        r = QMessageBox.question(self, tr.TR_CENTRAL_CONFIRM_DELETE_REL_TITLE,
+                                 tr.TR_CENTRAL_CONFIRM_DELETE_REL.format(
+                                     self.currentItem().text().split()[0]),
+                                 QMessageBox.No | QMessageBox.Yes)
+        if r == QMessageBox.No:
+            return
+        else:
+            index = self.currentRow()
+            self.takeItem(index)
+            self.itemRemoved.emit()
         #container = Pireal.get_service("container")
         #items = self._list_widget.selectedItems()
         #for item in items:
@@ -81,7 +97,6 @@ class LateralWidget(QListWidget):
             #container.table_widget.remove_table(index)
             #self.remove_item(index)
         #container.remove_relation(items)
-        pass
 
     def clear_items(self):
         """ Remove all items and selections in the view """
