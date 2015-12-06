@@ -28,6 +28,10 @@ from PyQt5.QtWidgets import (
     QSpacerItem,
     QHeaderView
 )
+from PyQt5.QtGui import (
+    QBrush,
+    QColor
+)
 
 from src import translations as tr
 
@@ -57,6 +61,7 @@ class EditRelationDialog(QDialog):
         # Connections
         btn_save.clicked.connect(self.__save)
         btn_cancel.clicked.connect(self.close)
+        self.new_table.cellChanged[int, int].connect(self.__on_cell_changed)
 
     def __save(self):
         for i in range(self.previous_table.rowCount()):
@@ -65,6 +70,12 @@ class EditRelationDialog(QDialog):
                 new_text = self.new_table.item(i, j).text()
                 item.setText(new_text)
         self.close()
+
+    def __on_cell_changed(self, row, column):
+        item = self.new_table.item(row, column)
+        item.setBackground(QBrush(QColor("#f95959")))
+        item.setForeground(QBrush(QColor("white")))
+        item.setSelected(False)
 
     def __load_table(self, table):
         new_table = QTableWidget()
