@@ -234,7 +234,6 @@ class Pireal(QMainWindow):
         actions = [
             'new_query',
             'save_file',
-            #'close_database',
             #'save_query',
             #'save_query_as',
             #'save_database_as',
@@ -242,6 +241,7 @@ class Pireal(QMainWindow):
             #'execute_queries',
             'create_new_relation',
             'remove_relation',
+            'close_database'
             #'load_relation'
         ]
 
