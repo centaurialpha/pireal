@@ -119,21 +119,21 @@ class MainContainer(QSplitter):
         for filename in filenames:
             rel = relation.Relation(filename)
             relation_name = file_manager.get_basename(filename)
-            self.table_widget.add_relation(relation_name, rel)
-            ptable = table.Table()
-            ptable.setColumnCount(len(rel.fields))
-            ptable.setHorizontalHeaderLabels(rel.fields)
+            if self.table_widget.add_relation(relation_name, rel):
+                ptable = table.Table()
+                ptable.setColumnCount(len(rel.fields))
+                ptable.setHorizontalHeaderLabels(rel.fields)
 
-            for row in rel.content:
-                nrow = ptable.rowCount()
-                ptable.insertRow(nrow)
-                for col, text in enumerate(row):
-                    item = table.Item()
-                    item.setText(text)
-                    ptable.setItem(nrow, col, item)
+                for row in rel.content:
+                    nrow = ptable.rowCount()
+                    ptable.insertRow(nrow)
+                    for col, text in enumerate(row):
+                        item = table.Item()
+                        item.setText(text)
+                        ptable.setItem(nrow, col, item)
 
-            self.table_widget.stacked.addWidget(ptable)
-            self.lateral_widget.add_item(relation_name, nrow)
+                self.table_widget.stacked.addWidget(ptable)
+                self.lateral_widget.add_item(relation_name, nrow)
     #def __add_to_recent(self, filename):
         #files = settings.get_setting('recentDB', [])
         #if filename not in files:

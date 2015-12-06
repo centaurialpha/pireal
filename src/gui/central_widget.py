@@ -165,6 +165,8 @@ class CentralWidget(QWidget):
             if not filenames:
                 return
 
+        # Save folder
+        self.__last_open_folder = file_manager.get_path(filenames[0])
         main_container = self.get_active_db()
         main_container.load_relation(filenames)
 
