@@ -22,7 +22,7 @@
 from PyQt5.QtWidgets import (
     QSplitter,
     #QFileDialog,
-    #QMessageBox
+    QMessageBox
 )
 from PyQt5.QtCore import Qt
 
@@ -35,7 +35,7 @@ from src.gui import (
 )
 from src.gui.dialogs import edit_relation_dialog
 from src.gui.query_container import query_container
-#from src import translations as tr
+from src import translations as tr
 from src.core import (
     relation,
     #pfile,
@@ -69,8 +69,8 @@ class MainContainer(QSplitter):
         # Connections
         self.lateral_widget.currentRowChanged[int].connect(
             lambda i: self.table_widget.stacked.setCurrentIndex(i))
-        self.lateral_widget.itemRemoved[int].connect(
-            lambda i: self.table_widget.remove_table(i))
+        #self.lateral_widget.itemRemoved[int].connect(
+            #lambda i: self.table_widget.remove_table(i))
         self.lateral_widget.showEditRelation.connect(self.__edit_relation)
         self.lateral_widget.doubleClicked.connect(self.__edit_relation)
 
@@ -115,6 +115,28 @@ class MainContainer(QSplitter):
             relation_name = file_manager.get_basename(filename)
             if self.table_widget.add_relation(relation_name, rel):
                 self.__add_table(rel, relation_name)
+
+    def delete_relation(self):
+        selected_items = self.lateral_widget.selectedItems()
+        if selected_items:
+            if len(selected_items) > 1:
+                msg = tr.TR_CENTRAL_CONFIRM_DELETE_RELATIONS
+            else:
+                msg = tr.TR_CENTRAL_CONFIRM_DELETE_RELATION.format(
+                    self.lateral_widget.text_item(
+                        self.lateral_widget.currentRow()))
+
+            r = QMessageBox.question(self,
+                                     tr.TR_CENTRAL_CONFIRM_DELETE_REL_TITLE,
+                                     msg, QMessageBox.No | QMessageBox.Yes)
+            if r == QMessageBox.No:
+                return
+            for item in selected_items:
+                index = self.lateral_widget.row(item)
+                # Remove from list
+                self.lateral_widget.takeItem(index)
+                # Remove table
+                self.table_widget.remove_table(index)
 
     def __on_data_table_changed(self, i, j):
         print("Table modified")

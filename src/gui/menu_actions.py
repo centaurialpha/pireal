@@ -98,7 +98,7 @@ MENU['relation'] = {
         'slot': "central:create_new_relation"
     }, {
         'name': tr.TR_MENU_RELATION_DELETE_RELATION,
-        'slot': "container:remove_relation"
+        'slot': "central:remove_relation"
     }, {
         'name': tr.TR_MENU_RELATION_LOAD_RELATION,
         'slot': "central:load_relation"

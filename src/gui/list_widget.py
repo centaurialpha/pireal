@@ -22,14 +22,14 @@ from PyQt5.QtWidgets import (
     QListWidgetItem,
     QMenu,
     QAbstractItemView,
-    QMessageBox
+    #QMessageBox
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import (
     Qt,
     pyqtSignal
 )
-#from src.gui.main_window import Pireal
+from src.gui.main_window import Pireal
 from src import translations as tr
 
 
@@ -86,22 +86,25 @@ class LateralWidget(QListWidget):
         return self.item(index).text().split()[0]
 
     def _remove(self):
-        items = self.selectedItems()
-        if len(items) > 1:
-            msg = tr.TR_CENTRAL_CONFIRM_DELETE_RELATIONS
-        else:
-            msg = tr.TR_CENTRAL_CONFIRM_DELETE_RELATION.format(
-                self.currentItem().text().split()[0])
+        central = Pireal.get_service("central")
+        central.remove_relation()
 
-        r = QMessageBox.question(self, tr.TR_CENTRAL_CONFIRM_DELETE_REL_TITLE,
-                                 msg, QMessageBox.No | QMessageBox.Yes)
-        if r == QMessageBox.No:
-            return
-        else:
-            for item in items:
-                index = self.row(item)
-                self.takeItem(index)
-                self.itemRemoved.emit(index)
+        #items = self.selectedItems()
+        #if len(items) > 1:
+            #msg = tr.TR_CENTRAL_CONFIRM_DELETE_RELATIONS
+        #else:
+            #msg = tr.TR_CENTRAL_CONFIRM_DELETE_RELATION.format(
+                #self.currentItem().text().split()[0])
+
+        #r = QMessageBox.question(self, tr.TR_CENTRAL_CONFIRM_DELETE_REL_TITLE,
+                                 #msg, QMessageBox.No | QMessageBox.Yes)
+        #if r == QMessageBox.No:
+            #return
+        #else:
+            #for item in items:
+                #index = self.row(item)
+                #self.takeItem(index)
+                #self.itemRemoved.emit(index)
         #container = Pireal.get_service("container")
         #items = self._list_widget.selectedItems()
         #for item in items:

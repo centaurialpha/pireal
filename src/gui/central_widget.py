@@ -146,6 +146,10 @@ class CentralWidget(QWidget):
     def save_database(self):
         pass
 
+    def remove_relation(self):
+        main_container = self.get_active_db()
+        main_container.delete_relation()
+
     def create_new_relation(self):
         dialog = new_relation_dialog.NewRelationDialog(self)
         dialog.show()
