@@ -82,6 +82,9 @@ class LateralWidget(QListWidget):
         item.setTextAlignment(Qt.AlignHCenter)
         self.addItem(item)
 
+    def text_item(self, index):
+        return self.item(index).text().split()[0]
+
     def _remove(self):
         items = self.selectedItems()
         if len(items) > 1:

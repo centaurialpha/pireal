@@ -38,9 +38,10 @@ from src import translations as tr
 
 class EditRelationDialog(QDialog):
 
-    def __init__(self, item, parent=None):
+    def __init__(self, item, table_name, parent=None):
         super(EditRelationDialog, self).__init__(parent)
-        self.setWindowTitle(tr.TR_RELATION_EDIT_DIALOG_TITLE)
+        title = tr.TR_RELATION_EDIT_DIALOG_TITLE + ' [' + table_name + ']'
+        self.setWindowTitle(title)
         self.resize(650, 450)
         box = QVBoxLayout(self)
         box.setContentsMargins(5, 5, 5, 5)

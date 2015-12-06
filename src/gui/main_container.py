@@ -121,8 +121,9 @@ class MainContainer(QSplitter):
 
     def __edit_relation(self, index):
         index = index.row()
+        name = self.lateral_widget.text_item(index)
         item = self.table_widget.stacked.widget(index)
-        dialog = edit_relation_dialog.EditRelationDialog(item, self)
+        dialog = edit_relation_dialog.EditRelationDialog(item, name, self)
         dialog.exec_()
 
     def __add_table(self, rela, relation_name):
