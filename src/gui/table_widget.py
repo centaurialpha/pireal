@@ -135,7 +135,7 @@ class TableWidget(QWidget):
         for k, v in list(data.items()):
             item = table.Item()
             item.setText(v)
-            ptable.setItem(k[0] - 1, k[1], item)
+            ptable.setItem(k[0], k[1], item)
 
         self.stacked.addWidget(ptable)
         self.stacked.setCurrentIndex(self.count() - 1)
