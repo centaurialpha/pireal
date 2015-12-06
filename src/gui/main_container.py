@@ -45,8 +45,6 @@ from src.core import (
     #lateral_widget
 #)
 
-#FIXME: modularizar la creación de tablas
-
 
 class MainContainer(QSplitter):
 
@@ -103,37 +101,30 @@ class MainContainer(QSplitter):
                 ptable.setColumnCount(len(rel.fields))
                 ptable.setHorizontalHeaderLabels(rel.fields)
                 self.table_widget.add_relation(name, rel)
-
-                for row in rel.content:
-                    nrow = ptable.rowCount()
-                    ptable.insertRow(nrow)
-                    for col, text in enumerate(row):
-                        item = table.Item()
-                        item.setText(text)
-                        ptable.setItem(nrow, col, item)
-
-                self.table_widget.stacked.addWidget(ptable)
-                self.lateral_widget.add_item(name, nrow)
+                self.__add_table(rel, name)
 
     def load_relation(self, filenames):
         for filename in filenames:
             rel = relation.Relation(filename)
             relation_name = file_manager.get_basename(filename)
             if self.table_widget.add_relation(relation_name, rel):
-                ptable = table.Table()
-                ptable.setColumnCount(len(rel.fields))
-                ptable.setHorizontalHeaderLabels(rel.fields)
+                self.__add_table(rel, relation_name)
 
-                for row in rel.content:
-                    nrow = ptable.rowCount()
-                    ptable.insertRow(nrow)
-                    for col, text in enumerate(row):
-                        item = table.Item()
-                        item.setText(text)
-                        ptable.setItem(nrow, col, item)
+    def __add_table(self, rela, relation_name):
+        ptable = table.Table()
+        ptable.setColumnCount(len(rela.fields))
+        ptable.setHorizontalHeaderLabels(rela.fields)
 
-                self.table_widget.stacked.addWidget(ptable)
-                self.lateral_widget.add_item(relation_name, nrow)
+        for row in rela.content:
+            nrow = ptable.rowCount()
+            ptable.insertRow(nrow)
+            for column, data in enumerate(row):
+                item = table.Item()
+                item.setText(data)
+                ptable.setItem(nrow, column, item)
+
+        self.table_widget.stacked.addWidget(ptable)
+        self.lateral_widget.add_item(relation_name, nrow)
     #def __add_to_recent(self, filename):
         #files = settings.get_setting('recentDB', [])
         #if filename not in files:
