@@ -241,8 +241,8 @@ class Pireal(QMainWindow):
             #'execute_queries',
             'create_new_relation',
             'remove_relation',
-            'close_database'
-            #'load_relation'
+            'close_database',
+            'load_relation'
         ]
 
         for action in actions:
