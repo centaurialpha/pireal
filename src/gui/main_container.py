@@ -33,6 +33,7 @@ from src.gui import (
     list_widget,
     table
 )
+from src.gui.dialogs import edit_relation_dialog
 from src.gui.query_container import query_container
 #from src import translations as tr
 from src.core import (
@@ -70,6 +71,7 @@ class MainContainer(QSplitter):
             lambda i: self.table_widget.stacked.setCurrentIndex(i))
         self.lateral_widget.itemRemoved[int].connect(
             lambda i: self.table_widget.remove_table(i))
+        self.lateral_widget.showEditRelation[int].connect(self.__edit_relation)
 
         self.setSizes([1, 1])
 
@@ -99,9 +101,10 @@ class MainContainer(QSplitter):
                 else:
                     rel.insert(line.split(','))
             if rel is not None:
-                ptable = table.Table()
-                ptable.setColumnCount(len(rel.fields))
-                ptable.setHorizontalHeaderLabels(rel.fields)
+                #ptable = table.Table()
+                #ptable.itemChanged.connect(self.__on_data_table_changed)
+                #ptable.setColumnCount(len(rel.fields))
+                #ptable.setHorizontalHeaderLabels(rel.fields)
                 self.table_widget.add_relation(name, rel)
                 self.__add_table(rel, name)
 
@@ -111,6 +114,14 @@ class MainContainer(QSplitter):
             relation_name = file_manager.get_basename(filename)
             if self.table_widget.add_relation(relation_name, rel):
                 self.__add_table(rel, relation_name)
+
+    def __on_data_table_changed(self, i, j):
+        print("Table modified")
+
+    def __edit_relation(self, index):
+        item = self.table_widget.stacked.widget(index)
+        dialog = edit_relation_dialog.EditRelationDialog(item, self)
+        dialog.exec_()
 
     def __add_table(self, rela, relation_name):
         ptable = table.Table()
@@ -127,6 +138,9 @@ class MainContainer(QSplitter):
 
         self.table_widget.stacked.addWidget(ptable)
         self.lateral_widget.add_item(relation_name, nrow)
+
+        # Connect the signal when data changed
+        ptable.cellChanged.connect(self.__on_data_table_changed)
     #def __add_to_recent(self, filename):
         #files = settings.get_setting('recentDB', [])
         #if filename not in files:

@@ -71,8 +71,9 @@ TR_ABOUT_DIALOG_LICENSE_SOURCE = translate("Pireal", ("<br>This software is "
                                            "<a href='{1}'>GitHub.</a>"))
 TR_ABOUT_DIALOG_BTN_OK = translate("Pireal", "Done")
 
-# New relation dialog
+# Dialogs
 TR_RELATION_DIALOG_TITLE = translate("Pireal", "New Relation")
+TR_RELATION_EDIT_DIALOG_TITLE = translate("Pireal", "Edit Relation")
 TR_RELATION_DIALOG_FIELDS = translate("Pireal", ("The first row corresponds"
                                       " to the fields."))
 TR_RELATION_DIALOG_NAME = translate("Pireal", "Relationship name")

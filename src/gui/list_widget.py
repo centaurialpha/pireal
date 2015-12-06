@@ -36,6 +36,7 @@ from src import translations as tr
 class LateralWidget(QListWidget):
 
     itemRemoved = pyqtSignal(int)
+    showEditRelation = pyqtSignal(int)
 
     def __init__(self):
         super(LateralWidget, self).__init__()
@@ -61,7 +62,8 @@ class LateralWidget(QListWidget):
         menu.exec_(self.mapToGlobal(point))
 
     def _edit(self):
-        pass
+        index = self.currentRow()
+        self.showEditRelation.emit(index)
 
     #def _change_item(self, index):
         #table_widget = Pireal.get_service("main").table_widget
@@ -108,21 +110,3 @@ class LateralWidget(QListWidget):
         """ Remove all items and selections in the view """
 
         self.clear()
-
-    def get_relation_name(self):
-        """ Returns the text of the item """
-
-        item = self._list_widget.currentItem()
-        if item is None:
-            return False
-        return item.text()
-
-    def current_index(self):
-        """ Returns the current index """
-
-        return self._list_widget.currentRow()
-
-    def remove_item(self, index):
-        """ Removes the item from the given index in the list widget"""
-
-        self._list_widget.takeItem(index)
