@@ -80,16 +80,22 @@ class LateralWidget(QListWidget):
         self.addItem(item)
 
     def _remove(self):
+        items = self.selectedItems()
+        if len(items) > 1:
+            msg = tr.TR_CENTRAL_CONFIRM_DELETE_RELATIONS
+        else:
+            msg = tr.TR_CENTRAL_CONFIRM_DELETE_RELATION.format(
+                self.currentItem().text().split()[0])
+
         r = QMessageBox.question(self, tr.TR_CENTRAL_CONFIRM_DELETE_REL_TITLE,
-                                 tr.TR_CENTRAL_CONFIRM_DELETE_REL.format(
-                                     self.currentItem().text().split()[0]),
-                                 QMessageBox.No | QMessageBox.Yes)
+                                 msg, QMessageBox.No | QMessageBox.Yes)
         if r == QMessageBox.No:
             return
         else:
-            index = self.currentRow()
-            self.takeItem(index)
-            self.itemRemoved.emit(index)
+            for item in items:
+                index = self.row(item)
+                self.takeItem(index)
+                self.itemRemoved.emit(index)
         #container = Pireal.get_service("container")
         #items = self._list_widget.selectedItems()
         #for item in items:
