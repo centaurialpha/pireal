@@ -101,7 +101,7 @@ MENU['relation'] = {
         'slot': "container:remove_relation"
     }, {
         'name': tr.TR_MENU_RELATION_LOAD_RELATION,
-        'slot': "container:load_relation"
+        'slot': "central:load_relation"
     }, "-", {
         'name': tr.TR_MENU_RELATION_ADD_ROW,
         'slot': "container:insert_tuple"

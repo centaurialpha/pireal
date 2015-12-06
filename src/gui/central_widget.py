@@ -148,15 +148,35 @@ class CentralWidget(QWidget):
         dialog = new_relation_dialog.NewRelationDialog(self)
         dialog.show()
 
+    def load_relation(self, filename=''):
+        """ Load Relation file """
+
+        if not filename:
+            if self.__last_open_folder is None:
+                directory = os.path.expanduser("~")
+            else:
+                directory = self.__last_open_folder
+
+            msg = tr.TR_CENTRAL_OPEN_RELATION
+            filter_ = settings.SUPPORTED_FILES.split(';;')[-1]
+            filenames = QFileDialog.getOpenFileNames(self, msg, directory,
+                                                    filter_)[0]
+
+            if not filenames:
+                return
+
+        main_container = self.get_active_db()
+        main_container.load_relation(filenames)
+
     def add_start_page(self):
         """ This function adds the Start Page to the stacked widget """
 
         sp = start_page.StartPage()
         self.add_widget(sp)
 
-    def add_main_container(self):
-        main = Pireal.get_service("main")
-        self.add_widget(main)
+    #def add_main_container(self):
+        #main = Pireal.get_service("main")
+        #self.add_widget(main)
 
     def __get_created(self):
         return self.__created
