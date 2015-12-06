@@ -141,6 +141,8 @@ class NewRelationDialog(QDialog):
         model = self._table.model()
         column_to_remove = self._table.currentIndex().column()
         model.removeColumn(column_to_remove)
+        self.__remove_from_layout(column_to_remove)
+        self._table.resizeColumnToContents(0)
 
     def __add_tuple(self):
         model = self._table.model()
@@ -164,9 +166,9 @@ class NewRelationDialog(QDialog):
         delegate = self._table.itemDelegate()
         delegate.set_column_type(index_of_combo_widget, index)
 
-    #def __remove_from_layout(self, index):
-        #widget = self._hbox.takeAt(index).widget()
-        #widget.deleteLater()
+    def __remove_from_layout(self, index):
+        widget = self._hbox.takeAt(index).widget()
+        widget.deleteLater()
 
     #def __validate_types(self):
         #data = {}
