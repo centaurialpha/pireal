@@ -85,6 +85,12 @@ class QueryContainer(QWidget):
         self._tabs = tab_widget.TabWidget()
         box.addWidget(self._tabs)
 
+        self.__hide()
+
+        # Connections
+        self._tabs.tabCloseRequested.connect(self.__hide)
+
+    def __hide(self):
         if self.count() == 0:
             self.hide()
 
@@ -103,6 +109,8 @@ class QueryContainer(QWidget):
 
         widget = QueryWidget()
         index = self._tabs.addTab(widget, "Untitled_{}".format(self.__ntab))
+        # Focus editor
+        widget.get_editor().setFocus()
         self._tabs.setCurrentIndex(index)
         self.__ntab += 1
 
