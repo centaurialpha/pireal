@@ -162,7 +162,7 @@ class MainContainer(QSplitter):
                 ptable.setItem(nrow, column, item)
 
         self.table_widget.stacked.addWidget(ptable)
-        self.lateral_widget.add_item(relation_name, nrow)
+        self.lateral_widget.add_item(relation_name, nrow + 1)
 
         # Connect the signal when data changed
         ptable.cellChanged.connect(self.__on_data_table_changed)
