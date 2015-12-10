@@ -169,6 +169,10 @@ class MainContainer(QSplitter):
 
     def new_query(self):
         self.query_container.add_tab()
+
+    def execute_queries(self):
+        self.query_container.execute_queries()
+
     #def __add_to_recent(self, filename):
         #files = settings.get_setting('recentDB', [])
         #if filename not in files:

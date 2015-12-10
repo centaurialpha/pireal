@@ -121,7 +121,8 @@ class QueryContainer(QWidget):
         weditor = self.currentWidget().get_editor()
         text = weditor.toPlainText()
 
-        table_widget = Pireal.get_service("main").table_widget
+        central = Pireal.get_service("central")
+        table_widget = central.get_active_db().table_widget
 
         #FIXME: Move ignore comments to parser
         for line in text.splitlines():

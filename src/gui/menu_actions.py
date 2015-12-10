@@ -110,7 +110,7 @@ MENU['relation'] = {
         'slot': "container:remove_tuple"
     }, "-", {
         'name': tr.TR_MENU_RELATION_EXECUTE,
-        'slot': "main:execute_queries"}]}
+        'slot': "central:execute_queries"}]}
 
 
 # Menu Help
