@@ -23,7 +23,8 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import (
     QTextCharFormat,
-    QTextCursor
+    QTextCursor,
+    QColor
 )
 from PyQt5.QtCore import (
     Qt,
@@ -52,6 +53,8 @@ class Editor(QPlainTextEdit):
         self._sidebar = sidebar.Sidebar(self)
         # Completer
         self._completer = completer.Completer(self)
+
+        self.__cursor_position_changed()
 
         # Connection
         self.updateRequest['const QRect&', int].connect(
@@ -107,20 +110,28 @@ class Editor(QPlainTextEdit):
         return relation.fields
 
     def __cursor_position_changed(self):
-        # Paren matching
         _selection = QTextEdit.ExtraSelection()
-        extra_selection = []
-        extra_selection.append(_selection)
+        extra_selections = []
+        extra_selections.append(_selection)
 
+        # Highlight current line
+        color = QColor(Qt.lightGray).lighter(125)
+        _selection.format.setBackground(color)
+        _selection.format.setProperty(QTextCharFormat.FullWidthSelection, True)
+        _selection.cursor = self.textCursor()
+        _selection.cursor.clearSelection()
+        extra_selections.append(_selection)
+
+        # Paren matching
         extras = self.__check_brackets()
         if extras:
-            extra_selection.extend(extras)
-        self.setExtraSelections(extra_selection)
+            extra_selections.extend(extras)
+        self.setExtraSelections(extra_selections)
 
         # Emit line and column signal
-        line = self.blockCount()
-        col = self.textCursor().columnNumber() + 1
-        self._cursorPositionChanged.emit(line, col)
+        #line = self.blockCount()
+        #col = self.textCursor().columnNumber() + 1
+        #self._cursorPositionChanged.emit(line, col)
 
     def __check_brackets(self):
         left, right = QTextEdit.ExtraSelection(), QTextEdit.ExtraSelection()

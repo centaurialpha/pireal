@@ -20,7 +20,7 @@
 """
 This module contains an ordered dictionary, in turn this has a dictionary
 with the name and a list of items with properties as an icon , shortcut,
-slot for each item in a menu, by default, strings they are in Spanish.
+slot for each item in a menu.
 
 """
 
@@ -39,7 +39,7 @@ MENU['file'] = {
         'slot': "central:create_database"
     }, {
         'name': tr.TR_MENU_FILE_NEW_QUERY,
-        'slot': "main:new_query"
+        'slot': "central:new_query"
     }, "-", {
         'name': tr.TR_MENU_FILE_OPEN,
         'slot': "central:open_file"

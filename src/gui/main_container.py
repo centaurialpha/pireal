@@ -166,6 +166,9 @@ class MainContainer(QSplitter):
 
         # Connect the signal when data changed
         ptable.cellChanged.connect(self.__on_data_table_changed)
+
+    def new_query(self):
+        self.query_container.add_tab()
     #def __add_to_recent(self, filename):
         #files = settings.get_setting('recentDB', [])
         #if filename not in files:

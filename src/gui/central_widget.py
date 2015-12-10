@@ -143,6 +143,10 @@ class CentralWidget(QWidget):
             pireal.enable_disable_db_actions(False)
             self.created = False
 
+    def new_query(self):
+        main_container = self.get_active_db()
+        main_container.new_query()
+
     def save_database(self):
         pass
 
