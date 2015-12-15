@@ -137,6 +137,9 @@ class MainContainer(QSplitter):
                 self.lateral_widget.takeItem(index)
                 # Remove table
                 self.table_widget.remove_table(index)
+                # Remove relation
+                name = item.text().split()[0].strip()
+                self.table_widget.remove_relation(name)
 
     def __on_data_table_changed(self, table_name):
         current_table = self.table_widget.stacked.currentWidget()

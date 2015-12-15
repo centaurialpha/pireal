@@ -61,6 +61,9 @@ class TableWidget(QWidget):
         self.stacked.removeWidget(widget)
         del widget
 
+    def remove_relation(self, name):
+        del self.relations[name]
+
     def add_relation(self, name, rela):
         if self.relations.get(name, None) is None:
             self.relations[name] = rela
