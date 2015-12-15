@@ -48,7 +48,7 @@ MENU['file'] = {
         #'slot': "container:save_data_base"
     #}, {
         'name': tr.TR_MENU_FILE_SAVE,
-        'slot': "container:save_file"
+        'slot': "central:save_file"
     }, "-", {
         'name': tr.TR_MENU_FILE_CLOSE_DB,
         'slot': "central:close_database"
@@ -104,10 +104,10 @@ MENU['relation'] = {
         'slot': "central:load_relation"
     }, "-", {
         'name': tr.TR_MENU_RELATION_ADD_ROW,
-        'slot': "container:insert_tuple"
+        'slot': "central:insert_tuple"
     }, {
         'name': tr.TR_MENU_RELATION_DELETE_ROW,
-        'slot': "container:remove_tuple"
+        'slot': "central:remove_tuple"
     }, "-", {
         'name': tr.TR_MENU_RELATION_EXECUTE,
         'slot': "central:execute_queries"}]}

@@ -136,7 +136,6 @@ class Pireal(QMainWindow):
         toolbar_items = {}
 
         central = Pireal.get_service("central")
-        main = Pireal.get_service("main")
 
         # Settings action on menu bar
         qaction = menubar.addAction(tr.TR_SETTINGS_MENUBAR)
@@ -155,12 +154,10 @@ class Pireal(QMainWindow):
                 else:
                     action = menu_item['name']
                     obj, connection = menu_item['slot'].split(':')
-                    if obj.startswith('main'):
-                        obj = main
-                    elif obj.startswith('pireal'):
-                        obj = self
-                    else:
+                    if obj.startswith('central'):
                         obj = central
+                    else:
+                        obj = self
 
                     # Load recent files
                     #if action is None:
