@@ -24,11 +24,17 @@ Rectangle {
         }
 
         NumberAnimation {
+            id: rot
             target: rotation
             property: "angle"
             from: 0; to: 360; duration: 1050
             running: true
-            loops: Animation.Infinite
+            loops: 2
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked:rot.start()
         }
 
     }
