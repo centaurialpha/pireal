@@ -126,10 +126,18 @@ class Preferences(QDialog):
         styles = QStyleFactory.keys()
         self.combo_themes.addItems(styles)
         current_style = QApplication.instance().style().objectName()
+        #FIXME: this sucks!
         try:
             index = styles.index(current_style.upper())
         except:
-            index = styles.index(current_style.title())
+            try:
+                index = styles.index(current_style.title())
+            except:
+                try:
+                    index = styles.index(current_style[:7].title() +
+                                         current_style[7:].title())
+                except:
+                    index = styles.index('WindowsXP')
         self.combo_themes.setCurrentIndex(index)
         box.addWidget(self.combo_themes)
 
