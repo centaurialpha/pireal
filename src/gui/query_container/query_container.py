@@ -27,11 +27,13 @@ from PyQt5.QtWidgets import (
     QToolBar,
     QSplitter,
     QStackedWidget,
-    QListWidget,
     QMessageBox,
     QTableWidgetItem
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import (
+    Qt,
+    pyqtSignal
+)
 
 from src.core import parser
 from src.gui import (
@@ -66,7 +68,6 @@ class QueryContainer(QWidget):
 
         # Regex for validate variable name
         self.__validName = re.compile(r'^[a-z_]\w*$')
-        self.__ntab = 1
 
         # Toolbar
         self._toolbar = QToolBar(self)
@@ -106,16 +107,15 @@ class QueryContainer(QWidget):
     def count(self):
         return self._tabs.count()
 
-    def add_tab(self):
+    def add_tab(self, widget, title):
         if not self.isVisible():
             self.show()
 
-        widget = QueryWidget()
-        index = self._tabs.addTab(widget, "Untitled_{}".format(self.__ntab))
+        index = self._tabs.addTab(widget, title)
         # Focus editor
         widget.get_editor().setFocus()
         self._tabs.setCurrentIndex(index)
-        self.__ntab += 1
+        widget.editorModified[bool].connect(self._tabs.tab_modified)
 
     def currentWidget(self):
         return self._tabs.currentWidget()
@@ -182,6 +182,7 @@ class QueryContainer(QWidget):
 
 
 class QueryWidget(QWidget):
+    editorModified = pyqtSignal(bool)
 
     def __init__(self):
         super(QueryWidget, self).__init__()
@@ -198,6 +199,8 @@ class QueryWidget(QWidget):
         self._hsplitter.addWidget(self._stack_tables)
 
         self._query_editor = editor.Editor()
+        self._query_editor.modificationChanged[bool].connect(
+            self.__editor_modified)
         self._vsplitter.addWidget(self._query_editor)
 
         self._vsplitter.addWidget(self._hsplitter)
@@ -209,6 +212,9 @@ class QueryWidget(QWidget):
 
     def get_editor(self):
         return self._query_editor
+
+    def __editor_modified(self, modified):
+        self.editorModified.emit(modified)
 
     def showEvent(self, event):
         super(QueryWidget, self).showEvent(event)

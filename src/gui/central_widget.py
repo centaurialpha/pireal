@@ -100,10 +100,8 @@ class CentralWidget(QWidget):
         self.add_widget(main)
 
         if not filename:
-            ffile.complete_name(self.__ndb, 'pdb')
+            ffile.filename = 'untitled_{n}.pdb'.format(n=self.__ndb)
             db_name = main.dbname()
-            #db_name = main.dbname().format(self.__ndb, 'pdb')
-
         else:
             try:
                 data = ffile.read()
@@ -143,11 +141,11 @@ class CentralWidget(QWidget):
             pireal.enable_disable_db_actions(False)
             self.created = False
 
-    def new_query(self):
+    def new_query(self, filename=''):
         pireal = Pireal.get_service("pireal")
         pireal.enable_disable_query_actions()
         main_container = self.get_active_db()
-        main_container.new_query()
+        main_container.new_query(filename)
 
     def execute_queries(self):
         main_container = self.get_active_db()

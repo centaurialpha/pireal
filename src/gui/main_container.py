@@ -38,7 +38,7 @@ from src.gui.query_container import query_container
 from src import translations as tr
 from src.core import (
     relation,
-    #pfile,
+    pfile,
     #settings,
     file_manager
 )
@@ -65,6 +65,8 @@ class MainContainer(QSplitter):
         self.addWidget(self.query_container)
 
         self.modified = False
+
+        self.__nquery = 1
 
         # Connections
         self.lateral_widget.currentRowChanged[int].connect(
@@ -181,8 +183,19 @@ class MainContainer(QSplitter):
         # Connect the signal when data changed
         #ptable.cellChanged.connect(self.__on_data_table_changed)
 
-    def new_query(self):
-        self.query_container.add_tab()
+    def new_query(self, filename):
+        # Create object file
+        ffile = pfile.PFile(filename)
+        if not filename:
+            ffile.filename = 'untitled_{n}.pqf'.format(n=self.__nquery)
+
+        query_widget = query_container.QueryWidget()
+        editor = query_widget.get_editor()
+        editor.pfile = ffile
+        ##pfile.complete_name(self.__nquery, 'pqf')
+        #editor.pfile = pfile
+        self.query_container.add_tab(query_widget, ffile.name)
+        self.__nquery += 1
 
     def execute_queries(self):
         self.query_container.execute_queries()
@@ -193,25 +206,6 @@ class MainContainer(QSplitter):
             #files.insert(0, filename)
             #del files[settings.PSettings.MAX_RECENT_FILES:]
             #settings.set_setting('recentDB', files)
-
-    #def get_recent_db(self):
-        #return settings.PSettings.RECENT_DB
-
-    #def create_new_relation(self):
-        #from src.gui.dialogs import new_relation_dialog
-        #d = new_relation_dialog.NewRelationDialog()
-        #d.show()
-
-    #def _change_state_actions(self, value):
-        #qactions = [
-            #'undo_action',
-            #'redo_action',
-            #'copy_action',
-            #'cut_action',
-            #'paste_action',
-        #]
-        #for qaction in qactions:
-            #Pireal.get_action(qaction).setEnabled(value)
 
     #def new_query(self, filename=''):
         #self.query_container.add_tab()

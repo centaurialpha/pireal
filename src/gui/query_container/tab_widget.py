@@ -34,3 +34,14 @@ class TabWidget(QTabWidget):
 
     def remove_tab(self, index):
         super(TabWidget, self).removeTab(index)
+
+    def tab_modified(self, modified):
+        editor_widget = self.sender().get_editor()
+        if modified:
+            text = "{} \u2022".format(editor_widget.name)
+        else:
+            text = editor_widget.name
+        self.setTabText(self.currentIndex(), text)
+
+    def add_tab(self, widget, title):
+        pass
