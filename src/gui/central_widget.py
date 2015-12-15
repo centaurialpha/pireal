@@ -242,5 +242,25 @@ class CentralWidget(QWidget):
             return widget
         return None
 
+    def undo_action(self):
+        query_container = self.get_active_db().query_container
+        query_container.undo()
+
+    def redo_action(self):
+        query_container = self.get_active_db().query_container
+        query_container.redo()
+
+    def cut_action(self):
+        query_container = self.get_active_db().query_container
+        query_container.cut()
+
+    def copy_action(self):
+        query_container = self.get_active_db().query_container
+        query_container.copy()
+
+    def paste_action(self):
+        query_container = self.get_active_db().query_container
+        query_container.paste()
+
 
 central = CentralWidget()

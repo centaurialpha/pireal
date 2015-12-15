@@ -152,6 +152,31 @@ class QueryContainer(QWidget):
     def __add_table(self, rela, rname):
         self.currentWidget().add_table(rela, rname)
 
+    def undo(self):
+        weditor = self.currentWidget().get_editor()
+        if weditor.hasFocus():
+            weditor.undo()
+
+    def redo(self):
+        weditor = self.currentWidget().get_editor()
+        if weditor.hasFocus():
+            weditor.redo()
+
+    def cut(self):
+        weditor = self.currentWidget().get_editor()
+        if weditor.hasFocus():
+            weditor.cut()
+
+    def copy(self):
+        weditor = self.currentWidget().get_editor()
+        if weditor.hasFocus():
+            weditor.copy()
+
+    def paste(self):
+        weditor = self.currentWidget().get_editor()
+        if weditor.hasFocus():
+            weditor.paste()
+
 
 class QueryWidget(QWidget):
 

@@ -71,19 +71,19 @@ MENU['edit'] = {
     'name': tr.TR_MENU_EDIT,
     'items': [{
         'name': tr.TR_MENU_EDIT_UNDO,
-        'slot': "container:undo_action"
+        'slot': "central:undo_action"
     }, {
         'name': tr.TR_MENU_EDIT_REDO,
-        'slot': "container:redo_action"
+        'slot': "central:redo_action"
     }, "-", {
         'name': tr.TR_MENU_EDIT_CUT,
-        'slot': "container:cut_action"
+        'slot': "central:cut_action"
     }, {
         'name': tr.TR_MENU_EDIT_COPY,
-        'slot': "container:copy_action"
+        'slot': "central:copy_action"
     }, {
         'name': tr.TR_MENU_EDIT_PASTE,
-        'slot': "container:paste_action"
+        'slot': "central:paste_action"
     }]}
     #}, "-", {
         #'name': tr.TR_MENU_EDIT_PREFERENCES,
