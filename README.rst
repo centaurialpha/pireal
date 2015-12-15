@@ -1,11 +1,10 @@
 .. |test| image:: https://travis-ci.org/centaurialpha/pireal.svg?branch=master
     :target: https://travis-ci.org/centaurialpha/pireal
-
-.. |issues| image:: https://img.shields.io/github/issues/centaurialpha/pireal.svg?
-    :target: https://github.com/centaurialpha/pireal/issues
     
+:Author: `Gabriel Acosta <http://centaurialpha.github.io>`_
+
 *****
-πreal |test| |issues|
+πreal |test|
 *****
 
 **Pireal** is an educational tool for working with relational database using the query language of relational algebra. *Currently under development*.
@@ -183,12 +182,3 @@ Demo
 .. image:: https://github.com/centaurialpha/pireal/blob/gh-pages/img/demo.gif
     :width: 300
     :height: 300
-    
-Author
-######
-
-Gabriel Acosta
-
-* e-mail: acostadariogabriel at gmail
-* web: `centaurialpha.githib.io <http://centaurialpha.github.io>`_
-* twitter: `@_alfacentauri <http://twitter.com/_alfacentauri>`_
