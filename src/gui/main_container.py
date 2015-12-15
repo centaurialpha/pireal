@@ -184,16 +184,16 @@ class MainContainer(QSplitter):
         #ptable.cellChanged.connect(self.__on_data_table_changed)
 
     def new_query(self, filename):
+        query_widget = query_container.QueryWidget()
         # Create object file
         ffile = pfile.PFile(filename)
-        if not filename:
-            ffile.filename = 'untitled_{n}.pqf'.format(n=self.__nquery)
-
-        query_widget = query_container.QueryWidget()
         editor = query_widget.get_editor()
         editor.pfile = ffile
-        ##pfile.complete_name(self.__nquery, 'pqf')
-        #editor.pfile = pfile
+        if not filename:
+            ffile.filename = 'untitled_{n}.pqf'.format(n=self.__nquery)
+        else:
+            content = ffile.read()
+            editor.setPlainText(content)
         self.query_container.add_tab(query_widget, ffile.name)
         self.__nquery += 1
 

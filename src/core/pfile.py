@@ -69,7 +69,7 @@ class PFile(object):
 
         _file = QFile(self.filename)
         if not _file.open(QIODevice.ReadOnly | QIODevice.Text):
-            raise
+            raise IOError
         fstream = QTextStream(_file)
         fstream.setCodec('utf-8')
         return fstream.readAll()
@@ -83,6 +83,6 @@ class PFile(object):
 
         _file = QFile(self.filename)
         if not _file.open(QIODevice.WriteOnly | QIODevice.Truncate):
-            raise
+            raise IOError
         outfile = QTextStream(_file)
         outfile << content

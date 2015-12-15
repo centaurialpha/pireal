@@ -81,6 +81,7 @@ class CentralWidget(QWidget):
                                         tr.TR_CENTRAL_FIRST_CREATE_DB)
                 return
             # Open a query file
+            self.new_query(filename)
         else:
             # Open a database file
             self.create_database(filename)

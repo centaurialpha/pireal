@@ -65,7 +65,7 @@ class PSettings:
     LANGUAGE = ""
     THEME = ""
     LAST_OPEN_FOLDER = ""
-    CONSOLE = False  # For dev
+    CONSOLE = True  # For dev
     RECENT_DB = []
 
 
