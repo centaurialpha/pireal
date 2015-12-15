@@ -138,14 +138,25 @@ class MainContainer(QSplitter):
                 # Remove table
                 self.table_widget.remove_table(index)
 
-    def __on_data_table_changed(self, i, j):
-        print("Table modified")
+    def __on_data_table_changed(self, table_name):
+        current_table = self.table_widget.stacked.currentWidget()
+        rel = self.table_widget.relations[table_name]
+        # Reset
+        rel.clear()
+        for nrow in range(current_table.rowCount()):
+            reg = []
+            for ncol in range(current_table.columnCount()):
+                item = current_table.item(nrow, ncol)
+                reg.append(item.text())
+            # Insert new data
+            rel.insert(reg)
 
     def __edit_relation(self, index):
         index = index.row()
         name = self.lateral_widget.text_item(index)
         item = self.table_widget.stacked.widget(index)
         dialog = edit_relation_dialog.EditRelationDialog(item, name, self)
+        dialog.tableChanged.connect(self.__on_data_table_changed)
         dialog.exec_()
 
     def __add_table(self, rela, relation_name):
@@ -165,7 +176,7 @@ class MainContainer(QSplitter):
         self.lateral_widget.add_item(relation_name, nrow + 1)
 
         # Connect the signal when data changed
-        ptable.cellChanged.connect(self.__on_data_table_changed)
+        #ptable.cellChanged.connect(self.__on_data_table_changed)
 
     def new_query(self):
         self.query_container.add_tab()

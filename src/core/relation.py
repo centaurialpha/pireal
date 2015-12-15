@@ -55,6 +55,9 @@ class Relation(object):
 
         self.content.add(tuple(record))
 
+    def clear(self):
+        self.content = set()
+
     def select(self, expression):
         """ The select operator returns a new relation with the tuples that
         satisfy an expression.

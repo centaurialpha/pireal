@@ -33,12 +33,14 @@ from PyQt5.QtGui import (
     QBrush,
     QColor
 )
+from PyQt5.QtCore import pyqtSignal
 
 from src.gui import table
 from src import translations as tr
 
 
 class EditRelationDialog(QDialog):
+    tableChanged = pyqtSignal('QString')
 
     def __init__(self, item, table_name, parent=None):
         super(EditRelationDialog, self).__init__(parent)
@@ -116,6 +118,9 @@ class EditRelationDialog(QDialog):
                     item = table.Item()
                     item.setText(text)
                     self.previous_table.setItem(i, j, item)
+
+            # Emit signal
+            self.tableChanged.emit(self._line_relation_name.text())
 
         self.close()
 
