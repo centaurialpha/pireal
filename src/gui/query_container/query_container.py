@@ -113,8 +113,10 @@ class QueryContainer(QWidget):
 
         index = self._tabs.addTab(widget, title)
         # Focus editor
-        widget.get_editor().setFocus()
+        weditor = widget.get_editor()
+        weditor.setFocus()
         self._tabs.setCurrentIndex(index)
+        self._tabs.setTabToolTip(index, weditor.filename)
         widget.editorModified[bool].connect(self._tabs.tab_modified)
 
     def currentWidget(self):
