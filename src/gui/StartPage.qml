@@ -6,18 +6,42 @@ Rectangle {
     color: "#F9F9F9";
 
     Image {
+        id: icon
+
+        anchors.left: parent.left
+        anchors.leftMargin: parent.width / 4
+        anchors.verticalCenter: parent.verticalCenter
+        opacity: 0.2
+        source: "../images/icon.png"
+        width: 128; height: 128
+
+        transform: Rotation {
+            id: rotation
+            origin.x: icon.width / 2
+            origin.y: icon.height / 2
+            axis.x: 0; axis.y: 1; axis.z: 0
+            angle: 0
+        }
+
+        NumberAnimation {
+            target: rotation
+            property: "angle"
+            from: 0; to: 360; duration: 1050
+            running: true
+            loops: Animation.Infinite
+        }
+
+    }
+
+    Image {
         id: logo
 
-        anchors.centerIn: parent
         opacity: 0.2
-        source: "../images/pireal_logo.png"
-
-        SequentialAnimation on opacity {
-            loops: Animation.Infinite
-            PropertyAnimation { to: 0; duration: 2000 }
-            PropertyAnimation { to: 0.2; duration: 2000 }
-
-        }
+        source: "../images/pi.png"
+        anchors.left: icon.right
+        anchors.top: icon.top
+        anchors.topMargin: -10
+        anchors.leftMargin: 50
     }
 
     Text {
