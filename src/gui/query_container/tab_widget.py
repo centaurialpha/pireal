@@ -18,8 +18,11 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt5.QtWidgets import (
-    QTabWidget
+    QTabWidget,
+    QMessageBox
 )
+
+from src import translations as tr
 
 
 class TabWidget(QTabWidget):
@@ -33,6 +36,19 @@ class TabWidget(QTabWidget):
         self.tabCloseRequested[int].connect(self.remove_tab)
 
     def remove_tab(self, index):
+        editor = self.currentWidget().get_editor()
+        if editor.modified:
+            flags = QMessageBox.Yes
+            flags |= QMessageBox.No
+            flags |= QMessageBox.Cancel
+            r = QMessageBox.question(self, tr.TR_QUERY_FILE_MODIFIED,
+                                     tr.TR_QUERY_FILE_MODIFIED_MSG.format(
+                                         editor.name), flags)
+            if r == QMessageBox.Cancel:
+                return
+            if r == QMessageBox.Yes:
+                print("Saving")
+
         super(TabWidget, self).removeTab(index)
 
     def tab_modified(self, modified):
@@ -42,6 +58,7 @@ class TabWidget(QTabWidget):
         else:
             text = editor_widget.name
         self.setTabText(self.currentIndex(), text)
+        editor_widget.modified = modified
 
     def add_tab(self, widget, title):
         pass
