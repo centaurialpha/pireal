@@ -76,10 +76,6 @@ class CentralWidget(QWidget):
 
         extension = file_manager.get_extension(filename)
         if extension == '.pqf':
-            if not self.created:
-                QMessageBox.information(self, tr.TR_CENTRAL_INFORMATION,
-                                        tr.TR_CENTRAL_FIRST_CREATE_DB)
-                return
             # Open a query file
             self.new_query(filename)
         else:
@@ -143,6 +139,10 @@ class CentralWidget(QWidget):
             self.created = False
 
     def new_query(self, filename=''):
+        if not self.created:
+            QMessageBox.information(self, tr.TR_CENTRAL_INFORMATION,
+                                    tr.TR_CENTRAL_FIRST_CREATE_DB)
+            return
         pireal = Pireal.get_service("pireal")
         pireal.enable_disable_query_actions()
         main_container = self.get_active_db()
