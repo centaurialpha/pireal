@@ -93,6 +93,9 @@ class QueryContainer(QWidget):
     def __hide(self):
         if self.count() == 0:
             self.hide()
+            # Disable query actions
+            pireal = Pireal.get_service("pireal")
+            pireal.enable_disable_query_actions(False)
 
     def _add_operator_to_editor(self):
         data = self.sender().data()
