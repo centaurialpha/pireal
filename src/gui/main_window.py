@@ -65,8 +65,6 @@ class Pireal(QMainWindow):
         '',
         'create_new_relation',
         'remove_relation',
-        #'insert_tuple',
-        #'remove_tuple',
         '',
         'execute_queries'
     ]
@@ -88,11 +86,6 @@ class Pireal(QMainWindow):
         # Central widget
         central_widget = self.__load_ui()
         self.setCentralWidget(central_widget)
-
-        # Status bar
-        #status_bar = Pireal.get_service("status")
-        #status_bar.hide()
-        #self.setStatusBar(status_bar)
 
         # Install service
         Pireal.load_service("pireal", self)
@@ -209,12 +202,6 @@ class Pireal(QMainWindow):
 
         if settings.PSettings.SHOW_START_PAGE:
             central_widget.add_start_page()
-        #central_widget.load_lateral_widget(lateral)
-        #central_widget.load_table_widget(container)
-        #central_widget.load_editor_widget(query_widget)
-
-        #container.currentFileSaved['QString'].connect(
-            #self.__show_status_message)
 
         return central_widget
 
@@ -230,12 +217,6 @@ class Pireal(QMainWindow):
 
         actions = [
             'new_query',
-            'save_file',
-            #'save_query',
-            #'save_query_as',
-            #'save_database_as',
-            #'close_query',
-            #'execute_queries',
             'create_new_relation',
             'remove_relation',
             'close_database',
@@ -262,6 +243,7 @@ class Pireal(QMainWindow):
         """ Public method. Enables or disables queries QAction """
 
         actions = [
+            'save_file',
             'undo_action',
             'redo_action',
             'copy_action',

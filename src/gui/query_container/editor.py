@@ -238,3 +238,8 @@ class Editor(QPlainTextEdit):
                             found -= 1
             block = block.previous()
             start = None
+
+    def saved(self):
+        self.modified = False
+        self.document().setModified(self.modified)
+        self.setFocus()

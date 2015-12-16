@@ -120,7 +120,9 @@ class QueryContainer(QWidget):
         weditor.setFocus()
         self._tabs.setCurrentIndex(index)
         self._tabs.setTabToolTip(index, weditor.filename)
-        widget.editorModified[bool].connect(self._tabs.tab_modified)
+
+        widget.editorModified[bool].connect(
+            lambda value: self._tabs.tab_modified(self.sender(), value))
 
     def currentWidget(self):
         return self._tabs.currentWidget()

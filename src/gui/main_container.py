@@ -21,7 +21,7 @@
 
 from PyQt5.QtWidgets import (
     QSplitter,
-    #QFileDialog,
+    QFileDialog,
     QMessageBox
 )
 from PyQt5.QtCore import Qt
@@ -199,14 +199,27 @@ class MainContainer(QSplitter):
         self.__nquery += 1
 
     def save_query(self, editor=None):
+        if editor is None:
+            editor = self.query_container.currentWidget().get_editor()
         if editor.is_new:
             return self.save_query_as(editor)
         # Get content of editor
         content = editor.toPlainText()
         editor.pfile.write(content=content)
+        editor.saved()
 
     def save_query_as(self, editor=None):
-        filename = QFileDialog.getSaveFileName
+        filename = QFileDialog.getSaveFileName(self, tr.TR_CONTAINER_SAVE_FILE,
+                                               editor.name,
+                                               "Pireal query files(*.pqf)")
+        filename = filename[0]
+        if not filename:
+            return
+        # Get the content
+        content = editor.toPlainText()
+        # Write the file
+        editor.pfile.write(content=content, new_fname=filename)
+        editor.saved()
 
     def execute_queries(self):
         self.query_container.execute_queries()

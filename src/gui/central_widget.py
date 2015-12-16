@@ -155,6 +155,10 @@ class CentralWidget(QWidget):
     def save_database(self):
         pass
 
+    def save_file(self):
+        mcontainer = self.get_active_db()
+        mcontainer.save_query()
+
     def remove_relation(self):
         main_container = self.get_active_db()
         main_container.delete_relation()
