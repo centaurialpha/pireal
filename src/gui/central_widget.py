@@ -153,7 +153,22 @@ class CentralWidget(QWidget):
         main_container.execute_queries()
 
     def save_database(self):
-        pass
+        mcontainer = self.get_active_db()
+        if mcontainer.isnew():
+            filename = QFileDialog.getSaveFileName(self,
+                                                   tr.TR_CONTAINER_SAVE_FILE,
+                                                   mcontainer.dbname(),
+                                                   "Pireal database files"
+                                                   "(*.pdb)")[0]
+            if not filename:
+                return
+        else:
+            filename = ''
+
+        # Generate content
+        relations = mcontainer.table_widget.relations
+        content = file_manager.generate_database(relations)
+        mcontainer.pfile.write(content=content, new_fname=filename)
 
     def save_file(self):
         mcontainer = self.get_active_db()

@@ -95,7 +95,7 @@ def get_path(filename):
 def generate_database(relations):
     """ This function generates the content of the database
 
-    :param relations: Dictionary with relations
+    :param relations: Dictionary with relations (Relation Object)
     :returns: The content of the database
     """
 
@@ -105,6 +105,9 @@ def generate_database(relations):
         content += ':' + ','.join(relation.fields) + '\n'
         for i in relation.content:
             content += ','.join(i) + '\n'
+        content += '\n'
+    # Remove last line
+    content = content[:-1]
     return content
 
 

@@ -44,9 +44,9 @@ MENU['file'] = {
         'name': tr.TR_MENU_FILE_OPEN,
         'slot': "central:open_file"
     }, {
-        #'name': tr.TR_MENU_FILE_SAVE_DB,
-        #'slot': "container:save_data_base"
-    #}, {
+        'name': tr.TR_MENU_FILE_SAVE_DB,
+        'slot': "central:save_database"
+    }, {
         'name': tr.TR_MENU_FILE_SAVE,
         'slot': "central:save_file"
     }, "-", {

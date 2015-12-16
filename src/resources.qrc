@@ -15,5 +15,6 @@
         <file alias="save_file">images/save.png</file>
         <file alias="arrow-left">images/arrow-left.png</file>
         <file alias="logo">images/pireal_logo.png</file>
+        <file alias="save_database">images/database_save.png</file>
     </qresource>
 </RCC>

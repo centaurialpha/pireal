@@ -90,6 +90,10 @@ class MainContainer(QSplitter):
     def isnew(self):
         return self.__pfile.is_new
 
+    @property
+    def pfile(self):
+        return self.__pfile
+
     def create_database(self, data):
         rel = None
         for part in data.split('@'):
