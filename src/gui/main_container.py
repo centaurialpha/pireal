@@ -98,6 +98,9 @@ class MainContainer(QSplitter):
         rel = None
         for part in data.split('@'):
             for e, line in enumerate(part.splitlines()):
+                # Ignore blank lines
+                if not line:
+                    continue
                 # Remove whitespaces
                 line = ','.join(list(map(str.strip, line.split(','))))
                 if e == 0:
