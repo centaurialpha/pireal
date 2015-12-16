@@ -29,14 +29,12 @@ from PyQt5.QtCore import (
     QT_VERSION_STR
 )
 
-from src.core import (
-    settings,
-    logger
-)
+from src.core import settings
+from src.core.logger import PirealLogger
 
-log = logger.get_logger(__name__)
-DEBUG = log.debug
-INFO = log.info
+# Logger
+logger = PirealLogger(__name__)
+INFO = logger.info
 
 
 def __get_versions():
@@ -71,10 +69,10 @@ if __name__ == "__main__":
     # Create dir
     settings.create_dir()
     info = __get_versions()
-    DEBUG("Executing Pireal from source")
+    INFO("Executing Pireal from source")
     INFO("Python {0} - Qt {1} on {2} {3}".format(
-         info['python'], info['qt'], info['os'], info['name']))
-    DEBUG("Loading settings...")
+          info['python'], info['qt'], info['os'], info['name']))
+    INFO("Loading settings...")
     settings.load_settings()
 
     # Import resources

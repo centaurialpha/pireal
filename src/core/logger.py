@@ -22,71 +22,49 @@ Logging
 """
 
 import logging
-import sys
+import time
 
-LOG_FORMAT = "[%(asctime)s]:%(levelname)-7s:%(name)s:%(message)s"
+from src.core import settings
+
+LOG_FORMAT = "[%(asctime)s]:%(levelname)-7s:%(name)s:%(funcName)s:%(message)s"
 TIME_FORMAT = "%H:%M:%S"
+_line = '=' * 80 + '\n'
+HEADER = _line + "Nueva sesión de Pireal: {date}".format(
+    date=time.strftime("%Y-%m-%d")) + '\n'
+HEADER += _line
 
 
-class CustomFormatter(logging.Formatter):
-    """ Custom Formatter with colors """
+class PLogger(object):
+    """ Logger for Pireal """
 
-    RESET = '\x1b[0m'
-    YELLOW = '\x1b[33m'
-    RED = '\x1b[31m'
-    GREEN = '\x1b[32m'
-    BLUE = '\x1b[34m'
+    def __init__(self):
+        self._handler = None
+        self._loggers = {}
+        logging.basicConfig()
 
-    def format(self, record, colour=False):
-        msg = super().format(record)
-
-        if not colour:
-            return msg
-
-        level = record.levelno
-        if level >= logging.CRITICAL:
-            colour = self.RED
-        elif level >= logging.ERROR:
-            colour = self.RED
-        elif level >= logging.WARNING:
-            colour = self.YELLOW
-        elif level >= logging.INFO:
-            colour = self.BLUE
-        elif level >= logging.DEBUG:
-            colour = self.GREEN
-        else:
-            colour = self.RESET
-
-        return colour + msg + self.RESET
+    def __call__(self, name):
+        if self._handler is None:
+            handler = FileHandlerWithHeader(settings.LOG_FILE_PATH, HEADER)
+            formatter = logging.Formatter(fmt=LOG_FORMAT, datefmt=TIME_FORMAT)
+            handler.setFormatter(formatter)
+            self._handler = handler
+        if name not in self._loggers:
+            logger = logging.getLogger(name)
+            self._loggers[name] = logger
+            logger.setLevel(logging.DEBUG)
+            logger.addHandler(self._handler)
+        return self._loggers[name]
 
 
-class CustomHandler(logging.StreamHandler):
+class FileHandlerWithHeader(logging.FileHandler):
+    """ Custom Handler with title """
 
-    def __init__(self, stream=sys.stdout):
-        super(CustomHandler, self).__init__(stream)
-
-    def format(self, record, colour=False):
-        if not isinstance(self.formatter, CustomFormatter):
-            self.formatter = CustomFormatter()
-
-        return self.formatter.format(record, colour)
-
-    def emit(self, record):
-        stream = self.stream
-        try:
-            msg = self.format(record, stream.isatty())
-            stream.write(msg)
-            stream.write(self.terminator)
-            self.flush()
-        except Exception:
-            self.handlerError(record)
+    def __init__(self, filename, header, mode='a', encoding=None, delay=0):
+        super(FileHandlerWithHeader, self).__init__(filename, mode,
+                                                    encoding, delay)
+        # The title is added at each new session
+        if not delay and self.stream is not None:
+            self.stream.write('{header}\n'.format(header=header))
 
 
-def get_logger(name):
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
-    handler = logging.StreamHandler()
-    formatter = logging.Formatter(LOG_FORMAT, TIME_FORMAT)
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    return logger
+PirealLogger = PLogger()

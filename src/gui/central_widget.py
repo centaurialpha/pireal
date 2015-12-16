@@ -32,6 +32,7 @@ from src.core import (
     file_manager,
     pfile
 )
+from src.core.logger import PirealLogger
 from src import translations as tr
 from src.gui.main_window import Pireal
 from src.gui import start_page, main_container
@@ -39,6 +40,11 @@ from src.gui.dialogs import (
     preferences,
     new_relation_dialog
 )
+
+# Logger
+logger = PirealLogger(__name__)
+CRITICAL = logger.critical
+DEBUG = logger.debug
 
 
 class CentralWidget(QWidget):
@@ -101,9 +107,11 @@ class CentralWidget(QWidget):
             db_name = main.dbname()
         else:
             try:
+                DEBUG("Intentando abrir la base de datos '{}'".format(filename))
                 data = ffile.read()
             except Exception as reason:
                 QMessageBox.critical(self, "Error", reason.__str__())
+                CRITICAL("Error al leer el archivo")
                 return
 
             db_name = ffile.name

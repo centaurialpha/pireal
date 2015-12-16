@@ -39,12 +39,13 @@ from src import translations as tr
 from src.core import (
     relation,
     pfile,
-    #settings,
     file_manager
 )
-    #table_widget,
-    #lateral_widget
-#)
+from src.core.logger import PirealLogger
+
+# Logger
+logger = PirealLogger(__name__)
+DEBUG = logger.debug
 
 
 class MainContainer(QSplitter):
@@ -118,6 +119,7 @@ class MainContainer(QSplitter):
                 #ptable.setHorizontalHeaderLabels(rel.fields)
                 self.table_widget.add_relation(name, rel)
                 self.__add_table(rel, name)
+        DEBUG("Base de datos importada con éxito")
 
     def load_relation(self, filenames):
         for filename in filenames:
