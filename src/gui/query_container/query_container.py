@@ -94,6 +94,9 @@ class QueryContainer(QWidget):
         self._tabs.saveEditor['PyQt_PyObject'].connect(
             self.__on_save_editor)
 
+    def set_focus_editor_tab(self, index):
+        self._tabs.setCurrentIndex(index)
+
     def __hide(self):
         if self.count() == 0:
             self.hide()
@@ -123,6 +126,13 @@ class QueryContainer(QWidget):
 
         widget.editorModified[bool].connect(
             lambda value: self._tabs.tab_modified(self.sender(), value))
+
+    def is_open(self, id_):
+        for index in range(self._tabs.count()):
+            weditor = self._tabs.widget(index).get_editor()
+            if weditor.filename == id_:
+                return index
+        return -1
 
     def currentWidget(self):
         return self._tabs.currentWidget()
