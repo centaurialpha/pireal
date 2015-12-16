@@ -74,6 +74,10 @@ class Editor(QPlainTextEdit):
     def name(self):
         return self.pfile.name
 
+    @property
+    def is_new(self):
+        return self.pfile.is_new
+
     def resizeEvent(self, event):
         super(Editor, self).resizeEvent(event)
         # Fixed sidebar height

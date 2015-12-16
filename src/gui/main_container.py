@@ -75,7 +75,8 @@ class MainContainer(QSplitter):
             #lambda i: self.table_widget.remove_table(i))
         self.lateral_widget.showEditRelation.connect(self.__edit_relation)
         self.lateral_widget.doubleClicked.connect(self.__edit_relation)
-
+        self.query_container.saveEditor['PyQt_PyObject'].connect(
+            self.save_query)
         self.setSizes([1, 1])
 
     #def get_last_open_folder(self):
@@ -196,6 +197,16 @@ class MainContainer(QSplitter):
             editor.setPlainText(content)
         self.query_container.add_tab(query_widget, ffile.name)
         self.__nquery += 1
+
+    def save_query(self, editor=None):
+        if editor.is_new:
+            return self.save_query_as(editor)
+        # Get content of editor
+        content = editor.toPlainText()
+        editor.pfile.write(content=content)
+
+    def save_query_as(self, editor=None):
+        filename = QFileDialog.getSaveFileName
 
     def execute_queries(self):
         self.query_container.execute_queries()

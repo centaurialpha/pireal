@@ -21,11 +21,13 @@ from PyQt5.QtWidgets import (
     QTabWidget,
     QMessageBox
 )
+from PyQt5.QtCore import pyqtSignal
 
 from src import translations as tr
 
 
 class TabWidget(QTabWidget):
+    saveEditor = pyqtSignal('PyQt_PyObject')
 
     def __init__(self):
         super(TabWidget, self).__init__()
@@ -47,7 +49,7 @@ class TabWidget(QTabWidget):
             if r == QMessageBox.Cancel:
                 return
             if r == QMessageBox.Yes:
-                print("Saving")
+                self.saveEditor.emit(editor)
 
         super(TabWidget, self).removeTab(index)
 

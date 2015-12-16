@@ -60,6 +60,7 @@ ITEMS_TOOLBAR_OPERATORS = OrderedDict(
 
 
 class QueryContainer(QWidget):
+    saveEditor = pyqtSignal('PyQt_PyObject')
 
     def __init__(self):
         super(QueryContainer, self).__init__()
@@ -90,6 +91,8 @@ class QueryContainer(QWidget):
 
         # Connections
         self._tabs.tabCloseRequested.connect(self.__hide)
+        self._tabs.saveEditor['PyQt_PyObject'].connect(
+            self.__on_save_editor)
 
     def __hide(self):
         if self.count() == 0:
@@ -121,6 +124,9 @@ class QueryContainer(QWidget):
 
     def currentWidget(self):
         return self._tabs.currentWidget()
+
+    def __on_save_editor(self, editor):
+        self.saveEditor.emit(editor)
 
     def execute_queries(self):
         weditor = self.currentWidget().get_editor()
