@@ -35,6 +35,7 @@ from PyQt5.QtCore import (
     pyqtSignal
 )
 
+from src.core.logger import PirealLogger
 from src.core import parser
 from src.gui import (
     table,
@@ -47,6 +48,11 @@ from src.gui.query_container import (
     editor,
     tab_widget
 )
+
+# Logger
+logger = PirealLogger(__name__)
+DEBUG = logger.debug
+ERROR = logger.error
 
 ITEMS_TOOLBAR_OPERATORS = OrderedDict(
     [('select', ('Selection', 0x3c3)),
@@ -164,10 +170,14 @@ class QueryContainer(QWidget):
             else:
                 relation_name = "query_"
             try:
+                DEBUG("Parseando la línea: {line}".format(line=line.strip()))
                 expression = parser.convert_to_python(line.strip())
+                DEBUG("Ejecutando la expresión: {exp}".format(exp=expression))
                 relation = eval(expression, table_widget.relations)
             except Exception as reason:
                 QMessageBox.critical(self, tr.TR_QUERY_ERROR, reason.__str__())
+                ERROR("Error al evaluar o ejecutar la expresión: {}".format(
+                    reason.__str__()))
 
             if table_widget.add_relation(relation_name, relation):
                 self.__add_table(relation, relation_name)
