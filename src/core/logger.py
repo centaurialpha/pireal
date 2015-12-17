@@ -85,8 +85,7 @@ class CustomFileHandler(logging.handlers.RotatingFileHandler):
     def __init__(self, filename, header, mode='a', maxBytes=50000,
                   backupCount=1, encoding=None, delay=0):
         super(CustomFileHandler, self).__init__(filename, mode, maxBytes,
-                                                    backupCount, encoding,
-                                                    delay)
+                                                backupCount, encoding, delay)
 
         # The header is added at each new session
         if not delay and self.stream is not None:
