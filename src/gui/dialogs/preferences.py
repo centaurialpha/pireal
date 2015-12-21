@@ -23,25 +23,29 @@ from PyQt5.QtWidgets import (
     QGroupBox,
     QVBoxLayout,
     QHBoxLayout,
+    QGridLayout,
     QRadioButton,
     QSpacerItem,
     QSizePolicy,
     QGraphicsOpacityEffect,
-    QToolButton,
     QPushButton,
     QCheckBox,
     QMessageBox,
     QComboBox,
-    QStyleFactory
-    #QLabel,
-    #QMovie
+    #QShortcut,
+    QStyleFactory,
+    QFontComboBox,
+    QLabel
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import (
+    #QKeySequence,
+    QFontDatabase
+)
 from PyQt5.QtCore import (
     QPropertyAnimation,
     QParallelAnimationGroup,
     QRect,
-    QSize,
+    #Qt,
     QSettings,
     pyqtSignal
 )
@@ -51,32 +55,36 @@ from src.core import (
     settings,
     file_manager
 )
+from src.gui.main_window import Pireal
 from src.gui import overlay_widget, updates
 
 
 class Preferences(QDialog):
+    # Signal to warn that the window is closed
     settingsClosed = pyqtSignal()
 
     def __init__(self, parent=None):
         super(Preferences, self).__init__(parent)
 
+        # Activate key escape to close preferences
+        #kescape = QShortcut(QKeySequence(Qt.Key_Escape), self)
+        #kescape.activated.connect(self.close)
+
         # Thread updates
         self.thread = updates.Updates()
 
-        hbox = QHBoxLayout(self)
-        hbox.setContentsMargins(50, 50, 500, 0)
-        vbox = QVBoxLayout()
-        btn_back = QToolButton()
-        btn_back.setAutoRaise(True)
-        btn_back.setIconSize(QSize(32, 32))
-        btn_back.setIcon(QIcon(":img/arrow-left"))
-        vbox.addWidget(btn_back)
-        hbox.addLayout(vbox)
-        vbox.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
-                     QSizePolicy.Expanding))
+        # Main container
+        # This contains a grid
+        main_box = QVBoxLayout(self)
+        main_box.setContentsMargins(200, 50, 200, 100)
 
-        container = QVBoxLayout()
-        container.setContentsMargins(0, 0, 0, 0)
+        # The grid contains two containers
+        # left container and right container
+        grid = QGridLayout()
+
+        # Left Container
+        left_container = QVBoxLayout()
+        left_container.setContentsMargins(0, 0, 0, 0)
 
         # General
         group_gral = QGroupBox(tr.TR_PREFERENCES_GROUP_GRAL)
@@ -142,18 +150,72 @@ class Preferences(QDialog):
         box.addWidget(self.combo_themes)
 
         # Add widgets
-        container.addWidget(group_gral)
-        container.addWidget(group_language)
-        container.addWidget(group_style)
-        container.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
-                          QSizePolicy.Expanding))
-        btn_reset = QPushButton(tr.TR_PREFERENCES_BTN_RESET)
-        btn_reset.setObjectName("cancel")
-        container.addWidget(btn_reset)
-        container.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
-                          QSizePolicy.Expanding))
+        left_container.addWidget(group_gral)
+        left_container.addWidget(group_language)
+        left_container.addWidget(group_style)
+        left_container.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
+                               QSizePolicy.Expanding))
 
-        hbox.addLayout(container)
+        # Right Container
+        right_container = QVBoxLayout()
+        right_container.setContentsMargins(0, 0, 0, 0)
+
+        # Editor
+        editor_group = QGroupBox(tr.TR_PREFERENCES_GROUP_EDITOR)
+        box_editor = QVBoxLayout(editor_group)
+        # Current line
+        self._highlight_current_line = QCheckBox(
+            tr.TR_PREFERENCES_CHECK_CURRENT_LINE)
+        self._highlight_current_line.setChecked(
+            settings.PSettings.HIGHLIGHT_CURRENT_LINE)
+        self._highlight_current_line.stateChanged[int].connect(
+            self.__current_line_value_changed)
+        box_editor.addWidget(self._highlight_current_line)
+        # Matching paren
+        self._matching_paren = QCheckBox(
+            tr.TR_PREFERENCES_CHECK_MATCHING_PAREN)
+        self._matching_paren.setChecked(
+            settings.PSettings.MATCHING_PARENTHESIS)
+        box_editor.addWidget(self._matching_paren)
+        # Font group
+        font_group = QGroupBox(tr.TR_PREFERENCES_GROUP_FONT)
+        font_grid = QGridLayout(font_group)
+        font_grid.addWidget(QLabel(tr.TR_PREFERENCES_LBL_FONT_FAMILY), 0, 0)
+        self._combo_font = QFontComboBox()
+        #FIXME: no cambia la fuente
+        self._combo_font.setCurrentFont(settings.PSettings.FONT)
+        font_grid.addWidget(self._combo_font, 0, 1)
+        font_grid.addWidget(QLabel(tr.TR_PREFERENCES_LBL_FONT_SIZE), 1, 0)
+        self._combo_font_size = QComboBox()
+        fdb = QFontDatabase()
+        combo_sizes = fdb.pointSizes(settings.PSettings.FONT.family())
+        current_size_index = combo_sizes.index(
+            settings.PSettings.FONT.pointSize())
+        # Convert to str
+        combo_sizes = [str(f) for f in combo_sizes]
+        self._combo_font_size.addItems(combo_sizes)
+        self._combo_font_size.setCurrentIndex(current_size_index)
+        font_grid.addWidget(self._combo_font_size, 1, 1)
+
+        right_container.addWidget(editor_group)
+        right_container.addWidget(font_group)
+        right_container.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
+                                QSizePolicy.Expanding))
+
+        # Add widgets
+        grid.addLayout(left_container, 0, 0)
+        grid.addLayout(right_container, 0, 1)
+        main_box.addLayout(grid)
+
+        # Button close and reset
+        hbox = QHBoxLayout()
+        hbox.setSpacing(20)
+        hbox.addItem(QSpacerItem(1, 0, QSizePolicy.Expanding))
+        btn_cancel = QPushButton(tr.TR_PREFERENCES_BTN_BACK)
+        hbox.addWidget(btn_cancel)
+        btn_reset = QPushButton(tr.TR_PREFERENCES_BTN_RESET)
+        hbox.addWidget(btn_reset)
+        main_box.addLayout(hbox)
 
         # Overlay
         self.overlay = overlay_widget.OverlayWidget(self)
@@ -173,9 +235,9 @@ class Preferences(QDialog):
         self.x_animation_s = QPropertyAnimation(self, b"geometry")
         self.x_animation_s.setDuration(duration)
         self.x_animation_s.setStartValue(QRect(x, 0, parent.width(),
-                                       parent.height()))
+                                         parent.height()))
         self.x_animation_s.setEndValue(QRect(0, 0, parent.width(),
-                                     parent.height()))
+                                       parent.height()))
         # Animation end
         # Opacity animation
         self.opacity_animation_e = QPropertyAnimation(self.effect, b"opacity")
@@ -203,12 +265,46 @@ class Preferences(QDialog):
         # Connections
         self.group_animation_e.finished.connect(
             self._on_group_animation_finished)
-        btn_back.clicked.connect(self.close)
+        btn_cancel.clicked.connect(self.close)
         btn_reset.clicked.connect(self._reset_settings)
-        btn_updates.clicked.connect(self._check_for_updates)
-        self.thread.finished.connect(self._on_thread_finished)
+        #btn_updates.clicked.connect(self._check_for_updates)
+        #self.thread.finished.connect(self._on_thread_finished)
         self.combo_themes.currentIndexChanged['QString'].connect(
             self._change_theme)
+        self._combo_font.currentFontChanged.connect(self._change_font)
+        self._combo_font_size.currentTextChanged.connect(self._change_font_size)
+
+    def __current_line_value_changed(self, value):
+        #FIXME: un quilombo esto
+        central = Pireal.get_service("central")
+        mcontainer = central.get_active_db()
+        if mcontainer is not None:
+            weditor = mcontainer.query_container.currentWidget().get_editor()
+            if weditor is not None:
+                weditor.setHighlightCurrentLine(value)
+        settings.set_setting("highlight_current_line", value)
+
+    def _change_font(self, font):
+        #FIXME: un quilombo esto
+        central = Pireal.get_service("central")
+        mcontainer = central.get_active_db()
+        if mcontainer is not None:
+            weditor = mcontainer.query_container.currentWidget().get_editor()
+            if weditor is not None:
+                weditor.setFont(font)
+        settings.set_setting("font", font)
+
+    def _change_font_size(self, size):
+        #FIXME: un quilombo esto
+        font = self._combo_font.currentFont()
+        font.setPointSize(int(size))
+        central = Pireal.get_service("central")
+        mcontainer = central.get_active_db()
+        if mcontainer is not None:
+            weditor = mcontainer.query_container.currentWidget().get_editor()
+            if weditor is not None:
+                weditor.setFont(font)
+        settings.set_setting("font", font)
 
     def showEvent(self, event):
         super(Preferences, self).showEvent(event)
@@ -250,15 +346,10 @@ class Preferences(QDialog):
             if radiob.isChecked():
                 settings.set_setting('language', radiob.text())
                 settings.PSettings.LANGUAGE = radiob.text()
-        print(settings.PSettings.LANGUAGE)
 
     def _change_theme(self, style):
-        #if self._radio_styles[0].isChecked():
-            #name = 'Default'
-            #style = file_manager.open_file(settings.STYLESHEET)
-        #else:
-            #style = None
-            #name = ''
+        """ Change theme style """
+
         QApplication.setStyle(style)
         settings.set_setting('stylesheet', style)
         settings.PSettings.THEME = style

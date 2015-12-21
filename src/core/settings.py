@@ -36,17 +36,17 @@ else:
 
 
 # Font
-if LINUX:
-    FONT = QFont('Monospace', 12)
-else:
-    FONT = QFont('Courier', 10)
+#if LINUX:
+    #FONT = QFont('Monospace', 12)
+#else:
+    #FONT = QFont('Courier', 10)
 
 # Supported files
 SUPPORTED_FILES = ("Pireal Files\t.PDB .PQF .CSV .PRF .TXT"
-                  "(*.pdb *.pqf *.csv *prf *.txt);;"
-                  "Pireal database files\t.PDB(*.pdb);;"
-                  "Pireal query files\t.PQF(*.pqf);;"
-                  "Pireal relation files\t.PRF .CSV(*.prf *.csv)")
+                   "(*.pdb *.pqf *.csv *prf *.txt);;"
+                   "Pireal database files\t.PDB(*.pdb);;"
+                   "Pireal query files\t.PQF(*.pqf);;"
+                   "Pireal relation files\t.PRF .CSV(*.prf *.csv)")
 
 # Create folder (settings and logging)
 PATH = os.path.realpath(os.path.dirname(sys.argv[0]))
@@ -67,6 +67,13 @@ class PSettings:
     LAST_OPEN_FOLDER = ""
     CONSOLE = False  # For dev
     RECENT_DB = []
+    HIGHLIGHT_CURRENT_LINE = False
+    MATCHING_PARENTHESIS = True
+    #FONT = ""
+    if LINUX:
+        FONT = QFont('Monospace', 12)
+    else:
+        FONT = QFont('Courier', 10)
 
 
 def create_dir():
@@ -95,3 +102,8 @@ def load_settings():
     PSettings.LAST_OPEN_FOLDER = settings.value("last_open_folder", "",
                                                 type='QString')
     PSettings.RECENT_DB = settings.value("recentDB", [])
+    PSettings.HIGHLIGHT_CURRENT_LINE = settings.value("highlight_current_line",
+                                                      False, type=bool)
+    PSettings.MATCHING_PARENTHESIS = settings.value("matching_parenthesis",
+                                                    True, type=bool)
+    PSettings.FONT = settings.value("font", "", type='QFont')

@@ -48,7 +48,7 @@ class Editor(QPlainTextEdit):
         self.modified = False
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
-        self.setFont(settings.FONT)
+        self.setFont(settings.PSettings.FONT)
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
         # Completer
@@ -113,18 +113,24 @@ class Editor(QPlainTextEdit):
         #relation = table_widget.relations.get(text)
         #return relation.fields
 
+    def setHighlightCurrentLine(self, value):
+        settings.PSettings.HIGHLIGHT_CURRENT_LINE = value
+        self.__cursor_position_changed()
+
     def __cursor_position_changed(self):
         _selection = QTextEdit.ExtraSelection()
         extra_selections = []
         extra_selections.append(_selection)
 
         # Highlight current line
-        color = QColor(Qt.lightGray).lighter(125)
-        _selection.format.setBackground(color)
-        _selection.format.setProperty(QTextCharFormat.FullWidthSelection, True)
-        _selection.cursor = self.textCursor()
-        _selection.cursor.clearSelection()
-        extra_selections.append(_selection)
+        if settings.PSettings.HIGHLIGHT_CURRENT_LINE:
+            color = QColor(Qt.lightGray).lighter(125)
+            _selection.format.setBackground(color)
+            _selection.format.setProperty(QTextCharFormat.FullWidthSelection,
+                                          True)
+            _selection.cursor = self.textCursor()
+            _selection.cursor.clearSelection()
+            extra_selections.append(_selection)
 
         # Paren matching
         extras = self.__check_brackets()
@@ -238,6 +244,9 @@ class Editor(QPlainTextEdit):
                             found -= 1
             block = block.previous()
             start = None
+
+    def setFont(self, font=settings.PSettings.FONT):
+        self.document().setDefaultFont(font)
 
     def saved(self):
         self.modified = False
