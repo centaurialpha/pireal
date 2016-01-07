@@ -33,10 +33,6 @@ from PyQt5.QtCore import (
 from src.core import settings
 from src.core.logger import PirealLogger
 
-# Logger
-logger = PirealLogger(__name__)
-INFO = logger.info
-
 
 def __get_versions():
     """ Version information for components used by Pireal """
@@ -69,6 +65,11 @@ if __name__ == "__main__":
 
     # Create dir
     settings.create_dir()
+
+    # Logger
+    logger = PirealLogger(__name__)
+    INFO = logger.info
+
     info = __get_versions()
     INFO("Executing Pireal from source")
     INFO("Python {0} - Qt {1} on {2} {3}".format(
