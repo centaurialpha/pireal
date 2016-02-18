@@ -71,9 +71,9 @@ class PSettings:
     MATCHING_PARENTHESIS = True
     #FONT = ""
     if LINUX:
-        FONT = QFont('Monospace')
+        FONT = QFont("Monospace", 12)
     else:
-        FONT = QFont('Courier')
+        FONT = QFont("Courier", 10)
 
 
 def create_dir():
@@ -106,4 +106,4 @@ def load_settings():
                                                       False, type=bool)
     PSettings.MATCHING_PARENTHESIS = settings.value("matching_parenthesis",
                                                     True, type=bool)
-    PSettings.FONT = settings.value("font", "", type='QFont')
+    #PSettings.FONT = settings.value("font", None)

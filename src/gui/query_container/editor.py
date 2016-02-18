@@ -49,7 +49,10 @@ class Editor(QPlainTextEdit):
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
-        self.setFont(settings.PSettings.FONT)
+        #FIXME: when set font, point size is -1 (?. See settings module
+        #font = settings.PSettings.FONT
+        #self.document().setDefaultFont(font)
+
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
 

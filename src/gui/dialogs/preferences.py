@@ -106,7 +106,8 @@ class Preferences(QDialog):
         group_language = QGroupBox(tr.TR_PREFERENCES_GROUP_LANG)
         box = QVBoxLayout(group_language)
         # Find .qm files in language path
-        available_langs = file_manager.get_files_from_folder(settings.LANG_PATH)
+        available_langs = file_manager.get_files_from_folder(
+            settings.LANG_PATH)
 
         languages = ["English"] + available_langs
         self._radio_buttons = []
@@ -189,8 +190,10 @@ class Preferences(QDialog):
         self._combo_font_size = QComboBox()
         fdb = QFontDatabase()
         combo_sizes = fdb.pointSizes(settings.PSettings.FONT.family())
-        current_size_index = combo_sizes.index(
-            settings.PSettings.FONT.pointSize())
+        #FIXME:
+        if settings.PSettings.FONT.pointSize() == -1:
+
+            current_size_index = combo_sizes.index(12)
         # Convert to str
         combo_sizes = [str(f) for f in combo_sizes]
         self._combo_font_size.addItems(combo_sizes)
@@ -271,8 +274,10 @@ class Preferences(QDialog):
         #self.thread.finished.connect(self._on_thread_finished)
         self.combo_themes.currentIndexChanged['QString'].connect(
             self._change_theme)
-        self._combo_font.currentFontChanged.connect(self._change_font)
-        self._combo_font_size.currentTextChanged.connect(self._change_font_size)
+        self._combo_font.currentFontChanged.connect(
+            self._change_font)
+        self._combo_font_size.currentTextChanged.connect(
+            self._change_font_size)
 
     def __current_line_value_changed(self, value):
         #FIXME: un quilombo esto
