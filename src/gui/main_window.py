@@ -27,7 +27,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import (
-    QFileInfo,
+    QSettings,
     QSize
 )
 from src.core import settings
@@ -72,8 +72,18 @@ class Pireal(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         self.setWindowTitle(self.tr("Pireal"))
-        self.showMaximized()
+        self.setMinimumSize(700, 500)
 
+        # Load window geometry
+        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        window_maximized = qsettings.value('window_max', True, type=bool)
+        if window_maximized:
+            self.showMaximized()
+        else:
+            size = qsettings.value('window_size')
+            self.resize(size)
+            position = qsettings.value('window_pos')
+            self.move(position)
         # Toolbar
         self.toolbar = QToolBar(self)
         self.toolbar.setIconSize(QSize(22, 22))
@@ -289,7 +299,14 @@ class Pireal(QMainWindow):
         pass
 
     def closeEvent(self, event):
-        pass
+        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        # Save window geometry
+        if self.isMaximized():
+            qsettings.setValue('window_max', True)
+        else:
+            qsettings.setValue('window_max', False)
+            qsettings.setValue('window_pos', self.pos())
+            qsettings.setValue('window_size', self.size())
         #main_container = Pireal.get_service("main")
         #last_open_folder = main_container.get_last_open_folder()
         #settings.set_setting("last_open_folder", last_open_folder)

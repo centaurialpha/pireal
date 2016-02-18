@@ -19,16 +19,25 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+
+if sys.version_info.major != 3:
+    print("Pireal need Python 3 :(")
+    sys.exit(-1)
+
 import os
 
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import (
-    QLocale,
-    QTranslator,
-    QLibraryInfo,
-    QT_VERSION_STR
-)
+try:
+
+    from PyQt5.QtWidgets import QApplication
+    from PyQt5.QtGui import QIcon
+    from PyQt5.QtCore import (
+        QLocale,
+        QTranslator,
+        QLibraryInfo,
+        QT_VERSION_STR
+    )
+except ImportError:
+    print("Pireal need PyQt 5 :(")
 
 from src.core import settings
 from src.core.logger import PirealLogger
@@ -104,14 +113,9 @@ if __name__ == "__main__":
         qapp.installTranslator(qtranslator)
 
     # Load services
-    #from src.gui import table_widget  # lint:ok
     from src.gui import central_widget  # lint:ok
     from src.gui import main_container  # lint:ok
-    #from src.gui import lateral_widget  # lint:ok
-    #from src.gui.query_container import query_container  # lint:ok
     from src.gui.main_window import Pireal
-    #from src.gui import status_bar  # lint:ok
-    #from src.gui import container  # lint:ok
 
     INFO("Loading GUI...")
     gui = Pireal()
