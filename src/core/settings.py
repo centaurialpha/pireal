@@ -71,9 +71,9 @@ class PSettings:
     MATCHING_PARENTHESIS = True
     #FONT = ""
     if LINUX:
-        FONT = QFont('Monospace', 12)
+        FONT = QFont('Monospace')
     else:
-        FONT = QFont('Courier', 10)
+        FONT = QFont('Courier')
 
 
 def create_dir():

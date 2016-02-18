@@ -48,11 +48,10 @@ class Editor(QPlainTextEdit):
         self.modified = False
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
+        # Set document font
         self.setFont(settings.PSettings.FONT)
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
-        # Completer
-        #self._completer = completer.Completer(self)
 
         self.__cursor_position_changed()
 
@@ -82,36 +81,6 @@ class Editor(QPlainTextEdit):
         super(Editor, self).resizeEvent(event)
         # Fixed sidebar height
         self._sidebar.setFixedHeight(self.height())
-
-    #def keyPressEvent(self, event):
-        #key = event.key()
-        #if self._completer.popup().isVisible():
-            #if key in (Qt.Key_Enter, Qt.Key_Return, Qt.Key_Tab):
-                #event.ignore()
-                #self._completer.popup().hide()
-                #return
-            #elif key in (Qt.Key_Space, Qt.Key_Escape, Qt.Key_Backspace):
-                #self._completer.popup().hide()
-
-        #QPlainTextEdit.keyPressEvent(self, event)
-
-        #if key == Qt.Key_Period:
-            #cursor = self.textCursor()
-            #cursor.movePosition(QTextCursor.WordLeft,
-                                #QTextCursor.KeepAnchor, 2)
-
-            #text = cursor.selectedText()
-            #text = text[:text.rfind('.')]
-            #cursor_rect = self.cursorRect()
-
-            #completions = self.__get_completions(text)
-
-            #self._completer.complete(cursor_rect, completions)
-
-    #def __get_completions(self, text):
-        #table_widget = Pireal.get_service("main").db_widget.table_widget
-        #relation = table_widget.relations.get(text)
-        #return relation.fields
 
     def setHighlightCurrentLine(self, value):
         settings.PSettings.HIGHLIGHT_CURRENT_LINE = value
@@ -244,9 +213,6 @@ class Editor(QPlainTextEdit):
                             found -= 1
             block = block.previous()
             start = None
-
-    def setFont(self, font=settings.PSettings.FONT):
-        self.document().setDefaultFont(font)
 
     def saved(self):
         self.modified = False
