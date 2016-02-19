@@ -60,6 +60,7 @@ class CentralWidget(QWidget):
         self.__ndb = 1
         self.__created = False
         self.__last_open_folder = None
+        self.__recent_files = set()
 
         Pireal.load_service("central", self)
 
@@ -87,6 +88,8 @@ class CentralWidget(QWidget):
         else:
             # Open a database file
             self.create_database(filename)
+            # Add to recent files
+            self.__recent_files.add(filename)
 
     def create_database(self, filename=''):
         """ This function opens or creates a database """
@@ -107,7 +110,8 @@ class CentralWidget(QWidget):
             db_name = main.dbname()
         else:
             try:
-                DEBUG("Intentando abrir la base de datos '{}'".format(filename))
+                DEBUG("Intentando abrir la base de datos '{}'".format(
+                    filename))
                 data = ffile.read()
             except Exception as reason:
                 QMessageBox.critical(self, "Error", reason.__str__())
@@ -264,6 +268,10 @@ class CentralWidget(QWidget):
 
         index = self.stacked.addWidget(widget)
         self.stacked.setCurrentIndex(index)
+
+    @property
+    def recent_files(self):
+        return self.__recent_files
 
     def _settings_closed(self):
         self.stacked.removeWidget(self.widget(1))

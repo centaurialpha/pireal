@@ -307,6 +307,12 @@ class Pireal(QMainWindow):
             qsettings.setValue('window_max', False)
             qsettings.setValue('window_pos', self.pos())
             qsettings.setValue('window_size', self.size())
+
+        # Recent databases
+        central_widget = Pireal.get_service("central")
+        recent_files = qsettings.value('recentDB', set())
+        qsettings.setValue("recentDB",
+                            recent_files.union(central_widget.recent_files))
         #main_container = Pireal.get_service("main")
         #last_open_folder = main_container.get_last_open_folder()
         #settings.set_setting("last_open_folder", last_open_folder)

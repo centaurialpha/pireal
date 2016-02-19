@@ -22,12 +22,18 @@ QML interface
 """
 
 import os
+
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout
 )
 from PyQt5.QtQuick import QQuickView
-from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import (
+    QUrl,
+    QSettings
+)
+from src.gui.main_window import Pireal
+from src.core import settings
 
 
 class StartPage(QWidget):
@@ -42,3 +48,25 @@ class StartPage(QWidget):
         view.setResizeMode(QQuickView.SizeRootObjectToView)
         widget = QWidget.createWindowContainer(view)
         vbox.addWidget(widget)
+
+        self.__root = view.rootObject()
+        self.load_items()
+
+        # Connections
+        self.__root.openDatabase.connect(self.__open_database)
+        self.__root.newDatabase.connect(self.__new_database)
+
+    def __open_database(self, path):
+        central_widget = Pireal.get_service("central")
+        central_widget.open_file(path)
+
+    def __new_database(self):
+        central_widget = Pireal.get_service("central")
+        central_widget.create_database()
+
+    def load_items(self):
+        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        recent_files = qsettings.value('recentDB', [])
+        for file_ in recent_files:
+            name = os.path.splitext(os.path.basename(file_))[0]
+            self.__root.loadItem(name, file_)

@@ -1,78 +1,188 @@
-import QtQuick 2.0
+import QtQuick 2.3
 
 Rectangle {
     id: root
+    color: "#ededed"
+    signal openDatabase(string path)
+    signal newDatabase
 
-    color: "#F9F9F9";
+    function loadItem(name, path) {
+        listModel.append({"name": name, "path": path})
+    }
 
-    Image {
-        id: icon
+    Component.onCompleted: {
+        listModel.clear();
+    }
 
-        anchors.left: parent.left
-        anchors.leftMargin: parent.width / 4
-        anchors.verticalCenter: parent.verticalCenter
-        opacity: 0.2
-        source: "../images/icon.png"
-        width: 128; height: 128
+    Rectangle {
+        id: container
+        anchors.centerIn: parent
+        width: root.width / 2 ; height: root.height / 1.5
+        color: "#f2f2f2"
+        radius: 5
+        border.color: "lightgray"
 
-        transform: Rotation {
-            id: rotation
-            origin.x: icon.width / 2
-            origin.y: icon.height / 2
-            axis.x: 0; axis.y: 1; axis.z: 0
-            angle: 0
+        ListModel {
+            id: listModel
+
+            ListElement {
+                name: ""
+                path: ""
+            }
         }
 
-        NumberAnimation {
-            id: rot
-            target: rotation
-            property: "angle"
-            from: 0; to: 360; duration: 1050
-            running: true
-            loops: 2
+        Component {
+            id: delegate
+            Item {
+                id: listItem
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onHoveredChanged:  {
+                        listView.currentIndex = index;
+                    }
+
+                    onClicked: {
+                        root.openDatabase(path)
+                    }
+
+                }
+
+                Keys.onReturnPressed: {
+                    root.openDatabase(path)
+                }
+
+                height: 75
+                Column {
+                    anchors {
+                        fill: parent
+                        leftMargin: 50
+                    }
+
+                    Text {
+                        id: fileName
+                        text: name
+                        font.bold: true
+                        font.pixelSize: 26
+                        color: "#838b8c"
+
+                    }
+
+                    Text {
+                        id: filePath
+                        color: "#838b8c"
+                        opacity: 0.5
+                        text: path
+                    }
+                }
+            }
         }
 
-        MouseArea {
+        Component {
+            id: high
+            Rectangle {
+
+                color: "#e3e3e3"
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                }
+
+            }
+        }
+
+        ListView {
+            id: listView
+
             anchors.fill: parent
-            onClicked:rot.start()
+            width: parent.width / 2.5; height: parent.height / 1.5
+            model: listModel
+            delegate: delegate
+            highlight: high
+            focus: true
+            //clip: true
         }
-
-    }
-
-    Image {
-        id: logo
-
-        opacity: 0.2
-        source: "../images/pi.png"
-        anchors.left: icon.right
-        anchors.top: icon.top
-        anchors.topMargin: -10
-        anchors.leftMargin: 50
-    }
-
-    Text {
-        text: "Copyright © 2015 - Pireal under GPLv3+ License"
-        font.pointSize: 10
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.bottomMargin: 10
-        anchors.leftMargin: 10
     }
 
     Row {
-        anchors.bottomMargin: 5
-        anchors.rightMargin: 10
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-
-        Text {
-            text: "Powered by: ";
-            height: logoPython.height;
-            verticalAlignment: Text.AlignVCenter;
+        anchors {
+            horizontalCenter: container.horizontalCenter
+            bottom: container.top
+            bottomMargin: 10
         }
 
-        Image { id: logoPython; source: "../images/python-logo.png"; }
-        Image { source: "../images/qt-logo.png"; }
-    }
-}
+        Text {
+            id: title
 
+            text: qsTr("Opens a recent database or ")
+            color: "#838b8c"
+            font.pixelSize: 16
+        }
+
+        Rectangle {
+            id: btnNewDB
+
+            color: "#f1f1f1"
+            border.color: "lightgray"
+            radius: 3
+            width: 150; height: 40
+            anchors.verticalCenter: title.verticalCenter
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+
+                onEntered: {
+                    btnNewDB.color = "#f7f7f7"
+                }
+
+                onExited: {
+                    btnNewDB.color = "#f1f1f1"
+                }
+
+                onPressed: {
+                    btnNewDB.color = "#e3e3e3"
+                }
+
+                onReleased: {
+                    btnNewDB.color = "#f7f7f7"
+                }
+
+                onClicked: {
+                    root.newDatabase();
+                }
+            }
+
+            Text {
+                text: qsTr("Create a new database")
+                font.pixelSize: 12
+                color: "#838b8c"
+                anchors.centerIn: parent
+            }
+        }
+    }
+
+    Row {
+        anchors {
+            bottom: parent.bottom
+            right: parent.right
+            bottomMargin: 5
+            rightMargin: 10
+        }
+
+        Text {
+         text: "Powered by: "
+         height: logoPython.height
+         verticalAlignment: Text.AlignVCenter
+        }
+
+        Image { id: logoPython; source: "../images/python-logo.png"; opacity: 0.7 }
+        Image { source: "../images/qt-logo.png"; opacity: 0.7 }
+    }
+
+
+}
