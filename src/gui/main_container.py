@@ -17,7 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-#import os
+import os
+import csv
 
 from PyQt5.QtWidgets import (
     QSplitter,
@@ -25,13 +26,14 @@ from PyQt5.QtWidgets import (
     QMessageBox
 )
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QStandardItem
 
 #from src.gui.main_window import Pireal
 from src.gui import (
     #database_widget
     table_widget,
     list_widget,
-    table
+    custom_table
 )
 from src.gui.dialogs import edit_relation_dialog
 from src.gui.query_container import query_container
@@ -50,7 +52,7 @@ DEBUG = logger.debug
 
 class MainContainer(QSplitter):
 
-    def __init__(self, pfile, orientation=Qt.Vertical):
+    def __init__(self, pfile='', orientation=Qt.Vertical):
         QSplitter.__init__(self, orientation)
         self.__pfile = pfile
         self._hsplitter = QSplitter(Qt.Horizontal)
@@ -95,31 +97,55 @@ class MainContainer(QSplitter):
     def pfile(self):
         return self.__pfile
 
-    def create_database(self, data):
-        rel = None
-        for part in data.split('@'):
-            for e, line in enumerate(part.splitlines()):
-                # Ignore blank lines
-                if not line:
-                    continue
-                # Remove whitespaces
-                line = ','.join(list(map(str.strip, line.split(','))))
-                if e == 0:
-                    if line.endswith(','):
-                        line = line[:-1]
-                    name = line.split(':')[0]
-                    rel = relation.Relation()
-                    rel.fields = line.split(':')[-1].split(',')
-                else:
-                    rel.insert(line.split(','))
-            if rel is not None:
-                #ptable = table.Table()
-                #ptable.itemChanged.connect(self.__on_data_table_changed)
-                #ptable.setColumnCount(len(rel.fields))
-                #ptable.setHorizontalHeaderLabels(rel.fields)
-                self.table_widget.add_relation(name, rel)
-                self.__add_table(rel, name)
-        DEBUG("Base de datos importada con éxito")
+    def create_database(self, json_object, filename):
+        # Get name of tables/relations
+        tables = json_object.get('tables')
+
+        for table in tables:
+            table_name = table.get('name')
+            table_path = os.path.join(os.path.dirname(filename),
+                                      "Tables", table_name + '.prf')
+
+            # Relation
+            rela = relation.Relation()
+
+            # Open Pireal Relation File
+            with open(table_path, mode='r') as f:
+                content = csv.reader(f)
+                # First line of file
+                first_line = next(content)
+                #FIXME: check syntax of file
+                # Get fields and types
+                fields = [f.split('/')[0].strip() for f in first_line]
+                rela.fields = fields
+                types = [f.split('/')[1].strip() for f in first_line]
+                # Create table widget
+                table_view = custom_table.Table()
+                # Model
+                model = table_view.model()
+                # Set horizontal header labes
+                model.setHorizontalHeaderLabels(fields)
+
+                for row in content:
+                    reg = []
+                    row_count = model.rowCount()
+                    for column, data in enumerate(row):
+                        data = data.strip()
+                        reg.append(data)
+                        # Create item
+                        item = QStandardItem(data)
+                        model.setItem(row_count, column, item)
+                        # Add type per each column
+                        delegate = table_view.itemDelegate()
+                        delegate.data_types[column] = types[column]
+                    # Insert a tuple in table
+                    rela.insert(reg)
+                # Add table to stacked
+                self.table_widget.stacked.addWidget(table_view)
+                # Add table name to list
+                self.lateral_widget.add_item(table_name, row_count + 1)
+                # Add relation object to relations dict
+                self.table_widget.add_relation(table_name, rela)
 
     def load_relation(self, filenames):
         for filename in filenames:
@@ -175,7 +201,7 @@ class MainContainer(QSplitter):
         dialog.exec_()
 
     def __add_table(self, rela, relation_name):
-        ptable = table.Table()
+        ptable = custom_table.Table()
         ptable.setColumnCount(len(rela.fields))
         ptable.setHorizontalHeaderLabels(rela.fields)
 
@@ -183,7 +209,7 @@ class MainContainer(QSplitter):
             nrow = ptable.rowCount()
             ptable.insertRow(nrow)
             for column, data in enumerate(row):
-                item = table.Item()
+                item = custom_table.Item()
                 item.setText(data)
                 ptable.setItem(nrow, column, item)
 

@@ -18,27 +18,39 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import json
+#import csv
 
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QStackedWidget,
     QFileDialog,
+    #QTableWidget,
+    #QHeaderView,
+    #QTableWidgetItem,
     QMessageBox
 )
+#from PyQt5.QtGui import QStandardItem
+#from PyQt5.QtCore import Qt
 
 from src.core import (
     settings,
     file_manager,
-    pfile
+    #pfile
 )
 from src.core.logger import PirealLogger
 from src import translations as tr
 from src.gui.main_window import Pireal
-from src.gui import start_page, main_container
+from src.gui import (
+    start_page,
+    main_container,
+    #custom_table
+)
 from src.gui.dialogs import (
     preferences,
-    new_relation_dialog
+    new_relation_dialog,
+    database_wizard
 )
 
 # Logger
@@ -65,6 +77,7 @@ class CentralWidget(QWidget):
         Pireal.load_service("central", self)
 
     def open_file(self, filename=''):
+        return self.rread()
         if self.__last_open_folder is None:
             directory = os.path.expanduser("~")
         else:
@@ -91,41 +104,108 @@ class CentralWidget(QWidget):
             # Add to recent files
             self.__recent_files.add(filename)
 
-    def create_database(self, filename=''):
-        """ This function opens or creates a database """
+    def create_database_wizard(self):
+        wizard = database_wizard.DatabaseWizard(self)
+        wizard.wizardFinished['PyQt_PyObject'].connect(
+            self.__on_wizard_finished)
+        # Hide menubar and toolbar
+        pireal = Pireal.get_service("pireal")
+        pireal.menuBar().hide()
+        pireal.toolbar.hide()
+        # Add wizard widget to stacked
+        self.add_widget(wizard)
 
-        # Only one database
-        if self.created:
-            QMessageBox.critical(self, "Error", tr.TR_CENTRAL_ERROR_DB)
-            return
-
-        # File
-        ffile = pfile.PFile(filename)
-
-        main = main_container.MainContainer(ffile)
-        self.add_widget(main)
-
-        if not filename:
-            ffile.filename = 'untitled_{n}.pdb'.format(n=self.__ndb)
-            db_name = main.dbname()
+    def __on_wizard_finished(self, data):
+        if not data:
+            self.remove_last_widget()
         else:
-            try:
-                DEBUG("Intentando abrir la base de datos '{}'".format(
-                    filename))
-                data = ffile.read()
-            except Exception as reason:
-                QMessageBox.critical(self, "Error", reason.__str__())
-                CRITICAL("Error al leer el archivo")
+            # Create structure
+            os.mkdir(data['folder'])
+            os.mkdir(os.path.join(data['folder'], 'Tables'))
+            os.mknod(data['filename'])
+            self.__create_database(data['filename'])
+
+        # Show menubar and toolbar
+        pireal = Pireal.get_service("pireal")
+        pireal.menuBar().setVisible(True)
+        pireal.toolbar.setVisible(True)
+
+    def open_database(self, filename=''):
+        # If not filename, then open dialog for select
+        if not filename:
+            if self.__last_open_folder is None:
+                directory = os.path.expanduser("~")
+            else:
+                directory = self.__last_open_folder
+            filename = QFileDialog.getOpenFileName(self,
+                                                   self.tr("Open Database"),
+                                                   directory,
+                                                   settings.SUPPORTED_FILES)[0]
+            # If is canceled, return
+            if not filename:
                 return
 
-            db_name = ffile.name
-            main.create_database(data)
+            # Remember the folder
+            self.__last_open_folder = file_manager.get_path(filename)
+
+        # Read json file
+        with open(filename, mode='r') as f:
+            json_object = json.load(f)
+
+        # Database name
+        db_name = json_object.get('name')
+
+        database_container = main_container.MainContainer()
+        database_container.create_database(json_object, filename)
+        self.add_widget(database_container)
 
         pireal = Pireal.get_service("pireal")
         pireal.change_title(db_name)
         pireal.enable_disable_db_actions()
         self.created = True
         self.__ndb += 1
+
+    def remove_last_widget(self):
+        """ Remove last widget from stacked """
+
+        widget = self.stacked.widget(self.stacked.count() - 1)
+        self.stacked.removeWidget(widget)
+
+    def __create_database(self, filename=''):
+        """ This function opens or creates a database """
+        pass
+        # Only one database
+        #if self.created:
+            #QMessageBox.critical(self, "Error", tr.TR_CENTRAL_ERROR_DB)
+            #return
+
+        ### File
+        #ffile = pfile.PFile(filename)
+
+        #main = main_container.MainContainer(ffile)
+        #self.add_widget(main)
+
+        #if not filename:
+            #ffile.filename = 'untitled_{n}.pdb'.format(n=self.__ndb)
+            #db_name = main.dbname()
+        #else:
+            #try:
+                #DEBUG("Intentando abrir la base de datos '{}'".format(
+                    #filename))
+                #data = ffile.read()
+            #except Exception as reason:
+                #QMessageBox.critical(self, "Error", reason.__str__())
+                #CRITICAL("Error al leer el archivo")
+                #return
+
+            #db_name = ffile.name
+            #main.create_database(data)
+
+        #pireal = Pireal.get_service("pireal")
+        #pireal.change_title(db_name)
+        #pireal.enable_disable_db_actions()
+        #self.created = True
+        #self.__ndb += 1
 
     def close_database(self):
         mcontainer = self.get_active_db()

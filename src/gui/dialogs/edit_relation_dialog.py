@@ -35,7 +35,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtCore import pyqtSignal
 
-from src.gui import table
+from src.gui import custom_table
 from src import translations as tr
 
 

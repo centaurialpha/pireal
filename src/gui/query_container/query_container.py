@@ -28,8 +28,9 @@ from PyQt5.QtWidgets import (
     QSplitter,
     QStackedWidget,
     QMessageBox,
-    QTableWidgetItem
+    #QTableWidgetItem,
 )
+from PyQt5.QtGui import QStandardItem
 from PyQt5.QtCore import (
     Qt,
     pyqtSignal
@@ -38,7 +39,7 @@ from PyQt5.QtCore import (
 from src.core.logger import PirealLogger
 from src.core import parser
 from src.gui import (
-    table,
+    custom_table,
     list_widget
 )
 from src import translations as tr
@@ -170,9 +171,9 @@ class QueryContainer(QWidget):
             else:
                 relation_name = "query_"
             try:
-                DEBUG("Parseando la línea: {line}".format(line=line.strip()))
+                #DEBUG("Parseando la línea: {line}".format(line=line.strip()))
                 expression = parser.convert_to_python(line.strip())
-                DEBUG("Ejecutando la expresión: {exp}".format(exp=expression))
+                #DEBUG("Ejecutando la expresión: {exp}".format(exp=expression))
                 relation = eval(expression, table_widget.relations)
             except Exception as reason:
                 QMessageBox.critical(self, tr.TR_QUERY_ERROR, reason.__str__())
@@ -251,18 +252,17 @@ class QueryWidget(QWidget):
         self._hsplitter.setSizes([1, self.width() / 3])
 
     def add_table(self, rela, rname):
-        wtable = table.Table()
+        wtable = custom_table.Table()
 
-        wtable.setColumnCount(len(rela.fields))
-        wtable.setHorizontalHeaderLabels(rela.fields)
+        #wtable.setColumnCount(len(rela.fields))
+        wtable.model().setHorizontalHeaderLabels(rela.fields)
 
         for data in rela.content:
-            nrow = wtable.rowCount()
-            wtable.insertRow(nrow)
+            nrow = wtable.model().rowCount()
+            #wtable.insertRow(nrow)
             for col, text in enumerate(data):
-                item = QTableWidgetItem()
-                item.setText(text)
-                wtable.setItem(nrow, col, item)
+                item = QStandardItem(text)
+                wtable.model().setItem(nrow, col, item)
 
         index = self._stack_tables.addWidget(wtable)
         self._stack_tables.setCurrentIndex(index)

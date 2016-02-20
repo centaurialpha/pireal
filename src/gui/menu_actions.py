@@ -36,13 +36,13 @@ MENU['file'] = {
     'name': tr.TR_MENU_FILE,
     'items': [{
         'name': tr.TR_MENU_FILE_NEW_DB,
-        'slot': "central:create_database"
+        'slot': "central:create_database_wizard"
     }, {
         'name': tr.TR_MENU_FILE_NEW_QUERY,
         'slot': "central:new_query"
     }, "-", {
         'name': tr.TR_MENU_FILE_OPEN,
-        'slot': "central:open_file"
+        'slot': "central:open_database"
     }, {
         'name': tr.TR_MENU_FILE_SAVE_DB,
         'slot': "central:save_database"

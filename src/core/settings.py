@@ -52,6 +52,7 @@ SUPPORTED_FILES = ("Pireal Files\t.PDB .PQF .CSV .PRF .TXT"
 PATH = os.path.realpath(os.path.dirname(sys.argv[0]))
 HOME = os.path.expanduser("~")
 PIREAL_DIR = os.path.join(HOME, ".pireal")
+PIREAL_PROJECTS = os.path.join(HOME, "PirealDatabases")
 LOG_FILE_PATH = os.path.join(PIREAL_DIR, "pireal_log.log")
 SETTINGS_PATH = os.path.join(PIREAL_DIR, "pireal_settings.ini")
 LANG_PATH = os.path.join(PATH, "src", "lang")
@@ -77,8 +78,9 @@ class PSettings:
 
 
 def create_dir():
-    if not os.path.isdir(PIREAL_DIR):
-        os.mkdir(PIREAL_DIR)
+    for path in (PIREAL_DIR, PIREAL_PROJECTS):
+        if not os.path.isdir(path):
+            os.mkdir(path)
 
 
 def get_setting(key, default):

@@ -27,14 +27,14 @@ from PyQt5.QtCore import Qt
 
 
 KEYMAP = {
-    'create_data_base': QKeySequence(Qt.CTRL + Qt.Key_N),
-    'new_query': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_Q),
-    'open_file': QKeySequence(Qt.CTRL + Qt.Key_O),
-    'save_file': QKeySequence(Qt.CTRL + Qt.Key_S),
-    'close': QKeySequence(Qt.CTRL + Qt.Key_Q),
-    'undo_action': QKeySequence(Qt.CTRL + Qt.Key_Z),
-    'redo_action': QKeySequence(Qt.CTRL + Qt.Key_Y),
-    'cut_action': QKeySequence(Qt.CTRL + Qt.Key_X),
-    'copy_action': QKeySequence(Qt.CTRL + Qt.Key_C),
-    'paste_action': QKeySequence(Qt.CTRL + Qt.Key_V)
-    }
+    'create_database_wizard': QKeySequence(Qt.CTRL + Qt.Key_N),
+    #'new_query': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_Q),
+    'open_database': QKeySequence(Qt.CTRL + Qt.Key_O),
+    #'save_file': QKeySequence(Qt.CTRL + Qt.Key_S),
+    #'close': QKeySequence(Qt.CTRL + Qt.Key_Q),
+    #'undo_action': QKeySequence(Qt.CTRL + Qt.Key_Z),
+    #'redo_action': QKeySequence(Qt.CTRL + Qt.Key_Y),
+    #'cut_action': QKeySequence(Qt.CTRL + Qt.Key_X),
+    #'copy_action': QKeySequence(Qt.CTRL + Qt.Key_C),
+    #'paste_action': QKeySequence(Qt.CTRL + Qt.Key_V)
+}

@@ -50,11 +50,11 @@ class Pireal(QMainWindow):
 
     # The name of items is the connection text
     TOOLBAR_ITEMS = [
-        'create_database',
+        'create_database_wizard',
         'save_database',
         'new_query',
         '',  # Is a separator!
-        'open_file',
+        'open_database',
         'save_file',
         '',
         'undo_action',
@@ -94,8 +94,9 @@ class Pireal(QMainWindow):
         self.__load_menubar(menubar)
 
         # Central widget
-        central_widget = self.__load_ui()
+        central_widget = Pireal.get_service("central")
         self.setCentralWidget(central_widget)
+        central_widget.add_start_page()
 
         # Install service
         Pireal.load_service("pireal", self)
@@ -206,14 +207,6 @@ class Pireal(QMainWindow):
         self.enable_disable_db_actions(False)
         self.enable_disable_relation_actions(False)
         self.enable_disable_query_actions(False)
-
-    def __load_ui(self):
-        central_widget = Pireal.get_service("central")
-
-        if settings.PSettings.SHOW_START_PAGE:
-            central_widget.add_start_page()
-
-        return central_widget
 
     def __show_status_message(self, msg):
         status = Pireal.get_service("status")

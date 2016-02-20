@@ -59,7 +59,8 @@ class Relation(object):
         self.content = set()
 
     def select(self, expression):
-        """ The select operator returns a new relation with the tuples that
+        """
+        The select operator returns a new relation with the tuples that
         satisfy an expression.
 
         :param expression: A python valid expression
@@ -74,7 +75,8 @@ class Relation(object):
         for register in self.content:
             for e, attr in enumerate(self.fields):
                 if register[e].isdigit():
-                    d[attr] = int(register[e])
+                    print(register[e])
+                    d[attr] = str(register[e])
                 else:
                     d[attr] = register[e]
 
