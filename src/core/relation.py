@@ -70,15 +70,15 @@ class Relation(object):
         new_relation = Relation()
         new_relation.fields = self.fields
 
+        value = expression.rsplit(' ', 1)[-1]
+        if value.isdigit():
+            expression = expression.replace(value, '"' + value + '"')
+
         # Filtering
         d = {}
         for register in self.content:
             for e, attr in enumerate(self.fields):
-                if register[e].isdigit():
-                    print(register[e])
-                    d[attr] = str(register[e])
-                else:
-                    d[attr] = register[e]
+                d[attr] = register[e]
 
             # The expression is evaluated
             try:
