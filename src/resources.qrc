@@ -16,5 +16,12 @@
         <file alias="arrow-left">images/arrow-left.png</file>
         <file alias="logo">images/pireal_logo.png</file>
         <file alias="save_database">images/database_save.png</file>
+        <file alias="intersect">images/intersection.png</file>
+        <file alias="njoin">images/njoin.png</file>
+        <file alias="product">images/product.png</file>
+        <file alias="project">images/project.png</file>
+        <file alias="select">images/select.png</file>
+        <file alias="union">images/union.png</file>
+        <file alias="difference">images/difference.png</file>
     </qresource>
 </RCC>

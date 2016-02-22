@@ -30,9 +30,13 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     #QTableWidgetItem,
 )
-from PyQt5.QtGui import QStandardItem
+from PyQt5.QtGui import (
+    QStandardItem,
+    QIcon
+)
 from PyQt5.QtCore import (
     Qt,
+    QSize,
     pyqtSignal
 )
 
@@ -79,13 +83,15 @@ class QueryContainer(QWidget):
 
         # Toolbar
         self._toolbar = QToolBar(self)
+        self._toolbar.setIconSize(QSize(22, 22))
         for key, value in ITEMS_TOOLBAR_OPERATORS.items():
             tooltip, action = value
             qaction = self._toolbar.addAction(chr(action))
-            widget = self._toolbar.widgetForAction(qaction)
+            qaction.setIcon(QIcon(":img/{}".format(key)))
+            #widget = self._toolbar.widgetForAction(qaction)
             qaction.setData(key)
             qaction.triggered.connect(self._add_operator_to_editor)
-            widget.setFixedSize(60, 30)
+            #widget.setFixedSize(60, 30)
             qaction.setToolTip(tooltip)
 
         box.addWidget(self._toolbar)
