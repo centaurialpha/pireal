@@ -142,7 +142,6 @@ class Relation(object):
 
         for i in self.content:
             for e in other_relation.content:
-                print(i)
                 new_relation.insert(i + e)
 
         return new_relation
@@ -277,5 +276,3 @@ if __name__ == "__main__":
     data2 = {('1', 'Python'), ('32', 'C++')}
     for reg in data2:
         r2.insert(reg)
-
-    r1.product(r2)
