@@ -119,7 +119,8 @@ class Relation(object):
         return new_relation
 
     def product(self, other_relation):
-        """ The cartesian product is defined as: R x S, its outline
+        """
+        The cartesian product is defined as: R x S, its outline
         corresponds to a combination of all tuples in R with each S
         tuples, and attributes corresponding to those of R followed by S.
 
@@ -129,17 +130,19 @@ class Relation(object):
         :returns: A new relation
         """
 
-        for i in other_relation.fields:
-            if i in self.fields:
+        new_relation = Relation()
+
+        # Check if there are duplicate fields
+        for i in self.fields:
+            if i in other_relation.fields:
                 raise DuplicateFieldsError("Duplicate attribute \"{}\" in "
                                            "product operation.".format(i))
-            self.fields.append(i)
 
-        new_relation = Relation()
-        new_relation.fields = self.fields
+        new_relation.fields = self.fields + other_relation.fields
 
         for i in self.content:
             for e in other_relation.content:
+                print(i)
                 new_relation.insert(i + e)
 
         return new_relation
@@ -262,7 +265,7 @@ if __name__ == "__main__":
     # Test
 
     r1 = Relation()
-    f1 = ['id', 'name']
+    f1 = ['idL', 'name']
     r1.fields = f1
     data1 = {('1', 'Gabriel'), ('32', 'Rodrigo')}
     for reg in data1:
@@ -274,3 +277,5 @@ if __name__ == "__main__":
     data2 = {('1', 'Python'), ('32', 'C++')}
     for reg in data2:
         r2.insert(reg)
+
+    r1.product(r2)
