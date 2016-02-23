@@ -66,7 +66,10 @@ class StartPage(QWidget):
 
     def load_items(self):
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        recent_files = qsettings.value('recentDB', [])
-        for file_ in recent_files:
-            name = os.path.splitext(os.path.basename(file_))[0]
-            self.__root.loadItem(name, file_)
+        recent_files = qsettings.value('recentDB', set())
+        if recent_files:
+            for file_ in recent_files:
+                name = os.path.splitext(os.path.basename(file_))[0]
+                self.__root.loadItem(name, file_)
+        else:
+            self.__root.show_empty_text()

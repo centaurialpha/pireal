@@ -10,6 +10,10 @@ Rectangle {
         listModel.append({"name": name, "path": path})
     }
 
+    function show_empty_text() {
+        emptyText.visible = true;
+    }
+
     Component.onCompleted: {
         listModel.clear();
     }
@@ -21,6 +25,17 @@ Rectangle {
         color: "#f2f2f2"
         radius: 5
         border.color: "lightgray"
+
+        Text {
+            id: emptyText
+
+            anchors.centerIn: parent
+            font.pixelSize: 40
+            font.bold: true
+            color: "lightgray"
+            text: "No recent files"
+            visible: false
+        }
 
         ListModel {
             id: listModel
