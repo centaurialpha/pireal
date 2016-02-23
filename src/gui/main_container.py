@@ -138,6 +138,8 @@ class MainContainer(QSplitter):
                     delegate.data_types[col_count] = types[col_count]
                 rela.insert(row)
                 row_count += 1
+            # Add relation to relations dict
+            self.table_widget.add_relation(table_name, rela)
             # Add table to stacked
             self.table_widget.stacked.addWidget(table_view)
             # Add table name to list widget
