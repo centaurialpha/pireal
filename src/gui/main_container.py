@@ -97,21 +97,6 @@ class MainContainer(QSplitter):
     def pfile(self):
         return self.__pfile
 
-    def __create_table(self, data, rela):
-        # New table
-        table = custom_table.Table()
-        model = table.model()
-
-        row_count = 0
-        reg = []
-        for col_count, i in enumerate(data.split(',')):
-            item = QStandardItem(i)
-            model.setItem(row_count, col_count, item)
-            reg.append(i)
-        rela.insert(reg)
-
-        return table
-
     def create_database(self, data):
         for table in data.get('tables'):
             # Table view widget
@@ -200,22 +185,17 @@ class MainContainer(QSplitter):
 
     def __add_table(self, rela, relation_name):
         ptable = custom_table.Table()
-        ptable.setColumnCount(len(rela.fields))
-        ptable.setHorizontalHeaderLabels(rela.fields)
+        model = ptable.model()
 
+        row_count = 0
         for row in rela.content:
-            nrow = ptable.rowCount()
-            ptable.insertRow(nrow)
-            for column, data in enumerate(row):
-                item = custom_table.Item()
-                item.setText(data)
-                ptable.setItem(nrow, column, item)
+            for col_count, data in enumerate(row):
+                item = QStandardItem(data)
+                model.setItem(row_count, col_count, item)
+            row_count += 1
 
         self.table_widget.stacked.addWidget(ptable)
-        self.lateral_widget.add_item(relation_name, nrow + 1)
-
-        # Connect the signal when data changed
-        #ptable.cellChanged.connect(self.__on_data_table_changed)
+        self.lateral_widget.add_item(relation_name)
 
     def new_query(self, filename):
         editor_tab_at = self.query_container.is_open(filename)

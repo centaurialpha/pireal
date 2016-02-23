@@ -74,33 +74,33 @@ class CentralWidget(QWidget):
 
         Pireal.load_service("central", self)
 
-    def open_file(self, filename=''):
-        return self.rread()
-        if self.__last_open_folder is None:
-            directory = os.path.expanduser("~")
-        else:
-            directory = self.__last_open_folder
+    #def open_file(self, filename=''):
+        #return self.rread()
+        #if self.__last_open_folder is None:
+            #directory = os.path.expanduser("~")
+        #else:
+            #directory = self.__last_open_folder
 
-        if not filename:
-            filename = QFileDialog.getOpenFileName(self,
-                                                   tr.TR_CENTRAL_OPEN_FILE,
-                                                   directory,
-                                                   settings.SUPPORTED_FILES)[0]
-            if not filename:
-                return
+        #if not filename:
+            #filename = QFileDialog.getOpenFileName(self,
+                                                   #tr.TR_CENTRAL_OPEN_FILE,
+                                                   #directory,
+                                                   #settings.SUPPORTED_FILES)[0]
+            #if not filename:
+                #return
 
-        # Save folder
-        self.__last_open_folder = file_manager.get_path(filename)
+        ## Save folder
+        #self.__last_open_folder = file_manager.get_path(filename)
 
-        extension = file_manager.get_extension(filename)
-        if extension == '.pqf':
-            # Open a query file
-            self.new_query(filename)
-        else:
-            # Open a database file
-            self.create_database(filename)
-            # Add to recent files
-            self.__recent_files.add(filename)
+        #extension = file_manager.get_extension(filename)
+        #if extension == '.pqf':
+            ## Open a query file
+            #self.new_query(filename)
+        #else:
+            ## Open a database file
+            #self.create_database(filename)
+            ## Add to recent files
+            #self.__recent_files.add(filename)
 
     def create_database_wizard(self):
         wizard = database_wizard.DatabaseWizard(self)
@@ -192,42 +192,6 @@ class CentralWidget(QWidget):
 
         widget = self.stacked.widget(self.stacked.count() - 1)
         self.stacked.removeWidget(widget)
-
-    def __create_database(self, filename=''):
-        """ This function opens or creates a database """
-        pass
-        # Only one database
-        #if self.created:
-            #QMessageBox.critical(self, "Error", tr.TR_CENTRAL_ERROR_DB)
-            #return
-
-        ### File
-        #ffile = pfile.PFile(filename)
-
-        #main = main_container.MainContainer(ffile)
-        #self.add_widget(main)
-
-        #if not filename:
-            #ffile.filename = 'untitled_{n}.pdb'.format(n=self.__ndb)
-            #db_name = main.dbname()
-        #else:
-            #try:
-                #DEBUG("Intentando abrir la base de datos '{}'".format(
-                    #filename))
-                #data = ffile.read()
-            #except Exception as reason:
-                #QMessageBox.critical(self, "Error", reason.__str__())
-                #CRITICAL("Error al leer el archivo")
-                #return
-
-            #db_name = ffile.name
-            #main.create_database(data)
-
-        #pireal = Pireal.get_service("pireal")
-        #pireal.change_title(db_name)
-        #pireal.enable_disable_db_actions()
-        #self.created = True
-        #self.__ndb += 1
 
     def close_database(self):
         mcontainer = self.get_active_db()
