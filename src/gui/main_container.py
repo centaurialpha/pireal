@@ -97,55 +97,51 @@ class MainContainer(QSplitter):
     def pfile(self):
         return self.__pfile
 
-    def create_database(self, json_object, filename):
-        # Get name of tables/relations
-        tables = json_object.get('tables')
+    def __create_table(self, data, rela):
+        # New table
+        table = custom_table.Table()
+        model = table.model()
 
-        for table in tables:
+        row_count = 0
+        reg = []
+        for col_count, i in enumerate(data.split(',')):
+            item = QStandardItem(i)
+            model.setItem(row_count, col_count, item)
+            reg.append(i)
+        rela.insert(reg)
+
+        return table
+
+    def create_database(self, data):
+        for table in data.get('tables'):
+            # Table view widget
+            table_view = custom_table.Table()
+            model = table_view.model()
+            # Get data
             table_name = table.get('name')
-            table_path = os.path.join(os.path.dirname(filename),
-                                      "Tables", table_name + '.prf')
+            fields = table.get('fields')
+            tuples = table.get('tuples')
+            types = table.get('types')
 
-            # Relation
+            model.setHorizontalHeaderLabels(fields)
+
+            # Create relation
             rela = relation.Relation()
-
-            # Open Pireal Relation File
-            with open(table_path, mode='r') as f:
-                content = csv.reader(f)
-                # First line of file
-                first_line = next(content)
-                #FIXME: check syntax of file
-                # Get fields and types
-                fields = [f.split('/')[0].strip() for f in first_line]
-                rela.fields = fields
-                types = [f.split('/')[1].strip() for f in first_line]
-                # Create table widget
-                table_view = custom_table.Table()
-                # Model
-                model = table_view.model()
-                # Set horizontal header labes
-                model.setHorizontalHeaderLabels(fields)
-
-                for row in content:
-                    reg = []
-                    row_count = model.rowCount()
-                    for column, data in enumerate(row):
-                        data = data.strip()
-                        reg.append(data)
-                        # Create item
-                        item = QStandardItem(data)
-                        model.setItem(row_count, column, item)
-                        # Add type per each column
-                        delegate = table_view.itemDelegate()
-                        delegate.data_types[column] = types[column]
-                    # Insert a tuple in table
-                    rela.insert(reg)
-                # Add table to stacked
-                self.table_widget.stacked.addWidget(table_view)
-                # Add table name to list
-                self.lateral_widget.add_item(table_name, row_count + 1)
-                # Add relation object to relations dict
-                self.table_widget.add_relation(table_name, rela)
+            rela.fields = fields
+            # Populate table view
+            row_count = 0
+            for row in tuples:
+                for col_count, i in enumerate(row):
+                    item = QStandardItem(i)
+                    model.setItem(row_count, col_count, item)
+                    delegate = table_view.itemDelegate()
+                    delegate.data_types[col_count] = types[col_count]
+                rela.insert(row)
+                row_count += 1
+            # Add table to stacked
+            self.table_widget.stacked.addWidget(table_view)
+            # Add table name to list widget
+            self.lateral_widget.add_item(table_name)
 
     def load_relation(self, filenames):
         for filename in filenames:

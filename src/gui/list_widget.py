@@ -77,8 +77,8 @@ class LateralWidget(QListWidget):
             #item = QListWidgetItem(i)
             #item.setTextAlignment(Qt.AlignHCenter)
             #self._list_widget.addItem(item)
-    def add_item(self, text, nrow):
-        item = QListWidgetItem(text + ' [' + str(nrow) + ']')
+    def add_item(self, text):
+        item = QListWidgetItem(text)
         item.setTextAlignment(Qt.AlignHCenter)
         self.addItem(item)
 

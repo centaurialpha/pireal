@@ -18,8 +18,6 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import json
-#import csv
 
 from PyQt5.QtWidgets import (
     QWidget,
@@ -148,15 +146,15 @@ class CentralWidget(QWidget):
             # Remember the folder
             self.__last_open_folder = file_manager.get_path(filename)
 
-        # Read json file
+        # Read pdb file
         with open(filename, mode='r') as f:
-            json_object = json.load(f)
+            db_data = f.read()
 
         # Database name
-        db_name = json_object.get('name')
+        db_name = file_manager.get_basename(filename)
 
         database_container = main_container.MainContainer()
-        database_container.create_database(json_object, filename)
+        database_container.create_database(self.__sanitize_data(db_data))
         self.add_widget(database_container)
 
         pireal = Pireal.get_service("pireal")
@@ -164,6 +162,27 @@ class CentralWidget(QWidget):
         pireal.enable_disable_db_actions()
         self.created = True
         self.__ndb += 1
+
+    def __sanitize_data(self, data):
+        data_dict = {'tables': []}
+
+        for line in data.splitlines():
+            if line.startswith('@'):
+                table_name, line = line.split(':')
+                table_name = table_name[1:].strip()
+                fields = [tuple(f.split('/')) for f in line.split(',')]
+                table_dict = {}
+                table_dict['name'] = table_name
+                table_dict['fields'] = [f[0] for f in fields]
+                table_dict['types'] = [f[1] for f in fields]
+                table_dict['tuples'] = []
+            else:
+                if table_dict['name'] == table_name:
+                    table_dict['tuples'].append(line.split(','))
+            if not table_dict['tuples']:
+                data_dict['tables'].append(table_dict)
+
+        return data_dict
 
     def remove_last_widget(self):
         """ Remove last widget from stacked """
