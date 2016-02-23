@@ -58,7 +58,7 @@ class StartPage(QWidget):
 
     def __open_database(self, path):
         central_widget = Pireal.get_service("central")
-        central_widget.open_file(path)
+        central_widget.open_database(path)
 
     def __new_database(self):
         central_widget = Pireal.get_service("central")

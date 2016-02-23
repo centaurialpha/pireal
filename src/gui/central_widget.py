@@ -150,6 +150,9 @@ class CentralWidget(QWidget):
         with open(filename, mode='r') as f:
             db_data = f.read()
 
+        # Add to recent databases
+        self.__recent_files.add(filename)
+
         # Database name
         db_name = file_manager.get_basename(filename)
 
