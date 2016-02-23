@@ -24,26 +24,19 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QStackedWidget,
     QFileDialog,
-    #QTableWidget,
-    #QHeaderView,
-    #QTableWidgetItem,
     QMessageBox
 )
-#from PyQt5.QtGui import QStandardItem
-#from PyQt5.QtCore import Qt
 
 from src.core import (
     settings,
     file_manager,
-    #pfile
 )
 from src.core.logger import PirealLogger
 from src import translations as tr
 from src.gui.main_window import Pireal
 from src.gui import (
     start_page,
-    main_container,
-    #custom_table
+    main_container
 )
 from src.gui.dialogs import (
     preferences,
@@ -56,6 +49,8 @@ logger = PirealLogger(__name__)
 CRITICAL = logger.critical
 DEBUG = logger.debug
 
+#FIXME: Refactoring
+
 
 class CentralWidget(QWidget):
 
@@ -67,40 +62,12 @@ class CentralWidget(QWidget):
         self.stacked = QStackedWidget()
         box.addWidget(self.stacked)
 
-        self.__ndb = 1
+        #self.__ndb = 1
         self.__created = False
         self.__last_open_folder = None
         self.__recent_files = set()
 
         Pireal.load_service("central", self)
-
-    #def open_file(self, filename=''):
-        #return self.rread()
-        #if self.__last_open_folder is None:
-            #directory = os.path.expanduser("~")
-        #else:
-            #directory = self.__last_open_folder
-
-        #if not filename:
-            #filename = QFileDialog.getOpenFileName(self,
-                                                   #tr.TR_CENTRAL_OPEN_FILE,
-                                                   #directory,
-                                                   #settings.SUPPORTED_FILES)[0]
-            #if not filename:
-                #return
-
-        ## Save folder
-        #self.__last_open_folder = file_manager.get_path(filename)
-
-        #extension = file_manager.get_extension(filename)
-        #if extension == '.pqf':
-            ## Open a query file
-            #self.new_query(filename)
-        #else:
-            ## Open a database file
-            #self.create_database(filename)
-            ## Add to recent files
-            #self.__recent_files.add(filename)
 
     def create_database_wizard(self):
         wizard = database_wizard.DatabaseWizard(self)
@@ -162,9 +129,8 @@ class CentralWidget(QWidget):
 
         pireal = Pireal.get_service("pireal")
         pireal.change_title(db_name)
-        pireal.enable_disable_db_actions()
+        pireal.set_enabled_db_actions(True)
         self.created = True
-        self.__ndb += 1
 
     def __sanitize_data(self, data):
         data_dict = {'tables': []}
@@ -213,7 +179,7 @@ class CentralWidget(QWidget):
             del mcontainer
 
             pireal = Pireal.get_service("pireal")
-            pireal.enable_disable_db_actions(False)
+            pireal.set_enabled_db_actions(False)
             self.created = False
 
     def new_query(self, filename=''):
@@ -222,7 +188,7 @@ class CentralWidget(QWidget):
                                     tr.TR_CENTRAL_FIRST_CREATE_DB)
             return
         pireal = Pireal.get_service("pireal")
-        pireal.enable_disable_query_actions()
+        pireal.set_enabled_query_actions(True)
         main_container = self.get_active_db()
         main_container.new_query(filename)
 
@@ -299,10 +265,6 @@ class CentralWidget(QWidget):
 
         sp = start_page.StartPage()
         self.add_widget(sp)
-
-    #def add_main_container(self):
-        #main = Pireal.get_service("main")
-        #self.add_widget(main)
 
     def __get_created(self):
         return self.__created

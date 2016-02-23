@@ -84,19 +84,8 @@ class QueryContainer(QWidget):
         self.__validName = re.compile(r'^[a-z_]\w*$')
 
         # Toolbar
-        self._toolbar = QToolBar(self)
-        self._toolbar.setIconSize(QSize(22, 22))
-        for key, value in ITEMS_TOOLBAR_OPERATORS.items():
-            tooltip, action = value
-            qaction = self._toolbar.addAction(chr(action))
-            qaction.setIcon(QIcon(":img/{}".format(key)))
-            #widget = self._toolbar.widgetForAction(qaction)
-            qaction.setData(key)
-            qaction.triggered.connect(self._add_operator_to_editor)
-            #widget.setFixedSize(60, 30)
-            qaction.setToolTip(tooltip)
-
-        box.addWidget(self._toolbar)
+        toolbar = self.__load_toolbar()
+        box.addWidget(toolbar)
 
         # Tab
         self._tabs = tab_widget.TabWidget()
@@ -109,6 +98,20 @@ class QueryContainer(QWidget):
         self._tabs.saveEditor['PyQt_PyObject'].connect(
             self.__on_save_editor)
 
+    def __load_toolbar(self):
+        toolbar = QToolBar(self)
+        toolbar.setIconSize(QSize(14, 14))
+
+        for key, value in ITEMS_TOOLBAR_OPERATORS.items():
+            tooltip, action = value
+            qaction = toolbar.addAction(chr(action))
+            qaction.setIcon(QIcon(":img/{}".format(key)))
+            qaction.setData(key)
+            qaction.triggered.connect(self._add_operator_to_editor)
+            qaction.setToolTip(tooltip)
+
+        return toolbar
+
     def set_focus_editor_tab(self, index):
         self._tabs.setCurrentIndex(index)
 
@@ -117,7 +120,7 @@ class QueryContainer(QWidget):
             self.hide()
             # Disable query actions
             pireal = Pireal.get_service("pireal")
-            pireal.enable_disable_query_actions(False)
+            pireal.set_enabled_query_actions(False)
 
     def _add_operator_to_editor(self):
         data = self.sender().data()

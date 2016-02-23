@@ -204,9 +204,9 @@ class Pireal(QMainWindow):
             else:
                 self.toolbar.addSeparator()
 
-        self.enable_disable_db_actions(False)
-        self.enable_disable_relation_actions(False)
-        self.enable_disable_query_actions(False)
+        self.set_enabled_db_actions(False)
+        self.set_enabled_relation_actions(False)
+        self.set_enabled_query_actions(False)
 
     def __show_status_message(self, msg):
         status = Pireal.get_service("status")
@@ -215,7 +215,7 @@ class Pireal(QMainWindow):
     def change_title(self, title):
         self.setWindowTitle("Pireal " + '[' + title + ']')
 
-    def enable_disable_db_actions(self, enable=True):
+    def set_enabled_db_actions(self, value):
         """ Public method. Enables or disables db QAction """
 
         actions = [
@@ -229,9 +229,9 @@ class Pireal(QMainWindow):
 
         for action in actions:
             qaction = Pireal.get_action(action)
-            qaction.setEnabled(enable)
+            qaction.setEnabled(value)
 
-    def enable_disable_relation_actions(self, enable=True):
+    def set_enabled_relation_actions(self, value):
         """ Public method. Enables or disables relation's QAction """
 
         actions = [
@@ -241,9 +241,9 @@ class Pireal(QMainWindow):
 
         for action in actions:
             qaction = Pireal.get_action(action)
-            qaction.setEnabled(enable)
+            qaction.setEnabled(value)
 
-    def enable_disable_query_actions(self, enable=True):
+    def set_enabled_query_actions(self, value):
         """ Public method. Enables or disables queries QAction """
 
         actions = [
@@ -258,7 +258,7 @@ class Pireal(QMainWindow):
 
         for action in actions:
             qaction = Pireal.get_action(action)
-            qaction.setEnabled(enable)
+            qaction.setEnabled(value)
 
     def show_hide_lateral(self):
         lateral = Pireal.get_service("lateral")

@@ -28,9 +28,7 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtGui import QStandardItem
 
-#from src.gui.main_window import Pireal
 from src.gui import (
-    #database_widget
     table_widget,
     list_widget,
     custom_table
@@ -82,9 +80,6 @@ class MainContainer(QSplitter):
         self.query_container.saveEditor['PyQt_PyObject'].connect(
             self.save_query)
         self.setSizes([1, 1])
-
-    #def get_last_open_folder(self):
-        #return self.__last_open_folder
 
     def dbname(self):
         """ Return display name """
@@ -246,52 +241,6 @@ class MainContainer(QSplitter):
 
     def execute_queries(self):
         self.query_container.execute_queries()
-
-    #def __add_to_recent(self, filename):
-        #files = settings.get_setting('recentDB', [])
-        #if filename not in files:
-            #files.insert(0, filename)
-            #del files[settings.PSettings.MAX_RECENT_FILES:]
-            #settings.set_setting('recentDB', files)
-
-    #def new_query(self, filename=''):
-        #self.query_container.add_tab()
-        #qcontainer = query_container.QueryContainer()
-        #qcontainer.editorFocused.connect(self._change_state_actions)
-        #qcontainer.editorModified.connect(self._editor_modified)
-
-        #if not filename:
-            #ffile = pfile.PFile()
-            #filename = "New_query_{}.qpf".format(self.__nquery)
-            #ffile.filename = filename
-            #self.__nquery += 1
-        #else:
-            #ffile = pfile.PFile(filename)
-            #qcontainer.add_editor_text(ffile.read())
-
-        #qcontainer.set_pfile(ffile)
-
-        #if not self.query_tab_container.isVisible():
-            #self.query_tab_container.show()
-
-        #pireal = Pireal.get_service("pireal")
-        #pireal.enable_disable_query_actions()
-
-        #index = self._add_query_tab(qcontainer, ffile.name)
-        #self.query_tab_container.setTabToolTip(index, ffile.filename)
-
-        #self.setSizes([(self.height() / 5) * 2, 1])
-
-    #def _add_query_tab(self, widget, title):
-        #return self.query_tab_container.add_tab(widget, title)
-
-    #def _editor_modified(self, modified):
-        #self.query_tab_container.tab_modified(modified)
-        #weditor = self.query_tab_container.currentWidget().editor()
-        #weditor.modified = True
-
-    #def execute_queries(self):
-        #self.query_container.execute_queries()
 
     def showEvent(self, event):
         QSplitter.showEvent(self, event)
