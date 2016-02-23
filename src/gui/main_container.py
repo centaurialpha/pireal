@@ -134,8 +134,13 @@ class MainContainer(QSplitter):
         for filename in filenames:
             rel = relation.Relation(filename)
             relation_name = file_manager.get_basename(filename)
-            if self.table_widget.add_relation(relation_name, rel):
-                self.__add_table(rel, relation_name)
+            if not self.table_widget.add_relation(relation_name, rel):
+                QMessageBox.information(self, self.tr("Information"),
+                                        self.tr("There is already a "
+                                                "relationship with name "
+                                                "'{}'".format(relation_name)))
+                return
+            self.__add_table(rel, relation_name)
 
     def delete_relation(self):
         selected_items = self.lateral_widget.selectedItems()
