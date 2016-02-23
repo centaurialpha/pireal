@@ -306,6 +306,10 @@ class Pireal(QMainWindow):
         recent_files = qsettings.value('recentDB', set())
         qsettings.setValue("recentDB",
                             recent_files.union(central_widget.recent_files))
+
+        main_container = central_widget.get_active_db()
+        if main_container is not None:
+            main_container.save_sizes()
         #main_container = Pireal.get_service("main")
         #last_open_folder = main_container.get_last_open_folder()
         #settings.set_setting("last_open_folder", last_open_folder)

@@ -37,7 +37,8 @@ from PyQt5.QtGui import (
 from PyQt5.QtCore import (
     Qt,
     QSize,
-    pyqtSignal
+    pyqtSignal,
+    QSettings
 )
 
 from src.core.logger import PirealLogger
@@ -53,6 +54,7 @@ from src.gui.query_container import (
     editor,
     tab_widget
 )
+from src.core import settings
 
 # Logger
 logger = PirealLogger(__name__)
@@ -246,6 +248,15 @@ class QueryWidget(QWidget):
         # Connections
         #self._result_list.currentRowChanged[int].connect(
             #lambda index: self._stack_tables.setCurrentIndex(index))
+
+    def save_sizes(self):
+        """ Save sizes of Splitters """
+
+        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        qsettings.setValue('hsplitter_query_sizes',
+                           self._hsplitter.saveState())
+        qsettings.setValue('vsplitter_query_sizes',
+                           self._vsplitter.saveState())
 
     def get_editor(self):
         return self._query_editor

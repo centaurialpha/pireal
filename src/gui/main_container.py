@@ -17,15 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import csv
-
 from PyQt5.QtWidgets import (
     QSplitter,
     QFileDialog,
     QMessageBox
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import (
+    Qt,
+    QSettings
+)
 from PyQt5.QtGui import QStandardItem
 
 #from src.gui.main_window import Pireal
@@ -41,7 +41,8 @@ from src import translations as tr
 from src.core import (
     relation,
     pfile,
-    file_manager
+    file_manager,
+    settings
 )
 from src.core.logger import PirealLogger
 
@@ -294,6 +295,24 @@ class MainContainer(QSplitter):
 
     def showEvent(self, event):
         QSplitter.showEvent(self, event)
-        self._hsplitter.setSizes([1, self._hsplitter.width() / 3])
+        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        hsizes = qsettings.value('hsplitter_sizes', None)
+        if hsizes is not None:
+            self._hsplitter.restoreState(hsizes)
+        else:
+            self._hsplitter.setSizes([1, self._hsplitter.width() / 3])
+        vsizes = qsettings.value('vsplitter_sizes', None)
+        if vsizes is not None:
+            self.restoreState(vsizes)
+        else:
+            self.setSizes([(self.height() / 3) * 2, self.height() / 3])
 
-#main = MainContainer()
+    def save_sizes(self):
+        """ Save sizes of Splitters """
+
+        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        qsettings.setValue('hsplitter_sizes',
+                           self._hsplitter.saveState())
+        qsettings.setValue('vsplitter_sizes',
+                           self.saveState())
+        #FIXME: save sizes of query container
