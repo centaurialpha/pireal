@@ -139,44 +139,14 @@ Rectangle {
             font.pixelSize: 16
         }
 
-        Rectangle {
-            id: btnNewDB
-
-            color: "#f1f1f1"
-            border.color: "lightgray"
-            radius: 3
-            width: 150; height: 40
+        Button {
+            text: qsTr("Create a new database")
             anchors.verticalCenter: title.verticalCenter
-            MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
+            width: 150; height: 40
+            pointSize: 10
 
-                onEntered: {
-                    btnNewDB.color = "#f7f7f7"
-                }
-
-                onExited: {
-                    btnNewDB.color = "#f1f1f1"
-                }
-
-                onPressed: {
-                    btnNewDB.color = "#e3e3e3"
-                }
-
-                onReleased: {
-                    btnNewDB.color = "#f7f7f7"
-                }
-
-                onClicked: {
-                    root.newDatabase();
-                }
-            }
-
-            Text {
-                text: qsTr("Create a new database")
-                font.pixelSize: 12
-                color: "#838b8c"
-                anchors.centerIn: parent
+            onClicked: {
+                root.newDatabase();
             }
         }
     }
@@ -195,8 +165,8 @@ Rectangle {
          verticalAlignment: Text.AlignVCenter
         }
 
-        Image { id: logoPython; source: "../images/python-logo.png"; opacity: 0.7 }
-        Image { source: "../images/qt-logo.png"; opacity: 0.7 }
+        Image { id: logoPython; source: "../../images/python-logo.png"; opacity: 0.7 }
+        Image { source: "../../images/qt-logo.png"; opacity: 0.7 }
     }
 
 

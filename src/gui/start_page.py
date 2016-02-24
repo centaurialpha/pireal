@@ -43,7 +43,7 @@ class StartPage(QWidget):
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         view = QQuickView()
-        qml = os.path.join(os.path.dirname(__file__), "StartPage.qml")
+        qml = os.path.join(os.path.dirname(__file__), "qml", "StartPage.qml")
         view.setSource(QUrl.fromLocalFile(qml))
         view.setResizeMode(QQuickView.SizeRootObjectToView)
         widget = QWidget.createWindowContainer(view)
