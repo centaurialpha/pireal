@@ -80,15 +80,10 @@ class IntroPage(QWizardPage):
         self._line_dblocation.setText(location)
         self._dbfolder = os.path.join(self._dbfolder, location)
         self._line_dbfolder.setText(
-            os.path.join(location,
-                         self.__sanitize_text(self._line_dbname.text())))
+            os.path.join(location, self._line_dbname.text()))
 
     def __on_dbname_changed(self, db_name):
-        self._line_dbfolder.setText(
-            os.path.join(self._dbfolder, self.__sanitize_text(db_name)))
-
-    def __sanitize_text(self, text):
-        return text.title().replace('_', '').split('.')[0]
+        self._line_dbfolder.setText(os.path.join(self._dbfolder, db_name))
 
     def get_data(self):
         data = {
