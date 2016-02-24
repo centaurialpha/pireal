@@ -33,7 +33,7 @@ Rectangle {
             font.pixelSize: 40
             font.bold: true
             color: "lightgray"
-            text: "No recent files"
+            text: qsTr("No recent databases")
             visible: false
         }
 

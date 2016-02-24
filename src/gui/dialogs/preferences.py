@@ -183,20 +183,16 @@ class Preferences(QDialog):
         font_grid = QGridLayout(font_group)
         font_grid.addWidget(QLabel(tr.TR_PREFERENCES_LBL_FONT_FAMILY), 0, 0)
         self._combo_font = QFontComboBox()
-        #FIXME: no cambia la fuente
         self._combo_font.setCurrentFont(settings.PSettings.FONT)
         font_grid.addWidget(self._combo_font, 0, 1)
         font_grid.addWidget(QLabel(tr.TR_PREFERENCES_LBL_FONT_SIZE), 1, 0)
         self._combo_font_size = QComboBox()
         fdb = QFontDatabase()
         combo_sizes = fdb.pointSizes(settings.PSettings.FONT.family())
-        #FIXME:
-        if settings.PSettings.FONT.pointSize() == -1:
+        current_size_index = combo_sizes.index(
+            settings.PSettings.FONT.pointSize())
 
-            current_size_index = combo_sizes.index(12)
-        # Convert to str
-        combo_sizes = [str(f) for f in combo_sizes]
-        self._combo_font_size.addItems(combo_sizes)
+        self._combo_font_size.addItems([str(f) for f in combo_sizes])
         self._combo_font_size.setCurrentIndex(current_size_index)
         font_grid.addWidget(self._combo_font_size, 1, 1)
 
@@ -296,7 +292,7 @@ class Preferences(QDialog):
         if mcontainer is not None:
             weditor = mcontainer.query_container.currentWidget().get_editor()
             if weditor is not None:
-                weditor.setFont(font)
+                weditor.set_font(font)
         settings.set_setting("font", font)
 
     def _change_font_size(self, size):
@@ -308,7 +304,7 @@ class Preferences(QDialog):
         if mcontainer is not None:
             weditor = mcontainer.query_container.currentWidget().get_editor()
             if weditor is not None:
-                weditor.setFont(font)
+                weditor.set_font(font)
         settings.set_setting("font", font)
 
     def showEvent(self, event):

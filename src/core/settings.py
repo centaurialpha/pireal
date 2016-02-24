@@ -70,7 +70,6 @@ class PSettings:
     RECENT_DB = []
     HIGHLIGHT_CURRENT_LINE = False
     MATCHING_PARENTHESIS = True
-    #FONT = ""
     if LINUX:
         FONT = QFont("Monospace", 12)
     else:
@@ -108,4 +107,6 @@ def load_settings():
                                                       False, type=bool)
     PSettings.MATCHING_PARENTHESIS = settings.value("matching_parenthesis",
                                                     True, type=bool)
-    #PSettings.FONT = settings.value("font", None)
+    font = settings.value("font", None)
+    if font is not None:
+        PSettings.FONT = font

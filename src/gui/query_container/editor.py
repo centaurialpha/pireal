@@ -49,10 +49,7 @@ class Editor(QPlainTextEdit):
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
-        #FIXME: when set font, point size is -1 (?. See settings module
-        #font = settings.PSettings.FONT
-        #self.document().setDefaultFont(font)
-
+        self.set_font(settings.PSettings.FONT)
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
 
@@ -114,6 +111,9 @@ class Editor(QPlainTextEdit):
         #line = self.blockCount()
         #col = self.textCursor().columnNumber() + 1
         #self._cursorPositionChanged.emit(line, col)
+
+    def set_font(self, font):
+        self.document().setDefaultFont(font)
 
     def __check_brackets(self):
         left, right = QTextEdit.ExtraSelection(), QTextEdit.ExtraSelection()
