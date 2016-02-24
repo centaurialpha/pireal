@@ -65,17 +65,17 @@ TR_ABOUT_DIALOG_DESC = translate("Pireal", ("<br><br>an educational "
                                  "tool for working\nwith Relational Algebra."))
 
 TR_ABOUT_DIALOG_VERSION = translate("Pireal", ("<a href='{0}'><span style='"
-                                               "color: #f57900'>Version {1}"
+                                               "color: #3465a4'>Version {1}"
                                                "</span></a>"))
 TR_ABOUT_DIALOG_LICENSE_SOURCE = translate("Pireal", ("<br>This software is "
                                                       "licensed under <a href"
                                                       "='{0}'><span style="
-                                                      "'color: #f57900'>GNU "
+                                                      "'color: #3465a4'>GNU "
                                                       "GPL</span></a> version"
                                                       " 3,<br>source code is "
                                                       "available on "
                                                       "<a href='{1}'><span "
-                                                      "style='color: #f57900'>"
+                                                      "style='color: #3465a4'>"
                                                       "GitHub.</span></a>"))
 TR_ABOUT_DIALOG_BTN_OK = translate("Pireal", "Done")
 
