@@ -41,7 +41,11 @@ class ItemDelegate(QItemDelegate):
         elif type_ == 'char':
             regex = r"^[a-zA-Z][a-zA-Z0-9]*?$"
         else:
-            regex = r"(\d{2})[/.-](\d{2})[/.-](\d{4})$"
+            # Validate 0000/00/00, 00/00/00, 00/00/0000
+            regex1 = "(\d{1,4})[/.-](\d{1,2})[/.-](\d{2,4})$"
+            # Validate 00:00
+            regex2 = "(24:00|2[0-3]:[0-5][0-9]|[0-1][0-9]:[0-5][0-9])"
+            regex = '(' + regex1 + '|' + regex2 + ')'
         editor.regexp = re.compile(regex)
         editor.data_ok = False
         editor.textChanged.connect(self.__check_state)
