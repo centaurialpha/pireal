@@ -136,6 +136,9 @@ class CentralWidget(QWidget):
         data_dict = {'tables': []}
 
         for line in data.splitlines():
+            # Ignore blank lines
+            if not line:
+                continue
             if line.startswith('@'):
                 table_name, line = line.split(':')
                 table_name = table_name[1:].strip()
@@ -146,8 +149,10 @@ class CentralWidget(QWidget):
                 table_dict['types'] = [f[1] for f in fields]
                 table_dict['tuples'] = []
             else:
+                # Strip whitespace
+                line = list(map(str.strip, line.split(',')))
                 if table_dict['name'] == table_name:
-                    table_dict['tuples'].append(line.split(','))
+                    table_dict['tuples'].append(line)
             if not table_dict['tuples']:
                 data_dict['tables'].append(table_dict)
 
