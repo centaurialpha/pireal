@@ -90,9 +90,9 @@ class Preferences(QDialog):
         group_gral = QGroupBox(tr.TR_PREFERENCES_GROUP_GRAL)
         box_gral = QVBoxLayout(group_gral)
         # Start Page
-        self._check_start_page = QCheckBox(tr.TR_PREFERENCES_CHECK_START_PAGE)
-        self._check_start_page.setChecked(settings.PSettings.SHOW_START_PAGE)
-        box_gral.addWidget(self._check_start_page)
+        #self._check_start_page = QCheckBox(tr.TR_PREFERENCES_CHECK_START_PAGE)
+        #self._check_start_page.setChecked(settings.PSettings.SHOW_START_PAGE)
+        #box_gral.addWidget(self._check_start_page)
         # Updates
         hhbox = QHBoxLayout()
         self._check_updates = QCheckBox(tr.TR_PREFERENCES_CHECK_UPDATES)
@@ -282,8 +282,10 @@ class Preferences(QDialog):
         if mcontainer is not None:
             weditor = mcontainer.query_container.currentWidget().get_editor()
             if weditor is not None:
+                value = bool(value)
                 weditor.setHighlightCurrentLine(value)
         settings.set_setting("highlight_current_line", value)
+        settings.PSettings.HIGHLIGHT_CURRENT_LINE = value
 
     def _change_font(self, font):
         #FIXME: un quilombo esto

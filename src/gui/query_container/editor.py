@@ -46,6 +46,8 @@ class Editor(QPlainTextEdit):
         super(Editor, self).__init__()
         self.pfile = pfile
         self.modified = False
+        # Highlight current line
+        self._highlight_line = settings.PSettings.HIGHLIGHT_CURRENT_LINE
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
@@ -87,16 +89,16 @@ class Editor(QPlainTextEdit):
         self.__cursor_position_changed()
 
     def __cursor_position_changed(self):
-        _selection = QTextEdit.ExtraSelection()
         extra_selections = []
+        _selection = QTextEdit.ExtraSelection()
         extra_selections.append(_selection)
 
         # Highlight current line
         if settings.PSettings.HIGHLIGHT_CURRENT_LINE:
             color = QColor(Qt.lightGray).lighter(125)
             _selection.format.setBackground(color)
-            _selection.format.setProperty(QTextCharFormat.FullWidthSelection,
-                                          True)
+            _selection.format.setProperty(
+                QTextCharFormat.FullWidthSelection, True)
             _selection.cursor = self.textCursor()
             _selection.cursor.clearSelection()
             extra_selections.append(_selection)
