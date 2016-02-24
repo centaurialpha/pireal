@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+# Convert .rdb file to .pdb file
+
+import sys
+import os
+import codecs
+
+
+def read(rdb_file):
+    content = codecs.open(rdb_file, 'r', 'iso-8859-1').read()
+    return content
+
+
+def convert(rdb_content):
+    content = ""
+    for line in rdb_content.splitlines():
+        if line.startswith('@'):
+            content += "@"
+            portion = line.split('(')
+            name = portion[0][1:]
+            content += name + ':'
+            content += portion[1].split(':')[0][:-1]
+        else:
+            if not line:
+                continue
+            for l in line.splitlines():
+                l = l.replace('\'', '')
+                line = l
+            content += line
+        content += '\n'
+    return content
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python rdb_to_pdb [file.rdb]")
+        sys.exit(-1)
+
+    filename = sys.argv[-1]
+    print("Reading RDB file...")
+    content = read(filename)
+    print("Converting RDB to PDB...")
+    pdb_content = convert(content)
+    new_filename = os.path.join(os.path.dirname(filename),
+                                filename[:-3] + 'pdb')
+    print("Writing...")
+    f = codecs.open(new_filename, 'w', 'utf-8')
+    f.write(pdb_content)
+    f.close()
+    print("Ok!")

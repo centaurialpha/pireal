@@ -19,7 +19,6 @@
 
 import os
 import json
-import codecs
 
 
 def get_extension(filename):
@@ -46,35 +45,6 @@ def open_database(filename):
             return get_basename(filename), f.read()
     except Exception:
         raise
-
-
-def read_rdb_file(filename):
-    content = codecs.open(filename, 'r', 'iso-8859-1').read()
-    return content
-
-
-def convert_to_pdb(rdb_content):
-    content = ""
-    for line in rdb_content.splitlines():
-        if line.startswith('@'):
-            content += "@"
-            portion = line.split('(')
-            name = portion[0][1:]
-            content += name + ':'
-            for i in portion[1].split(','):
-                if not i.startswith(' '):
-                    field = i.split('/')[0].strip()
-                    content += field + ','
-        else:
-            if not line:
-                continue
-
-            for lline in line.splitlines():
-                lline = lline.replace('\'', '')
-                line = lline
-            content += line
-        content += '\n'
-    return content
 
 
 def get_basename(filename):
