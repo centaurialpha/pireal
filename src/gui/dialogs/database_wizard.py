@@ -75,6 +75,8 @@ class IntroPage(QWizardPage):
     def __select_location(self):
         location = QFileDialog.getExistingDirectory(self,
                                                     self.tr("Select Folder"))
+        if not location:
+            return
         self._line_dblocation.setText(location)
         self._dbfolder = os.path.join(self._dbfolder, location)
         self._line_dbfolder.setText(
