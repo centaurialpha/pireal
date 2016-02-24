@@ -111,6 +111,6 @@ class LineEdit(QLineEdit):
 
     def resizeEvent(self, event):
         QLineEdit.resizeEvent(self, event)
-        self.button.move(self.width() - self.button.width() + 22, 0)
+        self.button.setFixedWidth(40)
+        self.button.move(self.width() - self.button.width(), 0)
         self.button.setFixedHeight(self.height())
-        self.button.setFixedWidth(self.width() / 15)
