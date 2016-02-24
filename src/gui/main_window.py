@@ -31,7 +31,6 @@ from PyQt5.QtCore import (
     QSize
 )
 from src.core import settings
-from src import translations as tr
 
 
 class Pireal(QMainWindow):
@@ -140,10 +139,6 @@ class Pireal(QMainWindow):
         toolbar_items = {}
 
         central = Pireal.get_service("central")
-
-        # Settings action on menu bar
-        qaction = menubar.addAction(tr.TR_SETTINGS_MENUBAR)
-        qaction.triggered.connect(central.show_settings)
 
         # Load menu bar
         for item in menu_actions.MENU:
