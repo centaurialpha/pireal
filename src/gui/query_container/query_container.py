@@ -45,7 +45,8 @@ from src.core.logger import PirealLogger
 from src.core import parser
 from src.gui import (
     custom_table,
-    list_widget
+    list_widget,
+    fader_widget
 )
 from src import translations as tr
 from src.gui.main_window import Pireal
@@ -237,7 +238,7 @@ class QueryWidget(QWidget):
         self._result_list = list_widget.LateralWidget()
         self._hsplitter.addWidget(self._result_list)
 
-        self._stack_tables = QStackedWidget()
+        self._stack_tables = StackedWidget()
         self._hsplitter.addWidget(self._stack_tables)
 
         self._query_editor = editor.Editor()
@@ -249,8 +250,8 @@ class QueryWidget(QWidget):
         box.addWidget(self._vsplitter)
 
         # Connections
-        #self._result_list.currentRowChanged[int].connect(
-            #lambda index: self._stack_tables.setCurrentIndex(index))
+        self._result_list.currentRowChanged[int].connect(
+            lambda index: self._stack_tables.show_display(index))
 
     def save_sizes(self):
         """ Save sizes of Splitters """
@@ -288,3 +289,14 @@ class QueryWidget(QWidget):
         self._stack_tables.setCurrentIndex(index)
 
         self._result_list.addItem(rname)
+
+
+class StackedWidget(QStackedWidget):
+
+    def setCurrentIndex(self, index):
+        self.fader_widget = fader_widget.FaderWidget(self.currentWidget(),
+                                                     self.widget(index))
+        QStackedWidget.setCurrentIndex(self, index)
+
+    def show_display(self, index):
+        self.setCurrentIndex(index)

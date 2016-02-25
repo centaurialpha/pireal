@@ -23,7 +23,10 @@ from PyQt5.QtWidgets import (
     QStackedWidget,
 )
 
-from src.gui import custom_table
+from src.gui import (
+    custom_table,
+    fader_widget
+)
 from src.gui.main_window import Pireal
 
 
@@ -38,7 +41,7 @@ class TableWidget(QWidget):
         self.relations = {}
 
         # Stack
-        self.stacked = QStackedWidget()
+        self.stacked = StackedWidget()
         vbox.addWidget(self.stacked)
 
     def count(self):
@@ -76,3 +79,14 @@ class TableWidget(QWidget):
         central = Pireal.get_service("central")
         active_db = central.get_active_db()
         active_db.modified = True
+
+
+class StackedWidget(QStackedWidget):
+
+    def setCurrentIndex(self, index):
+        self.fader_widget = fader_widget.FaderWidget(self.currentWidget(),
+                                                     self.widget(index))
+        QStackedWidget.setCurrentIndex(self, index)
+
+    def show_display(self, index):
+        self.setCurrentIndex(index)

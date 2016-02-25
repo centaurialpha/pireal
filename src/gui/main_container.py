@@ -72,7 +72,7 @@ class MainContainer(QSplitter):
 
         # Connections
         self.lateral_widget.currentRowChanged[int].connect(
-            lambda i: self.table_widget.stacked.setCurrentIndex(i))
+            lambda i: self.table_widget.stacked.show_display(i))
         #self.lateral_widget.itemRemoved[int].connect(
             #lambda i: self.table_widget.remove_table(i))
         self.lateral_widget.showEditRelation.connect(self.__edit_relation)
