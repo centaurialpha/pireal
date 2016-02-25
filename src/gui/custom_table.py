@@ -9,10 +9,15 @@ from PyQt5.QtWidgets import (
     QHeaderView
 )
 from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import (
+    Qt,
+    pyqtSignal
+)
 
 
 class Table(QTableView):
+
+    dataChange = pyqtSignal(int, int, 'QString')
 
     def __init__(self):
         super(Table, self).__init__()
@@ -24,9 +29,15 @@ class Table(QTableView):
         # Item delegate
         delegate = ItemDelegate()
         self.setItemDelegate(delegate)
+        delegate.dataChanged.connect(self.__on_data_changed)
+
+    def __on_data_changed(self, index, data):
+        self.dataChange.emit(index.row(), index.column(), data)
 
 
 class ItemDelegate(QItemDelegate):
+
+    dataChanged = pyqtSignal('PyQt_PyObject', 'QString')
 
     def __init__(self, parent=None):
         super(ItemDelegate, self).__init__(parent)
@@ -49,6 +60,8 @@ class ItemDelegate(QItemDelegate):
         editor.regexp = re.compile(regex)
         editor.data_ok = False
         editor.textChanged.connect(self.__check_state)
+        editor.returnPressed.connect(
+            lambda: self.dataChanged.emit(index, editor.text()))
 
         return editor
 

@@ -131,6 +131,8 @@ class CentralWidget(QWidget):
         db_name = file_manager.get_basename(filename)
 
         database_container = main_container.MainContainer()
+        pfile_object = pfile.PFile(filename)
+        database_container.pfile = pfile_object
         database_container.create_database(self.__sanitize_data(db_data))
         self.add_widget(database_container)
 

@@ -61,6 +61,9 @@ class LateralWidget(QListWidget):
 
         menu.exec_(self.mapToGlobal(point))
 
+    def current_text(self):
+        return self.currentItem().text()
+
     def _edit(self):
         item = self.currentItem()
         index = self.indexFromItem(item)

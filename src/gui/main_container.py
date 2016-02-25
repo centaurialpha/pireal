@@ -26,7 +26,11 @@ from PyQt5.QtCore import (
     Qt,
     QSettings
 )
-from PyQt5.QtGui import QStandardItem
+from PyQt5.QtGui import (
+    QStandardItem,
+    QBrush,
+    QColor
+)
 
 from src.gui import (
     table_widget,
@@ -97,6 +101,7 @@ class MainContainer(QSplitter):
         for table in data.get('tables'):
             # Table view widget
             table_view = custom_table.Table()
+            table_view.dataChange.connect(self.__on_data_table_changed)
             model = table_view.model()
             # Get data
             table_name = table.get('name')
@@ -114,6 +119,7 @@ class MainContainer(QSplitter):
             for row in tuples:
                 for col_count, i in enumerate(row):
                     item = QStandardItem(i)
+                    item.setSelectable(False)
                     model.setItem(row_count, col_count, item)
                     delegate = table_view.itemDelegate()
                     delegate.data_types[col_count] = types[col_count]
@@ -164,18 +170,28 @@ class MainContainer(QSplitter):
                 name = item.text().split()[0].strip()
                 self.table_widget.remove_relation(name)
 
-    def __on_data_table_changed(self, table_name):
+    def __on_data_table_changed(self, row, col, data):
+        current_relation = self.lateral_widget.current_text()
+        # Relation to be update
+        rela = self.table_widget.relations.get(current_relation)
+        # Clear old content
+        rela.clear()
         current_table = self.table_widget.stacked.currentWidget()
-        rel = self.table_widget.relations[table_name]
-        # Reset
-        rel.clear()
-        for nrow in range(current_table.rowCount()):
+        model = current_table.model()
+        # Change color of item modified
+        item = model.item(row, col)
+        item.setBackground(QBrush(QColor("#e7e49d")))
+        for i in range(model.rowCount()):
             reg = []
-            for ncol in range(current_table.columnCount()):
-                item = current_table.item(nrow, ncol)
-                reg.append(item.text())
-            # Insert new data
-            rel.insert(reg)
+            for j in range(model.columnCount()):
+                if row == i and col == j:
+                    reg.append(data)
+                else:
+                    reg.append(model.item(i, j).text())
+            # Insert new content
+            rela.insert(reg)
+        # Update relation
+        self.table_widget.relations[current_relation] = rela
 
     def __edit_relation(self, index):
         index = index.row()
