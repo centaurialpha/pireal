@@ -39,7 +39,7 @@ class ItemDelegate(QItemDelegate):
         if type_ == 'numeric':
             regex = r"^\d*\.?\d*$"
         elif type_ == 'char':
-            regex = r"^[a-zA-Z][a-zA-Z0-9]*?$"
+            regex = r'^\w+( +\w+)*$'
         else:
             # Validate 0000/00/00, 00/00/00, 00/00/0000
             regex1 = "(\d{1,4})[/.-](\d{1,2})[/.-](\d{2,4})$"
