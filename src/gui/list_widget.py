@@ -69,17 +69,6 @@ class LateralWidget(QListWidget):
         index = self.indexFromItem(item)
         self.showEditRelation.emit(index)
 
-    #def _change_item(self, index):
-        #table_widget = Pireal.get_service("main").table_widget
-        #table_widget.stacked.setCurrentIndex(index)
-
-    #def add_item_list(self, items):
-        #if not self.isVisible():
-            #self.show()
-        #for i in items:
-            #item = QListWidgetItem(i)
-            #item.setTextAlignment(Qt.AlignHCenter)
-            #self._list_widget.addItem(item)
     def add_item(self, text):
         item = QListWidgetItem(text)
         item.setTextAlignment(Qt.AlignHCenter)
@@ -91,30 +80,6 @@ class LateralWidget(QListWidget):
     def _remove(self):
         central = Pireal.get_service("central")
         central.remove_relation()
-
-        #items = self.selectedItems()
-        #if len(items) > 1:
-            #msg = tr.TR_CENTRAL_CONFIRM_DELETE_RELATIONS
-        #else:
-            #msg = tr.TR_CENTRAL_CONFIRM_DELETE_RELATION.format(
-                #self.currentItem().text().split()[0])
-
-        #r = QMessageBox.question(self, tr.TR_CENTRAL_CONFIRM_DELETE_REL_TITLE,
-                                 #msg, QMessageBox.No | QMessageBox.Yes)
-        #if r == QMessageBox.No:
-            #return
-        #else:
-            #for item in items:
-                #index = self.row(item)
-                #self.takeItem(index)
-                #self.itemRemoved.emit(index)
-        #container = Pireal.get_service("container")
-        #items = self._list_widget.selectedItems()
-        #for item in items:
-            #index = self._list_widget.row(item)
-            #container.table_widget.remove_table(index)
-            #self.remove_item(index)
-        #container.remove_relation(items)
 
     def clear_items(self):
         """ Remove all items and selections in the view """

@@ -79,8 +79,8 @@ class MainContainer(QSplitter):
             lambda i: self.table_widget.stacked.show_display(i))
         #self.lateral_widget.itemRemoved[int].connect(
             #lambda i: self.table_widget.remove_table(i))
-        self.lateral_widget.showEditRelation.connect(self.__edit_relation)
-        self.lateral_widget.doubleClicked.connect(self.__edit_relation)
+        #self.lateral_widget.showEditRelation.connect(self.__edit_relation)
+        #self.lateral_widget.doubleClicked.connect(self.__edit_relation)
         self.query_container.saveEditor['PyQt_PyObject'].connect(
             self.save_query)
         self.setSizes([1, 1])
@@ -131,6 +131,9 @@ class MainContainer(QSplitter):
             self.table_widget.stacked.addWidget(table_view)
             # Add table name to list widget
             self.lateral_widget.add_item(table_name)
+        # Select first item
+        first_item = self.lateral_widget.item(0)
+        first_item.setSelected(True)
 
     def load_relation(self, filenames):
         for filename in filenames:
