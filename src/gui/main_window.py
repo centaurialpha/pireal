@@ -215,8 +215,8 @@ class Pireal(QMainWindow):
 
         actions = [
             'new_query',
-            'create_new_relation',
-            'remove_relation',
+            #'create_new_relation',
+            #'remove_relation',
             'close_database',
             'save_database',
             'load_relation'
@@ -230,8 +230,8 @@ class Pireal(QMainWindow):
         """ Public method. Enables or disables relation's QAction """
 
         actions = [
-            'insert_tuple',
-            'remove_tuple',
+            #'insert_tuple',
+            #'remove_tuple',
         ]
 
         for action in actions:
@@ -242,7 +242,7 @@ class Pireal(QMainWindow):
         """ Public method. Enables or disables queries QAction """
 
         actions = [
-            'save_file',
+            #'save_file',
             'undo_action',
             'redo_action',
             'copy_action',

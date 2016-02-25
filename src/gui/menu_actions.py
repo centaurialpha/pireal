@@ -25,99 +25,100 @@ slot for each item in a menu.
 """
 
 from collections import OrderedDict
-from src import translations as tr
+from PyQt5.QtWidgets import QApplication
 
+translate = QApplication.translate
 
 MENU = OrderedDict()
 
 
 # Menu File
 MENU['file'] = {
-    'name': tr.TR_MENU_FILE,
+    'name': translate("Pireal", "&File"),
     'items': [{
-        'name': tr.TR_MENU_FILE_NEW_DB,
+        'name': translate("Pireal", "New Database"),
         'slot': "central:create_database_wizard"
     }, {
-        'name': tr.TR_MENU_FILE_NEW_QUERY,
+        'name': translate("Pireal", "New Query"),
         'slot': "central:new_query"
     }, "-", {
-        'name': tr.TR_MENU_FILE_OPEN,
+        'name': translate("Pireal", "Open Database"),
         'slot': "central:open_database"
     }, {
-        'name': tr.TR_MENU_FILE_SAVE_DB,
+        'name': translate("Pireal", "Save Database"),
         'slot': "central:save_database"
-    }, {
-        'name': tr.TR_MENU_FILE_SAVE,
-        'slot': "central:save_file"
+    #}, {
+        #'name': translate.TR_MENU_FILE_SAVE,
+        #'slot': "central:save_file"
     }, "-", {
-        'name': tr.TR_MENU_FILE_CLOSE_DB,
+        'name': translate("Pireal", "Close Database"),
         'slot': "central:close_database"
     #}, {
-        #'name': tr.TR_MENU_FILE_SAVE_AS,
+        #'name': translate.TR_MENU_FILE_SAVE_AS,
         #'slot': "container:save_query_as"
     #}, "-", {
-        #'name': tr.TR_MENU_FILE_CONVERT_TO_PDB,
+        #'name': translate.TR_MENU_FILE_CONVERT_TO_PDB,
         #'slot': "container:convert_to_pdb"
     #}, "-", {
         #'name': None,
         #'slot': "main:open_recent_file"
     }, "-", {
-        'name': tr.TR_MENU_FILE_EXIT,
+        'name': translate("Pireal", "Exit"),
         'slot': "pireal:close"}]}
 
 
 # Menu Edit
 MENU['edit'] = {
-    'name': tr.TR_MENU_EDIT,
+    'name': translate("Pireal", "&Edit"),
     'items': [{
-        'name': tr.TR_MENU_EDIT_UNDO,
+        'name': translate("Pireal", "Undo"),
         'slot': "central:undo_action"
     }, {
-        'name': tr.TR_MENU_EDIT_REDO,
+        'name': translate("Pireal", "Redo"),
         'slot': "central:redo_action"
     }, "-", {
-        'name': tr.TR_MENU_EDIT_CUT,
+        'name': translate("Pireal", "Cut"),
         'slot': "central:cut_action"
     }, {
-        'name': tr.TR_MENU_EDIT_COPY,
+        'name': translate("Pireal", "Copy"),
         'slot': "central:copy_action"
     }, {
-        'name': tr.TR_MENU_EDIT_PASTE,
+        'name': translate("Pireal", "Paste"),
         'slot': "central:paste_action"
     }, "-", {
-        'name': "Preferences",
+        'name': translate("Pireal", "Preferences"),
         'slot': "central:show_settings"}]}
 
 
 # Menu Relation
 MENU['relation'] = {
-    'name': tr.TR_MENU_RELATION,
+    'name': translate("Pireal", "&Relation"),
     'items': [{
-        'name': tr.TR_MENU_RELATION_NEW_RELATION,
+        'name': translate("Pireal", "New Relation"),
         'slot': "central:create_new_relation"
+    #}, {
+        #'name': translate("Pireal", "Edit ",
+        #'slot': "central:remove_relation"
     }, {
-        'name': tr.TR_MENU_RELATION_DELETE_RELATION,
-        'slot': "central:remove_relation"
-    }, {
-        'name': tr.TR_MENU_RELATION_LOAD_RELATION,
+        'name': translate("Pireal", "Load Relation"),
         'slot': "central:load_relation"
+    #}, "-", {
+        #'name': translate.TR_MENU_RELATION_ADD_ROW,
+        #'slot': "central:insert_tuple"
+    #}, {
+        #'name': translate.TR_MENU_RELATION_DELETE_ROW,
+        #'slot': "central:remove_tuple"
     }, "-", {
-        'name': tr.TR_MENU_RELATION_ADD_ROW,
-        'slot': "central:insert_tuple"
-    }, {
-        'name': tr.TR_MENU_RELATION_DELETE_ROW,
-        'slot': "central:remove_tuple"
-    }, "-", {
-        'name': tr.TR_MENU_RELATION_EXECUTE,
+        'name': translate("Pireal", "Execute Queries"),
         'slot': "central:execute_queries"}]}
 
 
 # Menu Help
 MENU['help'] = {
-    'name': tr.TR_MENU_HELP,
+    'name': translate("Pireal", "&Help"),
     'items': [{
-        'name': tr.TR_MENU_HELP_ABOUT_PIREAL,
+        'name': translate("Pireal", "About Pireal"),
         'slot': "pireal:about_pireal"
     }, {
-        'name': tr.TR_MENU_HELP_ABOUT_QT,
+        'name': translate("Pireal", "About Qt"),
         'slot': "pireal:about_qt"}]}

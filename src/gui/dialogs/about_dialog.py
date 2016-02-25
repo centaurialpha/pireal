@@ -29,17 +29,14 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
-from src import (
-    gui,
-    translations as tr
-)
+from src import gui
 
 
 class AboutDialog(QDialog):
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
-        self.setWindowTitle(tr.TR_ABOUT_DIALOG)
+        self.setWindowTitle(self.tr("About Pireal"))
         vbox = QVBoxLayout(self)
         # Banner
         banner = QLabel()
@@ -48,8 +45,10 @@ class AboutDialog(QDialog):
         vbox.addWidget(banner)
 
         # Version
-        label_version = QLabel(tr.TR_ABOUT_DIALOG_VERSION.format(
-                               gui.__source_code__, gui.__version__))
+        label_version = QLabel(self.tr("<a href='{0}'><span style='color: "
+                                       "#3465a4'>Version {1}"
+                                       "</span></a>".format(
+                               gui.__source_code__, gui.__version__)))
         label_version.setAlignment(Qt.AlignHCenter)
         font = label_version.font()
         font.setPointSize(13)
@@ -57,7 +56,8 @@ class AboutDialog(QDialog):
         vbox.addWidget(label_version)
 
         # Description
-        description = QLabel(tr.TR_ABOUT_DIALOG_DESC)
+        description = QLabel(self.tr("<br><br>an educational tool for "
+                                     "working\nwith Relational Algebra."))
         description.setAlignment(Qt.AlignHCenter)
         font = description.font()
         font.setPointSize(13)
@@ -65,8 +65,14 @@ class AboutDialog(QDialog):
         vbox.addWidget(description)
 
         # License and source
-        lbl_license_source = QLabel(tr.TR_ABOUT_DIALOG_LICENSE_SOURCE.format(
-                                    gui.__license__, gui.__source_code__))
+        lbl_license_source = QLabel(self.tr("<br>This sotfware is licensed "
+                                            "under <a href='{0}'><span style"
+                                            "='color: #3465a4'>GNU GPL</span>"
+                                            "</a> version 3,<br>source code "
+                                            "is available on <a href='{1}'>"
+                                            "<span style='color: #3465a4'>"
+                                            "GitHub.</span></a>".format(
+                                    gui.__license__, gui.__source_code__)))
         lbl_license_source.setAlignment(Qt.AlignHCenter)
         font = lbl_license_source.font()
         font.setPointSize(13)
@@ -76,7 +82,7 @@ class AboutDialog(QDialog):
         # Buttons
         hbox = QHBoxLayout()
         hbox.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
-        btn_ok = QPushButton(tr.TR_ABOUT_DIALOG_BTN_OK)
+        btn_ok = QPushButton(self.tr("Done"))
         hbox.addWidget(btn_ok)
         vbox.addLayout(hbox)
 

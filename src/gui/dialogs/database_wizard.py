@@ -22,6 +22,7 @@ import os
 from PyQt5.QtWidgets import (
     QWizard,
     QWizardPage,
+    QMessageBox,
     QGridLayout,
     QLineEdit,
     QLabel,
@@ -34,7 +35,7 @@ from src.core import settings
 
 
 class DatabaseWizard(QWizard):
-    wizardFinished = pyqtSignal('PyQt_PyObject')
+    wizardFinished = pyqtSignal('PyQt_PyObject', 'PyQt_PyObject')
 
     def __init__(self, parent=None):
         super(DatabaseWizard, self).__init__(parent)
@@ -45,7 +46,13 @@ class DatabaseWizard(QWizard):
         data = {}
         if result:
             data = self._intro_page.get_data()
-        self.wizardFinished.emit(data)
+            if os.path.exists(data['filename']):
+                QMessageBox.information(self, self.tr("Information"),
+                                        self.tr("The file <b>{}</b> "
+                                                "already exists".format(
+                                                    data['filename'])))
+                return
+        self.wizardFinished.emit(data, self)
         QWizard.done(self, result)
 
 
@@ -66,9 +73,9 @@ class IntroPage(QWizardPage):
         grid.addWidget(self._line_dblocation, 1, 1)
         grid.addWidget(QLabel(self.tr("Database Folder: ")), 2, 0)
         self._dbfolder = settings.PIREAL_PROJECTS
-        self._line_dbfolder = QLineEdit()
-        self._line_dbfolder.setText(self._dbfolder)
-        grid.addWidget(self._line_dbfolder, 2, 1)
+        self._line_dbfilename = QLineEdit()
+        self._line_dbfilename.setText(self._dbfolder)
+        grid.addWidget(self._line_dbfilename, 2, 1)
         self._line_dbname.setText("pireal_database.pdb")
         self._line_dbname.setSelection(0, 15)
 
@@ -79,19 +86,17 @@ class IntroPage(QWizardPage):
             return
         self._line_dblocation.setText(location)
         self._dbfolder = os.path.join(self._dbfolder, location)
-        self._line_dbfolder.setText(
+        self._line_dbfilename.setText(
             os.path.join(location, self._line_dbname.text()))
 
     def __on_dbname_changed(self, db_name):
-        self._line_dbfolder.setText(os.path.join(self._dbfolder, db_name))
+        self._line_dbfilename.setText(os.path.join(self._dbfolder, db_name))
 
     def get_data(self):
         data = {
             'name': self._line_dbname.text(),
             'location': self._line_dblocation.text(),
-            'folder': self._line_dbfolder.text(),
-            'filename': os.path.join(self._line_dbfolder.text(),
-                                     self._line_dbname.text())
+            'filename': self._line_dbfilename.text(),
         }
 
         return data

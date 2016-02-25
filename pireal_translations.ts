@@ -1,257 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="es_AR">
+<!DOCTYPE TS><TS version="2.0">
 <context>
     <name>Pireal</name>
     <message>
-        <location filename="src/translations.py" line="25"/>
-        <source>Settings</source>
-        <translation>Configuraciones</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="28"/>
+        <location filename="src/gui/menu_actions.py" line="37"/>
         <source>&amp;File</source>
-        <translation>&amp;Archivo</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="29"/>
+        <location filename="src/gui/menu_actions.py" line="39"/>
         <source>New Database</source>
-        <translation>Nueva Base de Datos</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="30"/>
+        <location filename="src/gui/menu_actions.py" line="42"/>
         <source>New Query</source>
-        <translation>Nueva Consulta</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="31"/>
-        <source>Open</source>
-        <translation>Abrir</translation>
+        <location filename="src/gui/menu_actions.py" line="45"/>
+        <source>Open Database</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="100"/>
+        <location filename="src/gui/menu_actions.py" line="48"/>
         <source>Save Database</source>
-        <translation>Guardar Base de Datos</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="33"/>
-        <source>Save</source>
-        <translation>Guardar</translation>
+        <location filename="src/gui/menu_actions.py" line="54"/>
+        <source>Close Database</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="34"/>
-        <source>Save As...</source>
-        <translation>Guardar como...</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="35"/>
+        <location filename="src/gui/menu_actions.py" line="66"/>
         <source>Exit</source>
-        <translation>Salir</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="38"/>
+        <location filename="src/gui/menu_actions.py" line="72"/>
         <source>&amp;Edit</source>
-        <translation>&amp;Editar</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="39"/>
+        <location filename="src/gui/menu_actions.py" line="74"/>
         <source>Undo</source>
-        <translation>Deshacer</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="40"/>
+        <location filename="src/gui/menu_actions.py" line="77"/>
         <source>Redo</source>
-        <translation>Rehacer</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="41"/>
+        <location filename="src/gui/menu_actions.py" line="80"/>
         <source>Cut</source>
-        <translation>Cortar</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="42"/>
+        <location filename="src/gui/menu_actions.py" line="83"/>
         <source>Copy</source>
-        <translation>Copiar</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="43"/>
+        <location filename="src/gui/menu_actions.py" line="86"/>
         <source>Paste</source>
-        <translation>Pegar</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="46"/>
+        <location filename="src/gui/menu_actions.py" line="89"/>
+        <source>Preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/gui/menu_actions.py" line="95"/>
         <source>&amp;Relation</source>
-        <translation>&amp;Relación</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="72"/>
+        <location filename="src/gui/menu_actions.py" line="97"/>
         <source>New Relation</source>
-        <translation>Nueva Relación</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="48"/>
-        <source>Delete Relation</source>
-        <translation>Eliminar Relación</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="49"/>
+        <location filename="src/gui/menu_actions.py" line="103"/>
         <source>Load Relation</source>
-        <translation>Cargar Relación</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="77"/>
-        <source>Add Row</source>
-        <translation>Agregar Tupla</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="78"/>
-        <source>Delete Row</source>
-        <translation>Eliminar Tupla</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="52"/>
+        <location filename="src/gui/menu_actions.py" line="112"/>
         <source>Execute Queries</source>
-        <translation>Ejecutar Consultas</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="55"/>
+        <location filename="src/gui/menu_actions.py" line="118"/>
         <source>&amp;Help</source>
-        <translation>A&amp;yuda</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="60"/>
+        <location filename="src/gui/menu_actions.py" line="120"/>
         <source>About Pireal</source>
-        <translation>Acerca de Pireal</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="57"/>
+        <location filename="src/gui/menu_actions.py" line="123"/>
         <source>About Qt</source>
-        <translation>Acerca de Qt</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/translations.py" line="69"/>
-        <source>Done</source>
-        <translation>Aceptar</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="75"/>
-        <source>Relationship name</source>
-        <translation>Nombre de la relación</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="76"/>
-        <source>Add Column</source>
-        <translation>Agregar Columna</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="79"/>
-        <source>Delete Column</source>
-        <translation>Eliminar Columna</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="80"/>
-        <source>Ok</source>
-        <translation>Aceptar</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="81"/>
-        <source>Cancel</source>
-        <translation>Cancelar</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="82"/>
-        <source>Relation name not specified.</source>
-        <translation>Nombre de relación no especificado.</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="84"/>
-        <source>Invalid field name.</source>
-        <translation>Nombre de campo inválido.</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="85"/>
-        <source>Field {0}:{1} is empty!</source>
-        <translation>El campo {0}:{1} está vacio!</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="86"/>
-        <source>Field 1</source>
-        <translation>Campo 1</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="87"/>
-        <source>Field 2</source>
-        <translation>Campo 2</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="92"/>
-        <source>None selected relationship</source>
-        <translation>Ninguna relación seleccionada</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="94"/>
-        <source>Confirmation</source>
-        <translation>Confirmación</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="98"/>
-        <source>File Saved: {}</source>
-        <translation>Archivo Guardado: {}</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="99"/>
-        <source>Save File</source>
-        <translation>Guardar Archivo</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="101"/>
-        <source>Open File</source>
-        <translation>Abrir Archivo</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="104"/>
-        <source>Query error</source>
-        <translation>Error de consulta</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="105"/>
-        <source>File modified</source>
-        <translation>Archivo modificado</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="111"/>
-        <source>Language</source>
-        <translation>Idioma</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="112"/>
-        <source>General</source>
-        <translation>General</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="113"/>
-        <source>Show Start Page</source>
-        <translation>Mostrar Página de Inicio</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="114"/>
-        <source>Notify me of new updates</source>
-        <translation>Notificarme de nuevas versiones</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="115"/>
-        <source>Check for updates</source>
-        <translation>Buscar Actualizaciones</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="116"/>
-        <source>Reset preferences</source>
-        <translation>Borrar Configuraciones</translation>
-    </message>
-    <message>
-        <location filename="src/translations.py" line="119"/>
-        <source>Reset settings?</source>
-        <translation>Borrar Configuraciones?</translation>
+        <location filename="src/gui/main_window.py" line="73"/>
+        <source>Pireal</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

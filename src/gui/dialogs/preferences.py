@@ -50,7 +50,6 @@ from PyQt5.QtCore import (
     pyqtSignal
 )
 
-from src import translations as tr
 from src.core import (
     settings,
     file_manager
@@ -87,7 +86,7 @@ class Preferences(QDialog):
         left_container.setContentsMargins(0, 0, 0, 0)
 
         # General
-        group_gral = QGroupBox(tr.TR_PREFERENCES_GROUP_GRAL)
+        group_gral = QGroupBox(self.tr("General"))
         box_gral = QVBoxLayout(group_gral)
         # Start Page
         #self._check_start_page = QCheckBox(tr.TR_PREFERENCES_CHECK_START_PAGE)
@@ -95,15 +94,15 @@ class Preferences(QDialog):
         #box_gral.addWidget(self._check_start_page)
         # Updates
         hhbox = QHBoxLayout()
-        self._check_updates = QCheckBox(tr.TR_PREFERENCES_CHECK_UPDATES)
+        self._check_updates = QCheckBox(self.tr("Notify me of new updates"))
         self._check_updates.setChecked(settings.PSettings.CHECK_UPDATES)
         hhbox.addWidget(self._check_updates)
-        btn_updates = QPushButton(tr.TR_PREFERENCES_BTN_CHECK_FOR_UPDATES)
+        btn_updates = QPushButton(self.tr("Check for updates"))
         hhbox.addWidget(btn_updates)
         box_gral.addLayout(hhbox)
 
         # Language
-        group_language = QGroupBox(tr.TR_PREFERENCES_GROUP_LANG)
+        group_language = QGroupBox(self.tr("Language"))
         box = QVBoxLayout(group_language)
         # Find .qm files in language path
         available_langs = file_manager.get_files_from_folder(
@@ -162,30 +161,29 @@ class Preferences(QDialog):
         right_container.setContentsMargins(0, 0, 0, 0)
 
         # Editor
-        editor_group = QGroupBox(tr.TR_PREFERENCES_GROUP_EDITOR)
+        editor_group = QGroupBox(self.tr("Editor Configurations"))
         box_editor = QVBoxLayout(editor_group)
         # Current line
         self._highlight_current_line = QCheckBox(
-            tr.TR_PREFERENCES_CHECK_CURRENT_LINE)
+            self.tr("Highlight Current Line"))
         self._highlight_current_line.setChecked(
             settings.PSettings.HIGHLIGHT_CURRENT_LINE)
         self._highlight_current_line.stateChanged[int].connect(
             self.__current_line_value_changed)
         box_editor.addWidget(self._highlight_current_line)
         # Matching paren
-        self._matching_paren = QCheckBox(
-            tr.TR_PREFERENCES_CHECK_MATCHING_PAREN)
+        self._matching_paren = QCheckBox(self.tr("Matching Parenthesis"))
         self._matching_paren.setChecked(
             settings.PSettings.MATCHING_PARENTHESIS)
         box_editor.addWidget(self._matching_paren)
         # Font group
-        font_group = QGroupBox(tr.TR_PREFERENCES_GROUP_FONT)
+        font_group = QGroupBox(self.tr("Font"))
         font_grid = QGridLayout(font_group)
-        font_grid.addWidget(QLabel(tr.TR_PREFERENCES_LBL_FONT_FAMILY), 0, 0)
+        font_grid.addWidget(QLabel(self.tr("Family")), 0, 0)
         self._combo_font = QFontComboBox()
         self._combo_font.setCurrentFont(settings.PSettings.FONT)
         font_grid.addWidget(self._combo_font, 0, 1)
-        font_grid.addWidget(QLabel(tr.TR_PREFERENCES_LBL_FONT_SIZE), 1, 0)
+        font_grid.addWidget(QLabel(self.tr("Point Size")), 1, 0)
         self._combo_font_size = QComboBox()
         fdb = QFontDatabase()
         combo_sizes = fdb.pointSizes(settings.PSettings.FONT.family())
@@ -210,9 +208,9 @@ class Preferences(QDialog):
         hbox = QHBoxLayout()
         hbox.setSpacing(20)
         hbox.addItem(QSpacerItem(1, 0, QSizePolicy.Expanding))
-        btn_cancel = QPushButton(tr.TR_PREFERENCES_BTN_BACK)
+        btn_cancel = QPushButton(self.tr("Back"))
         hbox.addWidget(btn_cancel)
-        btn_reset = QPushButton(tr.TR_PREFERENCES_BTN_RESET)
+        btn_reset = QPushButton(self.tr("Reset Configurations"))
         hbox.addWidget(btn_reset)
         main_box.addLayout(hbox)
 
@@ -337,8 +335,9 @@ class Preferences(QDialog):
 
         flags = QMessageBox.Yes
         flags |= QMessageBox.No
-        result = QMessageBox.question(self, tr.TR_PREFERENCES_RESET_TITLE,
-                                      tr.TR_PREFERENCES_RESET_MSG, flags)
+        result = QMessageBox.question(self, self.tr("Reset Settings"),
+                                      self.tr("Are you sure you want to "
+                                              "clear all settings?"), flags)
 
         if result == QMessageBox.Yes:
             QSettings(settings.SETTINGS_PATH, QSettings.IniFormat).clear()

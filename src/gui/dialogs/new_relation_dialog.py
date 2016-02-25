@@ -48,7 +48,6 @@ from PyQt5.QtCore import (
 )
 from src.gui.main_window import Pireal
 #from src.gui import table
-from src import translations as tr
 from src.core import relation
 
 
@@ -61,24 +60,24 @@ class NewRelationDialog(QDialog):
         #self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.setFocusPolicy(Qt.TabFocus)
         self.setFocus()
-        self.setWindowTitle(tr.TR_RELATION_DIALOG_TITLE)
+        self.setWindowTitle(self.tr("New Relation"))
         vbox = QVBoxLayout(self)
         hbox = QHBoxLayout()
         self._line_relation_name = QLineEdit()
-        self._line_relation_name.setPlaceholderText(tr.TR_RELATION_DIALOG_NAME)
+        self._line_relation_name.setPlaceholderText(self.tr("Relation name"))
         hbox.addWidget(self._line_relation_name)
         vbox.addLayout(hbox)
 
         #vbox.addWidget(QLabel(tr.TR_RELATION_DIALOG_FIELDS))
 
         hbox = QHBoxLayout()
-        btn_add_column = QPushButton(tr.TR_RELATION_DIALOG_ADD_COL)
+        btn_add_column = QPushButton(self.tr("Add Column"))
         hbox.addWidget(btn_add_column)
-        btn_add_tuple = QPushButton(tr.TR_RELATION_DIALOG_ADD_ROW)
+        btn_add_tuple = QPushButton(self.tr("Add Row"))
         hbox.addWidget(btn_add_tuple)
-        btn_remove_column = QPushButton(tr.TR_RELATION_DIALOG_DELETE_COL)
+        btn_remove_column = QPushButton(self.tr("Delete Column"))
         hbox.addWidget(btn_remove_column)
-        btn_remove_tuple = QPushButton(tr.TR_RELATION_DIALOG_DELETE_ROW)
+        btn_remove_tuple = QPushButton(self.tr("Delete Row"))
         hbox.addWidget(btn_remove_tuple)
         vbox.addLayout(hbox)
 
@@ -96,10 +95,8 @@ class NewRelationDialog(QDialog):
         header = Header()
         self._table.setHorizontalHeader(header)
         # Default section name
-        header.model().setHeaderData(0, Qt.Horizontal,
-                                     tr.TR_RELATION_DIALOG_F1)
-        header.model().setHeaderData(1, Qt.Horizontal,
-                                     tr.TR_RELATION_DIALOG_F2)
+        header.model().setHeaderData(0, Qt.Horizontal, self.tr("Field 1"))
+        header.model().setHeaderData(1, Qt.Horizontal, self.tr("Field 2"))
         # Delegate
         delegate = ItemDelegate()
         self._table.setItemDelegate(delegate)
@@ -108,9 +105,9 @@ class NewRelationDialog(QDialog):
         # Button ok and cancel
         hbox = QHBoxLayout()
         hbox.addItem(QSpacerItem(1, 0, QSizePolicy.Expanding))
-        btn_ok = QPushButton(tr.TR_RELATION_DIALOG_BTN_OK)
+        btn_ok = QPushButton(self.tr("Ok"))
         hbox.addWidget(btn_ok)
-        btn_cancel = QPushButton(tr.TR_RELATION_DIALOG_BTN_CANCEL)
+        btn_cancel = QPushButton(self.tr("Cancel"))
         btn_cancel.setObjectName("cancel")
         hbox.addWidget(btn_cancel)
         vbox.addLayout(hbox)
@@ -175,7 +172,7 @@ class NewRelationDialog(QDialog):
         #for index in range(self._hbox.count()):
             #combo = self._hbox.itemAt(index).widget()
             #if combo.currentIndex() == 0:
-                #QMessageBox.critical(self, "Select type", "Please select type")
+            #QMessageBox.critical(self, "Select type", "Please select type")
                 #return {}
             #data[index] = combo.currentText()
 
@@ -186,7 +183,7 @@ class NewRelationDialog(QDialog):
         name = self._line_relation_name.text()
         if not name.strip():
             QMessageBox.critical(self, "Error",
-                                 tr.TR_RELATION_DIALOG_ERROR_NAME)
+                                 self.tr("Relation name not specified."))
             return
 
         nrow = self._table.model().rowCount()
@@ -200,7 +197,7 @@ class NewRelationDialog(QDialog):
             text = self._table.model().horizontalHeaderItem(i).text()
             if not text.strip():
                 QMessageBox.critical(self, "Error",
-                                     tr.TR_RELATION_DIALOG_ADD_COL)
+                                     self.tr("Add Column"))
                 return
             fields.append(text)
 
@@ -214,8 +211,8 @@ class NewRelationDialog(QDialog):
                 item = self._table.model().item(row, column)
                 if item is None or not item.text().strip():
                     QMessageBox.critical(self, "Error",
-                        tr.TR_RELATION_DIALOG_FIELD_EMPTY.format(
-                            row + 1, column + 1))
+                        self.tr("Field {0}:{1} is empty!".format(
+                            row + 1, column + 1)))
                     return
                 reg.append(item.text())
                 data[row, column] = item.text()

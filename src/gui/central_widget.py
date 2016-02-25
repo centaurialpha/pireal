@@ -30,9 +30,9 @@ from PyQt5.QtWidgets import (
 from src.core import (
     settings,
     file_manager,
+    pfile
 )
 from src.core.logger import PirealLogger
-from src import translations as tr
 from src.gui.main_window import Pireal
 from src.gui import (
     start_page,
@@ -71,7 +71,7 @@ class CentralWidget(QWidget):
 
     def create_database_wizard(self):
         wizard = database_wizard.DatabaseWizard(self)
-        wizard.wizardFinished['PyQt_PyObject'].connect(
+        wizard.wizardFinished.connect(
             self.__on_wizard_finished)
         # Hide menubar and toolbar
         pireal = Pireal.get_service("pireal")
@@ -80,20 +80,27 @@ class CentralWidget(QWidget):
         # Add wizard widget to stacked
         self.add_widget(wizard)
 
-    def __on_wizard_finished(self, data):
+    def __on_wizard_finished(self, data, wizard_widget):
         if not data:
             self.remove_last_widget()
         else:
-            # Create structure
-            os.mkdir(data['folder'])
-            os.mkdir(os.path.join(data['folder'], 'Tables'))
+            #os.mkdir(data['folder'])
+            #os.mkdir(os.path.join(data['folder'], 'Tables'))
             os.mknod(data['filename'])
-            self.__create_database(data['filename'])
+            database_container = main_container.MainContainer()
+            pfile_object = pfile.PFile(data['filename'])
+            database_container.pfile = pfile_object
+            self.add_widget(database_container)
+            # Remove wizard
+            self.stacked.removeWidget(wizard_widget)
+            #self.__create_database(data['filename'])
 
         # Show menubar and toolbar
         pireal = Pireal.get_service("pireal")
         pireal.menuBar().setVisible(True)
         pireal.toolbar.setVisible(True)
+        # Enable db actions
+        pireal.set_enabled_db_actions(True)
 
     def open_database(self, filename=''):
         # If not filename, then open dialog for select
@@ -171,9 +178,12 @@ class CentralWidget(QWidget):
                 flags = QMessageBox.Cancel
                 flags |= QMessageBox.No
                 flags |= QMessageBox.Yes
-                r = QMessageBox.question(self, tr.TR_CENTRAL_DB_UNSAVED_TITLE,
-                                         tr.TR_CENTRAL_DB_UNSAVED_MSG.format(
-                                             mcontainer.dbname()), flags)
+                r = QMessageBox.question(self, self.tr("Save Changes?"),
+                                         self.tr("The <b>{}</b> database "
+                                                 "has ben modified.<br>"
+                                                 "Dou you want save your "
+                                                 "changes?".format(
+                                             mcontainer.dbname())), flags)
                 if r == QMessageBox.Cancel:
                     return
                 if r == QMessageBox.Yes:
@@ -189,8 +199,8 @@ class CentralWidget(QWidget):
 
     def new_query(self, filename=''):
         if not self.created:
-            QMessageBox.information(self, tr.TR_CENTRAL_INFORMATION,
-                                    tr.TR_CENTRAL_FIRST_CREATE_DB)
+            QMessageBox.information(self, self.tr("Information"),
+                                    self.tr("First create or open a database"))
             return
         pireal = Pireal.get_service("pireal")
         pireal.set_enabled_query_actions(True)
@@ -218,7 +228,7 @@ class CentralWidget(QWidget):
         if main_container is None:
             main_container = self.get_active_db()
 
-        filename = QFileDialog.getSaveFileName(self, tr.TR_CONTAINER_SAVE_FILE,
+        filename = QFileDialog.getSaveFileName(self, self.tr("Save File"),
                                                main_container.dbname(),
                                                "Pireal database files"
                                                "(*.pdb)")[0]
@@ -251,7 +261,7 @@ class CentralWidget(QWidget):
             else:
                 directory = self.__last_open_folder
 
-            msg = tr.TR_CENTRAL_OPEN_RELATION
+            msg = self.tr("Open Relation File")
             filter_ = settings.SUPPORTED_FILES.split(';;')[-1]
             filenames = QFileDialog.getOpenFileNames(self, msg, directory,
                                                     filter_)[0]

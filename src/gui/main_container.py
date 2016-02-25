@@ -35,7 +35,6 @@ from src.gui import (
 )
 from src.gui.dialogs import edit_relation_dialog
 from src.gui.query_container import query_container
-from src import translations as tr
 from src.core import (
     relation,
     pfile,
@@ -51,9 +50,10 @@ DEBUG = logger.debug
 
 class MainContainer(QSplitter):
 
-    def __init__(self, pfile='', orientation=Qt.Vertical):
+    def __init__(self, orientation=Qt.Vertical):
         QSplitter.__init__(self, orientation)
-        self.__pfile = pfile
+        self.pfile = None
+        #self.__pfile = pfile
         self._hsplitter = QSplitter(Qt.Horizontal)
 
         self.lateral_widget = list_widget.LateralWidget()
@@ -84,14 +84,14 @@ class MainContainer(QSplitter):
     def dbname(self):
         """ Return display name """
 
-        return self.__pfile.name
+        return self.pfile.name
 
-    def isnew(self):
-        return self.__pfile.is_new
+    #def isnew(self):
+        #return self.__pfile.is_new
 
-    @property
-    def pfile(self):
-        return self.__pfile
+    #@property
+    #def pfile(self):
+        #return self.__pfile
 
     def create_database(self, data):
         for table in data.get('tables'):
@@ -142,14 +142,15 @@ class MainContainer(QSplitter):
         selected_items = self.lateral_widget.selectedItems()
         if selected_items:
             if len(selected_items) > 1:
-                msg = tr.TR_CENTRAL_CONFIRM_DELETE_RELATIONS
+                msg = self.tr("Are you sure you want to delete the selected"
+                              " relations?")
             else:
-                msg = tr.TR_CENTRAL_CONFIRM_DELETE_RELATION.format(
+                msg = self.tr("Are you sure you want to delete the "
+                              "relation <b>{}</b>?".format(
                     self.lateral_widget.text_item(
-                        self.lateral_widget.currentRow()))
+                        self.lateral_widget.currentRow())))
 
-            r = QMessageBox.question(self,
-                                     tr.TR_CENTRAL_CONFIRM_DELETE_REL_TITLE,
+            r = QMessageBox.question(self, self.tr("Confirmation"),
                                      msg, QMessageBox.No | QMessageBox.Yes)
             if r == QMessageBox.No:
                 return
@@ -227,7 +228,7 @@ class MainContainer(QSplitter):
         editor.saved()
 
     def save_query_as(self, editor=None):
-        filename = QFileDialog.getSaveFileName(self, tr.TR_CONTAINER_SAVE_FILE,
+        filename = QFileDialog.getSaveFileName(self, self.tr("Save File"),
                                                editor.name,
                                                "Pireal query files(*.pqf)")
         filename = filename[0]
