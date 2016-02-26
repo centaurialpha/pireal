@@ -121,8 +121,10 @@ class CentralWidget(QWidget):
             self.__last_open_folder = file_manager.get_path(filename)
 
         # Read pdb file
-        with open(filename, mode='r') as f:
-            db_data = f.read()
+        pfile_object = pfile.PFile(filename)
+        db_data = pfile_object.read()
+        #with open(filename, mode='r') as f:
+            #db_data = f.read()
 
         # Add to recent databases
         self.__recent_files.add(filename)
@@ -131,7 +133,7 @@ class CentralWidget(QWidget):
         db_name = file_manager.get_basename(filename)
 
         database_container = main_container.MainContainer()
-        pfile_object = pfile.PFile(filename)
+        #pfile_object = pfile.PFile(filename)
         database_container.pfile = pfile_object
         database_container.create_database(self.__sanitize_data(db_data))
         self.add_widget(database_container)
@@ -139,7 +141,17 @@ class CentralWidget(QWidget):
         pireal = Pireal.get_service("pireal")
         pireal.change_title(db_name)
         pireal.set_enabled_db_actions(True)
+        pireal.set_enabled_relation_actions(True)
         self.created = True
+
+    def open_query(self):
+        pass
+
+    def save_query(self):
+        pass
+
+    def save_query_as(self):
+        pass
 
     def __sanitize_data(self, data):
         data_dict = {'tables': []}
@@ -197,6 +209,7 @@ class CentralWidget(QWidget):
 
             pireal = Pireal.get_service("pireal")
             pireal.set_enabled_db_actions(False)
+            pireal.set_enabled_relation_actions(False)
             self.created = False
 
     def new_query(self, filename=''):
@@ -243,10 +256,6 @@ class CentralWidget(QWidget):
         print(relations)
         #content = file_manager.generate_database(relations)
         #main_container.pfile.write(content=content, new_fname=filename)
-
-    def save_file(self):
-        mcontainer = self.get_active_db()
-        mcontainer.save_query()
 
     def remove_relation(self):
         main_container = self.get_active_db()
@@ -315,6 +324,12 @@ class CentralWidget(QWidget):
 
         index = self.stacked.addWidget(widget)
         self.stacked.setCurrentIndex(index)
+
+    def insert_row(self):
+        pass
+
+    def insert_column(self):
+        pass
 
     @property
     def recent_files(self):

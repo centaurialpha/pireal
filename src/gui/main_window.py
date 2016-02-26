@@ -49,12 +49,13 @@ class Pireal(QMainWindow):
 
     # The name of items is the connection text
     TOOLBAR_ITEMS = [
-        'create_database_wizard',
-        'save_database',
-        'new_query',
-        '',  # Is a separator!
+        'create_database',
         'open_database',
-        'save_file',
+        'save_database',
+        '',  # Is a separator!
+        'new_query',
+        'open_query',
+        'save_query',
         '',
         'undo_action',
         'redo_action',
@@ -64,6 +65,8 @@ class Pireal(QMainWindow):
         '',
         'create_new_relation',
         'remove_relation',
+        'insert_row',
+        'insert_column',
         '',
         'execute_queries'
     ]
@@ -157,20 +160,6 @@ class Pireal(QMainWindow):
                         obj = central
                     else:
                         obj = self
-
-                    # Load recent files
-                    #if action is None:
-                        #files = settings.get_setting('recentFiles', [])
-                        #nrfiles = min(len(files),
-                                      #settings.PSettings.MAX_RECENT_FILES)
-                        #for i in range(nrfiles):
-                            #name = QFileInfo(files[i]).fileName()
-                            #text = "&%d %s" % (i + 1, name)
-                            #qaction = menu.addAction(text)
-                            #qaction.setData(files[i])
-                            #qaction.triggered.connect(
-                                #central.open_recent_database)
-                        #continue
                     qaction = menu.addAction(action)
                     # Icon name is connection
                     icon = QIcon(":img/%s" % connection)
@@ -215,6 +204,8 @@ class Pireal(QMainWindow):
 
         actions = [
             'new_query',
+            'open_query',
+            'save_query',
             #'create_new_relation',
             #'remove_relation',
             'close_database',
@@ -230,8 +221,10 @@ class Pireal(QMainWindow):
         """ Public method. Enables or disables relation's QAction """
 
         actions = [
-            #'insert_tuple',
-            #'remove_tuple',
+            'create_new_relation',
+            'remove_relation',
+            'insert_row',
+            'insert_column',
         ]
 
         for action in actions:
@@ -273,6 +266,11 @@ class Pireal(QMainWindow):
         from src.gui.dialogs import about_dialog
         dialog = about_dialog.AboutDialog(self)
         dialog.exec_()
+
+    def show_user_guide(self):
+        from src.gui import web_render
+        web = web_render.WebRender(self)
+        web.show()
 
     def show_settings(self):
         from src.gui.dialogs import preferences

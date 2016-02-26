@@ -37,22 +37,30 @@ MENU['file'] = {
     'name': translate("Pireal", "&File"),
     'items': [{
         'name': translate("Pireal", "New Database"),
-        'slot': "central:create_database_wizard"
+        'slot': "central:create_database"
     }, {
-        'name': translate("Pireal", "New Query"),
-        'slot': "central:new_query"
-    }, "-", {
         'name': translate("Pireal", "Open Database"),
         'slot': "central:open_database"
     }, {
         'name': translate("Pireal", "Save Database"),
         'slot': "central:save_database"
+    }, {
+        'name': translate("Pireal", "Close Database"),
+        'slot': "central:close_database"
+    }, "-", {
+        'name': translate("Pireal", "New Query"),
+        'slot': "central:new_query"
+    }, {
+        'name': translate("Pireal", "Open Query"),
+        'slot': "central:open_query"
+    }, {
+        'name': translate("Pireal", "Save Query"),
+        'slot': "central:save_query"
+
     #}, {
         #'name': translate.TR_MENU_FILE_SAVE,
         #'slot': "central:save_file"
-    }, "-", {
-        'name': translate("Pireal", "Close Database"),
-        'slot': "central:close_database"
+
     #}, {
         #'name': translate.TR_MENU_FILE_SAVE_AS,
         #'slot': "container:save_query_as"
@@ -96,18 +104,18 @@ MENU['relation'] = {
     'items': [{
         'name': translate("Pireal", "New Relation"),
         'slot': "central:create_new_relation"
-    #}, {
-        #'name': translate("Pireal", "Edit ",
-        #'slot': "central:remove_relation"
+    }, {
+        'name': translate("Pireal", "Delete Relation"),
+        'slot': "central:remove_relation"
     }, {
         'name': translate("Pireal", "Load Relation"),
         'slot': "central:load_relation"
-    #}, "-", {
-        #'name': translate.TR_MENU_RELATION_ADD_ROW,
-        #'slot': "central:insert_tuple"
-    #}, {
-        #'name': translate.TR_MENU_RELATION_DELETE_ROW,
-        #'slot': "central:remove_tuple"
+    }, {
+        'name': translate("Pireal", "Insert Row"),
+        'slot': "central:insert_row"
+    }, {
+        'name': translate("Pireal", "Insert Column"),
+        'slot': "central:insert_column"
     }, "-", {
         'name': translate("Pireal", "Execute Queries"),
         'slot': "central:execute_queries"}]}
@@ -117,6 +125,9 @@ MENU['relation'] = {
 MENU['help'] = {
     'name': translate("Pireal", "&Help"),
     'items': [{
+        'name': translate("Pireal", "User Guide"),
+        'slot': "pireal:show_user_guide"
+    }, "-", {
         'name': translate("Pireal", "About Pireal"),
         'slot': "pireal:about_pireal"
     }, {

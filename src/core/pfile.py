@@ -85,4 +85,5 @@ class PFile(object):
         if not _file.open(QIODevice.WriteOnly | QIODevice.Truncate):
             raise IOError
         outfile = QTextStream(_file)
+        outfile.setCodec('utf-8')
         outfile << content
