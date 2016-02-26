@@ -85,8 +85,8 @@ class QueryContainer(QWidget):
         self.__validName = re.compile(r'^[a-z_]\w*$')
 
         # Toolbar
-        toolbar = self.__load_toolbar()
-        box.addWidget(toolbar)
+        #toolbar = self.__load_toolbar()
+        #box.addWidget(toolbar)
 
         # Tab
         self._tabs = tab_widget.TabWidget()

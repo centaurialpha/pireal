@@ -58,6 +58,7 @@ class CentralWidget(QWidget):
         QWidget.__init__(self)
         box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 0, 0)
+        box.setSpacing(0)
 
         self.stacked = QStackedWidget()
         box.addWidget(self.stacked)
@@ -217,12 +218,13 @@ class CentralWidget(QWidget):
         mcontainer = self.get_active_db()
         if not mcontainer.modified:
             return
-        if mcontainer.isnew():
-            return self.save_database_as(mcontainer)
+        #if mcontainer.is_new():
+            #return self.save_database_as(mcontainer)
 
         # Generate content
         relations = mcontainer.table_widget.relations
-        content = file_manager.generate_database(relations)
+        relations_types = mcontainer.table_widget.relations_types
+        content = file_manager.generate_database(relations, relations_types)
         mcontainer.pfile.write(content=content, new_fname='')
         mcontainer.modified = False
 
@@ -239,8 +241,9 @@ class CentralWidget(QWidget):
 
         # Generate content
         relations = main_container.table_widget.relations
-        content = file_manager.generate_database(relations)
-        main_container.pfile.write(content=content, new_fname=filename)
+        print(relations)
+        #content = file_manager.generate_database(relations)
+        #main_container.pfile.write(content=content, new_fname=filename)
 
     def save_file(self):
         mcontainer = self.get_active_db()

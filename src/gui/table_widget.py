@@ -39,6 +39,7 @@ class TableWidget(QWidget):
         vbox.setContentsMargins(0, 0, 0, 0)
 
         self.relations = {}
+        self.relations_types = {}
 
         # Stack
         self.stacked = StackedWidget()

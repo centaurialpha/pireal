@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import csv
+
 from PyQt5.QtWidgets import (
     QSplitter,
     QFileDialog,
@@ -90,8 +92,8 @@ class MainContainer(QSplitter):
 
         return self.pfile.name
 
-    #def isnew(self):
-        #return self.__pfile.is_new
+    def is_new(self):
+        return self.pfile.is_new
 
     #@property
     #def pfile(self):
@@ -108,6 +110,7 @@ class MainContainer(QSplitter):
             fields = table.get('fields')
             tuples = table.get('tuples')
             types = table.get('types')
+            self.table_widget.relations_types[table_name] = types
 
             model.setHorizontalHeaderLabels(fields)
 
@@ -137,15 +140,25 @@ class MainContainer(QSplitter):
 
     def load_relation(self, filenames):
         for filename in filenames:
-            rel = relation.Relation(filename)
-            relation_name = file_manager.get_basename(filename)
-            if not self.table_widget.add_relation(relation_name, rel):
-                QMessageBox.information(self, self.tr("Information"),
-                                        self.tr("There is already a "
-                                                "relationship with name "
-                                                "'{}'".format(relation_name)))
-                return
-            self.__add_table(rel, relation_name)
+            with open(filename) as f:
+                csv_reader = csv.reader(f)
+                first_line = next(csv_reader)
+                fields = [f.split('/')[0] for f in first_line]
+                types = [f.split('/')[1] for f in first_line]
+
+                rel = relation.Relation()
+                rel.fields = fields
+                for i in csv_reader:
+                    rel.insert(i)
+                relation_name = file_manager.get_basename(filename)
+                if not self.table_widget.add_relation(relation_name, rel):
+                    QMessageBox.information(self, self.tr("Information"),
+                                            self.tr("There is already a "
+                                                    "relationship with name "
+                                                    "'{}'".format(
+                                                        relation_name)))
+                    return
+            self.__add_table(rel, relation_name, types)
 
     def delete_relation(self):
         selected_items = self.lateral_widget.selectedItems()
@@ -204,15 +217,18 @@ class MainContainer(QSplitter):
         dialog.tableChanged.connect(self.__on_data_table_changed)
         dialog.exec_()
 
-    def __add_table(self, rela, relation_name):
+    def __add_table(self, rela, relation_name, types):
         ptable = custom_table.Table()
         model = ptable.model()
+        model.setHorizontalHeaderLabels(rela.fields)
 
         row_count = 0
         for row in rela.content:
             for col_count, data in enumerate(row):
                 item = QStandardItem(data)
                 model.setItem(row_count, col_count, item)
+                delegate = ptable.itemDelegate()
+                delegate.data_types[col_count] = types[col_count]
             row_count += 1
 
         self.table_widget.stacked.addWidget(ptable)
