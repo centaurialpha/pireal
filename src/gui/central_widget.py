@@ -96,6 +96,8 @@ class CentralWidget(QWidget):
         pireal = Pireal.get_service("pireal")
         pireal.menuBar().setVisible(True)
         pireal.toolbar.setVisible(True)
+        # Title
+        pireal.change_title(file_manager.get_basename(data['filename']))
         # Enable db actions
         pireal.set_enabled_db_actions(True)
         self.__created = True
