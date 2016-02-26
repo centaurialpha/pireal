@@ -71,17 +71,18 @@ def generate_database(relations, fields_types):
 
     content = ""
     for relation_name, relation in list(relations.items()):
-        content += '@' + relation_name
-        ','.join([relation.fields[i] + '/' + fields_types[i]
-                  for i in range(len(relation.fields))])
-        #content += ':' + ','.join(relation.fields) + '\n'
+        content += '@%s:' % relation_name
+        for i in range(len(relation.fields)):
+            fields = ','.join([relation.fields[i] +
+                              '/' + fields_types[relation_name][i]
+                              for i in range(len(relation.fields))])
+        content += fields + '\n'
         for i in relation.content:
             content += ','.join(i) + '\n'
         content += '\n'
     # Remove last line
     content = content[:-1]
-    print(content)
-    #return content
+    return content
 
 
 def get_files_from_folder(path):

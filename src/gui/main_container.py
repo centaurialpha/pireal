@@ -158,6 +158,7 @@ class MainContainer(QSplitter):
                                                     "'{}'".format(
                                                         relation_name)))
                     return
+                self.table_widget.relations_types[relation_name] = types
             self.__add_table(rel, relation_name, types)
 
     def delete_relation(self):

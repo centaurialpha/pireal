@@ -85,16 +85,12 @@ class CentralWidget(QWidget):
         if not data:
             self.remove_last_widget()
         else:
-            #os.mkdir(data['folder'])
-            #os.mkdir(os.path.join(data['folder'], 'Tables'))
-            os.mknod(data['filename'])
             database_container = main_container.MainContainer()
             pfile_object = pfile.PFile(data['filename'])
             database_container.pfile = pfile_object
             self.add_widget(database_container)
             # Remove wizard
             self.stacked.removeWidget(wizard_widget)
-            #self.__create_database(data['filename'])
 
         # Show menubar and toolbar
         pireal = Pireal.get_service("pireal")
@@ -102,6 +98,7 @@ class CentralWidget(QWidget):
         pireal.toolbar.setVisible(True)
         # Enable db actions
         pireal.set_enabled_db_actions(True)
+        self.__created = True
 
     def open_database(self, filename=''):
         # If not filename, then open dialog for select
@@ -216,8 +213,8 @@ class CentralWidget(QWidget):
 
     def save_database(self):
         mcontainer = self.get_active_db()
-        if not mcontainer.modified:
-            return
+        #if not mcontainer.modified:
+            #return
         #if mcontainer.is_new():
             #return self.save_database_as(mcontainer)
 
