@@ -268,8 +268,9 @@ class Pireal(QMainWindow):
         dialog.exec_()
 
     def show_user_guide(self):
-        from src.gui import web_render
-        web = web_render.WebRender(self)
+        from src.gui.user_guide import help_widget
+        web = help_widget.HelpWidget(self)
+        web.resize(900, 500)
         web.show()
 
     def show_settings(self):

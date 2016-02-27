@@ -57,6 +57,7 @@ LOG_FILE_PATH = os.path.join(PIREAL_DIR, "pireal_log.log")
 SETTINGS_PATH = os.path.join(PIREAL_DIR, "pireal_settings.ini")
 LANG_PATH = os.path.join(PATH, "src", "lang")
 STYLESHEET = os.path.join(PATH, "src", "gui", "style.qss")
+USER_GUIDE_PATH = os.path.join(PATH, "src", "gui", "user_guide")
 
 
 class PSettings:
