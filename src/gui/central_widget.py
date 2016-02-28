@@ -103,7 +103,9 @@ class CentralWidget(QWidget):
         self.__created = True
 
     def open_database(self, filename=''):
-        # If not filename, then open dialog for select
+        """ This function opens a database and set this on the UI """
+
+        # If not filename provide, then open dialog to select
         if not filename:
             if self.__last_open_folder is None:
                 directory = os.path.expanduser("~")
@@ -120,12 +122,15 @@ class CentralWidget(QWidget):
             # Remember the folder
             self.__last_open_folder = file_manager.get_path(filename)
 
-        # Read pdb file
-        pfile_object = pfile.PFile(filename)
-        db_data = pfile_object.read()
-        #with open(filename, mode='r') as f:
-            #db_data = f.read()
-
+        try:
+            # Read pdb file
+            pfile_object = pfile.PFile(filename)
+            db_data = pfile_object.read()
+        except Exception as reason:
+            QMessageBox.information(self,
+                                    self.tr("The file couldn't be open"),
+                                    str(reason))
+            return
         # Add to recent databases
         self.__recent_files.add(filename)
 
@@ -133,11 +138,12 @@ class CentralWidget(QWidget):
         db_name = file_manager.get_basename(filename)
 
         database_container = main_container.MainContainer()
-        #pfile_object = pfile.PFile(filename)
+        # Set the PFile object to the new database
         database_container.pfile = pfile_object
         database_container.create_database(self.__sanitize_data(db_data))
         self.add_widget(database_container)
 
+        # Update title with the new database name, and enable some actions
         pireal = Pireal.get_service("pireal")
         pireal.change_title(db_name)
         pireal.set_enabled_db_actions(True)
@@ -154,6 +160,12 @@ class CentralWidget(QWidget):
         pass
 
     def __sanitize_data(self, data):
+        """
+        This function converts the data into a dictionary
+        for better handling then.
+        The argument 'data' is the content of the database.
+        """
+
         data_dict = {'tables': []}
 
         for line in data.splitlines():
@@ -186,6 +198,8 @@ class CentralWidget(QWidget):
         self.stacked.removeWidget(widget)
 
     def close_database(self):
+        """ Close the database and return to the main widget """
+
         mcontainer = self.get_active_db()
         if mcontainer is not None:
             if mcontainer.modified:

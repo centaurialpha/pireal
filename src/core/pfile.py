@@ -18,6 +18,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import os
+
 from PyQt5.QtCore import (
     QFile,
     QIODevice,
@@ -29,16 +30,14 @@ class PFile(object):
     """ This class represents a Pireal File, database file or query file """
 
     def __init__(self, filename=''):
+        """
+        Recive the filename or set using the filename property
+        """
+
         self.__is_new = True
         self.__filename = filename
-        #self.__filename = "untitled_{}.{}"
         if filename:
             self.__is_new = False
-
-    #def complete_name(self, n, extension):
-        #""" Adds number of new file and extension """
-
-        #self.__filename = self.__filename.format(n, extension)
 
     def __get_filename(self):
         """ Returns the filename """
@@ -67,10 +66,10 @@ class PFile(object):
     def read(self):
         """ This function reads the file and returns the contents """
 
-        _file = QFile(self.filename)
-        if not _file.open(QIODevice.ReadOnly | QIODevice.Text):
-            raise IOError
-        fstream = QTextStream(_file)
+        file_ = QFile(self.filename)
+        if not file_.open(QIODevice.ReadOnly | QIODevice.Text):
+            raise Exception(file_.errorString())
+        fstream = QTextStream(file_)
         fstream.setCodec('utf-8')
         return fstream.readAll()
 
@@ -81,9 +80,12 @@ class PFile(object):
             self.__filename = new_fname
             self.__is_new = False
 
-        _file = QFile(self.filename)
-        if not _file.open(QIODevice.WriteOnly | QIODevice.Truncate):
-            raise IOError
-        outfile = QTextStream(_file)
-        outfile.setCodec('utf-8')
-        outfile << content
+        file_ = QFile(self.filename)
+        if not file_.open(QIODevice.WriteOnly | QIODevice.Truncate):
+            raise Exception(file_.errorString())
+
+        stream = QTextStream(file_)
+        stream.setCodec('utf-8')
+        stream << content
+        stream.flush()
+        file_.close()

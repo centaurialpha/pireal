@@ -55,6 +55,13 @@ class StartPage(QWidget):
         # Connections
         self.__root.openDatabase.connect(self.__open_database)
         self.__root.newDatabase.connect(self.__new_database)
+        self.__root.removeCurrent.connect(self.__remove_current)
+
+    def __remove_current(self, path):
+        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        recent_files = qsettings.value('recentDB', set())
+        recent_files.remove(path)
+        qsettings.setValue('recentDB', recent_files)
 
     def __open_database(self, path):
         central_widget = Pireal.get_service("central")

@@ -5,6 +5,7 @@ Rectangle {
     color: "#ededed"
     signal openDatabase(string path)
     signal newDatabase
+    signal removeCurrent(string path)
 
     function loadItem(name, path) {
         listModel.append({"name": name, "path": path})
@@ -54,6 +55,8 @@ Rectangle {
                     left: parent.left
                     right: parent.right
                 }
+                property bool current: ListView.isCurrentItem
+
 
                 MouseArea {
                     anchors.fill: parent
@@ -95,6 +98,29 @@ Rectangle {
                         text: path
                     }
                 }
+
+                Image {
+                    id: imgDelete
+                    source: "close.png"
+                    anchors {
+                        right: parent.right
+                        verticalCenter: parent.verticalCenter
+                        rightMargin: 15
+                    }
+                    visible: listItem.current ? true : false;
+                    onVisibleChanged: NumberAnimation {
+                        target: imgDelete; property: "scale"; from: 0; to: 1; duration: 200
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+
+                        onClicked: {
+                            root.removeCurrent(path);
+                            listView.model.remove(index);
+                        }
+                    }
+                }
             }
         }
 
@@ -120,7 +146,6 @@ Rectangle {
             delegate: delegate
             highlight: high
             focus: true
-            //clip: true
         }
     }
 
