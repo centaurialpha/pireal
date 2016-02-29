@@ -30,8 +30,8 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtGui import (
     QStandardItem,
-    QBrush,
-    QColor
+    #QBrush,
+    #QColor
 )
 
 from src.gui import (
@@ -196,8 +196,8 @@ class MainContainer(QSplitter):
         current_table = self.table_widget.stacked.currentWidget()
         model = current_table.model()
         # Change color of item modified
-        item = model.item(row, col)
-        item.setBackground(QBrush(QColor("#e7e49d")))
+        #item = model.item(row, col)
+        #item.setBackground(QBrush(QColor("#e7e49d")))
         for i in range(model.rowCount()):
             reg = []
             for j in range(model.columnCount()):

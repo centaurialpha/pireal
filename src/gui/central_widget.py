@@ -26,6 +26,7 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QMessageBox
 )
+from PyQt5.QtCore import pyqtSignal
 
 from src.core import (
     settings,
@@ -53,6 +54,7 @@ DEBUG = logger.debug
 
 
 class CentralWidget(QWidget):
+    databaseSaved = pyqtSignal('QString')
 
     def __init__(self):
         QWidget.__init__(self)
@@ -253,21 +255,25 @@ class CentralWidget(QWidget):
         content = file_manager.generate_database(relations, relations_types)
         mcontainer.pfile.write(content=content, new_fname='')
         mcontainer.modified = False
+        filename = mcontainer.pfile.filename
+        # Emit signal
+        self.databaseSaved.emit(filename)
 
     def save_database_as(self, main_container=None):
-        if main_container is None:
-            main_container = self.get_active_db()
+        pass
+        #if main_container is None:
+            #main_container = self.get_active_db()
 
-        filename = QFileDialog.getSaveFileName(self, self.tr("Save File"),
-                                               main_container.dbname(),
-                                               "Pireal database files"
-                                               "(*.pdb)")[0]
-        if not filename:
-            return
+        #filename = QFileDialog.getSaveFileName(self, self.tr("Save File"),
+                                               #main_container.dbname(),
+                                               #"Pireal database files"
+                                               #"(*.pdb)")[0]
+        #if not filename:
+            #return
 
-        # Generate content
-        relations = main_container.table_widget.relations
-        print(relations)
+        ## Generate content
+        #relations = main_container.table_widget.relations
+        #print(relations)
         #content = file_manager.generate_database(relations)
         #main_container.pfile.write(content=content, new_fname=filename)
 
