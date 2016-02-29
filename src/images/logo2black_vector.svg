@@ -18,7 +18,7 @@
    inkscape:export-filename="/home/gabo/Documents/Projects/pireal/src/images/pireal_logo.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
-   sodipodi:docname="logo_vector.svg">
+   sodipodi:docname="logo2black_vector.svg">
   <defs
      id="defs4">
     <linearGradient
@@ -49,9 +49,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="331.77557"
-     inkscape:cy="176.82239"
+     inkscape:zoom="0.74577668"
+     inkscape:cx="403.89224"
+     inkscape:cy="182.70526"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -81,45 +81,39 @@
      transform="translate(0,-752.36218)">
     <text
        xml:space="preserve"
-       style="font-size:130.98144530999999802px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#3465a4;fill-opacity:1;stroke:none;font-family:Nimbus Mono L;-inkscape-font-specification:Sans Bold"
-       x="311.16559"
-       y="936.83368"
+       style="font-size:269.69662476000002016px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#3465a4;fill-opacity:1;stroke:none;font-family:Ubuntu Mono derivative Powerline;-inkscape-font-specification:Ubuntu Mono derivative Powerline Bold"
+       x="24.304882"
+       y="962.99921"
        id="text2989"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan2991"
-         x="311.16559"
-         y="936.83368"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#3465a4;font-family:Sans;-inkscape-font-specification:Sans Bold">π</tspan></text>
+         x="24.304882"
+         y="962.99921"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#3465a4;font-family:Ubuntu Mono derivative Powerline;-inkscape-font-specification:Ubuntu Mono derivative Powerline Bold">π</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:305.88415527px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#2e3436;fill-opacity:1;stroke:none;font-family:Sans"
-       x="16.113415"
-       y="993.36652"
-       id="text2985"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan2987"
-         x="16.113415"
-         y="993.36652"
-         style="font-weight:bold;fill:#2e3436;-inkscape-font-specification:Sans Bold">⋈</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:105.49711609px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#2e3436;fill-opacity:1;stroke:none;font-family:Sans"
-       x="433.97498"
-       y="937.87891"
+       style="font-size:183.10173035px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#2e3436;fill-opacity:1;stroke:none;font-family:Sans"
+       x="197.26865"
+       y="960.81293"
        id="text2993"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan2995"
-         x="433.97498"
-         y="937.87891"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;letter-spacing:30.83979607px;word-spacing:0px;fill:#2e3436;font-family:Ubuntu Mono derivative Powerline;-inkscape-font-specification:Ubuntu Mono derivative Powerline Bold">real</tspan></text>
-    <path
-       style="fill:url(#linearGradient3019);fill-opacity:1"
-       d="m 87.629524,897.07362 0,-33.24722 5.307395,4.11097 c 2.870254,2.22323 12.851831,9.49051 22.072801,16.29284 9.22098,6.80233 17.48795,12.75969 17.48795,12.75969 0,0 -4.41008,3.20462 -22.18441,16.32114 -12.094116,8.9248 -22.646535,16.87257 -22.646535,16.87257 0,0 -0.0372,-1.6417 -0.0372,-33.10999 z"
-       id="path3011"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="scsscscs" />
+         x="197.26865"
+         y="960.81293"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;letter-spacing:53.52582169px;word-spacing:0px;fill:#2e3436;font-family:Ubuntu Mono derivative Powerline;-inkscape-font-specification:Ubuntu Mono derivative Powerline Bold">real</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="105.92983"
+       y="26.459669"
+       id="text2990"
+       sodipodi:linespacing="125%"
+       transform="translate(0,752.36218)"><tspan
+         sodipodi:role="line"
+         id="tspan2992"
+         x="105.92983"
+         y="26.459669" /></text>
   </g>
 </svg>

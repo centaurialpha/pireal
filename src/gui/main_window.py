@@ -65,8 +65,8 @@ class Pireal(QMainWindow):
         '',
         'create_new_relation',
         'remove_relation',
-        'insert_row',
-        'insert_column',
+        'add_tuple',
+        'delete_tuple'
         '',
         'execute_queries'
     ]
@@ -91,12 +91,17 @@ class Pireal(QMainWindow):
         self.toolbar.setIconSize(QSize(22, 22))
         self.toolbar.setMovable(False)
         self.addToolBar(self.toolbar)
+
         # Menu bar
         menubar = self.menuBar()
         self.__load_menubar(menubar)
+        # Load notification widget after toolbar actions
+        notification_widget = Pireal.get_service("notification")
+        self.toolbar.addWidget(notification_widget)
 
         # Central widget
         central_widget = Pireal.get_service("central")
+        central_widget.databaseSaved.connect(notification_widget.show_text)
         self.setCentralWidget(central_widget)
         central_widget.add_start_page()
 
@@ -223,8 +228,9 @@ class Pireal(QMainWindow):
         actions = [
             'create_new_relation',
             'remove_relation',
-            'insert_row',
-            'insert_column',
+            'add_tuple',
+            'insert_tuple',
+            'delete_tuple'
         ]
 
         for action in actions:

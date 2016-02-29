@@ -56,20 +56,6 @@ MENU['file'] = {
     }, {
         'name': translate("Pireal", "Save Query"),
         'slot': "central:save_query"
-
-    #}, {
-        #'name': translate.TR_MENU_FILE_SAVE,
-        #'slot': "central:save_file"
-
-    #}, {
-        #'name': translate.TR_MENU_FILE_SAVE_AS,
-        #'slot': "container:save_query_as"
-    #}, "-", {
-        #'name': translate.TR_MENU_FILE_CONVERT_TO_PDB,
-        #'slot': "container:convert_to_pdb"
-    #}, "-", {
-        #'name': None,
-        #'slot': "main:open_recent_file"
     }, "-", {
         'name': translate("Pireal", "Exit"),
         'slot': "pireal:close"}]}
@@ -110,12 +96,15 @@ MENU['relation'] = {
     }, {
         'name': translate("Pireal", "Load Relation"),
         'slot': "central:load_relation"
+    }, "-", {
+        'name': translate("Pireal", "Insert Tuple"),
+        'slot': "central:insert_tuple"
     }, {
-        'name': translate("Pireal", "Insert Row"),
-        'slot': "central:insert_row"
+        'name': translate("Pireal", "Add Tuple"),
+        'slot': "central:add_tuple"
     }, {
-        'name': translate("Pireal", "Insert Column"),
-        'slot': "central:insert_column"
+        'name': translate("Pireal", "Delete Tuple"),
+        'slot': "central:delete_tuple"
     }, "-", {
         'name': translate("Pireal", "Execute Queries"),
         'slot': "central:execute_queries"}]}

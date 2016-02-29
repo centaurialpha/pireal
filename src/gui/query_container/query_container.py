@@ -48,7 +48,6 @@ from src.gui import (
     list_widget,
     fader_widget
 )
-from src import translations as tr
 from src.gui.main_window import Pireal
 #from src.gui import lateral_widget
 from src.gui.query_container import (
@@ -84,6 +83,7 @@ class QueryContainer(QWidget):
         # Regex for validate variable name
         self.__validName = re.compile(r'^[a-z_]\w*$')
 
+        self.__nquery = 1
         # Toolbar
         #toolbar = self.__load_toolbar()
         #box.addWidget(toolbar)
@@ -160,40 +160,36 @@ class QueryContainer(QWidget):
         self.saveEditor.emit(editor)
 
     def execute_queries(self):
+        # Get the text from editor
         weditor = self.currentWidget().get_editor()
         text = weditor.toPlainText()
 
         central = Pireal.get_service("central")
         table_widget = central.get_active_db().table_widget
 
-        #FIXME: Move ignore comments to parser
+        # Ignore comments
         for line in text.splitlines():
             if line.startswith('--'):
                 continue
 
-            #FIXME: validate ':='
-            parts = line.split(':=')
-            parts[0] = parts[0].strip()
-            if len(parts) > 1:
-                if self.__validName.match(parts[0]):
-                    relation_name, line = parts
-                else:
-                    QMessageBox.critical(self, tr.TR_QUERY_ERROR,
-                                         "Nombre inválido")
+            parts = line.split('=', 1)
+            if len(parts) == 2 and self.__validName.match(parts[0].strip()):
+                relation_name = parts[0].strip()
+                line = parts[1].strip()
             else:
-                relation_name = "query_"
+                relation_name = "query_{}".format(self.__nquery)
+                self.__nquery += 1
+            print(line)
             try:
-                #DEBUG("Parseando la línea: {line}".format(line=line.strip()))
-                expression = parser.convert_to_python(line.strip())
-                #DEBUG("Ejecutando la expresión: {exp}".format(exp=expression))
-                relation = eval(expression, table_widget.relations)
+                expression = parser.convert_to_python(line)
+                rela = eval(expression, table_widget.relations)
             except Exception as reason:
-                QMessageBox.critical(self, tr.TR_QUERY_ERROR, reason.__str__())
-                ERROR("Error al evaluar o ejecutar la expresión: {}".format(
-                    reason.__str__()))
+                QMessageBox.critical(self,
+                                     self.tr("Query Error"),
+                                     reason.__str__())
 
-            if table_widget.add_relation(relation_name, relation):
-                self.__add_table(relation, relation_name)
+            if table_widget.add_relation(relation_name, rela):
+                self.__add_table(rela, relation_name)
 
     def __add_table(self, rela, rname):
         self.currentWidget().add_table(rela, rname)

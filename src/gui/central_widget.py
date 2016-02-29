@@ -257,7 +257,8 @@ class CentralWidget(QWidget):
         mcontainer.modified = False
         filename = mcontainer.pfile.filename
         # Emit signal
-        self.databaseSaved.emit(filename)
+        self.databaseSaved.emit(
+            self.tr("Database saved: {}".format(filename)))
 
     def save_database_as(self, main_container=None):
         pass

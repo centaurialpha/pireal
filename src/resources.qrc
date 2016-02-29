@@ -8,7 +8,6 @@
         <file alias="create_new_relation">images/table.png</file>
         <file alias="remove_relation">images/table_close.png</file>
         <file alias="execute_queries">images/execute.png</file>
-        <file alias="logo">images/pireal_logo.png</file>
         <file alias="intersect">images/intersection.png</file>
         <file alias="njoin">images/njoin.png</file>
         <file alias="product">images/product.png</file>
@@ -19,10 +18,16 @@
         <file alias="create_database">images/database.png</file>
         <file alias="save_database">images/database_save.png</file>
         <file alias="open_database">images/import_database.png</file>
-        <file alias="insert_column">images/insert_column.png</file>
-        <file alias="insert_row">images/insert_row.png</file>
+        <file alias="insert_tuple">images/insert_row.png</file>
         <file alias="new_query">images/new-query.png</file>
         <file alias="open_query">images/open-query.png</file>
         <file alias="save_query">images/save-query.png</file>
+        <file alias="add_tuple">images/add-tuple.png</file>
+        <file alias="delete_tuple">images/delete-tuple.png</file>
+        <file alias="load_relation">images/table_down.png</file>
+        <file alias="close_database">images/database-close.png</file>
+        <file alias="close">images/close.png</file>
+        <file alias="show_settings">images/preferences.png</file>
+        <file alias="logo">images/pireal_logo-black.png</file>
     </qresource>
 </RCC>

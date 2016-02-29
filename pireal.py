@@ -114,6 +114,7 @@ if __name__ == "__main__":
 
     # Load services
     from src.gui import central_widget  # lint:ok
+    from src.gui import notification  # lint:ok
     from src.gui.main_window import Pireal
 
     INFO("Loading GUI...")

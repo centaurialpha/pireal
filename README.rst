@@ -9,7 +9,7 @@
 
 **Pireal** is an educational tool for working with relational database using the query language of relational algebra. *Currently under development*.
 
-.. image:: /src/images/pireal_logo.png
+.. image:: /src/images/pireal_logo-black.png
 
 Platforms
 #########
