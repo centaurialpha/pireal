@@ -28,7 +28,10 @@ import os
 
 try:
 
-    from PyQt5.QtWidgets import QApplication
+    from PyQt5.QtWidgets import (
+        QApplication,
+        QStyleFactory
+    )
     from PyQt5.QtGui import QIcon
     from PyQt5.QtCore import (
         QLocale,
@@ -92,9 +95,7 @@ if __name__ == "__main__":
     qapp = QApplication(sys.argv)
 
     # Style
-    style = settings.PSettings.THEME
-    if style:
-        QApplication.instance().setStyle(style)
+    QApplication.setStyle(QStyleFactory.create("Fusion"))
 
     # Icon
     qapp.setWindowIcon(QIcon(":img/icon"))
