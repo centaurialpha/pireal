@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import webbrowser
 from PyQt5.QtWidgets import (
     QDialog,
     QVBoxLayout,
@@ -45,15 +44,16 @@ class AboutDialog(QDialog):
         vbox.addWidget(banner)
 
         # Version
-        label_version = QLabel(self.tr("<a href='{0}'><span style='color: "
+        lbl_version = QLabel(self.tr("<a href='{0}'><span style='color: "
                                        "#3465a4'>Version {1}"
                                        "</span></a>".format(
                                gui.__source_code__, gui.__version__)))
-        label_version.setAlignment(Qt.AlignHCenter)
-        font = label_version.font()
+        lbl_version.setOpenExternalLinks(True)
+        lbl_version.setAlignment(Qt.AlignHCenter)
+        font = lbl_version.font()
         font.setPointSize(13)
-        label_version.setFont(font)
-        vbox.addWidget(label_version)
+        lbl_version.setFont(font)
+        vbox.addWidget(lbl_version)
 
         # Description
         description = QLabel(self.tr("<br><br>an educational tool for "
@@ -74,10 +74,21 @@ class AboutDialog(QDialog):
                                             "GitHub.</span></a>".format(
                                     gui.__license__, gui.__source_code__)))
         lbl_license_source.setAlignment(Qt.AlignHCenter)
+        lbl_license_source.setOpenExternalLinks(True)
         font = lbl_license_source.font()
         font.setPointSize(13)
         lbl_license_source.setFont(font)
         vbox.addWidget(lbl_license_source)
+
+        # Author
+        lbl_author = QLabel(self.tr("<br><br><b>Author: </b>Gabriel Acosta "
+                                    "\"gabo\" &lt;<a href='mailto:acostadario"
+                                    "gabriel@gmail.com'><span "
+                                    "style='color: #3465a4'>"
+                                    "acostadariogabriel@gmail.com"
+                                    "</span></a>&gt;"))
+        lbl_author.setOpenExternalLinks(True)
+        vbox.addWidget(lbl_author)
 
         # Buttons
         hbox = QHBoxLayout()
@@ -87,7 +98,3 @@ class AboutDialog(QDialog):
         vbox.addLayout(hbox)
 
         btn_ok.clicked.connect(self.close)
-        label_version.linkActivated['QString'].connect(
-            lambda link: webbrowser.open_new(link))
-        lbl_license_source.linkActivated['QString'].connect(
-            lambda link: webbrowser.open_new(link))
