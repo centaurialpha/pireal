@@ -72,7 +72,7 @@ class CentralWidget(QWidget):
 
         Pireal.load_service("central", self)
 
-    def create_database_wizard(self):
+    def create_database(self):
         wizard = database_wizard.DatabaseWizard(self)
         wizard.wizardFinished.connect(
             self.__on_wizard_finished)

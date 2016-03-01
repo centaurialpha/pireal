@@ -27,14 +27,22 @@ from PyQt5.QtCore import Qt
 
 
 KEYMAP = {
-    'create_database_wizard': QKeySequence(Qt.CTRL + Qt.Key_N),
-    #'new_query': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_Q),
+    'create_database': QKeySequence(Qt.CTRL + Qt.Key_N),
     'open_database': QKeySequence(Qt.CTRL + Qt.Key_O),
-    #'save_file': QKeySequence(Qt.CTRL + Qt.Key_S),
-    #'close': QKeySequence(Qt.CTRL + Qt.Key_Q),
-    #'undo_action': QKeySequence(Qt.CTRL + Qt.Key_Z),
-    #'redo_action': QKeySequence(Qt.CTRL + Qt.Key_Y),
-    #'cut_action': QKeySequence(Qt.CTRL + Qt.Key_X),
-    #'copy_action': QKeySequence(Qt.CTRL + Qt.Key_C),
-    #'paste_action': QKeySequence(Qt.CTRL + Qt.Key_V)
+    'save_database': QKeySequence(Qt.CTRL + Qt.Key_S),
+    'close_database': QKeySequence(Qt.CTRL + Qt.Key_W),
+    'new_query': QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_N),
+    'open_query': QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_O),
+    'save_query': QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_S),
+    'close': QKeySequence(Qt.CTRL + Qt.Key_Q),
+    'undo_action': QKeySequence(Qt.CTRL + Qt.Key_Z),
+    'redo_action': QKeySequence(Qt.CTRL + Qt.Key_Y),
+    'cut_action': QKeySequence(Qt.CTRL + Qt.Key_X),
+    'copy_action': QKeySequence(Qt.CTRL + Qt.Key_C),
+    'paste_action': QKeySequence(Qt.CTRL + Qt.Key_V),
+    'show_settings': QKeySequence(Qt.CTRL + Qt.Key_P),
+    'create_new_relation': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_N),
+    'remove_relation': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_W),
+    'load_relation': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_O),
+    'execute_queries': QKeySequence(Qt.CTRL + Qt.Key_R)
 }
