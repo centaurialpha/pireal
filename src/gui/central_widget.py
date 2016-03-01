@@ -133,13 +133,21 @@ class CentralWidget(QWidget):
                                     self.tr("The file couldn't be open"),
                                     str(reason))
             return
+
+        try:
+            db_data = self.__sanitize_data(db_data)
+        except Exception as reason:
+            QMessageBox.critical(self,
+                                 self.tr("Error in database file"),
+                                 str(reason))
+            return
+        database_container = main_container.MainContainer()
         # Add to recent databases
         self.__recent_files.add(filename)
 
         # Database name
         db_name = file_manager.get_basename(filename)
 
-        database_container = main_container.MainContainer()
         # Set the PFile object to the new database
         database_container.pfile = pfile_object
         database_container.create_database(self.__sanitize_data(db_data))
@@ -168,8 +176,12 @@ class CentralWidget(QWidget):
         The argument 'data' is the content of the database.
         """
 
+        #FIXME: move to imports
+        import re
+        field_pat = re.compile("^[a-zA-Z]+/{1}(numeric|char|date){1}\s*$")
         data_dict = {'tables': []}
 
+        line_count = 1
         for line in data.splitlines():
             # Ignore blank lines
             if not line:
@@ -177,7 +189,14 @@ class CentralWidget(QWidget):
             if line.startswith('@'):
                 table_name, line = line.split(':')
                 table_name = table_name[1:].strip()
-                fields = [tuple(f.split('/')) for f in line.split(',')]
+                # Validate fields
+                fields = []
+                for f in line.split(','):
+                    if not field_pat.match(f):
+                        raise Exception("Syntax error in line {0}\n\n"
+                                        "{1}".format(line_count, f))
+                    fields.append(tuple(f.split('/')))
+
                 table_dict = {}
                 table_dict['name'] = table_name
                 table_dict['fields'] = [f[0] for f in fields]
@@ -190,6 +209,8 @@ class CentralWidget(QWidget):
                     table_dict['tuples'].append(line)
             if not table_dict['tuples']:
                 data_dict['tables'].append(table_dict)
+
+            line_count += 1
 
         return data_dict
 
