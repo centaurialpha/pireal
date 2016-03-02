@@ -7,7 +7,7 @@
 πreal |test|
 *****
 
-**Pireal** is an educational tool for working with relational database using the query language of relational algebra. *Currently under development*.
+**Pireal** is an educational tool for working with relational database using the query language of relational algebra.
 
 .. image:: /src/images/pireal_logo-black.png
 
@@ -55,9 +55,9 @@ Syntax
 
 ::
 
-    q1 := people njoin skills
-    q2 := select age > 25 (q1)
-    q3 := project id, name, skill (q2)
+    q1 = people njoin skills
+    q2 = select age > 25 (q1)
+    q3 = project id, name, skill (q2)
 
 or
 
@@ -110,11 +110,12 @@ Example of a ``database.pdb`` file:
 
 ::
 
-    @people:id,name,age
+    @people:id/numeric,name/char,age/numeric
     001,Mike,15
     002,Gabriel,24
     003,Linus,45
-    @skills:id,skill
+    
+    @skills:id/numeric,skill/char
     002,Python
     003,Linux
 
@@ -146,7 +147,7 @@ The result:
 How to create a table/relation
 ******************************
 
-The table files have the extension ``.prf``, ``csv`` or ``txt``.
+The table files have the extension ``.prf``.
 
 Syntax
 ******
@@ -166,7 +167,7 @@ Example:
 
 ::
 
-    id,skill
+    id/numeric,skill/char
     23,Linux
     7,GNU
     6,Gamer
@@ -179,6 +180,7 @@ Now you can load the relation from the menu ``Relation/Load Relation``.
 Demo
 ####
 
-.. image:: https://github.com/centaurialpha/pireal/blob/gh-pages/img/demo.gif
-    :width: 300
-    :height: 300
+.. image:: http://img.youtube.com/vi/UkfJpu6YlVM/maxresdefault.jpg
+   :width: 300
+   :height: 300
+   :target: https://www.youtube.com/watch?v=UkfJpu6YlVM
