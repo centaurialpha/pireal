@@ -180,7 +180,5 @@ Now you can load the relation from the menu ``Relation/Load Relation``.
 Video
 #####
 
-.. image:: http://img.youtube.com/vi/UkfJpu6YlVM/maxresdefault.jpg
+.. image:: http://img.youtube.com/vi/UkfJpu6YlVM/hqdefault.jpg
    :target: https://www.youtube.com/watch?v=UkfJpu6YlVM
-   :width: 200
-   :height: 200
