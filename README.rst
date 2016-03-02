@@ -177,10 +177,10 @@ Example:
 
 Now you can load the relation from the menu ``Relation/Load Relation``.
 
-Demo
-####
+Video
+#####
 
 .. image:: http://img.youtube.com/vi/UkfJpu6YlVM/maxresdefault.jpg
-   :width: 300
-   :height: 300
    :target: https://www.youtube.com/watch?v=UkfJpu6YlVM
+   :width: 200
+   :height: 200
