@@ -29,5 +29,6 @@
         <file alias="close">images/close.png</file>
         <file alias="show_settings">images/preferences.png</file>
         <file alias="logo">images/pireal_logo-black.png</file>
+        <file alias="icon">images/pireal_icon.png</file>
     </qresource>
 </RCC>
