@@ -124,6 +124,7 @@ class CentralWidget(QWidget):
             # Remember the folder
             self.__last_open_folder = file_manager.get_path(filename)
 
+        # If filename provide
         try:
             # Read pdb file
             pfile_object = pfile.PFile(filename)
@@ -134,25 +135,26 @@ class CentralWidget(QWidget):
                                     str(reason))
             return
 
-        try:
-            db_data = self.__sanitize_data(db_data)
-        except Exception as reason:
-            QMessageBox.critical(self,
-                                 self.tr("Error in database file"),
-                                 str(reason))
-            return
+        #try:
+        # Create a dict to manipulate data more easy
+        db_data = self.__sanitize_data(db_data)
+        # Create a database container widget
         database_container = main_container.MainContainer()
-        # Add to recent databases
-        self.__recent_files.add(filename)
 
-        # Database name
-        db_name = file_manager.get_basename(filename)
+        try:
+            database_container.create_database(db_data)
+        except Exception as reason:
+            QMessageBox.information(self,
+                                    self.tr("Error"),
+                                    str(reason))
+            return
 
         # Set the PFile object to the new database
         database_container.pfile = pfile_object
-        database_container.create_database(self.__sanitize_data(db_data))
+        # Add data base container to stacked
         self.add_widget(database_container)
-
+        # Database name
+        db_name = file_manager.get_basename(filename)
         # Update title with the new database name, and enable some actions
         pireal = Pireal.get_service("pireal")
         pireal.change_title(db_name)
@@ -175,13 +177,9 @@ class CentralWidget(QWidget):
         for better handling then.
         The argument 'data' is the content of the database.
         """
-
-        #FIXME: move to imports
-        import re
-        field_pat = re.compile("^[a-zA-Z]+/{1}(numeric|char|date){1}\s*$")
         data_dict = {'tables': []}
 
-        line_count = 1
+        #line_count = 1
         for line in data.splitlines():
             # Ignore blank lines
             if not line:
@@ -189,18 +187,21 @@ class CentralWidget(QWidget):
             if line.startswith('@'):
                 table_name, line = line.split(':')
                 table_name = table_name[1:].strip()
+
+                #fields = [tuple(f.spl]
                 # Validate fields
-                fields = []
-                for f in line.split(','):
-                    if not field_pat.match(f):
-                        raise Exception("Syntax error in line {0}\n\n"
-                                        "{1}".format(line_count, f))
-                    fields.append(tuple(f.split('/')))
+                #fields = []
+                #for f in line.split(','):
+                    #if not field_pat.match(f):
+                        #raise Exception("Syntax error in line {0}\n\n"
+                                        #"{1}".format(line_count, f))
+                    #fields.append(tuple(f.split('/')))
 
                 table_dict = {}
                 table_dict['name'] = table_name
-                table_dict['fields'] = [f[0] for f in fields]
-                table_dict['types'] = [f[1] for f in fields]
+                table_dict['header'] = line.split(',')
+                #table_dict['fields'] = [f[0] for f in fields]
+                #table_dict['types'] = [f[1] for f in fields]
                 table_dict['tuples'] = []
             else:
                 # Strip whitespace
@@ -210,8 +211,7 @@ class CentralWidget(QWidget):
             if not table_dict['tuples']:
                 data_dict['tables'].append(table_dict)
 
-            line_count += 1
-
+            #line_count += 1
         return data_dict
 
     def remove_last_widget(self):
