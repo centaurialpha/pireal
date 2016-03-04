@@ -69,7 +69,7 @@ class StartPage(QWidget):
 
     def __new_database(self):
         central_widget = Pireal.get_service("central")
-        central_widget.create_database_wizard()
+        central_widget.create_database()
 
     def load_items(self):
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)

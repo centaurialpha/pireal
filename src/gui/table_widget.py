@@ -20,8 +20,9 @@
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QStackedWidget,
+    QStackedWidget
 )
+from PyQt5.QtGui import QStandardItem
 
 from src.gui import (
     custom_table,
@@ -62,21 +63,27 @@ class TableWidget(QWidget):
             return True
         return False
 
-    def add_table(self, rows, columns, name, data, fields):
+    def add_table(self, rela, name, types):
         """ Add new table from New Relation Dialog """
 
         ptable = custom_table.Table()
-        ptable.setRowCount(rows)
-        ptable.setColumnCount(columns)
-        ptable.setHorizontalHeaderLabels(fields)
+        model = ptable.model()
+        model.setHorizontalHeaderLabels(rela.header)
 
-        for k, v in list(data.items()):
-            item = custom_table.Item()
-            item.setText(v)
-            ptable.setItem(k[0], k[1], item)
+        # Populate table
+        row_count = 0
+        for row in rela.content:
+            for col_count, i in enumerate(row):
+                item = QStandardItem(i)
+                item.setSelectable(False)
+                model.setItem(row_count, col_count, item)
+                delegate = ptable.itemDelegate()
+                delegate.data_types[col_count] = types[col_count]
+            row_count += 1
 
+        self.add_relation(name, rela)
         self.stacked.addWidget(ptable)
-        self.stacked.setCurrentIndex(self.count() - 1)
+
         central = Pireal.get_service("central")
         active_db = central.get_active_db()
         active_db.modified = True

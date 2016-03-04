@@ -102,6 +102,7 @@ class CentralWidget(QWidget):
         pireal.change_title(file_manager.get_basename(data['filename']))
         # Enable db actions
         pireal.set_enabled_db_actions(True)
+        pireal.set_enabled_relation_actions(True)
         self.__created = True
 
     def open_database(self, filename=''):

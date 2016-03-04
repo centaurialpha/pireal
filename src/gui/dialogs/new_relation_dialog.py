@@ -49,6 +49,7 @@ from PyQt5.QtCore import (
 from src.gui.main_window import Pireal
 #from src.gui import table
 from src.core import relation
+from src.gui import custom_table
 
 
 class NewRelationDialog(QDialog):
@@ -98,7 +99,7 @@ class NewRelationDialog(QDialog):
         header.model().setHeaderData(0, Qt.Horizontal, self.tr("Field 1"))
         header.model().setHeaderData(1, Qt.Horizontal, self.tr("Field 2"))
         # Delegate
-        delegate = ItemDelegate()
+        delegate = custom_table.ItemDelegate()
         self._table.setItemDelegate(delegate)
         vbox.addWidget(self._table)
 
@@ -137,6 +138,9 @@ class NewRelationDialog(QDialog):
     def __remove_column(self):
         model = self._table.model()
         column_to_remove = self._table.currentIndex().column()
+        if column_to_remove == -1:
+            # Remove last
+            column_to_remove = model.columnCount() - 1
         model.removeColumn(column_to_remove)
         self.__remove_from_layout(column_to_remove)
         self._table.resizeColumnToContents(0)
@@ -149,19 +153,27 @@ class NewRelationDialog(QDialog):
     def __remove_tuple(self):
         model = self._table.model()
         row_to_remove = self._table.currentIndex().row()
+        if row_to_remove == -1:
+            # Remove last
+            row_to_remove = model.rowCount() - 1
         model.removeRow(row_to_remove)
 
     def __add_combo_to_layout(self):
         combo = QComboBox()
-        combo.addItems(["Select Type", "Char", "Numeric"])
+        combo.addItems([
+            self.tr("Select Type"),
+            "numeric",
+            "char"
+        ])
         self._hbox.addWidget(combo)
 
-        combo.activated[int].connect(self._current_index_combo_changed)
+        combo.activated.connect(self._current_index_combo_changed)
 
-    def _current_index_combo_changed(self, index):
+    def _current_index_combo_changed(self):
         index_of_combo_widget = self._hbox.indexOf(self.sender())
+        type_ = self._hbox.itemAt(index_of_combo_widget).widget().currentText()
         delegate = self._table.itemDelegate()
-        delegate.set_column_type(index_of_combo_widget, index)
+        delegate.data_types[index_of_combo_widget] = type_
 
     def __remove_from_layout(self, index):
         widget = self._hbox.takeAt(index).widget()
@@ -187,11 +199,16 @@ class NewRelationDialog(QDialog):
             return
 
         nrow = self._table.model().rowCount()
+        if nrow == 0:
+            QMessageBox.critical(self,
+                                 "Error",
+                                 self.tr("Please add tuples"))
+            return
         ncolumn = self._table.model().columnCount()
 
         rel = relation.Relation()
         # Header of relation
-        fields = []
+        header = []
 
         for i in range(ncolumn):
             text = self._table.model().horizontalHeaderItem(i).text()
@@ -199,12 +216,14 @@ class NewRelationDialog(QDialog):
                 QMessageBox.critical(self, "Error",
                                      self.tr("Add Column"))
                 return
-            fields.append(text)
+            header.append(text)
 
-        rel.fields = fields
+        try:
+            rel.header = header
+        except Exception as reason:
+            QMessageBox.critical(self, "Error", str(reason))
+            return
 
-        # Data
-        data = {}
         for row in range(nrow):
             reg = []
             for column in range(ncolumn):
@@ -215,15 +234,14 @@ class NewRelationDialog(QDialog):
                             row + 1, column + 1)))
                     return
                 reg.append(item.text())
-                data[row, column] = item.text()
             rel.insert(reg)
-        # Add table and relation
+
         central = Pireal.get_service("central")
         table_widget = central.get_active_db().table_widget
-        table_widget.add_table(nrow, ncolumn, name, data, fields)
-        table_widget.add_relation(name, rel)
+        data_types = self._table.itemDelegate().data_types
+        table_widget.add_table(rel, name, data_types)
         list_relation = central.get_active_db().lateral_widget
-        list_relation.add_item(name, nrow)
+        list_relation.add_item(name)
 
         self.close()
 
