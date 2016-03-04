@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Pireal
+GenericName=Pireal
+Comment=Educational tool for working with Relational Algebra
+Icon=@ INSTALLED_ICON @
+Exec=pireal
+Terminal=false
+Categories=Education,Utilities

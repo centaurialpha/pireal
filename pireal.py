@@ -42,6 +42,17 @@ try:
 except ImportError:
     print("Pireal need PyQt 5 :(")
 
+INSTALL_DIR = "@ INSTALLED_BASE_DIR @"
+
+if os.path.exists(INSTALL_DIR):
+    project = INSTALL_DIR
+else:
+    project = os.path.abspath(os.path.dirname(
+        os.path.realpath(sys.argv[0])))
+
+if project not in sys.path:
+    sys.path.insert(0, project)
+
 from src.core import settings
 from src.core.logger import PirealLogger
 
