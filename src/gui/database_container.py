@@ -242,8 +242,23 @@ class DatabaseContainer(QSplitter):
         model = current_table.model()
         selection = current_table.selectionModel()
         if selection.hasSelection():
-            row = selection.selectedRows()[0].row()
-            model.takeRow(row)
+            r = QMessageBox.question(self,
+                                     self.tr("Confirm tuple delete"),
+                                     self.tr("Are you sure you want to "
+                                             "to delete the selected"
+                                             "tuple(s)?"),
+                                    QMessageBox.Yes | QMessageBox.No)
+            if r == QMessageBox.Yes:
+                selection = selection.selection()
+                rows = set([index.row() for index in selection.indexes()])
+                rows = sorted(list(rows))
+                previous = -1
+                i = len(rows) - 1
+                while i >= 0:
+                    current = rows[i]
+                    if current != previous:
+                        model.removeRows(current, 1)
+                    i -= 1
 
     def __add_table(self, rela, relation_name, types):
         ptable = custom_table.Table()

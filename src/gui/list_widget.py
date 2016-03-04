@@ -29,7 +29,7 @@ from PyQt5.QtCore import (
     Qt,
     pyqtSignal
 )
-from src.gui.main_window import Pireal
+#from src.gui.main_window import Pireal
 from src import translations as tr
 
 
