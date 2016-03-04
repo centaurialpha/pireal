@@ -136,6 +136,7 @@ class CentralWidget(QWidget):
             # Read pdb file
             pfile_object = pfile.PFile(filename)
             db_data = pfile_object.read()
+            db_data = self.__sanitize_data(db_data)
         except Exception as reason:
             QMessageBox.information(self,
                                     self.tr("The file couldn't be open"),
@@ -143,7 +144,6 @@ class CentralWidget(QWidget):
             return
 
         # Create a dict to manipulate data more easy
-        db_data = self.__sanitize_data(db_data)
         # Create a database container widget
         db_container = database_container.DatabaseContainer()
 
@@ -202,7 +202,12 @@ class CentralWidget(QWidget):
             if not line:
                 continue
             if line.startswith('@'):
-                table_name, line = line.split(':')
+                #FIXME: mmm
+                try:
+                    table_name, line = line.split(':')
+                except:
+                    raise Exception("Invalid syntax in '{}' relation:\n"
+                                    "{}".format(table_name, line))
                 table_name = table_name[1:].strip()
 
                 table_dict = {}
