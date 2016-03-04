@@ -105,42 +105,40 @@ class MainContainer(QSplitter):
             table_name = table.get('name')
             header = table.get('header')
             tuples = table.get('tuples')
-            #fields = table.get('fields')
-
-            #types = table.get('types')
+            types = [t.split('/')[1] for t in header]
+            fields_name = [f.split('/')[0] for f in header]
             #self.table_widget.relations_types[table_name] = types
-
-            #model.setHorizontalHeaderLabels(header)
 
             # Create relation
             rela = relation.Relation()
-            rela.header = header
-            print(rela.header)
+            rela.header = fields_name
+
             # Table view widget
             table_view = custom_table.Table()
             table_view.dataChange.connect(self.__on_data_table_changed)
             model = table_view.model()
-            #rela.fields = fields
-            ## Populate table view
-            #row_count = 0
-            #for row in tuples:
-                #for col_count, i in enumerate(row):
-                    #item = QStandardItem(i)
-                    #item.setSelectable(False)
-                    #model.setItem(row_count, col_count, item)
-                    #delegate = table_view.itemDelegate()
-                    #delegate.data_types[col_count] = types[col_count]
-                #rela.insert(row)
-                #row_count += 1
+            model.setHorizontalHeaderLabels(fields_name)
+
+            # Populate table view
+            row_count = 0
+            for row in tuples:
+                for col_count, i in enumerate(row):
+                    item = QStandardItem(i)
+                    item.setSelectable(False)
+                    model.setItem(row_count, col_count, item)
+                    delegate = table_view.itemDelegate()
+                    delegate.data_types[col_count] = types[col_count]
+                rela.insert(row)
+                row_count += 1
             ## Add relation to relations dict
-            #self.table_widget.add_relation(table_name, rela)
-            ## Add table to stacked
-            #self.table_widget.stacked.addWidget(table_view)
-            ## Add table name to list widget
-            #self.lateral_widget.add_item(table_name)
-        ## Select first item
-        #first_item = self.lateral_widget.item(0)
-        #first_item.setSelected(True)
+            self.table_widget.add_relation(table_name, rela)
+            # Add table to stacked
+            self.table_widget.stacked.addWidget(table_view)
+            # Add table name to list widget
+            self.lateral_widget.add_item(table_name)
+        # Select first item
+        first_item = self.lateral_widget.item(0)
+        first_item.setSelected(True)
 
     def load_relation(self, filenames):
         for filename in filenames:

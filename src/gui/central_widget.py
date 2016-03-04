@@ -179,7 +179,6 @@ class CentralWidget(QWidget):
         """
         data_dict = {'tables': []}
 
-        #line_count = 1
         for line in data.splitlines():
             # Ignore blank lines
             if not line:
@@ -188,20 +187,9 @@ class CentralWidget(QWidget):
                 table_name, line = line.split(':')
                 table_name = table_name[1:].strip()
 
-                #fields = [tuple(f.spl]
-                # Validate fields
-                #fields = []
-                #for f in line.split(','):
-                    #if not field_pat.match(f):
-                        #raise Exception("Syntax error in line {0}\n\n"
-                                        #"{1}".format(line_count, f))
-                    #fields.append(tuple(f.split('/')))
-
                 table_dict = {}
                 table_dict['name'] = table_name
                 table_dict['header'] = line.split(',')
-                #table_dict['fields'] = [f[0] for f in fields]
-                #table_dict['types'] = [f[1] for f in fields]
                 table_dict['tuples'] = []
             else:
                 # Strip whitespace
@@ -211,7 +199,6 @@ class CentralWidget(QWidget):
             if not table_dict['tuples']:
                 data_dict['tables'].append(table_dict)
 
-            #line_count += 1
         return data_dict
 
     def remove_last_widget(self):

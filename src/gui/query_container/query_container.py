@@ -272,7 +272,7 @@ class QueryWidget(QWidget):
         wtable = custom_table.Table()
 
         #wtable.setColumnCount(len(rela.fields))
-        wtable.model().setHorizontalHeaderLabels(rela.fields)
+        wtable.model().setHorizontalHeaderLabels(rela.header)
 
         for data in rela.content:
             nrow = wtable.model().rowCount()
