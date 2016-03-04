@@ -76,8 +76,7 @@ class Relation(object):
         new_relation.header = self.__header
 
         value = expression.rsplit(' ', 1)[-1]
-        if value.isdigit():
-            expression = expression.replace(value, '"' + value + '"')
+        expression = expression.replace(value, '"' + value + '"')
 
         # Filtering
         d = {}

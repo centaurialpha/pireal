@@ -193,6 +193,8 @@ class CentralWidget(QWidget):
         for better handling then.
         The argument 'data' is the content of the database.
         """
+
+        #FIXME: controlar cuando al final de la línea hay una coma
         data_dict = {'tables': []}
 
         for line in data.splitlines():

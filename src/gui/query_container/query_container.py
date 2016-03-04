@@ -181,7 +181,7 @@ class QueryContainer(QWidget):
             else:
                 relation_name = "query_{}".format(self.__nquery)
                 self.__nquery += 1
-            print(line)
+
             try:
                 expression = parser.convert_to_python(line)
                 rela = eval(expression, table_widget.relations)
