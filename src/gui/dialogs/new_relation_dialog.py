@@ -22,32 +22,27 @@ from PyQt5.QtWidgets import (
     QDialog,
     QVBoxLayout,
     QHBoxLayout,
-    #QLabel,
     QLineEdit,
     QPushButton,
-    #QTableWidgetItem,
     QSpacerItem,
     QSizePolicy,
     QMessageBox,
     QShortcut,
     QComboBox,
     QTableView,
-    QItemDelegate,
     QHeaderView
 )
 from PyQt5.QtGui import (
     QKeySequence,
-    QStandardItemModel,
-    QValidator,
-    QIntValidator
+    QStandardItemModel
 )
 from PyQt5.QtCore import (
     Qt,
     pyqtSignal,
     QModelIndex
 )
+
 from src.gui.main_window import Pireal
-#from src.gui import table
 from src.core import relation
 from src.gui import custom_table
 
@@ -58,7 +53,6 @@ class NewRelationDialog(QDialog):
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         self.resize(600, 400)
-        #self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.setFocusPolicy(Qt.TabFocus)
         self.setFocus()
         self.setWindowTitle(self.tr("New Relation"))
@@ -68,8 +62,6 @@ class NewRelationDialog(QDialog):
         self._line_relation_name.setPlaceholderText(self.tr("Relation name"))
         hbox.addWidget(self._line_relation_name)
         vbox.addLayout(hbox)
-
-        #vbox.addWidget(QLabel(tr.TR_RELATION_DIALOG_FIELDS))
 
         hbox = QHBoxLayout()
         btn_add_column = QPushButton(self.tr("Add Column"))
@@ -123,12 +115,6 @@ class NewRelationDialog(QDialog):
         btn_ok.clicked.connect(self.__create_table)
         btn_cancel.clicked.connect(lambda: self.done(1))
 
-    #def done(self, result):
-        #self.__result = result
-        #super(NewRelationDialog, self).done(self.__result)
-        ##self.emit(SIGNAL("dbModified(int)"), self.__result)
-        #self.dbModified.emit(self.__result)
-
     def __add_column(self):
         model = self._table.model()
         col_count = model.columnCount()
@@ -178,17 +164,6 @@ class NewRelationDialog(QDialog):
     def __remove_from_layout(self, index):
         widget = self._hbox.takeAt(index).widget()
         widget.deleteLater()
-
-    #def __validate_types(self):
-        #data = {}
-        #for index in range(self._hbox.count()):
-            #combo = self._hbox.itemAt(index).widget()
-            #if combo.currentIndex() == 0:
-            #QMessageBox.critical(self, "Select type", "Please select type")
-                #return {}
-            #data[index] = combo.currentText()
-
-        #return data
 
     def __create_table(self):
         # Name of relation
@@ -248,39 +223,6 @@ class NewRelationDialog(QDialog):
     def showEvent(self, event):
         QDialog.showEvent(self, event)
         self._line_relation_name.setFocus()
-
-
-class ItemDelegate(QItemDelegate):
-
-    def __init__(self, parent=None):
-        super(ItemDelegate, self).__init__(parent)
-        # (index column, index type)
-        self._cols_type = {}
-
-    def set_column_type(self, index_col, index_type):
-        self._cols_type[index_col] = index_type
-
-    def createEditor(self, parent, option, index):
-        editor = QLineEdit(parent)
-        return editor
-
-    def setEditorData(self, line, index):
-        text = index.model().data(index, Qt.EditRole)
-        line.setText(text)
-
-    def setModelData(self, line, model, index):
-        text = line.text()
-        validator = QIntValidator()
-        column = index.column()
-        if self._cols_type[column] == 2:
-            if validator.validate(text, 0)[0] == QValidator.Acceptable:
-                model.setData(index, text)
-        else:
-            if not text.isdigit():
-                model.setData(index, text)
-
-    def updateEditorGeometry(self, line, option, index):
-        line.setGeometry(option.rect)
 
 
 class Header(QHeaderView):
