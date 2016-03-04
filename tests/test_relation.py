@@ -53,6 +53,13 @@ class RelationTestCase(unittest.TestCase):
         for i in data3:
             self.r3.insert(i)
 
+        # Relation 4
+        self.r4 = relation.Relation()
+        self.r4.header = ['id', 'skill']
+        data4 = [("192", "Ruby"), ("43", "Go")]
+        for i in data4:
+            self.r4.insert(i)
+
     def test_projection(self):
         # Π name (r1)
         expected = {('Gabriel',), ('Rodrigo',)}
@@ -67,28 +74,19 @@ class RelationTestCase(unittest.TestCase):
         select = rselect.content
         self.assertEqual(expected, select)
 
-    #def test_cartesian_product_exception(self):
-        ## r1 x r2
-        #try:
-            #self.r1.product(self.r2)
-        #except relation.DuplicateFieldsError as reason:
-            #msg = reason.msg
-            #expected_error = "Duplicate attribute \"id\" in product operation."
-        #self.assertEqual(expected_error, msg)
-
-    #def test_cartesian_product(self):
-        ## r2 x r3
-        #expected = {
-            #('3', 'Ruby', '2015-12-12'),
-            #('1', 'Python', '2015-12-12'),
-            #('3', 'Ruby', '2012-07-09'),
-            #('1', 'Python', '2012-07-09'),
-            #('3', 'Ruby', '1998-12-09'),
-            #('1', 'Python', '1998-12-09'),
-        #}
-        #rproduct = self.r2.product(self.r3)
-        #product = rproduct.content
-        #self.assertEqual(expected, product)
+    def test_cartesian_product(self):
+        # r2 x r3
+        expected = {
+            ('3', 'Ruby', '2015-12-12'),
+            ('1', 'Python', '2015-12-12'),
+            ('3', 'Ruby', '2012-07-09'),
+            ('1', 'Python', '2012-07-09'),
+            ('3', 'Ruby', '1998-12-09'),
+            ('1', 'Python', '1998-12-09'),
+        }
+        rproduct = self.r2.product(self.r3)
+        product = rproduct.content
+        self.assertEqual(expected, product)
 
     def test_natural_join(self):
         # r1 ⋈ r2
@@ -97,11 +95,25 @@ class RelationTestCase(unittest.TestCase):
         njoin = rjoin.content
         self.assertEqual(expected, njoin)
 
-    #def test_intersection(self):
-        #project_idr1 = self.r1.project("id")
-        #project_idr2 = self.r2.project("id")
-        #expected = {('1',)}
-        ## project_idr1 ∩ project_idr2
-        #intersection = project_idr1.intersect(project_idr2).content
-        #self.assertEqual(expected, intersection)
-#
+    def test_intersection(self):
+        project_idr1 = self.r1.project("id")
+        project_idr2 = self.r2.project("id")
+        expected = {('1',)}
+        # project_idr1 ∩ project_idr2
+        intersection = project_idr1.intersect(project_idr2).content
+        self.assertEqual(expected, intersection)
+
+    def test_difference(self):
+        # r4 - r2
+        project_idr4 = self.r4.project("id")
+        project_idr2 = self.r2.project("id")
+        expected = {('192',), ('43',)}
+        difference = project_idr4.difference(project_idr2).content
+        self.assertEqual(expected, difference)
+
+    def test_union(self):
+        # r2 ∪ r4
+        expected = {("192", "Ruby"), ("43", "Go"),
+                    ('3', 'Ruby'), ('1', 'Python')}
+        union = self.r2.union(self.r4).content
+        self.assertEqual(expected, union)

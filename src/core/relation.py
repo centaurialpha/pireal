@@ -178,70 +178,68 @@ class Relation(object):
 
         return new_relation.project(*ss)
 
-    #def intersect(self, other_relation):
-        #""" The intersection is defined as: R ∩ S. corresponds to the set of
-        #all tuples in R and S, R and S compatible unions.
+    def intersect(self, other_relation):
+        """ The intersection is defined as: R ∩ S. corresponds to the set of
+        all tuples in R and S, R and S compatible unions.
 
-        #:param other_relation: Relation object
-        #:returns: A new relation
-        #"""
+        :param other_relation: Relation object
+        :returns: A new relation
+        """
 
-        #if len(self.__header) != len(other_relation.header):
-            #raise Exception("Not union compatible for intersect")
-        ##if self.header != other_relation.header:
-            ##raise Exception("Not union compatible")
+        if self.__header != other_relation.header:
+            raise Exception("Not union compatible for intersection")
 
-        #new_relation = Relation()
-        #new_relation.header = self.__header
-        #content = self.content.intersection(other_relation.content)
+        new_relation = Relation()
+        new_relation.header = self.__header
+        content = self.content.intersection(other_relation.content)
 
-        #if not content:
-            #return new_relation
+        if not content:
+            return new_relation
 
-        #for i in content:
-            #new_relation.insert(i)
+        for i in content:
+            new_relation.insert(i)
 
-        #return new_relation
+        return new_relation
 
-    #def difference(self, other_relation):
-        #""" The difference is defined as: R - S. It is the set of all tuples
-        #in R, but not in S. R and S must be compatible unions
+    def difference(self, other_relation):
+        """ The difference is defined as: R - S. It is the set of all tuples
+        in R, but not in S. R and S must be compatible unions
 
-        #:param other_relation: Relation object
-        #:returns: A new relation
-        #"""
+        :param other_relation: Relation object
+        :returns: A new relation
+        """
 
-        #if self.header != other_relation.header:
-            #raise Exception("Not union compatible")
+        if self.header != other_relation.header:
+            raise Exception("Not union compatible for difference")
 
-        #new_relation = Relation()
-        #new_relation.header = self.header
-        #content = self.content.difference(other_relation.content)
+        new_relation = Relation()
+        new_relation.header = self.header
+        content = self.content.difference(other_relation.content)
 
-        #for i in content:
-            #new_relation.insert(i)
+        for i in content:
+            new_relation.insert(i)
 
-        #return new_relation
+        return new_relation
 
-    #def union(self, other_relation):
-        #""" The union is defined as: R ∪ S. Returns the set of tuples in R,
-        #or S, or both. R and S must be compatible unions.
+    def union(self, other_relation):
+        """ The union is defined as: R ∪ S. Returns the set of tuples in R,
+        or S, or both. R and S must be compatible unions.
 
-        #:param other_relation: Relation object
-        #:returns: A new relation
-        #"""
+        :param other_relation: Relation object
+        :returns: A new relation
+        """
 
-        #if self.header != other_relation.header:
-            #raise Exception("Not union compatible")
+        if self.header != other_relation.header:
+            raise Exception("Not union compatible")
 
-        #new_relation = Relation()
-        #new_relation.header = self.header
-        #content = self.content.union(other_relation.content)
+        new_relation = Relation()
+        new_relation.header = self.header
+        content = self.content.union(other_relation.content)
 
-        #for i in content:
-            #new_relation.insert(i)
+        for i in content:
+            new_relation.insert(i)
 
-        #return new_relation
+        return new_relation
 
     def __str__(self):
         """ Magic method. Returns a representation of the relation

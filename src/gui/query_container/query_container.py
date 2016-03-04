@@ -146,6 +146,8 @@ class QueryContainer(QWidget):
         widget.editorModified[bool].connect(
             lambda value: self._tabs.tab_modified(self.sender(), value))
 
+        return widget
+
     def is_open(self, id_):
         for index in range(self._tabs.count()):
             weditor = self._tabs.widget(index).get_editor()

@@ -65,7 +65,6 @@ class CentralWidget(QWidget):
         self.stacked = QStackedWidget()
         box.addWidget(self.stacked)
 
-        #self.__ndb = 1
         self.__created = False
         self.__last_open_folder = None
         self.__recent_files = set()
@@ -120,10 +119,11 @@ class CentralWidget(QWidget):
                 directory = os.path.expanduser("~")
             else:
                 directory = self.__last_open_folder
+            filter_ = settings.SUPPORTED_FILES.split(';;')[0]
             filename = QFileDialog.getOpenFileName(self,
                                                    self.tr("Open Database"),
                                                    directory,
-                                                   settings.SUPPORTED_FILES)[0]
+                                                   filter_)[0]
             # If is canceled, return
             if not filename:
                 return
@@ -171,7 +171,15 @@ class CentralWidget(QWidget):
         self.created = True
 
     def open_query(self):
-        pass
+        filter_ = settings.SUPPORTED_FILES.split(';;')[1]
+        filename = QFileDialog.getOpenFileName(self,
+                                               self.tr("Open Query"),
+                                               os.path.expanduser("~"),
+                                               filter_)[0]
+        if not filename:
+            return
+        #FIXME: mejorar éste y new_query
+        self.new_query(filename)
 
     def save_query(self):
         pass
