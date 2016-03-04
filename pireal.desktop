@@ -7,4 +7,4 @@ Comment=Educational tool for working with Relational Algebra
 Icon=@ INSTALLED_ICON @
 Exec=pireal
 Terminal=false
-Categories=Education,Utilities
+Categories=Application;Education;

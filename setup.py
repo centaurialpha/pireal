@@ -26,7 +26,7 @@ class CustomInstall(install):
     """
     Custom installation class on package files.
 
-    It copies all the files into the "PREFIX/share/Pireal" dir.
+    It copies all the files into the "PREFIX/share/pireal" dir.
     """
 
     def run(self):
@@ -91,7 +91,7 @@ classifiers = [
 DESCRIPTION = ""
 
 setup(
-    name="Pireal",
+    name="pireal",
     version="1.0",
     description="",
     author="Gabriel Acosta",
@@ -100,7 +100,7 @@ setup(
     license='GPLv3+',
     long_description=open('README.rst').read(),
     package_data={
-        "src": ["gui/qml/*"]
+        "src": ["gui/qml/*", "images/pireal_icon.png"]
     },
     packages=[
         "src",
@@ -109,7 +109,7 @@ setup(
         "src.gui.dialogs",
         "src.gui.query_container"
     ],
-    scripts=['bin/pireal'],
+    scripts=['pireal'],
     classifiers=classifiers,
     cmdclass={'install': CustomInstall},
 )
