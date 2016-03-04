@@ -75,11 +75,7 @@ class LateralWidget(QListWidget):
         self.addItem(item)
 
     def text_item(self, index):
-        return self.item(index).text().split()[0]
-
-    def _remove(self):
-        central = Pireal.get_service("central")
-        central.remove_relation()
+        return self.item(index).text()
 
     def clear_items(self):
         """ Remove all items and selections in the view """

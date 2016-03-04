@@ -166,14 +166,16 @@ class DatabaseContainer(QSplitter):
     def delete_relation(self):
         selected_items = self.lateral_widget.selectedItems()
         if selected_items:
+            current_row = 0
+            if self.lateral_widget.currentRow() != -1:
+                current_row = self.lateral_widget.currentRow()
             if len(selected_items) > 1:
                 msg = self.tr("Are you sure you want to delete the selected"
                               " relations?")
             else:
                 msg = self.tr("Are you sure you want to delete the "
                               "relation <b>{}</b>?".format(
-                    self.lateral_widget.text_item(
-                        self.lateral_widget.currentRow())))
+                    self.lateral_widget.text_item(current_row)))
 
             r = QMessageBox.question(self, self.tr("Confirmation"),
                                      msg, QMessageBox.No | QMessageBox.Yes)
