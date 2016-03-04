@@ -190,8 +190,8 @@ Rectangle {
          verticalAlignment: Text.AlignVCenter
         }
 
-        Image { id: logoPython; source: "../../images/python-logo.png"; opacity: 0.7 }
-        Image { source: "../../images/qt-logo.png"; opacity: 0.7 }
+        Image { id: logoPython; source: "python-logo.png"; opacity: 0.7 }
+        Image { source: "qt-logo.png"; opacity: 0.7 }
     }
 
 

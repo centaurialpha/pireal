@@ -21,31 +21,6 @@ import os
 from distutils.command.install import install
 from distutils.core import setup
 
-#MODULES = [
-    #('PyQt5', 'http://riverbankcomputing.co.uk/software/pyqt/intro'),
-#('PyQt4.Qsci', 'http://riverbankcomputing.co.uk/software/qscintilla/intro')
-#]
-
-# Se verifica dependencias de módulos
-#for module, link in MODULES:
-    #try:
-        #_from = 'PyQt4' if module == 'PyQt4.Qsci' else ''
-        #__import__(module, fromlist=_from)
-    #except ImportError:
-        #print("The %s module is not installed.\nMore info: %s." %
-              #(module, link))
-        #sys.exit(1)
-
-# ctags
-#try:
-    #Popen(['ctags'], stdout=PIPE, stderr=PIPE)
-#except:
-    #print("Por favor instala ctags!")
-    #sys.exit(1)
-
-
-#from src import ui
-
 
 class CustomInstall(install):
     """
@@ -99,14 +74,6 @@ class CustomInstall(install):
         self._custom_data_dir = data_dir
         self._custom_apps_dir = apps_dir
 
-# Se compila la lista de paquetes
-#packages = []
-#for dir_path, dir_names, filenames in os.walk('src'):
-    #if '__pycache__' not in dir_path.split('/')[-1] and \
-            #'__init__.py' in filenames:
-        #package = dir_path.replace('/', '.')
-        #packages.append(package)
-
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Environment :: X11 Applications',
@@ -142,7 +109,7 @@ setup(
         "src.gui.dialogs",
         "src.gui.query_container"
     ],
-    scripts=['pireal.py'],
+    scripts=['bin/pireal'],
     classifiers=classifiers,
     cmdclass={'install': CustomInstall},
 )
