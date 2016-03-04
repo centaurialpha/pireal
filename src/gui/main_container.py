@@ -115,6 +115,7 @@ class MainContainer(QSplitter):
             # Create relation
             rela = relation.Relation()
             rela.header = header
+            print(rela.header)
             # Table view widget
             table_view = custom_table.Table()
             table_view.dataChange.connect(self.__on_data_table_changed)

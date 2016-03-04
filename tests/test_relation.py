@@ -27,9 +27,8 @@ class RelationTestCase(unittest.TestCase):
         # Relation 1
         self.r1 = relation.Relation()
         # Fields
-        f1 = ['id/numeric', 'name/char', 'city/char']
+        f1 = ['id', 'name', 'city']
         self.r1.header = f1
-
 
         # Data
         data1 = [('1', 'Gabriel', 'Belén'), ('23', 'Rodrigo', 'Belén')]
@@ -39,7 +38,7 @@ class RelationTestCase(unittest.TestCase):
         # Relation 2
         self.r2 = relation.Relation()
         # Fields
-        f2 = ['id/numeric', 'skill/char']
+        f2 = ['id', 'skill']
         self.r2.header = f2
         # Data
         data2 = [('3', 'Ruby'), ('1', 'Python')]
@@ -49,25 +48,24 @@ class RelationTestCase(unittest.TestCase):
         # Relation 3
         self.r3 = relation.Relation()
         # Fields
-        self.r3.header = ['date/date']
+        self.r3.header = ['date']
         data3 = [("2015-12-12",), ("2012-07-09",), ("1998-12-09",)]
         for i in data3:
             self.r3.insert(i)
 
     def test_projection(self):
-        # Project name
         # Π name (r1)
         expected = {('Gabriel',), ('Rodrigo',)}
         rproject = self.r1.project("name")
         project = rproject.content
         self.assertEqual(expected, project)
 
-    #def test_selection(self):
-        ## σ id == 23 (r2)
-        #expected = {('23', 'Rodrigo', 'Belén')}
-        #rselect = self.r1.select("id == 23")
-        #select = rselect.content
-        #self.assertEqual(expected, select)
+    def test_selection(self):
+         # σ id == 23 (r2)
+        expected = {('23', 'Rodrigo', 'Belén')}
+        rselect = self.r1.select("id == 23")
+        select = rselect.content
+        self.assertEqual(expected, select)
 
     #def test_cartesian_product_exception(self):
         ## r1 x r2
@@ -92,12 +90,12 @@ class RelationTestCase(unittest.TestCase):
         #product = rproduct.content
         #self.assertEqual(expected, product)
 
-    #def test_natural_join(self):
-        ## r1 ⋈ r2
-        #expected = {('1', 'Gabriel', 'Belén', 'Python')}
-        #rjoin = self.r1.njoin(self.r2)
-        #njoin = rjoin.content
-        #self.assertEqual(expected, njoin)
+    def test_natural_join(self):
+        # r1 ⋈ r2
+        expected = {('1', 'Gabriel', 'Belén', 'Python')}
+        rjoin = self.r1.njoin(self.r2)
+        njoin = rjoin.content
+        self.assertEqual(expected, njoin)
 
     #def test_intersection(self):
         #project_idr1 = self.r1.project("id")

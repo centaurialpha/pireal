@@ -19,15 +19,7 @@
 
 import re
 
-IS_VALID_FIELD_NAME = re.compile(r"^[_a-zA-Z][_a-zA-Z0-9]*/{1}"
-                                 "(numeric|char|date){1}\s*$")
-
-
-class DuplicateFieldsError(Exception):
-
-    def __init__(self, msg):
-        super(DuplicateFieldsError, self).__init__()
-        self.msg = msg
+IS_VALID_FIELD_NAME = re.compile(r"^[_a-zA-Z][_a-zA-Z0-9]*$")
 
 
 class Relation(object):
@@ -50,7 +42,7 @@ class Relation(object):
         self.content.add(tuple(record))
 
     def __set_header(self, header):
-        """ Set header to the relation, raise if not a valid header """
+        """ Set header to the relation """
 
         for field in header:
             if not IS_VALID_FIELD_NAME.match(field):
@@ -60,9 +52,9 @@ class Relation(object):
         self.__header = header
 
     def __get_header(self):
-        """ Get the header without types """
+        """ Get the header """
 
-        return [f.split('/')[0] for f in self.__header]
+        return self.__header
 
     header = property(__get_header, __set_header)
 
@@ -81,7 +73,7 @@ class Relation(object):
         """
 
         new_relation = Relation()
-        new_relation.header = self.header
+        new_relation.header = self.__header
 
         value = expression.rsplit(' ', 1)[-1]
         if value.isdigit():
@@ -90,7 +82,7 @@ class Relation(object):
         # Filtering
         d = {}
         for register in self.content:
-            for e, attr in enumerate(self.header):
+            for e, attr in enumerate(self.__header):
                 d[attr] = register[e]
 
             # The expression is evaluated
@@ -98,8 +90,8 @@ class Relation(object):
                 if eval(expression, d):
                     new_relation.insert(register)
             except SyntaxError:
-                raise Exception("Error de Sintáxis\nNo se pudo evaluar la "
-                                "expresión \"{}\"".format(expression))
+                raise Exception("Couldn't be evaluate the expression: "
+                                "'{}'".format(expression))
 
         return new_relation
 
@@ -115,12 +107,12 @@ class Relation(object):
         indexes = []
         for arg in args:
             try:
-                indexes.append(self.header.index(arg))
+                indexes.append(self.__header.index(arg))
             except ValueError as reason:
                 field = reason.__str__().split()[0]
-                raise Exception("Campo inválido: {}".format(field))
+                raise Exception("Invalid field name: {}".format(field))
         # New fields
-        header = [self.header[i] for i in indexes]
+        header = [self.__header[i] for i in indexes]
 
         # New relation
         new_relation = Relation()
@@ -143,15 +135,14 @@ class Relation(object):
         :returns: A new relation
         """
 
-        new_relation = Relation()
-
         # Check if there are duplicate fields
-        for i in self.header:
+        for i in self.__header:
             if i in other_relation.header:
-                raise DuplicateFieldsError("Duplicate attribute \"{}\" in "
-                                           "product operation.".format(i))
+                raise Exception("Duplicate field name '{}'"
+                                " in product operation".format(i))
 
-        new_relation.header = self.header + other_relation.header
+        new_relation = Relation()
+        new_relation.header = self.__header + other_relation.header
 
         for i in self.content:
             for e in other_relation.content:
@@ -160,93 +151,97 @@ class Relation(object):
         return new_relation
 
     def njoin(self, other_relation):
+        """  """
 
-        sharedf = set(self.header).intersection(set(other_relation.header))
+        # Combination of the headers
+        header = self.__header + other_relation.header
+
         new_relation = Relation()
+        new_relation.header = header
 
-        header = [i for i in other_relation.header if i not in self.header]
-        new_relation.header = self.header + header
+        # Shared field names
+        sharedf = set(self.__header).intersection(set(other_relation.header))
+        ss = self.__header + [i for i in other_relation.header
+                              if i not in sharedf]
 
-        sid = []
-        for i in sharedf:
-            sid.append(self.header.index(i))
-
-        oid = []
-        for i in sharedf:
-            oid.append(other_relation.header.index(i))
-
-        noid = [i for i in range(len(other_relation.header)) if i not in oid]
+        # Relation indexes field names
+        indexes_rela = [self.__header.index(i) for i in sharedf]
+        # Other relation indexes field names
+        indexes_other_rela = [other_relation.header.index(i) for i in sharedf]
 
         for i in self.content:
             for j in other_relation.content:
-                for k in range(len(sid)):
-                    if i[sid[k]] == j[oid[k]]:
-                        new_relation.insert(list(i) + list(j[l] for l in noid))
+                for k in indexes_rela:
+                    for l in indexes_other_rela:
+                        if i[k] == j[l]:
+                            new_relation.insert(i + j)
 
-        return new_relation
+        return new_relation.project(*ss)
 
-    def intersect(self, other_relation):
-        """ The intersection is defined as: R ∩ S. corresponds to the set of
-        all tuples in R and S, R and S compatible unions.
+    #def intersect(self, other_relation):
+        #""" The intersection is defined as: R ∩ S. corresponds to the set of
+        #all tuples in R and S, R and S compatible unions.
 
-        :param other_relation: Relation object
-        :returns: A new relation
-        """
+        #:param other_relation: Relation object
+        #:returns: A new relation
+        #"""
 
-        if self.header != other_relation.header:
-            raise Exception("Not union compatible")
+        #if len(self.__header) != len(other_relation.header):
+            #raise Exception("Not union compatible for intersect")
+        ##if self.header != other_relation.header:
+            ##raise Exception("Not union compatible")
 
-        new_relation = Relation()
-        new_relation.header = self.header
-        content = self.content.intersection(other_relation.content)
+        #new_relation = Relation()
+        #new_relation.header = self.__header
+        #content = self.content.intersection(other_relation.content)
 
-        if not content:
-            return new_relation
+        #if not content:
+            #return new_relation
 
-        for i in content:
-            new_relation.insert(i)
+        #for i in content:
+            #new_relation.insert(i)
 
-        return new_relation
+        #return new_relation
 
-    def difference(self, other_relation):
-        """ The difference is defined as: R - S. It is the set of all tuples
-        in R, but not in S. R and S must be compatible unions
+    #def difference(self, other_relation):
+        #""" The difference is defined as: R - S. It is the set of all tuples
+        #in R, but not in S. R and S must be compatible unions
 
-        :param other_relation: Relation object
-        :returns: A new relation
-        """
+        #:param other_relation: Relation object
+        #:returns: A new relation
+        #"""
 
-        if self.header != other_relation.header:
-            raise Exception("Not union compatible")
+        #if self.header != other_relation.header:
+            #raise Exception("Not union compatible")
 
-        new_relation = Relation()
-        new_relation.header = self.header
-        content = self.content.difference(other_relation.content)
+        #new_relation = Relation()
+        #new_relation.header = self.header
+        #content = self.content.difference(other_relation.content)
 
-        for i in content:
-            new_relation.insert(i)
+        #for i in content:
+            #new_relation.insert(i)
 
-        return new_relation
+        #return new_relation
 
-    def union(self, other_relation):
-        """ The union is defined as: R ∪ S. Returns the set of tuples in R,
-        or S, or both. R and S must be compatible unions.
+    #def union(self, other_relation):
+        #""" The union is defined as: R ∪ S. Returns the set of tuples in R,
+        #or S, or both. R and S must be compatible unions.
 
-        :param other_relation: Relation object
-        :returns: A new relation
-        """
+        #:param other_relation: Relation object
+        #:returns: A new relation
+        #"""
 
-        if self.header != other_relation.header:
-            raise Exception("Not union compatible")
+        #if self.header != other_relation.header:
+            #raise Exception("Not union compatible")
 
-        new_relation = Relation()
-        new_relation.header = self.header
-        content = self.content.union(other_relation.content)
+        #new_relation = Relation()
+        #new_relation.header = self.header
+        #content = self.content.union(other_relation.content)
 
-        for i in content:
-            new_relation.insert(i)
+        #for i in content:
+            #new_relation.insert(i)
 
-        return new_relation
+        #return new_relation
 
     def __str__(self):
         """ Magic method. Returns a representation of the relation
@@ -259,7 +254,7 @@ class Relation(object):
         """
 
         header = ""
-        for field in self.header:
+        for field in self.__header:
             header += "|  " + field.center(10) + "  "
         header += "|\n"
         header += "-" * (len(header) - 1) + "\n"
@@ -277,15 +272,15 @@ if __name__ == "__main__":
     # Test
 
     r1 = Relation()
-    f1 = ['idi/numeric', 'name1/char']
-    r1.header = f1
-    data1 = {('1', 'Gabriel'), ('32', 'Rodrigo')}
+    h1 = ['name', 'id', 'city']
+    r1.header = h1
+    data1 = {('Gabriel', '1', 'Bel'), ('Rodrigo', '32', 'Bel')}
     for reg in data1:
         r1.insert(reg)
 
     r2 = Relation()
-    f2 = ['id/numeric', 'skill/char']
-    r2.header = f2
+    h2 = ['id', 'skill']
+    r2.header = h2
     data2 = {('1', 'Python'), ('32', 'C++')}
     for reg in data2:
         r2.insert(reg)
