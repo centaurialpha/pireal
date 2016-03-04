@@ -54,7 +54,7 @@ logger = PirealLogger(__name__)
 DEBUG = logger.debug
 
 
-class MainContainer(QSplitter):
+class DatabaseContainer(QSplitter):
 
     def __init__(self, orientation=Qt.Vertical):
         QSplitter.__init__(self, orientation)

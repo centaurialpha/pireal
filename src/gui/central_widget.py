@@ -37,7 +37,7 @@ from src.core.logger import PirealLogger
 from src.gui.main_window import Pireal
 from src.gui import (
     start_page,
-    main_container
+    database_container
 )
 from src.gui.dialogs import (
     preferences,
@@ -87,10 +87,10 @@ class CentralWidget(QWidget):
         if not data:
             return self.remove_last_widget()
         else:
-            database_container = main_container.MainContainer()
+            db_container = database_container.DatabaseContainer()
             pfile_object = pfile.PFile(data['filename'])
-            database_container.pfile = pfile_object
-            self.add_widget(database_container)
+            db_container.pfile = pfile_object
+            self.add_widget(db_container)
             # Remove wizard
             self.stacked.removeWidget(wizard_widget)
 
@@ -140,10 +140,10 @@ class CentralWidget(QWidget):
         # Create a dict to manipulate data more easy
         db_data = self.__sanitize_data(db_data)
         # Create a database container widget
-        database_container = main_container.MainContainer()
+        db_container = database_container.DatabaseContainer()
 
         try:
-            database_container.create_database(db_data)
+            db_container.create_database(db_data)
         except Exception as reason:
             QMessageBox.information(self,
                                     self.tr("Error"),
@@ -151,9 +151,9 @@ class CentralWidget(QWidget):
             return
 
         # Set the PFile object to the new database
-        database_container.pfile = pfile_object
+        db_container.pfile = pfile_object
         # Add data base container to stacked
-        self.add_widget(database_container)
+        self.add_widget(db_container)
         # Database name
         db_name = file_manager.get_basename(filename)
         # Update title with the new database name, and enable some actions
@@ -244,12 +244,12 @@ class CentralWidget(QWidget):
             return
         pireal = Pireal.get_service("pireal")
         pireal.set_enabled_query_actions(True)
-        main_container = self.get_active_db()
-        main_container.new_query(filename)
+        db_container = self.get_active_db()
+        db_container.new_query(filename)
 
     def execute_queries(self):
-        main_container = self.get_active_db()
-        main_container.execute_queries()
+        db_container = self.get_active_db()
+        db_container.execute_queries()
 
     def save_database(self):
         mcontainer = self.get_active_db()
@@ -269,27 +269,27 @@ class CentralWidget(QWidget):
         self.databaseSaved.emit(
             self.tr("Database saved: {}".format(filename)))
 
-    def save_database_as(self, main_container=None):
+    def save_database_as(self, db_container=None):
         pass
-        #if main_container is None:
-            #main_container = self.get_active_db()
+        #if db_container is None:
+            #db_container = self.get_active_db()
 
         #filename = QFileDialog.getSaveFileName(self, self.tr("Save File"),
-                                               #main_container.dbname(),
+                                               #db_container.dbname(),
                                                #"Pireal database files"
                                                #"(*.pdb)")[0]
         #if not filename:
             #return
 
         ## Generate content
-        #relations = main_container.table_widget.relations
+        #relations = db_container.table_widget.relations
         #print(relations)
         #content = file_manager.generate_database(relations)
-        #main_container.pfile.write(content=content, new_fname=filename)
+        #db_container.pfile.write(content=content, new_fname=filename)
 
     def remove_relation(self):
-        main_container = self.get_active_db()
-        main_container.delete_relation()
+        db_container = self.get_active_db()
+        db_container.delete_relation()
 
     def create_new_relation(self):
         dialog = new_relation_dialog.NewRelationDialog(self)
@@ -314,9 +314,9 @@ class CentralWidget(QWidget):
 
         # Save folder
         self.__last_open_folder = file_manager.get_path(filenames[0])
-        main_container = self.get_active_db()
-        main_container.load_relation(filenames)
-        main_container.modified = True
+        db_container = self.get_active_db()
+        db_container.load_relation(filenames)
+        db_container.modified = True
 
     def add_start_page(self):
         """ This function adds the Start Page to the stacked widget """
@@ -376,7 +376,7 @@ class CentralWidget(QWidget):
 
         index = self.stacked.count() - 1
         widget = self.widget(index)
-        if isinstance(widget, main_container.MainContainer):
+        if isinstance(widget, database_container.DatabaseContainer):
             return widget
         return None
 
