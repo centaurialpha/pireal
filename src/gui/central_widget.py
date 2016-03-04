@@ -85,7 +85,7 @@ class CentralWidget(QWidget):
 
     def __on_wizard_finished(self, data, wizard_widget):
         if not data:
-            self.remove_last_widget()
+            return self.remove_last_widget()
         else:
             database_container = main_container.MainContainer()
             pfile_object = pfile.PFile(data['filename'])
