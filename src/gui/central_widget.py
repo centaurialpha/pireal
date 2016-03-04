@@ -73,6 +73,12 @@ class CentralWidget(QWidget):
         Pireal.load_service("central", self)
 
     def create_database(self):
+        if self.__created:
+            QMessageBox.information(self,
+                                    self.tr("Information"),
+                                    self.tr("You may only have one database"
+                                            "open at time."))
+            return
         wizard = database_wizard.DatabaseWizard(self)
         wizard.wizardFinished.connect(
             self.__on_wizard_finished)
