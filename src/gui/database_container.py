@@ -124,7 +124,7 @@ class DatabaseContainer(QSplitter):
             for row in tuples:
                 for col_count, i in enumerate(row):
                     item = QStandardItem(i)
-                    item.setSelectable(False)
+                    #item.setSelectable(False)
                     model.setItem(row_count, col_count, item)
                     delegate = table_view.itemDelegate()
                     delegate.data_types[col_count] = types[col_count]
@@ -219,6 +219,29 @@ class DatabaseContainer(QSplitter):
         dialog = edit_relation_dialog.EditRelationDialog(item, name, self)
         dialog.tableChanged.connect(self.__on_data_table_changed)
         dialog.exec_()
+
+    def add_tuple(self):
+        current_table = self.table_widget.current_table()
+        model = current_table.model()
+        model.insertRow(model.rowCount())
+
+    def insert_tuple(self):
+        current_table = self.table_widget.current_table()
+        model = current_table.model()
+        selection = current_table.selectionModel()
+        if not selection.hasSelection():
+            self.add_tuple()
+        else:
+            after = selection.selectedRows()[0].row()
+            model.insertRow(after + 1)
+
+    def delete_tuple(self):
+        current_table = self.table_widget.current_table()
+        model = current_table.model()
+        selection = current_table.selectionModel()
+        if selection.hasSelection():
+            row = selection.selectedRows()[0].row()
+            model.takeRow(row)
 
     def __add_table(self, rela, relation_name, types):
         ptable = custom_table.Table()

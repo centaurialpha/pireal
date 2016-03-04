@@ -6,7 +6,8 @@ from PyQt5.QtWidgets import (
     QTableView,
     QItemDelegate,
     QLineEdit,
-    QHeaderView
+    QHeaderView,
+    QAbstractItemView
 )
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtCore import (
@@ -23,6 +24,7 @@ class Table(QTableView):
         super(Table, self).__init__()
         # Stretch horizontal header
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)
         # Model
         model = QStandardItemModel()
         self.setModel(model)

@@ -114,9 +114,6 @@ MENU['relation'] = {
 MENU['help'] = {
     'name': translate("Pireal", "&Help"),
     'items': [{
-        'name': translate("Pireal", "User Guide"),
-        'slot': "pireal:show_user_guide"
-    }, "-", {
         'name': translate("Pireal", "About Pireal"),
         'slot': "pireal:about_pireal"
     }, {

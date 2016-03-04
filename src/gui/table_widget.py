@@ -54,6 +54,9 @@ class TableWidget(QWidget):
         self.stacked.removeWidget(widget)
         del widget
 
+    def current_table(self):
+        return self.stacked.currentWidget()
+
     def remove_relation(self, name):
         del self.relations[name]
 

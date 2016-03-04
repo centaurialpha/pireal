@@ -136,7 +136,6 @@ class CentralWidget(QWidget):
                                     str(reason))
             return
 
-        #try:
         # Create a dict to manipulate data more easy
         db_data = self.__sanitize_data(db_data)
         # Create a database container widget
@@ -161,6 +160,8 @@ class CentralWidget(QWidget):
         pireal.change_title(db_name)
         pireal.set_enabled_db_actions(True)
         pireal.set_enabled_relation_actions(True)
+        # Add to recent files
+        self.__recent_files.add(filename)
         self.created = True
 
     def open_query(self):
@@ -355,11 +356,17 @@ class CentralWidget(QWidget):
         index = self.stacked.addWidget(widget)
         self.stacked.setCurrentIndex(index)
 
-    def insert_row(self):
-        pass
+    def add_tuple(self):
+        db_container = self.get_active_db()
+        db_container.add_tuple()
 
-    def insert_column(self):
-        pass
+    def insert_tuple(self):
+        db_container = self.get_active_db()
+        db_container.insert_tuple()
+
+    def delete_tuple(self):
+        db_container = self.get_active_db()
+        db_container.delete_tuple()
 
     @property
     def recent_files(self):
