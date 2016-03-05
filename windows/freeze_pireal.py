@@ -18,12 +18,32 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from cx_Freeze import setup, Executable
+import os
+
+PYQT5_DIR = "C:/Python34/Lib/site-packages/PyQt5"
+include_files = [
+    "src/gui/qml",
+    (os.path.join(PYQT5_DIR, "qml", "QtQuick.2"), "QtQuick.2"),
+    (os.path.join(PYQT5_DIR, "qml", "QtQuick"), "QtQuick"),
+    (os.path.join(PYQT5_DIR, "qml", "QtGraphicalEffects"),
+        "QtGraphicalEffects"),
+]
 
 opt = {
     'build_exe': {
-        'includes': ['PyQt5.QtNetwork'],
+        'includes': [
+            'atexit',
+            'sip',
+            'PyQt5.QtCore',
+            'PyQt5.QtGui',
+            'PyQt5.QtWidgets',
+            'PyQt5.QtNetwork',
+            'PyQt5.QtOpenGL',
+            'PyQt5.QtQml',
+            'PyQt5.QtQuick'
+         ],
         'include_msvcr': True,
-        'include_files': []}}
+        'include_files': include_files}}
 
 exe = Executable(
     script="pireal",
