@@ -36,7 +36,7 @@ from PyQt5.QtGui import (
 
 from src.gui import (
     table_widget,
-    list_widget,
+    lateral_widget,
     custom_table
 )
 from src.gui.dialogs import edit_relation_dialog
@@ -62,7 +62,7 @@ class DatabaseContainer(QSplitter):
         #self.__pfile = pfile
         self._hsplitter = QSplitter(Qt.Horizontal)
 
-        self.lateral_widget = list_widget.LateralWidget()
+        self.lateral_widget = lateral_widget.LateralWidget()
         self._hsplitter.addWidget(self.lateral_widget)
         self.table_widget = table_widget.TableWidget()
         self._hsplitter.addWidget(self.table_widget)
@@ -77,8 +77,10 @@ class DatabaseContainer(QSplitter):
         self.__nquery = 1
 
         # Connections
-        self.lateral_widget.currentRowChanged[int].connect(
-            lambda i: self.table_widget.stacked.show_display(i))
+        #FIXME
+        self.lateral_widget.itemClicked.connect(
+            lambda: self.table_widget.stacked.show_display(
+                self.lateral_widget.row()))
         #self.lateral_widget.itemRemoved[int].connect(
             #lambda i: self.table_widget.remove_table(i))
         #self.lateral_widget.showEditRelation.connect(self.__edit_relation)
@@ -124,20 +126,19 @@ class DatabaseContainer(QSplitter):
             for row in tuples:
                 for col_count, i in enumerate(row):
                     item = QStandardItem(i)
-                    #item.setSelectable(False)
                     model.setItem(row_count, col_count, item)
                     delegate = table_view.itemDelegate()
                     delegate.data_types[col_count] = types[col_count]
                 rela.insert(row)
                 row_count += 1
-            ## Add relation to relations dict
+            # Add relation to relations dict
             self.table_widget.add_relation(table_name, rela)
             # Add table to stacked
             self.table_widget.stacked.addWidget(table_view)
             # Add table name to list widget
-            self.lateral_widget.add_item(table_name)
+            self.lateral_widget.add_item(table_name, rela.count())
         # Select first item
-        first_item = self.lateral_widget.item(0)
+        first_item = self.lateral_widget.topLevelItem(0)
         first_item.setSelected(True)
 
     def load_relation(self, filenames):
@@ -167,28 +168,28 @@ class DatabaseContainer(QSplitter):
         selected_items = self.lateral_widget.selectedItems()
         if selected_items:
             current_row = 0
-            if self.lateral_widget.currentRow() != -1:
-                current_row = self.lateral_widget.currentRow()
+            if self.lateral_widget.row() != -1:
+                current_row = self.lateral_widget.row()
             if len(selected_items) > 1:
                 msg = self.tr("Are you sure you want to delete the selected"
                               " relations?")
             else:
                 msg = self.tr("Are you sure you want to delete the "
                               "relation <b>{}</b>?".format(
-                    self.lateral_widget.text_item(current_row)))
+                    self.lateral_widget.item_text(current_row)))
 
             r = QMessageBox.question(self, self.tr("Confirmation"),
                                      msg, QMessageBox.No | QMessageBox.Yes)
             if r == QMessageBox.No:
                 return
             for item in selected_items:
-                index = self.lateral_widget.row(item)
+                index = self.lateral_widget.indexOfTopLevelItem(item)
                 # Remove from list
-                self.lateral_widget.takeItem(index)
+                self.lateral_widget.takeTopLevelItem(index)
                 # Remove table
                 self.table_widget.remove_table(index)
                 # Remove relation
-                name = item.text().split()[0].strip()
+                name = item.text(0).split()[0].strip()
                 self.table_widget.remove_relation(name)
 
     def __on_data_table_changed(self, row, col, data):
@@ -226,6 +227,7 @@ class DatabaseContainer(QSplitter):
         current_table = self.table_widget.current_table()
         model = current_table.model()
         model.insertRow(model.rowCount())
+        #self.lateral_widget.update_item()
 
     def insert_tuple(self):
         current_table = self.table_widget.current_table()

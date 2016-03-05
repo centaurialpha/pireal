@@ -45,7 +45,7 @@ from src.core.logger import PirealLogger
 from src.core import parser
 from src.gui import (
     custom_table,
-    list_widget,
+    lateral_widget,
     fader_widget
 )
 from src.gui.main_window import Pireal
@@ -189,7 +189,7 @@ class QueryContainer(QWidget):
                 QMessageBox.critical(self,
                                      self.tr("Query Error"),
                                      reason.__str__())
-
+                return
             if table_widget.add_relation(relation_name, rela):
                 self.__add_table(rela, relation_name)
 
@@ -233,7 +233,8 @@ class QueryWidget(QWidget):
         self._vsplitter = QSplitter(Qt.Vertical)
         self._hsplitter = QSplitter(Qt.Horizontal)
 
-        self._result_list = list_widget.LateralWidget()
+        self._result_list = lateral_widget.LateralWidget()
+        self._result_list.header().hide()
         self._hsplitter.addWidget(self._result_list)
 
         self._stack_tables = StackedWidget()
@@ -248,8 +249,9 @@ class QueryWidget(QWidget):
         box.addWidget(self._vsplitter)
 
         # Connections
-        self._result_list.currentRowChanged[int].connect(
-            lambda index: self._stack_tables.show_display(index))
+        self._result_list.itemClicked.connect(
+            lambda index: self._stack_tables.show_display(
+                self._result_list.row()))
 
     def save_sizes(self):
         """ Save sizes of Splitters """
@@ -286,7 +288,7 @@ class QueryWidget(QWidget):
         index = self._stack_tables.addWidget(wtable)
         self._stack_tables.setCurrentIndex(index)
 
-        self._result_list.addItem(rname)
+        self._result_list.add_item(rname, rela.count())
 
 
 class StackedWidget(QStackedWidget):

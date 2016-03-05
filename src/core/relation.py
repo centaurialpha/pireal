@@ -63,6 +63,11 @@ class Relation(object):
 
         self.content = set()
 
+    def count(self):
+        """ Return the number of tuples in the relation """
+
+        return str(len(self.content))
+
     def select(self, expression):
         """
         The select operator returns a new relation with the tuples that

@@ -24,6 +24,7 @@ class Table(QTableView):
         super(Table, self).__init__()
         # Stretch horizontal header
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.verticalHeader().hide()
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         # Model
         model = QStandardItemModel()
