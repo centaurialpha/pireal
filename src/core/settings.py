@@ -39,6 +39,7 @@ else:
 SUPPORTED_FILES = ("Pireal Database File (*.pdb);;Pireal Query File (*.pqf);;"
                    "Pireal Relation File (*.prf)")
 
+# Paths used by Pireal
 # Create folder (settings and logging)
 if getattr(sys, 'frozen', ''):
     PATH = os.path.realpath(os.path.dirname(sys.argv[0]))
@@ -51,8 +52,7 @@ PIREAL_PROJECTS = os.path.join(HOME, "PirealDatabases")
 LOG_FILE_PATH = os.path.join(PIREAL_DIR, "pireal_log.log")
 SETTINGS_PATH = os.path.join(PIREAL_DIR, "pireal_settings.ini")
 LANG_PATH = os.path.join(PATH, "src", "lang")
-STYLESHEET = os.path.join(PATH, "src", "gui", "style.qss")
-USER_GUIDE_PATH = os.path.join(PATH, "src", "gui", "user_guide")
+QML_FILES = os.path.join(PATH, "src", "gui", "qml")
 
 
 class PSettings:
