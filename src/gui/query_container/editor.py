@@ -26,21 +26,16 @@ from PyQt5.QtGui import (
     QTextCursor,
     QColor
 )
-from PyQt5.QtCore import (
-    Qt,
-    pyqtSignal
-)
-#from src.gui.main_window import Pireal
+from PyQt5.QtCore import Qt
+
 from src.gui.query_container import (
     highlighter,
-    sidebar,
-    #completer
+    sidebar
 )
 from src.core import settings
 
 
 class Editor(QPlainTextEdit):
-    _cursorPositionChanged = pyqtSignal(int, int)
 
     def __init__(self, pfile=None):
         super(Editor, self).__init__()
@@ -84,10 +79,6 @@ class Editor(QPlainTextEdit):
         # Fixed sidebar height
         self._sidebar.setFixedHeight(self.height())
 
-    def setHighlightCurrentLine(self, value):
-        settings.PSettings.HIGHLIGHT_CURRENT_LINE = value
-        self.__cursor_position_changed()
-
     def __cursor_position_changed(self):
         extra_selections = []
         _selection = QTextEdit.ExtraSelection()
@@ -104,15 +95,12 @@ class Editor(QPlainTextEdit):
             extra_selections.append(_selection)
 
         # Paren matching
-        extras = self.__check_brackets()
-        if extras:
+        extras = None
+        if settings.PSettings.MATCHING_PARENTHESIS:
+            extras = self.__check_brackets()
+        if extras is not None:
             extra_selections.extend(extras)
         self.setExtraSelections(extra_selections)
-
-        # Emit line and column signal
-        #line = self.blockCount()
-        #col = self.textCursor().columnNumber() + 1
-        #self._cursorPositionChanged.emit(line, col)
 
     def set_font(self, font):
         self.document().setDefaultFont(font)

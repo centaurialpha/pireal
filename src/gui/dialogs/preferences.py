@@ -88,10 +88,6 @@ class Preferences(QDialog):
         # General
         group_gral = QGroupBox(self.tr("General"))
         box_gral = QVBoxLayout(group_gral)
-        # Start Page
-        #self._check_start_page = QCheckBox(tr.TR_PREFERENCES_CHECK_START_PAGE)
-        #self._check_start_page.setChecked(settings.PSettings.SHOW_START_PAGE)
-        #box_gral.addWidget(self._check_start_page)
         # Updates
         hhbox = QHBoxLayout()
         self._check_updates = QCheckBox(self.tr("Notify me of new updates"))
@@ -100,7 +96,6 @@ class Preferences(QDialog):
         btn_updates = QPushButton(self.tr("Check for updates"))
         hhbox.addWidget(btn_updates)
         box_gral.addLayout(hhbox)
-
         # Language
         group_language = QGroupBox(self.tr("Language"))
         box = QVBoxLayout(group_language)
@@ -175,6 +170,8 @@ class Preferences(QDialog):
         self._matching_paren = QCheckBox(self.tr("Matching Parenthesis"))
         self._matching_paren.setChecked(
             settings.PSettings.MATCHING_PARENTHESIS)
+        self._matching_paren.stateChanged[int].connect(
+            self.__set_enabled_matching_parenthesis)
         box_editor.addWidget(self._matching_paren)
         # Font group
         font_group = QGroupBox(self.tr("Font"))
@@ -274,16 +271,12 @@ class Preferences(QDialog):
             self._change_font_size)
 
     def __current_line_value_changed(self, value):
-        #FIXME: un quilombo esto
-        central = Pireal.get_service("central")
-        mcontainer = central.get_active_db()
-        if mcontainer is not None:
-            weditor = mcontainer.query_container.currentWidget().get_editor()
-            if weditor is not None:
-                value = bool(value)
-                weditor.setHighlightCurrentLine(value)
         settings.set_setting("highlight_current_line", value)
         settings.PSettings.HIGHLIGHT_CURRENT_LINE = value
+
+    def __set_enabled_matching_parenthesis(self, value):
+        settings.set_setting("matching_parenthesis", value)
+        settings.PSettings.MATCHING_PARENTHESIS = value
 
     def _change_font(self, font):
         #FIXME: un quilombo esto

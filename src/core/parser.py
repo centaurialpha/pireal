@@ -31,7 +31,7 @@ class Node(object):
             self._name = expression[0]
             return
 
-        for i in range(len(expression) - 1, -1, -1):
+        for i in reversed(range(len(expression))):
             if expression[i] in operators.BOPERATORS:
                 self._name = expression[i]
 
@@ -39,7 +39,7 @@ class Node(object):
                 self.right = Node(expression[i + 1:])
                 return
 
-        for i in range(len(expression) - 1, -1, -1):
+        for i in reversed(range(len(expression))):
             if expression[i] in operators.UOPERATORS:
                 self._name = expression[i]
                 self._attrs = expression[1 + i].strip()
