@@ -89,8 +89,9 @@ class CentralWidget(QWidget):
         self.add_widget(wizard)
 
     def __on_wizard_finished(self, data, wizard_widget):
+        pireal = Pireal.get_service("pireal")
         if not data:
-            return self.remove_last_widget()
+            self.remove_last_widget()
         else:
             db_container = database_container.DatabaseContainer()
             pfile_object = pfile.PFile(data['filename'])
@@ -98,17 +99,17 @@ class CentralWidget(QWidget):
             self.add_widget(db_container)
             # Remove wizard
             self.stacked.removeWidget(wizard_widget)
+            # Title
+            pireal.change_title(file_manager.get_basename(data['filename']))
+            # Enable db actions
+            pireal.set_enabled_db_actions(True)
+            pireal.set_enabled_relation_actions(True)
+            self.__created = True
 
+        # If data or not, show menubar and toolbar again
         # Show menubar and toolbar
-        pireal = Pireal.get_service("pireal")
         pireal.menuBar().setVisible(True)
         pireal.toolbar.setVisible(True)
-        # Title
-        pireal.change_title(file_manager.get_basename(data['filename']))
-        # Enable db actions
-        pireal.set_enabled_db_actions(True)
-        pireal.set_enabled_relation_actions(True)
-        self.__created = True
 
     def open_database(self, filename=''):
         """ This function opens a database and set this on the UI """
