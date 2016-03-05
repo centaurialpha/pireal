@@ -35,18 +35,16 @@ else:
     WINDOWS = True
 
 
-# Font
-#if LINUX:
-    #FONT = QFont('Monospace', 12)
-#else:
-    #FONT = QFont('Courier', 10)
-
 # Supported files
 SUPPORTED_FILES = ("Pireal Database File (*.pdb);;Pireal Query File (*.pqf);;"
                    "Pireal Relation File (*.prf)")
 
 # Create folder (settings and logging)
-PATH = os.path.realpath(os.path.dirname(sys.argv[0]))
+if getattr(sys, 'frozen', ''):
+    PATH = os.path.realpath(os.path.dirname(sys.argv[0]))
+else:
+    PATH = os.path.join(os.path.realpath(
+        os.path.dirname(__file__)), "..", "..")
 HOME = os.path.expanduser("~")
 PIREAL_DIR = os.path.join(HOME, ".pireal")
 PIREAL_PROJECTS = os.path.join(HOME, "PirealDatabases")

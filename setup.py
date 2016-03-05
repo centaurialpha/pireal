@@ -100,7 +100,10 @@ setup(
     license='GPLv3+',
     long_description=open('README.rst').read(),
     package_data={
-        "src": ["gui/qml/*", "images/pireal_icon.png"]
+        "src": [
+            "gui/qml/*",
+            "images/pireal_icon.png",
+            "lang/*.qm"]
     },
     packages=[
         "src",
