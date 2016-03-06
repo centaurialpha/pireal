@@ -30,5 +30,6 @@
         <file alias="show_settings">images/preferences.png</file>
         <file alias="logo">images/pireal_logo-black.png</file>
         <file alias="icon">images/pireal_icon.png</file>
+        <file alias="edit_relation">images/table_edit.png</file>
     </qresource>
 </RCC>

@@ -65,8 +65,9 @@ class Pireal(QMainWindow):
         '',
         'create_new_relation',
         'remove_relation',
-        'add_tuple',
-        'delete_tuple'
+        'edit_relation',
+        #'add_tuple',
+        #'delete_tuple'
         '',
         'execute_queries'
     ]
@@ -228,9 +229,10 @@ class Pireal(QMainWindow):
         actions = [
             'create_new_relation',
             'remove_relation',
-            'add_tuple',
-            'insert_tuple',
-            'delete_tuple'
+            'edit_relation'
+            #'add_tuple',
+            #'insert_tuple',
+            #'delete_tuple'
         ]
 
         for action in actions:

@@ -28,18 +28,14 @@ from PyQt5.QtCore import (
     Qt,
     QSettings
 )
-from PyQt5.QtGui import (
-    QStandardItem,
-    #QBrush,
-    #QColor
-)
+from PyQt5.QtGui import QStandardItem
 
 from src.gui import (
     table_widget,
     lateral_widget,
     custom_table
 )
-from src.gui.dialogs import edit_relation_dialog
+
 from src.gui.query_container import query_container
 from src.core import (
     relation,
@@ -59,7 +55,6 @@ class DatabaseContainer(QSplitter):
     def __init__(self, orientation=Qt.Vertical):
         QSplitter.__init__(self, orientation)
         self.pfile = None
-        #self.__pfile = pfile
         self._hsplitter = QSplitter(Qt.Horizontal)
 
         self.lateral_widget = lateral_widget.LateralWidget()
@@ -81,10 +76,6 @@ class DatabaseContainer(QSplitter):
         self.lateral_widget.itemClicked.connect(
             lambda: self.table_widget.stacked.show_display(
                 self.lateral_widget.row()))
-        #self.lateral_widget.itemRemoved[int].connect(
-            #lambda i: self.table_widget.remove_table(i))
-        #self.lateral_widget.showEditRelation.connect(self.__edit_relation)
-        #self.lateral_widget.doubleClicked.connect(self.__edit_relation)
         self.query_container.saveEditor['PyQt_PyObject'].connect(
             self.save_query)
         self.setSizes([1, 1])
@@ -107,28 +98,24 @@ class DatabaseContainer(QSplitter):
             table_name = table.get('name')
             header = table.get('header')
             tuples = table.get('tuples')
-            types = [t.split('/')[1] for t in header]
-            fields_name = [f.split('/')[0] for f in header]
-            #self.table_widget.relations_types[table_name] = types
 
             # Create relation
             rela = relation.Relation()
-            rela.header = fields_name
+            rela.header = header
 
             # Table view widget
             table_view = custom_table.Table()
-            table_view.dataChange.connect(self.__on_data_table_changed)
             model = table_view.model()
-            model.setHorizontalHeaderLabels(fields_name)
+            model.setHorizontalHeaderLabels(header)
 
             # Populate table view
             row_count = 0
             for row in tuples:
                 for col_count, i in enumerate(row):
                     item = QStandardItem(i)
+                    # Set read only
+                    item.setFlags(item.flags() & ~Qt.ItemIsEditable)
                     model.setItem(row_count, col_count, item)
-                    delegate = table_view.itemDelegate()
-                    delegate.data_types[col_count] = types[col_count]
                 rela.insert(row)
                 row_count += 1
             # Add relation to relations dict
@@ -200,9 +187,6 @@ class DatabaseContainer(QSplitter):
         rela.clear()
         current_table = self.table_widget.stacked.currentWidget()
         model = current_table.model()
-        # Change color of item modified
-        #item = model.item(row, col)
-        #item.setBackground(QBrush(QColor("#e7e49d")))
         for i in range(model.rowCount()):
             reg = []
             for j in range(model.columnCount()):
@@ -215,19 +199,10 @@ class DatabaseContainer(QSplitter):
         # Update relation
         self.table_widget.relations[current_relation] = rela
 
-    def __edit_relation(self, index):
-        index = index.row()
-        name = self.lateral_widget.text_item(index)
-        item = self.table_widget.stacked.widget(index)
-        dialog = edit_relation_dialog.EditRelationDialog(item, name, self)
-        dialog.tableChanged.connect(self.__on_data_table_changed)
-        dialog.exec_()
-
     def add_tuple(self):
         current_table = self.table_widget.current_table()
         model = current_table.model()
         model.insertRow(model.rowCount())
-        #self.lateral_widget.update_item()
 
     def insert_tuple(self):
         current_table = self.table_widget.current_table()
@@ -272,8 +247,6 @@ class DatabaseContainer(QSplitter):
             for col_count, data in enumerate(row):
                 item = QStandardItem(data)
                 model.setItem(row_count, col_count, item)
-                delegate = ptable.itemDelegate()
-                delegate.data_types[col_count] = types[col_count]
             row_count += 1
 
         self.table_widget.stacked.addWidget(ptable)

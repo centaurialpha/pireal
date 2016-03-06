@@ -41,6 +41,7 @@ from src.gui import (
 )
 from src.gui.dialogs import (
     preferences,
+    relation_editor,
     new_relation_dialog,
     database_wizard
 )
@@ -198,17 +199,17 @@ class CentralWidget(QWidget):
         #FIXME: controlar cuando al final de la línea hay una coma
         data_dict = {'tables': []}
 
-        for line in data.splitlines():
+        for line_count, line in enumerate(data.splitlines()):
             # Ignore blank lines
             if not line:
                 continue
             if line.startswith('@'):
-                #FIXME: mmm
-                try:
-                    table_name, line = line.split(':')
-                except:
-                    raise Exception("Invalid syntax in '{}' relation:\n"
-                                    "{}".format(table_name, line))
+                tpoint = line.find(':')
+                if tpoint == -1:
+                    raise Exception("Invalid syntax at line {}".format(
+                        line_count + 1))
+
+                table_name, line = line.split(':')
                 table_name = table_name[1:].strip()
 
                 table_dict = {}
@@ -218,6 +219,7 @@ class CentralWidget(QWidget):
             else:
                 # Strip whitespace
                 line = list(map(str.strip, line.split(',')))
+                line = [l.strip() for l in line if l]
                 if table_dict['name'] == table_name:
                     table_dict['tuples'].append(line)
             if not table_dict['tuples']:
@@ -316,6 +318,15 @@ class CentralWidget(QWidget):
 
     def create_new_relation(self):
         dialog = new_relation_dialog.NewRelationDialog(self)
+        dialog.show()
+
+    def edit_relation(self):
+        #FIXME: mejorar esto
+        db = self.get_active_db()
+        selected_relation = db.lateral_widget.selectedItems()[0].text(0)
+        relation_text = selected_relation.split()[0].strip()
+        relation = db.table_widget.relations[relation_text]
+        dialog = relation_editor.RelationEditor(relation, self)
         dialog.show()
 
     def load_relation(self, filename=''):
