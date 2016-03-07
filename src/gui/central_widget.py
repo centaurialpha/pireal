@@ -42,8 +42,9 @@ from src.gui import (
 from src.gui.dialogs import (
     preferences,
     relation_editor,
-    new_relation_dialog,
-    database_wizard
+    # new_relation_dialog,
+    database_wizard,
+    relation_manager
 )
 
 # Logger
@@ -51,7 +52,7 @@ logger = PirealLogger(__name__)
 CRITICAL = logger.critical
 DEBUG = logger.debug
 
-#FIXME: Refactoring
+# FIXME: Refactoring
 
 
 class CentralWidget(QWidget):
@@ -180,7 +181,7 @@ class CentralWidget(QWidget):
                                                filter_)[0]
         if not filename:
             return
-        #FIXME: mejorar éste y new_query
+        # FIXME: mejorar éste y new_query
         self.new_query(filename)
 
     def save_query(self):
@@ -196,7 +197,7 @@ class CentralWidget(QWidget):
         The argument 'data' is the content of the database.
         """
 
-        #FIXME: controlar cuando al final de la línea hay una coma
+        # FIXME: controlar cuando al final de la línea hay una coma
         data_dict = {'tables': []}
 
         for line_count, line in enumerate(data.splitlines()):
@@ -247,7 +248,8 @@ class CentralWidget(QWidget):
                                                  "has ben modified.<br>"
                                                  "Dou you want save your "
                                                  "changes?".format(
-                                             mcontainer.dbname())), flags)
+                                                     mcontainer.dbname())),
+                                         flags)
                 if r == QMessageBox.Cancel:
                     return
                 if r == QMessageBox.Yes:
@@ -278,10 +280,6 @@ class CentralWidget(QWidget):
 
     def save_database(self):
         mcontainer = self.get_active_db()
-        #if not mcontainer.modified:
-            #return
-        #if mcontainer.is_new():
-            #return self.save_database_as(mcontainer)
 
         # Generate content
         relations = mcontainer.table_widget.relations
@@ -296,38 +294,26 @@ class CentralWidget(QWidget):
 
     def save_database_as(self, db_container=None):
         pass
-        #if db_container is None:
-            #db_container = self.get_active_db()
-
-        #filename = QFileDialog.getSaveFileName(self, self.tr("Save File"),
-                                               #db_container.dbname(),
-                                               #"Pireal database files"
-                                               #"(*.pdb)")[0]
-        #if not filename:
-            #return
-
-        ## Generate content
-        #relations = db_container.table_widget.relations
-        #print(relations)
-        #content = file_manager.generate_database(relations)
-        #db_container.pfile.write(content=content, new_fname=filename)
 
     def remove_relation(self):
         db_container = self.get_active_db()
         db_container.delete_relation()
 
     def create_new_relation(self):
-        dialog = new_relation_dialog.NewRelationDialog(self)
-        dialog.show()
+        relation_manager.create_or_edit_relation()
 
     def edit_relation(self):
-        #FIXME: mejorar esto
         db = self.get_active_db()
-        selected_relation = db.lateral_widget.selectedItems()[0].text(0)
+        lateral = db.lateral_widget
+        selected_relation = lateral.selectedItems()[0].text(0)
         relation_text = selected_relation.split()[0].strip()
-        relation = db.table_widget.relations[relation_text]
-        dialog = relation_editor.RelationEditor(relation, self)
-        dialog.show()
+        rela = db.table_widget.relations[relation_text]
+        data = relation_manager.create_or_edit_relation(rela)
+        if data is not None:
+            # Update table
+            db.table_widget.update_table(data)
+            # Update relation
+            db.table_widget.relations[relation_text] = data
 
     def load_relation(self, filename=''):
         """ Load Relation file """
@@ -341,7 +327,7 @@ class CentralWidget(QWidget):
             msg = self.tr("Open Relation File")
             filter_ = settings.SUPPORTED_FILES.split(';;')[-1]
             filenames = QFileDialog.getOpenFileNames(self, msg, directory,
-                                                    filter_)[0]
+                                                     filter_)[0]
 
             if not filenames:
                 return

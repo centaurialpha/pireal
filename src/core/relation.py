@@ -80,8 +80,8 @@ class Relation(object):
         new_relation = Relation()
         new_relation.header = self.__header
 
-        value = expression.rsplit(' ', 1)[-1]
-        expression = expression.replace(value, '"' + value + '"')
+        # value = expression.rsplit(' ', 1)[-1]
+        # expression = expression.replace(value,  + value + '"')
 
         # Filtering
         d = {}
@@ -270,9 +270,8 @@ class Relation(object):
         return header + content
 
 
+# Test
 if __name__ == "__main__":
-    # Test
-
     r1 = Relation()
     h1 = ['name', 'id', 'city']
     r1.header = h1
@@ -286,3 +285,4 @@ if __name__ == "__main__":
     data2 = {('1', 'Python'), ('32', 'C++')}
     for reg in data2:
         r2.insert(reg)
+    print(r1.select("name == 'Gabriel'"))

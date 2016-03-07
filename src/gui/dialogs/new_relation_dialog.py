@@ -74,10 +74,10 @@ class NewRelationDialog(QDialog):
         hbox.addWidget(btn_remove_tuple)
         vbox.addLayout(hbox)
 
-        self._hbox = QHBoxLayout()
-        for i in range(2):
-            self.__add_combo_to_layout()
-        vbox.addLayout(self._hbox)
+        #self._hbox = QHBoxLayout()
+        #for i in range(2):
+            #self.__add_combo_to_layout()
+        #vbox.addLayout(self._hbox)
 
         # Model
         model = QStandardItemModel(0, 2)
@@ -91,8 +91,8 @@ class NewRelationDialog(QDialog):
         header.model().setHeaderData(0, Qt.Horizontal, self.tr("Field 1"))
         header.model().setHeaderData(1, Qt.Horizontal, self.tr("Field 2"))
         # Delegate
-        delegate = custom_table.ItemDelegate()
-        self._table.setItemDelegate(delegate)
+        #delegate = custom_table.ItemDelegate()
+        #self._table.setItemDelegate(delegate)
         vbox.addWidget(self._table)
 
         # Button ok and cancel
@@ -119,7 +119,7 @@ class NewRelationDialog(QDialog):
         model = self._table.model()
         col_count = model.columnCount()
         model.insertColumn(col_count)
-        self.__add_combo_to_layout()
+        #self.__add_combo_to_layout()
 
     def __remove_column(self):
         model = self._table.model()

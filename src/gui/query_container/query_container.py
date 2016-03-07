@@ -27,8 +27,7 @@ from PyQt5.QtWidgets import (
     QToolBar,
     QSplitter,
     QStackedWidget,
-    QMessageBox,
-    #QTableWidgetItem,
+    QMessageBox
 )
 from PyQt5.QtGui import (
     QStandardItem,
@@ -49,7 +48,6 @@ from src.gui import (
     fader_widget
 )
 from src.gui.main_window import Pireal
-#from src.gui import lateral_widget
 from src.gui.query_container import (
     editor,
     tab_widget
@@ -63,12 +61,12 @@ ERROR = logger.error
 
 ITEMS_TOOLBAR_OPERATORS = OrderedDict(
     [('select', ('Selection', 0x3c3)),
-    ('project', ('Projection', 0x3a0)),
-    ('njoin', ('Natural Join', 0x22c8)),
-    ('product', ('Product', 0x58)),
-    ('intersect', ('Intersection', 0x2229)),
-    ('union', ('Union', 0x222a)),
-    ('difference', ('Difference', 0x2d))]
+     ('project', ('Projection', 0x3a0)),
+     ('njoin', ('Natural Join', 0x22c8)),
+     ('product', ('Product', 0x58)),
+     ('intersect', ('Intersection', 0x2229)),
+     ('union', ('Union', 0x222a)),
+     ('difference', ('Difference', 0x2d))]
 )
 
 
@@ -86,7 +84,7 @@ class QueryContainer(QWidget):
         self.__nquery = 1
         # Toolbar
         #toolbar = self.__load_toolbar()
-        #box.addWidget(toolbar)
+        # box.addWidget(toolbar)
 
         # Tab
         self._tabs = tab_widget.TabWidget()
@@ -275,12 +273,12 @@ class QueryWidget(QWidget):
     def add_table(self, rela, rname):
         wtable = custom_table.Table()
 
-        #wtable.setColumnCount(len(rela.fields))
+        # wtable.setColumnCount(len(rela.fields))
         wtable.model().setHorizontalHeaderLabels(rela.header)
 
         for data in rela.content:
             nrow = wtable.model().rowCount()
-            #wtable.insertRow(nrow)
+            # wtable.insertRow(nrow)
             for col, text in enumerate(data):
                 item = QStandardItem(text)
                 wtable.model().setItem(nrow, col, item)

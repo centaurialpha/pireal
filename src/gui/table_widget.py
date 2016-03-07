@@ -66,6 +66,17 @@ class TableWidget(QWidget):
             return True
         return False
 
+    def update_table(self, data):
+        current_table = self.current_table()
+        model = current_table.model()
+        model.setHorizontalHeaderLabels(data.header)
+
+        for row_count, row in enumerate(data.content):
+            for col_count, data in enumerate(row):
+                item = QStandardItem(data)
+                item.setSelectable(False)
+                model.setItem(row_count, col_count, item)
+
     def add_table(self, rela, name, types):
         """ Add new table from New Relation Dialog """
 
