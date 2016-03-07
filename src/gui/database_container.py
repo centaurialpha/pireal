@@ -72,7 +72,7 @@ class DatabaseContainer(QSplitter):
         self.__nquery = 1
 
         # Connections
-        #FIXME
+        # FIXME
         self.lateral_widget.itemClicked.connect(
             lambda: self.table_widget.stacked.show_display(
                 self.lateral_widget.row()))
@@ -89,8 +89,8 @@ class DatabaseContainer(QSplitter):
         return self.pfile.is_new
 
     #@property
-    #def pfile(self):
-        #return self.__pfile
+    # def pfile(self):
+        # return self.__pfile
 
     def create_database(self, data):
         for table in data.get('tables'):
@@ -163,7 +163,7 @@ class DatabaseContainer(QSplitter):
             else:
                 msg = self.tr("Are you sure you want to delete the "
                               "relation <b>{}</b>?".format(
-                    self.lateral_widget.item_text(current_row)))
+                                  self.lateral_widget.item_text(current_row)))
 
             r = QMessageBox.question(self, self.tr("Confirmation"),
                                      msg, QMessageBox.No | QMessageBox.Yes)
@@ -224,7 +224,7 @@ class DatabaseContainer(QSplitter):
                                      self.tr("Are you sure you want to "
                                              "to delete the selected"
                                              "tuple(s)?"),
-                                    QMessageBox.Yes | QMessageBox.No)
+                                     QMessageBox.Yes | QMessageBox.No)
             if r == QMessageBox.Yes:
                 selection = selection.selection()
                 rows = set([index.row() for index in selection.indexes()])
@@ -254,7 +254,7 @@ class DatabaseContainer(QSplitter):
 
     def new_query(self, filename):
         editor_tab_at = self.query_container.is_open(filename)
-        if  editor_tab_at != -1:
+        if editor_tab_at != -1:
             self.query_container.set_focus_editor_tab(editor_tab_at)
         else:
             query_widget = query_container.QueryWidget()
@@ -318,4 +318,4 @@ class DatabaseContainer(QSplitter):
                            self._hsplitter.saveState())
         qsettings.setValue('vsplitter_sizes',
                            self.saveState())
-        #FIXME: save sizes of query container
+        # FIXME: save sizes of query container
