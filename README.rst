@@ -7,7 +7,7 @@
 πreal |test|
 *****
 
-**Pireal** is an educational tool for working with relational database using the query language of relational algebra.
+**Pireal** is a tool to evaluate and display the results of queries written in the language of relational algebra.
 
 .. image:: /src/images/pireal_logo-black.png
 
@@ -110,12 +110,12 @@ Example of a ``database.pdb`` file:
 
 ::
 
-    @people:id/numeric,name/char,age/numeric
+    @people:id,name,age
     001,Mike,15
     002,Gabriel,24
     003,Linus,45
     
-    @skills:id/numeric,skill/char
+    @skills:id,skill
     002,Python
     003,Linux
 
@@ -167,7 +167,7 @@ Example:
 
 ::
 
-    id/numeric,skill/char
+    id,skill
     23,Linux
     7,GNU
     6,Gamer
