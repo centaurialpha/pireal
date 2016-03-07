@@ -23,6 +23,7 @@ from PyQt5.QtWidgets import (
     QStackedWidget
 )
 from PyQt5.QtGui import QStandardItem
+from PyQt5.QtCore import Qt
 
 from src.gui import (
     custom_table,
@@ -74,7 +75,8 @@ class TableWidget(QWidget):
         for row_count, row in enumerate(data.content):
             for col_count, data in enumerate(row):
                 item = QStandardItem(data)
-                item.setSelectable(False)
+                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+                # item.setSelectable(False)
                 model.setItem(row_count, col_count, item)
 
     def add_table(self, rela, name):
@@ -88,7 +90,8 @@ class TableWidget(QWidget):
         for row_count, row in enumerate(rela.content):
             for col_count, i in enumerate(row):
                 item = QStandardItem(i)
-                item.setSelectable(False)
+                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+                # item.setSelectable(False)
                 model.setItem(row_count, col_count, item)
 
         self.add_relation(name, rela)

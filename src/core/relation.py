@@ -80,16 +80,16 @@ class Relation(object):
         new_relation = Relation()
         new_relation.header = self.__header
 
-        value = expression.rsplit(' ', 1)[-1]
-        value_i = value.replace('.', '').replace('-', '')
-        if value_i.isdigit():
-            expression = expression.replace(value, '"' + value + '"')
-
         # Filtering
         d = {}
         for register in self.content:
             for e, attr in enumerate(self.__header):
-                d[attr] = register[e]
+                # Is a digit?
+                v = register[e].replace('.', '').replace('-', '')
+                if v.isdigit():
+                    d[attr] = float(register[e])
+                else:
+                    d[attr] = register[e]
 
             # The expression is evaluated
             try:
@@ -272,7 +272,6 @@ class Relation(object):
         return header + content
 
 
-# Test
 if __name__ == "__main__":
     r1 = Relation()
     h1 = ['name', 'id', 'city']
