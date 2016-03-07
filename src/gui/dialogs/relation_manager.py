@@ -45,6 +45,7 @@ def create_or_edit_relation(rela=None):
             super(RelationManager, self).__init__(parent)
             self.resize(700, 500)
             box = QVBoxLayout(self)
+            self.rela = rela
             self.data = None
             # Table
             self.table = QTableView()
@@ -92,6 +93,15 @@ def create_or_edit_relation(rela=None):
             add_column_btn.clicked.connect(self.__add_column)
 
         def __save(self):
+            rname = ''
+            if self.rela is None:
+                # New
+                rname = self._relation_name.text()
+                if not rname.strip():
+                    QMessageBox.critical(self, "Error",
+                                         self.tr("Relation name "
+                                                 "not specified"))
+                    return
             nrela = relation.Relation()
             model = self.table.model()
             ncolumn = model.columnCount()
@@ -122,7 +132,7 @@ def create_or_edit_relation(rela=None):
                     tuples.append(item.text())
                 nrela.insert(tuples)
 
-            self.data = nrela
+            self.data = nrela, rname
             self.close()
 
         def __setup_edit_relation(self, rela):

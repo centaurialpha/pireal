@@ -77,7 +77,7 @@ class TableWidget(QWidget):
                 item.setSelectable(False)
                 model.setItem(row_count, col_count, item)
 
-    def add_table(self, rela, name, types):
+    def add_table(self, rela, name):
         """ Add new table from New Relation Dialog """
 
         ptable = custom_table.Table()
@@ -85,21 +85,18 @@ class TableWidget(QWidget):
         model.setHorizontalHeaderLabels(rela.header)
 
         # Populate table
-        row_count = 0
-        for row in rela.content:
+        for row_count, row in enumerate(rela.content):
             for col_count, i in enumerate(row):
                 item = QStandardItem(i)
                 item.setSelectable(False)
                 model.setItem(row_count, col_count, item)
-                delegate = ptable.itemDelegate()
-                delegate.data_types[col_count] = types[col_count]
-            row_count += 1
 
         self.add_relation(name, rela)
         self.stacked.addWidget(ptable)
 
         central = Pireal.get_service("central")
         active_db = central.get_active_db()
+        active_db.lateral_widget.add_item(name, rela.count())
         active_db.modified = True
 
 

@@ -41,8 +41,6 @@ from src.gui import (
 )
 from src.gui.dialogs import (
     preferences,
-    relation_editor,
-    # new_relation_dialog,
     database_wizard,
     relation_manager
 )
@@ -300,7 +298,9 @@ class CentralWidget(QWidget):
         db_container.delete_relation()
 
     def create_new_relation(self):
-        relation_manager.create_or_edit_relation()
+        db = self.get_active_db()
+        data, name = relation_manager.create_or_edit_relation()
+        db.table_widget.add_table(data, name)
 
     def edit_relation(self):
         db = self.get_active_db()
@@ -308,7 +308,7 @@ class CentralWidget(QWidget):
         selected_relation = lateral.selectedItems()[0].text(0)
         relation_text = selected_relation.split()[0].strip()
         rela = db.table_widget.relations[relation_text]
-        data = relation_manager.create_or_edit_relation(rela)
+        data, _ = relation_manager.create_or_edit_relation(rela)
         if data is not None:
             # Update table
             db.table_widget.update_table(data)

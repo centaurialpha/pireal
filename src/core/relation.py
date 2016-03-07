@@ -80,8 +80,10 @@ class Relation(object):
         new_relation = Relation()
         new_relation.header = self.__header
 
-        # value = expression.rsplit(' ', 1)[-1]
-        # expression = expression.replace(value,  + value + '"')
+        value = expression.rsplit(' ', 1)[-1]
+        value_i = value.replace('.', '').replace('-', '')
+        if value_i.isdigit():
+            expression = expression.replace(value, '"' + value + '"')
 
         # Filtering
         d = {}
