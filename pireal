@@ -133,17 +133,5 @@ if __name__ == "__main__":
     gui = Pireal()
     gui.show()
 
-    # Console
-    # Enable from settings file
-    if settings.PSettings.CONSOLE:
-        from src.utils.console import console_widget
-        from PyQt5.QtWidgets import QDesktopWidget
-        console = console_widget.ConsoleWidget()
-        console.show()
-        console.resize(700, 150)
-        d = QDesktopWidget()
-        geo = d.screenGeometry()
-        console.move(geo.width() / 4, geo.height() / 1.5)
-
     INFO("Pireal ready!")
     sys.exit(qapp.exec_())

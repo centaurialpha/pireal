@@ -62,7 +62,6 @@ class PSettings:
     LANGUAGE = ""
     THEME = "Fusion"  # Default style
     LAST_OPEN_FOLDER = ""
-    CONSOLE = False  # For dev
     RECENT_DB = []
     HIGHLIGHT_CURRENT_LINE = False
     MATCHING_PARENTHESIS = False
