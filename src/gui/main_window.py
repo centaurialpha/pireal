@@ -168,6 +168,9 @@ class Pireal(QMainWindow):
                     else:
                         obj = self
                     qaction = menu.addAction(action)
+                    if connection.endswith('_action'):
+                        # Editor actions
+                        qaction.setEnabled(False)
                     # Icon name is connection
                     icon = QIcon(":img/%s" % connection)
                     qaction.setIcon(icon)
@@ -213,8 +216,6 @@ class Pireal(QMainWindow):
             'new_query',
             'open_query',
             'save_query',
-            #'create_new_relation',
-            #'remove_relation',
             'close_database',
             'save_database',
             'load_relation'
@@ -241,11 +242,6 @@ class Pireal(QMainWindow):
         """ Public method. Enables or disables queries QAction """
 
         actions = [
-            'undo_action',
-            'redo_action',
-            'copy_action',
-            'cut_action',
-            'paste_action',
             'execute_queries'
         ]
 

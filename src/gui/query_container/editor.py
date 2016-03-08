@@ -120,7 +120,7 @@ class Editor(QPlainTextEdit):
 
             for k in range(0, n):
                 if paren[k].position == position - block_pos or \
-                paren[k].position == position - block_pos - 1:
+                        paren[k].position == position - block_pos - 1:
                     previous = paren[k].position + block_pos
                     if paren[k].character == '(':
                         _next = self.__match_left(block,

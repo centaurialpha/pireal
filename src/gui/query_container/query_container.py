@@ -239,8 +239,15 @@ class QueryWidget(QWidget):
         self._hsplitter.addWidget(self._stack_tables)
 
         self._query_editor = editor.Editor()
+        # Editor connections
         self._query_editor.modificationChanged[bool].connect(
             self.__editor_modified)
+        self._query_editor.undoAvailable[bool].connect(
+            self.__on_undo_available)
+        self._query_editor.redoAvailable[bool].connect(
+            self.__on_redo_available)
+        self._query_editor.copyAvailable[bool].connect(
+            self.__on_copy_available)
         self._vsplitter.addWidget(self._query_editor)
 
         self._vsplitter.addWidget(self._hsplitter)
@@ -250,6 +257,29 @@ class QueryWidget(QWidget):
         self._result_list.itemClicked.connect(
             lambda index: self._stack_tables.show_display(
                 self._result_list.row()))
+
+    def __on_undo_available(self, value):
+        """ Change state of undo action """
+
+        pireal = Pireal.get_service("pireal")
+        action = pireal.get_action("undo_action")
+        action.setEnabled(value)
+
+    def __on_redo_available(self, value):
+        """ Change state of redo action """
+
+        pireal = Pireal.get_service("pireal")
+        action = pireal.get_action("redo_action")
+        action.setEnabled(value)
+
+    def __on_copy_available(self, value):
+        """ Change states of cut and copy action """
+
+        pireal = Pireal.get_service("pireal")
+        cut_action = pireal.get_action("cut_action")
+        cut_action.setEnabled(value)
+        copy_action = pireal.get_action("copy_action")
+        copy_action.setEnabled(value)
 
     def save_sizes(self):
         """ Save sizes of Splitters """
