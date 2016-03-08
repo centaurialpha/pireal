@@ -54,7 +54,9 @@ DEBUG = logger.debug
 
 
 class CentralWidget(QWidget):
+    # This signals is used by notificator
     databaseSaved = pyqtSignal('QString')
+    querySaved = pyqtSignal('QString')
 
     def __init__(self):
         QWidget.__init__(self)
@@ -91,15 +93,20 @@ class CentralWidget(QWidget):
     def __on_wizard_finished(self, data, wizard_widget):
         pireal = Pireal.get_service("pireal")
         if not data:
+            # If it's canceled, remove wizard widget and return to Start Page
             self.remove_last_widget()
         else:
+            # Create a new data base container
             db_container = database_container.DatabaseContainer()
+            # Associate the file name with the PFile object
             pfile_object = pfile.PFile(data['filename'])
+            # Associate PFile object with data base container
+            # and add widget to stacked
             db_container.pfile = pfile_object
             self.add_widget(db_container)
             # Remove wizard
             self.stacked.removeWidget(wizard_widget)
-            # Title
+            # Set window title
             pireal.change_title(file_manager.get_basename(data['filename']))
             # Enable db actions
             pireal.set_enabled_db_actions(True)
@@ -137,14 +144,15 @@ class CentralWidget(QWidget):
             # Read pdb file
             pfile_object = pfile.PFile(filename)
             db_data = pfile_object.read()
+            # Create a dict to manipulate data more easy
             db_data = self.__sanitize_data(db_data)
         except Exception as reason:
             QMessageBox.information(self,
                                     self.tr("The file couldn't be open"),
                                     str(reason))
+            CRITICAL("Error al intentar abrir el archivo: {}".format(reason))
             return
 
-        # Create a dict to manipulate data more easy
         # Create a database container widget
         db_container = database_container.DatabaseContainer()
 
@@ -154,6 +162,7 @@ class CentralWidget(QWidget):
             QMessageBox.information(self,
                                     self.tr("Error"),
                                     str(reason))
+            CRITICAL("Error al crear la base de datos: {}".format(reason))
             return
 
         # Set the PFile object to the new database
@@ -173,17 +182,20 @@ class CentralWidget(QWidget):
 
     def open_query(self):
         filter_ = settings.SUPPORTED_FILES.split(';;')[1]
-        filename = QFileDialog.getOpenFileName(self,
-                                               self.tr("Open Query"),
-                                               os.path.expanduser("~"),
-                                               filter_)[0]
+        filename, _ = QFileDialog.getOpenFileName(self,
+                                                  self.tr("Open Query"),
+                                                  os.path.expanduser("~"),
+                                                  filter_)
         if not filename:
             return
         # FIXME: mejorar éste y new_query
         self.new_query(filename)
 
     def save_query(self):
-        pass
+        db = self.get_active_db()
+        fname = db.save_query()
+        if fname:
+            self.querySaved.emit(self.tr("Query saved: {}".format(fname)))
 
     def save_query_as(self):
         pass
@@ -263,10 +275,10 @@ class CentralWidget(QWidget):
             self.created = False
 
     def new_query(self, filename=''):
-        if not self.created:
-            QMessageBox.information(self, self.tr("Information"),
-                                    self.tr("First create or open a database"))
-            return
+        # if not self.created:
+        #    QMessageBox.information(self, self.tr("Information"),
+        #                           self.tr("First create or open a database"))
+        #  return
         pireal = Pireal.get_service("pireal")
         pireal.set_enabled_query_actions(True)
         db_container = self.get_active_db()
@@ -281,8 +293,8 @@ class CentralWidget(QWidget):
 
         # Generate content
         relations = mcontainer.table_widget.relations
-        relations_types = mcontainer.table_widget.relations_types
-        content = file_manager.generate_database(relations, relations_types)
+        # relations_types = mcontainer.table_widget.relations_types
+        content = file_manager.generate_database(relations)
         mcontainer.pfile.write(content=content, new_fname='')
         mcontainer.modified = False
         filename = mcontainer.pfile.filename

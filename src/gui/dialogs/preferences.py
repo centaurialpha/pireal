@@ -32,20 +32,15 @@ from PyQt5.QtWidgets import (
     QCheckBox,
     QMessageBox,
     QComboBox,
-    #QShortcut,
     QStyleFactory,
     QFontComboBox,
     QLabel
 )
-from PyQt5.QtGui import (
-    #QKeySequence,
-    QFontDatabase
-)
+from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtCore import (
     QPropertyAnimation,
     QParallelAnimationGroup,
     QRect,
-    #Qt,
     QSettings,
     pyqtSignal
 )
@@ -67,7 +62,7 @@ class Preferences(QDialog):
 
         # Activate key escape to close preferences
         #kescape = QShortcut(QKeySequence(Qt.Key_Escape), self)
-        #kescape.activated.connect(self.close)
+        # kescape.activated.connect(self.close)
 
         # Thread updates
         self.thread = updates.Updates()
@@ -129,7 +124,7 @@ class Preferences(QDialog):
         styles = QStyleFactory.keys()
         self.combo_themes.addItems(styles)
         current_style = QApplication.instance().style().objectName()
-        #FIXME: this sucks!
+        # FIXME: this sucks!
         try:
             index = styles.index(current_style.upper())
         except:
@@ -149,7 +144,7 @@ class Preferences(QDialog):
         left_container.addWidget(group_language)
         left_container.addWidget(group_style)
         left_container.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
-                               QSizePolicy.Expanding))
+                                           QSizePolicy.Expanding))
 
         # Right Container
         right_container = QVBoxLayout()
@@ -194,7 +189,7 @@ class Preferences(QDialog):
         right_container.addWidget(editor_group)
         right_container.addWidget(font_group)
         right_container.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
-                                QSizePolicy.Expanding))
+                                            QSizePolicy.Expanding))
 
         # Add widgets
         grid.addLayout(left_container, 0, 0)
@@ -229,9 +224,9 @@ class Preferences(QDialog):
         self.x_animation_s = QPropertyAnimation(self, b"geometry")
         self.x_animation_s.setDuration(duration)
         self.x_animation_s.setStartValue(QRect(x, 0, parent.width(),
-                                         parent.height()))
+                                               parent.height()))
         self.x_animation_s.setEndValue(QRect(0, 0, parent.width(),
-                                       parent.height()))
+                                             parent.height()))
         # Animation end
         # Opacity animation
         self.opacity_animation_e = QPropertyAnimation(self.effect, b"opacity")
@@ -242,9 +237,9 @@ class Preferences(QDialog):
         self.x_animation_e = QPropertyAnimation(self, b"geometry")
         self.x_animation_e.setDuration(duration)
         self.x_animation_e.setStartValue(QRect(0, 0, parent.width(),
-                                         parent.height()))
+                                               parent.height()))
         self.x_animation_e.setEndValue(QRect(-x, 0, parent.width(),
-                                       parent.height()))
+                                             parent.height()))
 
         # Group animation start
         self.group_animation_s = QParallelAnimationGroup()
@@ -261,8 +256,8 @@ class Preferences(QDialog):
             self._on_group_animation_finished)
         btn_cancel.clicked.connect(self.close)
         btn_reset.clicked.connect(self._reset_settings)
-        #btn_updates.clicked.connect(self._check_for_updates)
-        #self.thread.finished.connect(self._on_thread_finished)
+        # btn_updates.clicked.connect(self._check_for_updates)
+        # self.thread.finished.connect(self._on_thread_finished)
         self.combo_themes.currentIndexChanged['QString'].connect(
             self._change_theme)
         self._combo_font.currentFontChanged.connect(
@@ -279,7 +274,7 @@ class Preferences(QDialog):
         settings.PSettings.MATCHING_PARENTHESIS = value
 
     def _change_font(self, font):
-        #FIXME: un quilombo esto
+        # FIXME: un quilombo esto
         central = Pireal.get_service("central")
         mcontainer = central.get_active_db()
         if mcontainer is not None:
@@ -289,7 +284,7 @@ class Preferences(QDialog):
         settings.set_setting("font", font)
 
     def _change_font_size(self, size):
-        #FIXME: un quilombo esto
+        # FIXME: un quilombo esto
         font = self._combo_font.currentFont()
         font.setPointSize(int(size))
         central = Pireal.get_service("central")
@@ -346,5 +341,5 @@ class Preferences(QDialog):
         """ Change theme style """
 
         QApplication.setStyle(style)
-        settings.set_setting('stylesheet', style)
+        settings.set_setting('theme', style)
         settings.PSettings.THEME = style

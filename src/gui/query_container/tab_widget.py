@@ -23,8 +23,6 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import pyqtSignal
 
-from src import translations as tr
-
 
 class TabWidget(QTabWidget):
     saveEditor = pyqtSignal('PyQt_PyObject')
@@ -43,9 +41,11 @@ class TabWidget(QTabWidget):
             flags = QMessageBox.Yes
             flags |= QMessageBox.No
             flags |= QMessageBox.Cancel
-            r = QMessageBox.question(self, tr.TR_QUERY_FILE_MODIFIED,
-                                     tr.TR_QUERY_FILE_MODIFIED_MSG.format(
-                                         editor.name), flags)
+            r = QMessageBox.question(self, self.tr("File modified"),
+                                     self.tr("The file <b>{}</b> has unsaved "
+                                             "changes. You want "
+                                             "to keep them?".format(
+                                                 editor.name)), flags)
             if r == QMessageBox.Cancel:
                 return
             if r == QMessageBox.Yes:

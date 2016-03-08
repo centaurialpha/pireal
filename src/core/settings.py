@@ -60,7 +60,7 @@ class PSettings:
     CHECK_UPDATES = True
     MAX_RECENT_FILES = 5
     LANGUAGE = ""
-    THEME = ""
+    THEME = "Fusion"  # Default style
     LAST_OPEN_FOLDER = ""
     CONSOLE = False  # For dev
     RECENT_DB = []
@@ -95,7 +95,7 @@ def load_settings():
     PSettings.SHOW_START_PAGE = settings.value('show-start-page',
                                                True, type=bool)
     PSettings.LANGUAGE = settings.value('language', "", type='QString')
-    PSettings.THEME = settings.value('stylesheet', "", type='QString')
+    PSettings.THEME = settings.value('theme', "Fusion", type='QString')
     PSettings.LAST_OPEN_FOLDER = settings.value("last_open_folder", "",
                                                 type='QString')
     PSettings.RECENT_DB = settings.value("recentDB", [])

@@ -103,6 +103,7 @@ class Pireal(QMainWindow):
         # Central widget
         central_widget = Pireal.get_service("central")
         central_widget.databaseSaved.connect(notification_widget.show_text)
+        central_widget.querySaved.connect(notification_widget.show_text)
         self.setCentralWidget(central_widget)
         central_widget.add_start_page()
 
@@ -307,7 +308,7 @@ class Pireal(QMainWindow):
         central_widget = Pireal.get_service("central")
         recent_files = qsettings.value('recentDB', set())
         qsettings.setValue("recentDB",
-                            recent_files.union(central_widget.recent_files))
+                           recent_files.union(central_widget.recent_files))
 
         main_container = central_widget.get_active_db()
         if main_container is not None:
@@ -316,19 +317,19 @@ class Pireal(QMainWindow):
         #last_open_folder = main_container.get_last_open_folder()
         #settings.set_setting("last_open_folder", last_open_folder)
         #container = Pireal.get_service("container")
-        #if not container.check_opened_query_files():
-            #event.ignore()
-        #if container.modified:
+        # if not container.check_opened_query_files():
+            # event.ignore()
+        # if container.modified:
             #db_name = container.get_db_name()
             #flags = QMessageBox.Yes
             #flags |= QMessageBox.No
             #flags |= QMessageBox.Cancel
 
-            #result = QMessageBox.question(self,
-                                          #tr.TR_CONTAINER_DB_UNSAVED_TITLE,
-                                          #tr.TR_CONTAINER_DB_UNSAVED.format(
-                                              #db_name), flags)
-            #if result == QMessageBox.Cancel:
-                #event.ignore()
-            #if result == QMessageBox.Yes:
-                #container.save_data_base()
+            # result = QMessageBox.question(self,
+            # tr.TR_CONTAINER_DB_UNSAVED_TITLE,
+            # tr.TR_CONTAINER_DB_UNSAVED.format(
+            # db_name), flags)
+            # if result == QMessageBox.Cancel:
+            # event.ignore()
+            # if result == QMessageBox.Yes:
+            # container.save_data_base()

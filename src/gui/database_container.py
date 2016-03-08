@@ -277,8 +277,15 @@ class DatabaseContainer(QSplitter):
             return self.save_query_as(editor)
         # Get content of editor
         content = editor.toPlainText()
-        editor.pfile.write(content=content)
+        try:
+            editor.pfile.write(content=content)
+        except Exception as reason:
+            QMessageBox.critical(self, "Error",
+                                 self.tr("The file couldn't be saved!"
+                                         "\n\n{}".format(reason)))
+            return False
         editor.saved()
+        return editor.pfile.filename
 
     def save_query_as(self, editor=None):
         filename = QFileDialog.getSaveFileName(self, self.tr("Save File"),
