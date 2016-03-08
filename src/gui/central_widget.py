@@ -50,8 +50,6 @@ logger = PirealLogger(__name__)
 CRITICAL = logger.critical
 DEBUG = logger.debug
 
-# FIXME: Refactoring
-
 
 class CentralWidget(QWidget):
     # This signals is used by notificator
@@ -74,6 +72,10 @@ class CentralWidget(QWidget):
         Pireal.load_service("central", self)
 
     def create_database(self):
+        """ Show a wizard widget to create a new database,
+        only have one database open at time.
+        """
+
         if self.__created:
             QMessageBox.information(self,
                                     self.tr("Information"),
@@ -85,12 +87,14 @@ class CentralWidget(QWidget):
             self.__on_wizard_finished)
         # Hide menubar and toolbar
         pireal = Pireal.get_service("pireal")
-        pireal.menuBar().hide()
-        pireal.toolbar.hide()
+        pireal.show_hide_menubar()
+        pireal.show_hide_toolbar()
         # Add wizard widget to stacked
         self.add_widget(wizard)
 
     def __on_wizard_finished(self, data, wizard_widget):
+        """ This slot execute when wizard to create a database is finished """
+
         pireal = Pireal.get_service("pireal")
         if not data:
             # If it's canceled, remove wizard widget and return to Start Page
@@ -114,9 +118,8 @@ class CentralWidget(QWidget):
             self.__created = True
 
         # If data or not, show menubar and toolbar again
-        # Show menubar and toolbar
-        pireal.menuBar().setVisible(True)
-        pireal.toolbar.setVisible(True)
+        pireal.show_hide_menubar()
+        pireal.show_hide_toolbar()
 
     def open_database(self, filename=''):
         """ This function opens a database and set this on the UI """
@@ -128,10 +131,10 @@ class CentralWidget(QWidget):
             else:
                 directory = self.__last_open_folder
             filter_ = settings.SUPPORTED_FILES.split(';;')[0]
-            filename = QFileDialog.getOpenFileName(self,
-                                                   self.tr("Open Database"),
-                                                   directory,
-                                                   filter_)[0]
+            filename, _ = QFileDialog.getOpenFileName(self,
+                                                      self.tr("Open Database"),
+                                                      directory,
+                                                      filter_)
             # If is canceled, return
             if not filename:
                 return
@@ -215,6 +218,7 @@ class CentralWidget(QWidget):
             if not line:
                 continue
             if line.startswith('@'):
+                # This line is a header
                 tpoint = line.find(':')
                 if tpoint == -1:
                     raise Exception("Invalid syntax at line {}".format(
@@ -366,6 +370,8 @@ class CentralWidget(QWidget):
     created = property(__get_created, __set_created)
 
     def show_settings(self):
+        """ Show settings dialog on stacked """
+
         preferences_dialog = preferences.Preferences(self)
 
         if isinstance(self.widget(1), preferences.Preferences):
@@ -388,20 +394,10 @@ class CentralWidget(QWidget):
         index = self.stacked.addWidget(widget)
         self.stacked.setCurrentIndex(index)
 
-    def add_tuple(self):
-        db_container = self.get_active_db()
-        db_container.add_tuple()
-
-    def insert_tuple(self):
-        db_container = self.get_active_db()
-        db_container.insert_tuple()
-
-    def delete_tuple(self):
-        db_container = self.get_active_db()
-        db_container.delete_tuple()
-
     @property
     def recent_files(self):
+        """ Returns recent database files """
+
         return self.__recent_files
 
     def _settings_closed(self):
@@ -409,9 +405,9 @@ class CentralWidget(QWidget):
         self.stacked.setCurrentWidget(self.stacked.currentWidget())
 
     def get_active_db(self):
-        """ Return an instance of Main Conatainer widget if the
-        stacked contains an Main Container in last index or None if it's
-        not an instance of Main Container """
+        """ Return an instance of DatabaseContainer widget if the
+        stacked contains an DatabaseContainer in last index or None if it's
+        not an instance of DatabaseContainer """
 
         index = self.stacked.count() - 1
         widget = self.widget(index)

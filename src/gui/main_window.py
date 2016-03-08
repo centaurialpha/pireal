@@ -231,9 +231,6 @@ class Pireal(QMainWindow):
             'create_new_relation',
             'remove_relation',
             'edit_relation'
-            #'add_tuple',
-            #'insert_tuple',
-            #'delete_tuple'
         ]
 
         for action in actions:
@@ -244,7 +241,6 @@ class Pireal(QMainWindow):
         """ Public method. Enables or disables queries QAction """
 
         actions = [
-            #'save_file',
             'undo_action',
             'redo_action',
             'copy_action',
@@ -291,8 +287,21 @@ class Pireal(QMainWindow):
         dialog.valueChanged['QString', 'PyQt_PyObject'].connect(
             self._update_settings)
 
-    def _update_settings(self, key, value):
-        pass
+    def show_hide_menubar(self):
+        """ Change visibility of menu bar """
+
+        if self.menuBar().isVisible():
+            self.menuBar().hide()
+        else:
+            self.menuBar().show()
+
+    def show_hide_toolbar(self):
+        """ Change visibility of tool bar """
+
+        if self.toolbar.isVisible():
+            self.toolbar.hide()
+        else:
+            self.toolbar.show()
 
     def closeEvent(self, event):
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)

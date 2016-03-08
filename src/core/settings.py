@@ -72,17 +72,25 @@ class PSettings:
 
 
 def create_dir():
+    """ This functions create a structure folders used by Pireal  """
+
     for path in (PIREAL_DIR, PIREAL_PROJECTS):
         if not os.path.isdir(path):
             os.mkdir(path)
 
 
 def get_setting(key, default):
+    """ Get the value for setting key. If the setting doesn't exists,
+    returns default
+    """
+
     psettings = QSettings(SETTINGS_PATH, QSettings.IniFormat)
     return psettings.value(key, default)
 
 
 def set_setting(key, value):
+    """ Sets the value of setting key to value """
+
     psettings = QSettings(SETTINGS_PATH, QSettings.IniFormat)
     psettings.setValue(key, value)
 
