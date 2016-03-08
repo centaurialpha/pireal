@@ -312,7 +312,7 @@ class CentralWidget(QWidget):
     def create_new_relation(self):
         db = self.get_active_db()
         data = relation_manager.create_or_edit_relation()
-        if data[0] is not None:
+        if data is not None:
             db.table_widget.add_table(data[0], data[1])
 
     def edit_relation(self):

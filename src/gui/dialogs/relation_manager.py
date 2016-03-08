@@ -91,6 +91,7 @@ def create_or_edit_relation(rela=None):
             add_tuple_btn.clicked.connect(self.__add_tuple)
             delete_tuple_btn.clicked.connect(self.__delete_tuple)
             add_column_btn.clicked.connect(self.__add_column)
+            delete_column_btn.clicked.connect(self.__delete_column)
 
         def __save(self):
             rname = ''
@@ -187,6 +188,11 @@ def create_or_edit_relation(rela=None):
         def __add_column(self):
             model = self.table.model()
             model.insertColumn(model.columnCount())
+
+        def __delete_column(self):
+            model = self.table.model()
+            if model.columnCount() >= 2:
+                model.takeColumn(model.columnCount() - 1)
 
     manager = RelationManager()
     manager.exec_()
