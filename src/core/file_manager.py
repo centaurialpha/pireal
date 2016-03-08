@@ -62,7 +62,7 @@ def get_path(filename):
     return os.path.dirname(filename)
 
 
-def generate_database(relations, fields_types):
+def generate_database(relations):
     """ This function generates the content of the database
 
     :param relations: Dictionary with relations (Relation Object)
@@ -72,11 +72,8 @@ def generate_database(relations, fields_types):
     content = ""
     for relation_name, relation in list(relations.items()):
         content += '@%s:' % relation_name
-        for i in range(len(relation.fields)):
-            fields = ','.join([relation.fields[i] +
-                              '/' + fields_types[relation_name][i]
-                              for i in range(len(relation.fields))])
-        content += fields + '\n'
+        header = ','.join(relation.header)
+        content += header + '\n'
         for i in relation.content:
             content += ','.join(i) + '\n'
         content += '\n'

@@ -293,21 +293,22 @@ class CentralWidget(QWidget):
         db_container.execute_queries()
 
     def save_database(self):
-        mcontainer = self.get_active_db()
 
+        db = self.get_active_db()
+        if not db.modified:
+            return
+
+        # Get relations dict
+        relations = db.table_widget.relations
         # Generate content
-        relations = mcontainer.table_widget.relations
-        # relations_types = mcontainer.table_widget.relations_types
         content = file_manager.generate_database(relations)
-        mcontainer.pfile.write(content=content, new_fname='')
-        mcontainer.modified = False
-        filename = mcontainer.pfile.filename
+        db.pfile.write(content=content, new_fname='')
+        filename = db.pfile.filename
         # Emit signal
         self.databaseSaved.emit(
             self.tr("Database saved: {}".format(filename)))
 
-    def save_database_as(self, db_container=None):
-        pass
+        db.modified = False
 
     def remove_relation(self):
         db_container = self.get_active_db()
