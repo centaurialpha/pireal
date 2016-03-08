@@ -254,19 +254,24 @@ class CentralWidget(QWidget):
         mcontainer = self.get_active_db()
         if mcontainer is not None:
             if mcontainer.modified:
-                flags = QMessageBox.Cancel
-                flags |= QMessageBox.No
-                flags |= QMessageBox.Yes
-                r = QMessageBox.question(self, self.tr("Save Changes?"),
-                                         self.tr("The <b>{}</b> database "
-                                                 "has ben modified.<br>"
-                                                 "Dou you want save your "
-                                                 "changes?".format(
-                                                     mcontainer.dbname())),
-                                         flags)
-                if r == QMessageBox.Cancel:
+                msgbox = QMessageBox(self)
+                msgbox.setIcon(QMessageBox.Question)
+                msgbox.setWindowTitle(self.tr("Save Changes?"))
+                msgbox.setText(self.tr("The <b>{}</b> database has ben"
+                                       "modified.<br>Do you want save "
+                                       "your changes?".format(
+                                           mcontainer.dbname())))
+                cancel_btn = msgbox.addButton(self.tr("Cancel"),
+                                              QMessageBox.RejectRole)
+                msgbox.addButton(self.tr("No"),
+                                 QMessageBox.NoRole)
+                yes_btn = msgbox.addButton(self.tr("Yes"),
+                                           QMessageBox.YesRole)
+                msgbox.exec_()
+                r = msgbox.clickedButton()
+                if r == cancel_btn:
                     return
-                if r == QMessageBox.Yes:
+                if r == yes_btn:
                     self.save_database()
 
             self.stacked.removeWidget(mcontainer)
