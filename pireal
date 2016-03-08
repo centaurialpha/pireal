@@ -119,11 +119,6 @@ if __name__ == "__main__":
     #   translator.load(os.path.join(settings.LANG_PATH, lang + '.qm'))
     #   qapp.installTranslator(translator)
 
-    # qtranslator = QTranslator()
-    # qtranslator.load("qt_" + locale, QLibraryInfo.location(
-    #    QLibraryInfo.TranslationsPath))
-    # qapp.installTranslator(qtranslator)
-
     # Load services
     from src.gui import central_widget  # lint:ok
     from src.gui import notification  # lint:ok
