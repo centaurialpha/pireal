@@ -36,7 +36,7 @@ class AboutDialog(QDialog):
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         self.setStyleSheet("QDialog { border: 1px solid lightgray;"
-                                     "border-radius: 3px;}")
+                           "border-radius: 3px;}")
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.setWindowTitle(self.tr("About Pireal"))
         vbox = QVBoxLayout(self)
@@ -48,9 +48,10 @@ class AboutDialog(QDialog):
 
         # Version
         lbl_version = QLabel(self.tr("<a href='{0}'><span style='color: "
-                                       "#3465a4'>Version {1}"
-                                       "</span></a>".format(
-                               gui.__source_code__, gui.__version__)))
+                                     "#3465a4'>Version {1}"
+                                     "</span></a>".format(
+                                         gui.__source_code__,
+                                         gui.__version__)))
         lbl_version.setOpenExternalLinks(True)
         lbl_version.setAlignment(Qt.AlignHCenter)
         font = lbl_version.font()
@@ -59,8 +60,8 @@ class AboutDialog(QDialog):
         vbox.addWidget(lbl_version)
 
         # Description
-        description = QLabel(self.tr("<br><br>an educational tool for "
-                                     "working\nwith Relational Algebra."))
+        description = QLabel(
+            self.tr("<br><br>Relational Algebra query evaluator"))
         description.setAlignment(Qt.AlignHCenter)
         font = description.font()
         font.setPointSize(13)
@@ -75,7 +76,8 @@ class AboutDialog(QDialog):
                                             "is available on <a href='{1}'>"
                                             "<span style='color: #3465a4'>"
                                             "GitHub.</span></a>".format(
-                                    gui.__license__, gui.__source_code__)))
+                                                gui.__license__,
+                                                gui.__source_code__)))
         lbl_license_source.setAlignment(Qt.AlignHCenter)
         lbl_license_source.setOpenExternalLinks(True)
         font = lbl_license_source.font()
