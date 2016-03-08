@@ -322,15 +322,17 @@ class CentralWidget(QWidget):
     def edit_relation(self):
         db = self.get_active_db()
         lateral = db.lateral_widget
-        selected_relation = lateral.selectedItems()[0].text(0)
-        relation_text = selected_relation.split()[0].strip()
-        rela = db.table_widget.relations[relation_text]
-        data = relation_manager.create_or_edit_relation(rela)
-        if data[0] is not None:
-            # Update table
-            db.table_widget.update_table(data[0])
-            # Update relation
-            db.table_widget.relations[relation_text] = data[0]
+        selected_items = lateral.selectedItems()
+        if selected_items:
+            selected_relation = selected_items[0].text(0)
+            relation_text = selected_relation.split()[0].strip()
+            rela = db.table_widget.relations[relation_text]
+            data = relation_manager.create_or_edit_relation(rela)
+            if data[0] is not None:
+                # Update table
+                db.table_widget.update_table(data[0])
+                # Update relation
+                db.table_widget.relations[relation_text] = data[0]
 
     def load_relation(self, filename=''):
         """ Load Relation file """

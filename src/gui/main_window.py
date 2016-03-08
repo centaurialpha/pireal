@@ -168,9 +168,6 @@ class Pireal(QMainWindow):
                     else:
                         obj = self
                     qaction = menu.addAction(action)
-                    if connection.endswith('_action'):
-                        # Editor actions
-                        qaction.setEnabled(False)
                     # Icon name is connection
                     icon = QIcon(":img/%s" % connection)
                     qaction.setIcon(icon)
@@ -201,6 +198,7 @@ class Pireal(QMainWindow):
         self.set_enabled_db_actions(False)
         self.set_enabled_relation_actions(False)
         self.set_enabled_query_actions(False)
+        self.set_enabled_editor_actions(False)
 
     def __show_status_message(self, msg):
         status = Pireal.get_service("status")
@@ -243,6 +241,21 @@ class Pireal(QMainWindow):
 
         actions = [
             'execute_queries'
+        ]
+
+        for action in actions:
+            qaction = Pireal.get_action(action)
+            qaction.setEnabled(value)
+
+    def set_enabled_editor_actions(self, value):
+        """ Public slot. Enables or disables editor actions """
+
+        actions = [
+            'undo_action',
+            'redo_action',
+            'copy_action',
+            'cut_action',
+            'paste_action'
         ]
 
         for action in actions:

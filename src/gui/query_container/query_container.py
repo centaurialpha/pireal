@@ -120,6 +120,7 @@ class QueryContainer(QWidget):
             # Disable query actions
             pireal = Pireal.get_service("pireal")
             pireal.set_enabled_query_actions(False)
+            pireal.set_enabled_editor_actions(False)
 
     def _add_operator_to_editor(self):
         data = self.sender().data()
