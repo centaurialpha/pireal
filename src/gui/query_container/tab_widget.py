@@ -38,17 +38,23 @@ class TabWidget(QTabWidget):
     def remove_tab(self, index):
         editor = self.currentWidget().get_editor()
         if editor.modified:
-            flags = QMessageBox.Yes
-            flags |= QMessageBox.No
-            flags |= QMessageBox.Cancel
-            r = QMessageBox.question(self, self.tr("File modified"),
-                                     self.tr("The file <b>{}</b> has unsaved "
-                                             "changes. You want "
-                                             "to keep them?".format(
-                                                 editor.name)), flags)
-            if r == QMessageBox.Cancel:
+            msgbox = QMessageBox(self)
+            msgbox.setIcon(QMessageBox.Question)
+            msgbox.setWindowTitle(self.tr("File modified"))
+            msgbox.setText(self.tr("The file <b>{}</b> has unsaved changes."
+                                   "You want to keep them?".format(
+                                       editor.name)))
+            cancel_btn = msgbox.addButton(self.tr("Cancel"),
+                                          QMessageBox.RejectRole)
+            msgbox.addButton(self.tr("No"),
+                             QMessageBox.NoRole)
+            yes_btn = msgbox.addButton(self.tr("Yes"),
+                                       QMessageBox.YesRole)
+            msgbox.exec_()
+            r = msgbox.clickedButton()
+            if r == cancel_btn:
                 return
-            if r == QMessageBox.Yes:
+            if r == yes_btn:
                 self.saveEditor.emit(editor)
 
         super(TabWidget, self).removeTab(index)
