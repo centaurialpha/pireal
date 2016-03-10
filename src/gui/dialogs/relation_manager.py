@@ -27,6 +27,7 @@ from PyQt5.QtWidgets import (
     QSpacerItem,
     QSizePolicy,
     QMessageBox,
+    QAbstractItemView
 )
 from PyQt5.QtGui import (
     QStandardItemModel,
@@ -49,6 +50,7 @@ def create_or_edit_relation(rela=None):
             self.data = None
             # Table
             self.table = QTableView()
+            self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
             model = QStandardItemModel()
             self.table.setModel(model)
 
