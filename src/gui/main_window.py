@@ -216,6 +216,7 @@ class Pireal(QMainWindow):
             'save_query',
             'close_database',
             'save_database',
+            'save_database_as',
             'load_relation'
         ]
 

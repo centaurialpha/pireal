@@ -36,7 +36,7 @@ class PFile(object):
 
         self.__is_new = True
         self.__filename = filename
-        if filename:
+        if self.exists:
             self.__is_new = False
 
     def __get_filename(self):
@@ -50,6 +50,13 @@ class PFile(object):
         self.__filename = fname
 
     filename = property(__get_filename, __set_filename)
+
+    @property
+    def exists(self):
+        exists = False
+        if self.__filename and os.path.exists(self.__filename):
+            exists = True
+        return exists
 
     @property
     def name(self):
@@ -76,7 +83,7 @@ class PFile(object):
     def write(self, content, new_fname=''):
         """ This function write the file """
 
-        if self.is_new:
+        if new_fname:
             self.__filename = new_fname
             self.__is_new = False
 

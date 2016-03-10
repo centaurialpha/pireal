@@ -45,6 +45,9 @@ MENU['file'] = {
         'name': translate("Pireal", "Save Database"),
         'slot': "central:save_database"
     }, {
+        'name': translate("Pireal", "Save Database As..."),
+        'slot': "central:save_database_as"
+    }, {
         'name': translate("Pireal", "Close Database"),
         'slot': "central:close_database"
     }, "-", {

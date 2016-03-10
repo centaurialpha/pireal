@@ -316,6 +316,25 @@ class CentralWidget(QWidget):
 
         db.modified = False
 
+    def save_database_as(self):
+        filter = settings.SUPPORTED_FILES.split(';;')[0]
+        filename, _ = QFileDialog.getSaveFileName(self,
+                                                  self.tr("Save Database As"),
+                                                  settings.PIREAL_PROJECTS,
+                                                  filter)
+        if not filename:
+            return
+        db = self.get_active_db()
+        # Get relations
+        relations = db.table_widget.relations
+        # Content
+        content = file_manager.generate_database(relations)
+        db.pfile.write(content, filename)
+        self.databaseSaved.emit(
+            self.tr("Database saved: {}".format(db.pfile.filename)))
+
+        db.modified = False
+
     def remove_relation(self):
         db = self.get_active_db()
         if db.delete_relation():
