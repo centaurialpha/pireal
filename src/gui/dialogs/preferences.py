@@ -24,7 +24,6 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QGridLayout,
-    QRadioButton,
     QSpacerItem,
     QSizePolicy,
     QGraphicsOpacityEffect,
@@ -59,10 +58,6 @@ class Preferences(QDialog):
 
     def __init__(self, parent=None):
         super(Preferences, self).__init__(parent)
-
-        # Activate key escape to close preferences
-        #kescape = QShortcut(QKeySequence(Qt.Key_Escape), self)
-        # kescape.activated.connect(self.close)
 
         # Thread updates
         self.thread = updates.Updates()
