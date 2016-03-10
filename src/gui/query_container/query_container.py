@@ -19,8 +19,6 @@
 
 import re
 
-from collections import OrderedDict
-
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -59,16 +57,6 @@ logger = PirealLogger(__name__)
 DEBUG = logger.debug
 ERROR = logger.error
 
-ITEMS_TOOLBAR_OPERATORS = OrderedDict(
-    [('select', ('Selection', 0x3c3)),
-     ('project', ('Projection', 0x3a0)),
-     ('njoin', ('Natural Join', 0x22c8)),
-     ('product', ('Product', 0x58)),
-     ('intersect', ('Intersection', 0x2229)),
-     ('union', ('Union', 0x222a)),
-     ('difference', ('Difference', 0x2d))]
-)
-
 
 class QueryContainer(QWidget):
     saveEditor = pyqtSignal('PyQt_PyObject')
@@ -82,9 +70,6 @@ class QueryContainer(QWidget):
         self.__validName = re.compile(r'^[a-z_]\w*$')
 
         self.__nquery = 1
-        # Toolbar
-        #toolbar = self.__load_toolbar()
-        # box.addWidget(toolbar)
 
         # Tab
         self._tabs = tab_widget.TabWidget()
@@ -96,20 +81,6 @@ class QueryContainer(QWidget):
         self._tabs.tabCloseRequested.connect(self.__hide)
         self._tabs.saveEditor['PyQt_PyObject'].connect(
             self.__on_save_editor)
-
-    def __load_toolbar(self):
-        toolbar = QToolBar(self)
-        toolbar.setIconSize(QSize(14, 14))
-
-        for key, value in ITEMS_TOOLBAR_OPERATORS.items():
-            tooltip, action = value
-            qaction = toolbar.addAction(chr(action))
-            qaction.setIcon(QIcon(":img/{}".format(key)))
-            qaction.setData(key)
-            qaction.triggered.connect(self._add_operator_to_editor)
-            qaction.setToolTip(tooltip)
-
-        return toolbar
 
     def set_focus_editor_tab(self, index):
         self._tabs.setCurrentIndex(index)

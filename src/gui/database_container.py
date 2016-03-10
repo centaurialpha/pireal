@@ -88,10 +88,6 @@ class DatabaseContainer(QSplitter):
     def is_new(self):
         return self.pfile.is_new
 
-    #@property
-    # def pfile(self):
-        # return self.__pfile
-
     def create_database(self, data):
         for table in data.get('tables'):
             # Get data
