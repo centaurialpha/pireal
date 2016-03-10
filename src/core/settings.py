@@ -56,9 +56,6 @@ QML_FILES = os.path.join(PATH, "src", "gui", "qml")
 
 
 class PSettings:
-    SHOW_START_PAGE = True
-    CHECK_UPDATES = True
-    MAX_RECENT_FILES = 5
     LANGUAGE = ""
     THEME = "Fusion"  # Default style
     LAST_OPEN_FOLDER = ""
@@ -99,8 +96,6 @@ def load_settings():
     """ Load settings from .ini file """
 
     settings = QSettings(SETTINGS_PATH, QSettings.IniFormat)
-    PSettings.SHOW_START_PAGE = settings.value('show-start-page',
-                                               True, type=bool)
     PSettings.LANGUAGE = settings.value('language', "", type='QString')
     PSettings.THEME = settings.value('theme', "Fusion", type='QString')
     PSettings.LAST_OPEN_FOLDER = settings.value("last_open_folder", "",

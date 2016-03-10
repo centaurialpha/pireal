@@ -20,10 +20,8 @@
 # Based on A full widget waiting indicator
 # https://wiki.python.org/moin/PyQt
 
-import math
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import (
-    QPalette,
     QPainter,
     QBrush,
     QColor,
@@ -37,9 +35,6 @@ class OverlayWidget(QWidget):
     def __init__(self, parent=None):
 
         QWidget.__init__(self, parent)
-        palette = QPalette(self.palette())
-        palette.setColor(palette.Background, Qt.transparent)
-        self.setPalette(palette)
 
     def paintEvent(self, event):
 
@@ -49,24 +44,22 @@ class OverlayWidget(QWidget):
         painter.fillRect(event.rect(), QBrush(QColor(255, 255, 255, 127)))
         painter.setPen(QPen(Qt.NoPen))
 
-        for i in range(6):
-            if (self.counter / 5) % 6 == i:
+        for i in range(3):
+            if (self.counter / 3) % 3 == i:
                 painter.setBrush(QBrush(QColor(99, 137, 168)))
             else:
                 painter.setBrush(QBrush(QColor(127, 127, 127)))
-            painter.drawEllipse(
-                self.width() / 2 + 30 * math.cos(2 * math.pi * i / 6.0) - 10,
-                self.height() / 2 + 30 * math.sin(2 * math.pi * i / 6.0) - 10,
-                20, 20)
+            painter.drawEllipse(self.width() / 2.5 + 50 * i,
+                                self.height() / 2, 35, 35)
 
         painter.end()
 
     def showEvent(self, event):
 
-        self.timer = self.startTimer(50)
+        self.timer = self.startTimer(100)
         self.counter = 0
 
     def timerEvent(self, event):
 
-        self.counter += 1
+        self.counter += 3
         self.update()

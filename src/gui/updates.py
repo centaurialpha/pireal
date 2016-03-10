@@ -17,10 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import json
+from PyQt5.QtWidgets import QMessageBox
 from urllib.request import urlopen
 from PyQt5.QtCore import QThread
-from src import gui
+
+URL = "http://centaurialpha.github.io/pireal"
 
 
 class Updates(QThread):
@@ -31,8 +32,7 @@ class Updates(QThread):
 
     def run(self):
         try:
-            response = urlopen(gui.__updates__).read().decode('utf8')
-            data = json.loads(response)
+            web_version = urlopen(URL).read().decode('utf8')
+            print(web_version)
         except:
-            data = {}
-        #self.emit(SIGNAL("updatesFound(QString)"), data.get('version', ''))
+            print("Error")

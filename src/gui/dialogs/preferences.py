@@ -49,7 +49,10 @@ from src.core import (
     file_manager
 )
 from src.gui.main_window import Pireal
-from src.gui import overlay_widget, updates
+from src.gui import (
+    overlay_widget,
+    updates
+)
 
 
 class Preferences(QDialog):
@@ -79,13 +82,8 @@ class Preferences(QDialog):
         group_gral = QGroupBox(self.tr("General"))
         box_gral = QVBoxLayout(group_gral)
         # Updates
-        hhbox = QHBoxLayout()
-        self._check_updates = QCheckBox(self.tr("Notify me of new updates"))
-        self._check_updates.setChecked(settings.PSettings.CHECK_UPDATES)
-        hhbox.addWidget(self._check_updates)
         btn_updates = QPushButton(self.tr("Check for updates"))
-        hhbox.addWidget(btn_updates)
-        box_gral.addLayout(hhbox)
+        box_gral.addWidget(btn_updates)
         # Language
         group_language = QGroupBox(self.tr("Language"))
         box = QVBoxLayout(group_language)
@@ -137,7 +135,7 @@ class Preferences(QDialog):
 
         # Editor
         editor_group = QGroupBox(self.tr("Editor Configurations"))
-        box_editor = QVBoxLayout(editor_group)
+        box_editor = QHBoxLayout(editor_group)
         # Current line
         self._highlight_current_line = QCheckBox(
             self.tr("Highlight Current Line"))
@@ -241,7 +239,7 @@ class Preferences(QDialog):
             self._on_group_animation_finished)
         btn_cancel.clicked.connect(self.close)
         btn_reset.clicked.connect(self._reset_settings)
-        # btn_updates.clicked.connect(self._check_for_updates)
+        btn_updates.clicked.connect(self._check_for_updates)
         # self.thread.finished.connect(self._on_thread_finished)
         self.combo_themes.currentIndexChanged['QString'].connect(
             self._change_theme)
