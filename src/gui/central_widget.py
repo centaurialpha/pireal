@@ -350,8 +350,7 @@ class CentralWidget(QWidget):
                 db.table_widget.relations[relation_text] = data
                 # Set modified db
                 db.modified = True
-                # FIXME: Update lateral item
-                lateral.update_item(data)
+                lateral.update_item(data.count())
 
     def load_relation(self, filename=''):
         """ Load Relation file """
