@@ -78,5 +78,5 @@ class StartPage(QWidget):
             for file_ in recent_files:
                 name = os.path.splitext(os.path.basename(file_))[0]
                 self.__root.loadItem(name, file_)
-        else:
-            self.__root.show_empty_text()
+        # else:
+        #    self.__root.show_empty_text()

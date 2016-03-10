@@ -11,10 +11,6 @@ Rectangle {
         listModel.append({"name": name, "path": path})
     }
 
-    function show_empty_text() {
-        emptyText.visible = true;
-    }
-
     Component.onCompleted: {
         listModel.clear();
     }
@@ -28,14 +24,12 @@ Rectangle {
         border.color: "lightgray"
 
         Text {
-            id: emptyText
-
             anchors.centerIn: parent
             font.pixelSize: 40
             font.bold: true
             color: "lightgray"
             text: qsTr("No recent databases")
-            visible: false
+            visible: listView.empty ? true : false;
         }
 
         ListModel {
@@ -146,6 +140,7 @@ Rectangle {
             delegate: delegate
             highlight: high
             focus: true
+            property bool empty: listView.count == 0
         }
     }
 
