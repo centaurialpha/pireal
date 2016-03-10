@@ -69,6 +69,9 @@ class TableWidget(QWidget):
     def update_table(self, data):
         current_table = self.current_table()
         model = current_table.model()
+        # Clear content
+        model.clear()
+        # Add new header and content
         model.setHorizontalHeaderLabels(data.header)
 
         for row_count, row in enumerate(data.content):
@@ -95,11 +98,6 @@ class TableWidget(QWidget):
 
         self.add_relation(name, rela)
         self.stacked.addWidget(ptable)
-
-        central = Pireal.get_service("central")
-        active_db = central.get_active_db()
-        active_db.lateral_widget.add_item(name, rela.count())
-        active_db.modified = True
 
 
 class StackedWidget(QStackedWidget):

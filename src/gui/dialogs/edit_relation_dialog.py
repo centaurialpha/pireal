@@ -18,39 +18,36 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtCore import Qt
+from PyQt5.QtGui import (
+    QStandardItem,
+    QStandardItemModel
+)
 
 from src.core import relation
-from src.gui.dialogs import edit_relation_dialog
+from src.gui.dialogs import relation_dialog
 
 
-class NewRelationDialog(edit_relation_dialog.EditRelationDialog):
+class EditRelationDialog(relation_dialog.RelationDialog):
 
     def __init__(self, parent=None):
-        super(NewRelationDialog, self).__init__(parent)
-        self.setWindowTitle(self.tr("Relation Creator"))
-        self.relation_name.setVisible(True)
-        self.relation_name.setPlaceholderText(self.tr("Relation Name"))
+        super(EditRelationDialog, self).__init__(parent)
+        self.setWindowTitle(self.tr("Relation Editor"))
 
-    def setup_table(self):
-        model = QStandardItemModel(0, 2)
+    def setup_table(self, rela):
+        # Table model
+        model = QStandardItemModel()
         self.table.setModel(model)
-        header = self.table.horizontalHeader()
-        header.model().setHeaderData(0,
-                                     Qt.Horizontal,
-                                     self.tr("Field 1"))
-        header.model().setHeaderData(1,
-                                     Qt.Horizontal,
-                                     self.tr("Field 2"))
+        # Set header
+        model.setHorizontalHeaderLabels(rela.header)
+
+        # Populate table
+        for row_count, row in enumerate(rela.content):
+            for col_count, data in enumerate(row):
+                item = QStandardItem()
+                item.setText(data)
+                model.setItem(row_count, col_count, item)
 
     def save(self):
-        relation_name = self.relation_name.text().strip()
-        if not relation_name:
-            QMessageBox.critical(self, "Error",
-                                 self.tr("Relation name "
-                                         "not specified"))
-            return
         # Table model
         model = self.table.model()
         # Row and column count
@@ -85,14 +82,12 @@ class NewRelationDialog(edit_relation_dialog.EditRelationDialog):
                     return
                 tuples.append(item.text())
             rela.insert(tuples)
-
-        # Data
-        self.data = rela, relation_name
+        self.data = rela
         self.close()
 
 
-def create_relation():
-    dialog = NewRelationDialog()
-    dialog.setup_table()
+def edit_relation(rela):
+    dialog = EditRelationDialog()
+    dialog.setup_table(rela)
     dialog.exec_()
     return dialog.data

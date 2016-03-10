@@ -39,8 +39,10 @@ class LateralWidget(QTreeWidget):
         return self.indexOfTopLevelItem(self.currentItem())
 
     def add_item(self, text, ntuples):
-        item = QTreeWidgetItem()
-        item.setText(0, text + " [" + ntuples + "]")
+        item = Item()
+        item.name = text
+        item.ntuples = ntuples
+        item.setText(0, item.display_name)
         self.addTopLevelItem(item)
 
     def item_text(self, index):
@@ -53,3 +55,20 @@ class LateralWidget(QTreeWidget):
         """ Remove all items and selections in the view """
 
         self.clear()
+
+    def update_item(self, data):
+        item = self.currentItem()
+        item.ntuples = data.count()
+        item.setText(0, item.display_name)
+
+
+class Item(QTreeWidgetItem):
+
+    def __init__(self):
+        super(Item, self).__init__()
+        self.ntuples = 0
+        self.name = ''
+
+    @property
+    def display_name(self):
+        return self.name + " [" + self.ntuples + "]"

@@ -42,7 +42,8 @@ from src.gui import (
 from src.gui.dialogs import (
     preferences,
     database_wizard,
-    relation_manager
+    edit_relation_dialog,
+    new_relation_dialog
 )
 
 # Logger
@@ -316,14 +317,22 @@ class CentralWidget(QWidget):
         db.modified = False
 
     def remove_relation(self):
-        db_container = self.get_active_db()
-        db_container.delete_relation()
+        db = self.get_active_db()
+        if db.delete_relation():
+            db.modified = True
 
     def create_new_relation(self):
-        db = self.get_active_db()
-        data = relation_manager.create_or_edit_relation()
+        data = new_relation_dialog.create_relation()
+        print(data)
         if data is not None:
-            db.table_widget.add_table(data[0], data[1])
+            db = self.get_active_db()
+            rela, rela_name = data
+            # Add table
+            db.table_widget.add_table(rela, rela_name)
+            # Add item to lateral widget
+            db.lateral_widget.add_item(rela_name, rela.count())
+            # Set modified db
+            db.modified = True
 
     def edit_relation(self):
         db = self.get_active_db()
@@ -333,12 +342,16 @@ class CentralWidget(QWidget):
             selected_relation = selected_items[0].text(0)
             relation_text = selected_relation.split()[0].strip()
             rela = db.table_widget.relations[relation_text]
-            data = relation_manager.create_or_edit_relation(rela)
-            if data[0] is not None:
+            data = edit_relation_dialog.edit_relation(rela)
+            if data is not None:
                 # Update table
-                db.table_widget.update_table(data[0])
+                db.table_widget.update_table(data)
                 # Update relation
-                db.table_widget.relations[relation_text] = data[0]
+                db.table_widget.relations[relation_text] = data
+                # Set modified db
+                db.modified = True
+                # FIXME: Update lateral item
+                lateral.update_item(data)
 
     def load_relation(self, filename=''):
         """ Load Relation file """

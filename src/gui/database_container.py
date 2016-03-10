@@ -149,31 +149,33 @@ class DatabaseContainer(QSplitter):
 
     def delete_relation(self):
         selected_items = self.lateral_widget.selectedItems()
-        if selected_items:
-            current_row = 0
-            if self.lateral_widget.row() != -1:
-                current_row = self.lateral_widget.row()
-            if len(selected_items) > 1:
-                msg = self.tr("Are you sure you want to delete the selected"
-                              " relations?")
-            else:
-                msg = self.tr("Are you sure you want to delete the "
-                              "relation <b>{}</b>?".format(
-                                  self.lateral_widget.item_text(current_row)))
+        if not selected_items:
+            return False
+        current_row = 0
+        if self.lateral_widget.row() != -1:
+            current_row = self.lateral_widget.row()
+        if len(selected_items) > 1:
+            msg = self.tr("Are you sure you want to delete the selected"
+                          " relations?")
+        else:
+            msg = self.tr("Are you sure you want to delete the "
+                          "relation <b>{}</b>?".format(
+                              self.lateral_widget.item_text(current_row)))
 
-            r = QMessageBox.question(self, self.tr("Confirmation"),
-                                     msg, QMessageBox.No | QMessageBox.Yes)
-            if r == QMessageBox.No:
-                return
-            for item in selected_items:
-                index = self.lateral_widget.indexOfTopLevelItem(item)
-                # Remove from list
-                self.lateral_widget.takeTopLevelItem(index)
-                # Remove table
-                self.table_widget.remove_table(index)
-                # Remove relation
-                name = item.text(0).split()[0].strip()
-                self.table_widget.remove_relation(name)
+        r = QMessageBox.question(self, self.tr("Confirmation"),
+                                 msg, QMessageBox.No | QMessageBox.Yes)
+        if r == QMessageBox.No:
+            return
+        for item in selected_items:
+            index = self.lateral_widget.indexOfTopLevelItem(item)
+            # Remove from list
+            self.lateral_widget.takeTopLevelItem(index)
+            # Remove table
+            self.table_widget.remove_table(index)
+            # Remove relation
+            name = item.text(0).split()[0].strip()
+            self.table_widget.remove_relation(name)
+        return True
 
     def __on_data_table_changed(self, row, col, data):
         current_relation = self.lateral_widget.current_text()
