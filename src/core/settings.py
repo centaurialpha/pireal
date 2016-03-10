@@ -64,7 +64,7 @@ class PSettings:
     LAST_OPEN_FOLDER = ""
     RECENT_DB = []
     HIGHLIGHT_CURRENT_LINE = False
-    MATCHING_PARENTHESIS = False
+    MATCHING_PARENTHESIS = True
     if LINUX:
         FONT = QFont("Monospace", 12)
     else:
@@ -109,7 +109,7 @@ def load_settings():
     PSettings.HIGHLIGHT_CURRENT_LINE = settings.value("highlight_current_line",
                                                       False, type=bool)
     PSettings.MATCHING_PARENTHESIS = settings.value("matching_parenthesis",
-                                                    False, type=bool)
+                                                    True, type=bool)
     font = settings.value("font", None)
     if font is not None:
         PSettings.FONT = font

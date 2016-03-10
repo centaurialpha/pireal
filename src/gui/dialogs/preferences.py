@@ -99,23 +99,13 @@ class Preferences(QDialog):
             settings.LANG_PATH)
 
         languages = ["English"] + available_langs
-        self._radio_buttons = []
-        for lang in languages:
-            radio = QRadioButton()
-            self._radio_buttons.append(radio)
-            radio.setText(lang)
-            box.addWidget(radio)
-        index = 0
+        self._combo_lang = QComboBox()
+        box.addWidget(self._combo_lang)
+        self._combo_lang.addItems(languages)
+        self._combo_lang.currentIndexChanged[int].connect(
+            self._change_lang)
         if settings.PSettings.LANGUAGE:
-            for i in range(len(self._radio_buttons)):
-                text = self._radio_buttons[i].text()
-                if text == settings.PSettings.LANGUAGE:
-                    index = i
-        self._radio_buttons[index].setChecked(True)
-
-        # Connect radio buttons
-        for radiob in self._radio_buttons:
-            radiob.clicked.connect(self._change_lang)
+            self._combo_lang.setCurrentText(settings.PSettings.LANGUAGE)
 
         # Stylesheet
         group_style = QGroupBox("Theme")
@@ -321,21 +311,22 @@ class Preferences(QDialog):
     def _reset_settings(self):
         """ Remove all settings """
 
-        flags = QMessageBox.Yes
-        flags |= QMessageBox.No
-        result = QMessageBox.question(self, self.tr("Reset Settings"),
-                                      self.tr("Are you sure you want to "
-                                              "clear all settings?"), flags)
-
-        if result == QMessageBox.Yes:
+        msg = QMessageBox(self)
+        msg.setWindowTitle(self.tr("Reset Settings"))
+        msg.setText(self.tr("Are you sure you want to clear all settings?"))
+        msg.setIcon(QMessageBox.Question)
+        msg.addButton(self.tr("No"), QMessageBox.NoRole)
+        yes_btn = msg.addButton(self.tr("Yes"),
+                                QMessageBox.YesRole)
+        msg.exec_()
+        r = msg.clickedButton()
+        if r == yes_btn:
             QSettings(settings.SETTINGS_PATH, QSettings.IniFormat).clear()
             self.close()
 
-    def _change_lang(self):
-        for radiob in self._radio_buttons:
-            if radiob.isChecked():
-                settings.set_setting('language', radiob.text())
-                settings.PSettings.LANGUAGE = radiob.text()
+    def _change_lang(self, index):
+        lang = self._combo_lang.itemText(index)
+        settings.set_setting('language', lang)
 
     def _change_theme(self, style):
         """ Change theme style """
