@@ -124,8 +124,8 @@ Rectangle {
 
                 color: "#e3e3e3"
                 anchors {
-                    left: parent.left
-                    right: parent.right
+                    left: high.left
+                    right: high.right
                 }
 
             }
