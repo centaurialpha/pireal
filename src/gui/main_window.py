@@ -282,21 +282,6 @@ class Pireal(QMainWindow):
         dialog = about_dialog.AboutDialog(self)
         dialog.exec_()
 
-    def show_user_guide(self):
-        from src.gui.user_guide import help_widget
-        web = help_widget.HelpWidget(self)
-        web.resize(900, 500)
-        web.show()
-
-    def show_settings(self):
-        from src.gui.dialogs import preferences
-        container = Pireal.get_service("container")
-        dialog = preferences.Preferences(self)
-        container.show_dialog(dialog)
-
-        dialog.valueChanged['QString', 'PyQt_PyObject'].connect(
-            self._update_settings)
-
     def show_hide_menubar(self):
         """ Change visibility of menu bar """
 
@@ -329,26 +314,23 @@ class Pireal(QMainWindow):
         qsettings.setValue("recentDB",
                            recent_files.union(central_widget.recent_files))
 
-        main_container = central_widget.get_active_db()
-        if main_container is not None:
-            main_container.save_sizes()
-        #main_container = Pireal.get_service("main")
-        #last_open_folder = main_container.get_last_open_folder()
-        #settings.set_setting("last_open_folder", last_open_folder)
-        #container = Pireal.get_service("container")
-        # if not container.check_opened_query_files():
-            # event.ignore()
-        # if container.modified:
-            #db_name = container.get_db_name()
-            #flags = QMessageBox.Yes
-            #flags |= QMessageBox.No
-            #flags |= QMessageBox.Cancel
-
-            # result = QMessageBox.question(self,
-            # tr.TR_CONTAINER_DB_UNSAVED_TITLE,
-            # tr.TR_CONTAINER_DB_UNSAVED.format(
-            # db_name), flags)
-            # if result == QMessageBox.Cancel:
-            # event.ignore()
-            # if result == QMessageBox.Yes:
-            # container.save_data_base()
+        db = central_widget.get_active_db()
+        if db is not None:
+            db.save_sizes()
+            if db.modified:
+                msg = QMessageBox(self)
+                msg.setIcon(QMessageBox.Question)
+                msg.setWindowTitle(self.tr("Some changes where not saved"))
+                msg.setText(self.tr("Do you want to save them?"))
+                cancel_btn = msg.addButton(self.tr("Cancel"),
+                                           QMessageBox.RejectRole)
+                msg.addButton(self.tr("No"),
+                              QMessageBox.NoRole)
+                yes_btn = msg.addButton(self.tr("Yes"),
+                                        QMessageBox.YesRole)
+                msg.exec_()
+                r = msg.clickedButton()
+                if r == yes_btn:
+                    central_widget.save_database()
+                if r == cancel_btn:
+                    event.ignore()
