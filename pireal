@@ -106,7 +106,8 @@ if __name__ == "__main__":
     qapp = QApplication(sys.argv)
 
     # Style
-    QApplication.setStyle(QStyleFactory.create("Fusion"))
+    style = settings.PSettings.THEME
+    QApplication.setStyle(QStyleFactory.create(style))
 
     # Icon
     qapp.setWindowIcon(QIcon(":img/icon"))
