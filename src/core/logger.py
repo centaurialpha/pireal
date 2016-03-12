@@ -83,7 +83,7 @@ class CustomFileHandler(logging.handlers.RotatingFileHandler):
     """ Custom Rotating File Handler with header """
 
     def __init__(self, filename, header, mode='a', maxBytes=50000,
-                  backupCount=1, encoding=None, delay=0):
+                 backupCount=1, encoding=None, delay=0):
         super(CustomFileHandler, self).__init__(filename, mode, maxBytes,
                                                 backupCount, encoding, delay)
 
