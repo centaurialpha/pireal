@@ -305,9 +305,9 @@ class Preferences(QDialog):
     def __on_thread_update_finished(self):
         # Hide overlay widget
         self.overlay.hide()
+        msg = QMessageBox(self)
         if self.thread.version:
             version = self.thread.version
-            msg = QMessageBox(self)
             msg.setWindowTitle(self.tr("New version available!"))
             msg.setText(self.tr("Check the web site to "
                                 "download <b>Pireal {}</b>".format(version)))
@@ -319,6 +319,12 @@ class Preferences(QDialog):
             r = msg.clickedButton()
             if r == download_btn:
                 webbrowser.open_new("http://centaurialpha.github.io/pireal")
+        else:
+            msg.setWindowTitle(self.tr("Information"))
+            msg.setText(self.tr("Last version installed"))
+            msg.addButton(self.tr("Ok"),
+                          QMessageBox.AcceptRole)
+            msg.exec_()
 
     def _reset_settings(self):
         """ Remove all settings """
