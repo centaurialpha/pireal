@@ -18,9 +18,14 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from urllib.request import urlopen
+from urllib.error import URLError
 
 from PyQt5.QtCore import QThread
 
+from src.core.logger import PirealLogger
+
+logger = PirealLogger(__name__)
+DEBUG = logger.debug
 
 URL = "http://centaurialpha.github.io/pireal/version"
 
@@ -32,6 +37,9 @@ class Update(QThread):
         self.version = ""
 
     def run(self):
-        web_version = urlopen(URL).read().decode('utf8').strip()
-        if "1.0" < web_version:
-            self.version = web_version
+        try:
+            web_version = urlopen(URL).read().decode('utf8').strip()
+            if "1.0" < web_version:
+                self.version = web_version
+        except URLError as reason:
+            DEBUG("Connection error: {}".format(reason))
