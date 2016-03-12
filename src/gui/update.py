@@ -17,22 +17,21 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import QMessageBox
 from urllib.request import urlopen
+
 from PyQt5.QtCore import QThread
 
-URL = "http://centaurialpha.github.io/pireal"
+
+URL = "http://centaurialpha.github.io/pireal/version"
 
 
-class Updates(QThread):
-    """ This thread checks for a new version of Pireal """
+class Update(QThread):
 
     def __init__(self):
-        super(Updates, self).__init__()
+        super(Update, self).__init__()
+        self.version = ""
 
     def run(self):
-        try:
-            web_version = urlopen(URL).read().decode('utf8')
-            print(web_version)
-        except:
-            print("Error")
+        web_version = urlopen(URL).read().decode('utf8').strip()
+        if "1.0" < web_version:
+            self.version = web_version

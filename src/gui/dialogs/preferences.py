@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import webbrowser
+
 from PyQt5.QtWidgets import (
     QApplication,
     QDialog,
@@ -51,7 +53,7 @@ from src.core import (
 from src.gui.main_window import Pireal
 from src.gui import (
     overlay_widget,
-    updates
+    update
 )
 
 
@@ -61,9 +63,6 @@ class Preferences(QDialog):
 
     def __init__(self, parent=None):
         super(Preferences, self).__init__(parent)
-
-        # Thread updates
-        self.thread = updates.Updates()
 
         # Main container
         # This contains a grid
@@ -295,11 +294,31 @@ class Preferences(QDialog):
         self.settingsClosed.emit()
 
     def _check_for_updates(self):
+        # Thread
+        self.thread = update.Update()
+        self.thread.finished.connect(self.__on_thread_update_finished)
+        # Show overlay widget
         self.overlay.show()
+        # Start thread
         self.thread.start()
 
-    def _on_thread_finished(self):
+    def __on_thread_update_finished(self):
+        # Hide overlay widget
         self.overlay.hide()
+        if self.thread.version:
+            version = self.thread.version
+            msg = QMessageBox(self)
+            msg.setWindowTitle(self.tr("New version available!"))
+            msg.setText(self.tr("Check the web site to "
+                                "download <b>Pireal {}</b>".format(version)))
+            download_btn = msg.addButton(self.tr("Download!"),
+                                         QMessageBox.YesRole)
+            msg.addButton(self.tr("Cancel"),
+                          QMessageBox.RejectRole)
+            msg.exec_()
+            r = msg.clickedButton()
+            if r == download_btn:
+                webbrowser.open_new("http://centaurialpha.github.io/pireal")
 
     def _reset_settings(self):
         """ Remove all settings """
