@@ -154,7 +154,7 @@ class QueryContainer(QWidget):
 
             try:
                 expression = parser.convert_to_python(line)
-                rela = eval(expression, table_widget.relations)
+                rela = eval(expression, {}, table_widget.relations)
             except Exception as reason:
                 QMessageBox.critical(self,
                                      self.tr("Query Error"),

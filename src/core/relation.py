@@ -93,7 +93,7 @@ class Relation(object):
 
             # The expression is evaluated
             try:
-                if eval(expression, d):
+                if eval(expression, {}, d):
                     new_relation.insert(register)
             except SyntaxError:
                 raise Exception("Couldn't be evaluate the expression: "
