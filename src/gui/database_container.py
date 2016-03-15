@@ -147,36 +147,6 @@ class DatabaseContainer(QSplitter):
                 self.table_widget.relations_types[relation_name] = types
             self.__add_table(rel, relation_name, types)
 
-    def delete_relation(self):
-        selected_items = self.lateral_widget.selectedItems()
-        if not selected_items:
-            return False
-        current_row = 0
-        if self.lateral_widget.row() != -1:
-            current_row = self.lateral_widget.row()
-        if len(selected_items) > 1:
-            msg = self.tr("Are you sure you want to delete the selected"
-                          " relations?")
-        else:
-            msg = self.tr("Are you sure you want to delete the "
-                          "relation <b>{}</b>?".format(
-                              self.lateral_widget.item_text(current_row)))
-
-        r = QMessageBox.question(self, self.tr("Confirmation"),
-                                 msg, QMessageBox.No | QMessageBox.Yes)
-        if r == QMessageBox.No:
-            return
-        for item in selected_items:
-            index = self.lateral_widget.indexOfTopLevelItem(item)
-            # Remove from list
-            self.lateral_widget.takeTopLevelItem(index)
-            # Remove table
-            self.table_widget.remove_table(index)
-            # Remove relation
-            name = item.text(0).split()[0].strip()
-            self.table_widget.remove_relation(name)
-        return True
-
     def __on_data_table_changed(self, row, col, data):
         current_relation = self.lateral_widget.current_text()
         # Relation to be update
@@ -196,59 +166,6 @@ class DatabaseContainer(QSplitter):
             rela.insert(reg)
         # Update relation
         self.table_widget.relations[current_relation] = rela
-
-    def add_tuple(self):
-        current_table = self.table_widget.current_table()
-        model = current_table.model()
-        model.insertRow(model.rowCount())
-
-    def insert_tuple(self):
-        current_table = self.table_widget.current_table()
-        model = current_table.model()
-        selection = current_table.selectionModel()
-        if not selection.hasSelection():
-            self.add_tuple()
-        else:
-            after = selection.selectedRows()[0].row()
-            model.insertRow(after + 1)
-
-    def delete_tuple(self):
-        current_table = self.table_widget.current_table()
-        model = current_table.model()
-        selection = current_table.selectionModel()
-        if selection.hasSelection():
-            r = QMessageBox.question(self,
-                                     self.tr("Confirm tuple delete"),
-                                     self.tr("Are you sure you want to "
-                                             "to delete the selected"
-                                             "tuple(s)?"),
-                                     QMessageBox.Yes | QMessageBox.No)
-            if r == QMessageBox.Yes:
-                selection = selection.selection()
-                rows = set([index.row() for index in selection.indexes()])
-                rows = sorted(list(rows))
-                previous = -1
-                i = len(rows) - 1
-                while i >= 0:
-                    current = rows[i]
-                    if current != previous:
-                        model.removeRows(current, 1)
-                    i -= 1
-
-    def __add_table(self, rela, relation_name, types):
-        ptable = custom_table.Table()
-        model = ptable.model()
-        model.setHorizontalHeaderLabels(rela.fields)
-
-        row_count = 0
-        for row in rela.content:
-            for col_count, data in enumerate(row):
-                item = QStandardItem(data)
-                model.setItem(row_count, col_count, item)
-            row_count += 1
-
-        self.table_widget.stacked.addWidget(ptable)
-        self.lateral_widget.add_item(relation_name)
 
     def new_query(self, filename):
         editor_tab_at = self.query_container.is_open(filename)
