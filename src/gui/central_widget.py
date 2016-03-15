@@ -81,7 +81,7 @@ class CentralWidget(QWidget):
             QMessageBox.information(self,
                                     self.tr("Information"),
                                     self.tr("You may only have one database"
-                                            "open at time."))
+                                            " open at time."))
             return
         wizard = database_wizard.DatabaseWizard(self)
         wizard.wizardFinished.connect(
@@ -259,7 +259,7 @@ class CentralWidget(QWidget):
                 msgbox.setIcon(QMessageBox.Question)
                 msgbox.setWindowTitle(self.tr("Save Changes?"))
                 msgbox.setText(self.tr("The <b>{}</b> database has ben"
-                                       "modified.<br>Do you want save "
+                                       " modified.<br>Do you want save "
                                        "your changes?".format(
                                            mcontainer.dbname())))
                 cancel_btn = msgbox.addButton(self.tr("Cancel"),
