@@ -98,6 +98,7 @@ class Preferences(QDialog):
             self._change_lang)
         if settings.PSettings.LANGUAGE:
             self._combo_lang.setCurrentText(settings.PSettings.LANGUAGE)
+        box.addWidget(QLabel(self.tr("(Requires restart)")))
 
         # Stylesheet
         group_style = QGroupBox("Theme")
