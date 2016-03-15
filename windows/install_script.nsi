@@ -14,8 +14,17 @@ Name "${NAME} ${VERSION}"
 Caption "${NAME} for Windows"
 OutFile "${NAME}-${VERSION}-setup.exe"
 
+Function .onInit
+  SetOutPath $TEMP
+  File /oname=spltmp.bmp "splash.bmp"
+  splash::show 2300 $TEMP\spltmp
+  Pop $0
+  Delete $TEMP\spltmp.bmp
+FunctionEnd
+
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "header.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "sidebar.bmp"
 !define MUI_LICENSEPAGE
 
 !insertmacro MUI_PAGE_WELCOME
