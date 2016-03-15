@@ -50,7 +50,7 @@ exe = Executable(
     base='Win32GUI',
     targetName='Pireal.exe',
     compress=True,
-    #icon="windows/pireal.ico"
+    icon="windows/icon.ico"
 )
 
 setup(
