@@ -147,6 +147,39 @@ class DatabaseContainer(QSplitter):
                 self.table_widget.relations_types[relation_name] = types
             self.__add_table(rel, relation_name, types)
 
+    def delete_relation(self):
+        selected_items = self.lateral_widget.selectedItems()
+        if not selected_items:
+            return False
+        current_row = 0
+        if self.lateral_widget.row() != -1:
+            current_row = self.lateral_widget.row()
+        if len(selected_items) > 1:
+            msg = self.tr("Are you sure you want to delete "
+                          "the selected relations")
+        else:
+            msg = self.tr("Are you sure you want to delete "
+                          "the relation <b>{}</b>?".format(
+                              self.lateral_widget.item_text(current_row)))
+        msgbox = QMessageBox(self)
+        msgbox.setIcon(QMessageBox.Question)
+        msgbox.setWindowTitle(self.tr("Confirmation"))
+        msgbox.setText(msg)
+        msgbox.addButton(self.tr("No"), QMessageBox.NoRole)
+        yes_btn = msgbox.addButton(self.tr("Yes"), QMessageBox.YesRole)
+        msgbox.exec_()
+        r = msgbox.clickedButton()
+        if r == yes_btn:
+            for item in selected_items:
+                index = self.lateral_widget.indexOfTopLevelItem(item)
+                # Remove from list
+                self.lateral_widget.takeTopLevelItem(index)
+                # Remove table
+                self.table_widget.remove_table(index)
+                # Remove relation
+                self.table_widget.remove_relation(item.name)
+            return True
+
     def __on_data_table_changed(self, row, col, data):
         current_relation = self.lateral_widget.current_text()
         # Relation to be update
