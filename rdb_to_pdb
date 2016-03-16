@@ -1,5 +1,24 @@
 #!/usr/bin/env python
-# Convert .rdb file to .pdb file
+# -*- coding: utf-8 -*-
+#
+# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+#
+# This file is part of Pireal.
+#
+# Pireal is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# any later version.
+#
+# Pireal is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Pireal; If not, see <http://www.gnu.org/licenses/>.
+
+""" Convert .rdb file to .pdb file """
 
 import sys
 import os
@@ -19,7 +38,11 @@ def convert(rdb_content):
             portion = line.split('(')
             name = portion[0][1:]
             content += name + ':'
-            content += portion[1].split(':')[0][:-1]
+            hheader = portion[1].split(':')[0][:-1].split(',')
+            header = []
+            for field in hheader:
+                header.append(field.split('/')[0].strip())
+            content += ','.join(header)
         else:
             if not line:
                 continue
@@ -28,6 +51,7 @@ def convert(rdb_content):
                 line = l
             content += line
         content += '\n'
+
     return content
 
 
