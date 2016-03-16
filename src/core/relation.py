@@ -19,7 +19,7 @@
 
 import re
 
-IS_VALID_FIELD_NAME = re.compile(r"^[_a-zA-Z][_a-zA-Z0-9]*$")
+IS_VALID_FIELD_NAME = re.compile("^[_á-úa-zA-Z][_á-úa-zA-Z0-9]*$")
 
 
 class Relation(object):
