@@ -99,6 +99,19 @@ class TableWidget(QWidget):
         self.add_relation(name, rela)
         self.stacked.addWidget(ptable)
 
+    def create_table(self, rela):
+        table = custom_table.Table()
+        model = table.model()
+        model.setHorizontalHeaderLabels(rela.header)
+
+        for row_count, row in enumerate(rela.content):
+            for col_count, data in enumerate(row):
+                item = QStandardItem(data)
+                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+                model.setItem(row_count, col_count, item)
+
+        return table
+
 
 class StackedWidget(QStackedWidget):
 

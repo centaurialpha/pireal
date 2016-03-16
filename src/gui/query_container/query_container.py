@@ -22,18 +22,14 @@ import re
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QToolBar,
     QSplitter,
     QStackedWidget,
-    QMessageBox
+    QMessageBox,
+    QDialog
 )
-from PyQt5.QtGui import (
-    QStandardItem,
-    QIcon
-)
+from PyQt5.QtGui import QStandardItem
 from PyQt5.QtCore import (
     Qt,
-    QSize,
     pyqtSignal,
     QSettings
 )
@@ -229,6 +225,8 @@ class QueryWidget(QWidget):
         self._result_list.itemClicked.connect(
             lambda index: self._stack_tables.show_display(
                 self._result_list.row()))
+        self._result_list.itemDoubleClicked.connect(
+            self.show_relation)
 
     def __on_undo_available(self, value):
         """ Change state of undo action """
@@ -252,6 +250,19 @@ class QueryWidget(QWidget):
         cut_action.setEnabled(value)
         copy_action = pireal.get_action("copy_action")
         copy_action.setEnabled(value)
+
+    def show_relation(self, item):
+        central_widget = Pireal.get_service("central")
+        table_widget = central_widget.get_active_db().table_widget
+        rela = table_widget.relations[item.name]
+        dialog = QDialog(self)
+        dialog.resize(700, 500)
+        dialog.setWindowTitle(item.name)
+        box = QVBoxLayout(dialog)
+        box.setContentsMargins(5, 5, 5, 5)
+        table = table_widget.create_table(rela)
+        box.addWidget(table)
+        dialog.show()
 
     def save_sizes(self):
         """ Save sizes of Splitters """
