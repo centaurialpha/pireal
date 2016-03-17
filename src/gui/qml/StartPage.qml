@@ -126,7 +126,9 @@ Rectangle {
             id: high
             Rectangle {
 
-                color: "#e3e3e3"
+                color: "#3465a4"
+                opacity: 0.1
+                radius: 3
                 anchors {
                     left: high.left
                     right: high.right
