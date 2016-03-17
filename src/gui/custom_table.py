@@ -20,12 +20,27 @@ class Table(QTableView):
         super(Table, self).__init__()
         # Stretch horizontal header
         self.setAlternatingRowColors(True)
-        self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.horizontalHeader().setSectionResizeMode(
+            QHeaderView.Interactive)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.horizontalHeader().setStretchLastSection(True)
         self.verticalHeader().hide()
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         # Model
         model = QStandardItemModel()
         self.setModel(model)
+
+    def resizeEvent(self, event):
+        super(Table, self).resizeEvent(event)
+        size = self.width()
+        col_count = self.model().columnCount()
+        remaining_width = size % col_count
+        for ncol in range(self.model().columnCount()):
+            if remaining_width > 0:
+                self.setColumnWidth(ncol, int(size / col_count) + 1)
+                remaining_width -= 1
+            else:
+                self.setColumnWidth(ncol, int(size / col_count))
 
 
 class Header(QHeaderView):

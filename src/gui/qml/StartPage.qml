@@ -112,7 +112,6 @@ Rectangle {
 
                     MouseArea {
                         anchors.fill: parent
-
                         onClicked: {
                             root.removeCurrent(path);
                             listView.model.remove(index);
@@ -125,7 +124,6 @@ Rectangle {
         Component {
             id: high
             Rectangle {
-
                 color: "#3465a4"
                 opacity: 0.1
                 radius: 3
