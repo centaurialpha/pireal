@@ -71,6 +71,8 @@ class QueryContainer(QWidget):
         self._tabs = tab_widget.TabWidget()
         box.addWidget(self._tabs)
 
+        self.relations = {}
+
         self.__hide()
 
         # Connections
@@ -131,7 +133,7 @@ class QueryContainer(QWidget):
         # Get the text from editor
         weditor = self.currentWidget().get_editor()
         text = weditor.toPlainText()
-
+        relations = self.currentWidget().relations
         central = Pireal.get_service("central")
         table_widget = central.get_active_db().table_widget
 
@@ -150,14 +152,17 @@ class QueryContainer(QWidget):
 
             try:
                 expression = parser.convert_to_python(line)
-                rela = eval(expression, {}, table_widget.relations)
+                # rela = eval(expression, {}, table_widget.relations)
+                relations.update(table_widget.relations)
+                rela = eval(expression, {}, relations)
             except Exception as reason:
                 QMessageBox.critical(self,
                                      self.tr("Query Error"),
                                      reason.__str__())
                 return
-            if table_widget.add_relation(relation_name, rela):
-                self.__add_table(rela, relation_name)
+
+            relations[relation_name] = rela
+            self.__add_table(rela, relation_name)
 
     def __add_table(self, rela, rname):
         self.currentWidget().add_table(rela, rname)
@@ -205,6 +210,8 @@ class QueryWidget(QWidget):
 
         self._stack_tables = StackedWidget()
         self._hsplitter.addWidget(self._stack_tables)
+
+        self.relations = {}
 
         self._query_editor = editor.Editor()
         # Editor connections
@@ -254,7 +261,7 @@ class QueryWidget(QWidget):
     def show_relation(self, item):
         central_widget = Pireal.get_service("central")
         table_widget = central_widget.get_active_db().table_widget
-        rela = table_widget.relations[item.name]
+        rela = self.relations[item.name]
         dialog = QDialog(self)
         dialog.resize(700, 500)
         dialog.setWindowTitle(item.name)
