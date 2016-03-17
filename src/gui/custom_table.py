@@ -19,6 +19,7 @@ class Table(QTableView):
     def __init__(self):
         super(Table, self).__init__()
         # Stretch horizontal header
+        self.setAlternatingRowColors(True)
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.verticalHeader().hide()
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
