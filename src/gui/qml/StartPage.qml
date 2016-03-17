@@ -43,6 +43,7 @@ Rectangle {
 
         Component {
             id: delegate
+
             Item {
                 id: listItem
                 anchors {
@@ -90,6 +91,7 @@ Rectangle {
                         color: "#838b8c"
                         opacity: 0.5
                         text: path
+                        elide: Text.ElideLeft
                     }
 
                 }
@@ -142,6 +144,7 @@ Rectangle {
             delegate: delegate
             highlight: high
             focus: true
+            clip: true
             property bool empty: listView.count == 0
         }
     }
