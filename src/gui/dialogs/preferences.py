@@ -307,25 +307,30 @@ class Preferences(QDialog):
         # Hide overlay widget
         self.overlay.hide()
         msg = QMessageBox(self)
-        if self.thread.version:
-            version = self.thread.version
-            msg.setWindowTitle(self.tr("New version available!"))
-            msg.setText(self.tr("Check the web site to "
-                                "download <b>Pireal {}</b>".format(version)))
-            download_btn = msg.addButton(self.tr("Download!"),
-                                         QMessageBox.YesRole)
-            msg.addButton(self.tr("Cancel"),
-                          QMessageBox.RejectRole)
-            msg.exec_()
-            r = msg.clickedButton()
-            if r == download_btn:
-                webbrowser.open_new("http://centaurialpha.github.io/pireal")
+        if not self.thread.error:
+            if self.thread.version:
+                version = self.thread.version
+                msg.setWindowTitle(self.tr("New version available!"))
+                msg.setText(self.tr("Check the web site to "
+                                    "download <b>Pireal {}</b>".format(version)))
+                download_btn = msg.addButton(self.tr("Download!"),
+                                             QMessageBox.YesRole)
+                msg.addButton(self.tr("Cancel"),
+                              QMessageBox.RejectRole)
+                msg.exec_()
+                r = msg.clickedButton()
+                if r == download_btn:
+                    webbrowser.open_new(
+                        "http://centaurialpha.github.io/pireal")
+            else:
+                msg.setWindowTitle(self.tr("Information"))
+                msg.setText(self.tr("Last version installed"))
+                msg.addButton(self.tr("Ok"),
+                              QMessageBox.AcceptRole)
+                msg.exec_()
         else:
-            msg.setWindowTitle(self.tr("Information"))
-            msg.setText(self.tr("Last version installed"))
-            msg.addButton(self.tr("Ok"),
-                          QMessageBox.AcceptRole)
-            msg.exec_()
+            msg.critical(self, self.tr("Error"),
+                         self.tr("Connection error"))
 
     def _reset_settings(self):
         """ Remove all settings """

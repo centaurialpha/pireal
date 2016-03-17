@@ -49,7 +49,7 @@ class OverlayWidget(QWidget):
                 painter.setBrush(QBrush(QColor(99, 137, 168)))
             else:
                 painter.setBrush(QBrush(QColor(127, 127, 127)))
-            painter.drawEllipse(self.width() / 2.5 + 50 * i,
+            painter.drawEllipse(self.width() / 2.3 + 50 * i,
                                 self.height() / 2, 35, 35)
 
         painter.end()

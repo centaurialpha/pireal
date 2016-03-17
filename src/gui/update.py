@@ -35,6 +35,7 @@ class Update(QThread):
     def __init__(self):
         super(Update, self).__init__()
         self.version = ""
+        self.error = False
 
     def run(self):
         try:
@@ -42,4 +43,5 @@ class Update(QThread):
             if "1.0" < web_version:
                 self.version = web_version
         except URLError as reason:
+            self.error = True
             DEBUG("Connection error: {}".format(reason))
