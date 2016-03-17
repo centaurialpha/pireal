@@ -73,25 +73,25 @@ Rectangle {
                 Column {
                     anchors {
                         fill: parent
-                        leftMargin: 50
+                        leftMargin: 30
                     }
-                    Item {
-                        Text {
-                            id: fileName
-                            text: name
-                            font.bold: true
-                            font.pixelSize: 26
-                            color: "#838b8c"
 
-                        }
+                    Text {
+                        id: fileName
+                        text: name
+                        font.bold: true
+                        font.pixelSize: 26
+                        color: "#838b8c"
 
-                        Text {
-                            id: filePath
-                            color: "#838b8c"
-                            opacity: 0.5
-                            text: path
-                        }
                     }
+
+                    Text {
+                        id: filePath
+                        color: "#838b8c"
+                        opacity: 0.5
+                        text: path
+                    }
+
                 }
 
                 Image {
@@ -164,7 +164,7 @@ Rectangle {
         Button {
             text: qsTr("Create a new database")
             anchors.verticalCenter: title.verticalCenter
-            width: 150; height: 40
+            width: textWidth; height: 40
             pointSize: 10
 
             onClicked: {

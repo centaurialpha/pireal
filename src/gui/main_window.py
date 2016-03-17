@@ -75,7 +75,7 @@ class Pireal(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         self.setWindowTitle(self.tr("Pireal"))
-        self.setMinimumSize(700, 500)
+        #self.setMinimumSize(700, 500)
 
         # Load window geometry
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)

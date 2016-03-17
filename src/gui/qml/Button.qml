@@ -8,6 +8,7 @@ Rectangle {
     radius: 3
     property alias text: buttonText.text
     property alias pointSize: buttonText.font.pointSize
+    property int textWidth: buttonText.width + 10
     signal clicked
 
     Text {
