@@ -98,7 +98,8 @@ Rectangle {
                     source: "close.png"
                     anchors {
                         right: parent.right
-                        verticalCenter: parent.verticalCenter
+                        top: parent.top
+                        topMargin: 15
                         rightMargin: 15
                     }
                     visible: listItem.current ? true : false;
