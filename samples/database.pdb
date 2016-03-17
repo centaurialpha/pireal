@@ -1,4 +1,4 @@
-@persona:id_persona,nombre,apellido,edad
+@personas:id_persona,nombre,apellido,edad
 1111, Mariela, Torres, 40
 2222, Rodrigo, Acosta, 15
 3333, María, Medina, 23
