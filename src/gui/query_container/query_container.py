@@ -22,10 +22,12 @@ import re
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
+    QHBoxLayout,
     QSplitter,
     QStackedWidget,
     QMessageBox,
-    QDialog
+    QDialog,
+    QPushButton
 )
 from PyQt5.QtGui import QStandardItem
 from PyQt5.QtCore import (
@@ -269,6 +271,12 @@ class QueryWidget(QWidget):
         box.setContentsMargins(5, 5, 5, 5)
         table = table_widget.create_table(rela)
         box.addWidget(table)
+        hbox = QHBoxLayout()
+        btn = QPushButton(self.tr("Ok"))
+        btn.clicked.connect(dialog.close)
+        hbox.addStretch()
+        hbox.addWidget(btn)
+        box.addLayout(hbox)
         dialog.show()
 
     def save_sizes(self):
