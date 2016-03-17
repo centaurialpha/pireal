@@ -128,12 +128,9 @@ class DatabaseContainer(QSplitter):
         for filename in filenames:
             with open(filename) as f:
                 csv_reader = csv.reader(f)
-                first_line = next(csv_reader)
-                fields = [f.split('/')[0] for f in first_line]
-                types = [f.split('/')[1] for f in first_line]
-
+                header = next(csv_reader)
                 rel = relation.Relation()
-                rel.fields = fields
+                rel.header = header
                 for i in csv_reader:
                     rel.insert(i)
                 relation_name = file_manager.get_basename(filename)
@@ -143,9 +140,11 @@ class DatabaseContainer(QSplitter):
                                                     "relationship with name "
                                                     "'{}'".format(
                                                         relation_name)))
-                    return
-                self.table_widget.relations_types[relation_name] = types
-            self.__add_table(rel, relation_name, types)
+                    return False
+
+            self.table_widget.add_table(rel, relation_name)
+            self.lateral_widget.add_item(relation_name, rel.count())
+            return True
 
     def delete_relation(self):
         selected_items = self.lateral_widget.selectedItems()

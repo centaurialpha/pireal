@@ -391,8 +391,8 @@ class CentralWidget(QWidget):
         # Save folder
         self.__last_open_folder = file_manager.get_path(filenames[0])
         db_container = self.get_active_db()
-        db_container.load_relation(filenames)
-        db_container.modified = True
+        if db_container.load_relation(filenames):
+            db_container.modified = True
 
     def add_start_page(self):
         """ This function adds the Start Page to the stacked widget """
