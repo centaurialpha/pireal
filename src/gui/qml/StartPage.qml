@@ -75,21 +75,22 @@ Rectangle {
                         fill: parent
                         leftMargin: 50
                     }
+                    Item {
+                        Text {
+                            id: fileName
+                            text: name
+                            font.bold: true
+                            font.pixelSize: 26
+                            color: "#838b8c"
 
-                    Text {
-                        id: fileName
-                        text: name
-                        font.bold: true
-                        font.pixelSize: 26
-                        color: "#838b8c"
+                        }
 
-                    }
-
-                    Text {
-                        id: filePath
-                        color: "#838b8c"
-                        opacity: 0.5
-                        text: path
+                        Text {
+                            id: filePath
+                            color: "#838b8c"
+                            opacity: 0.5
+                            text: path
+                        }
                     }
                 }
 
