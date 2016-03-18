@@ -107,8 +107,7 @@ if __name__ == "__main__":
     # Icon
     qapp.setWindowIcon(QIcon(":img/icon"))
 
-    # System and app language
-
+    # Language
     lang = settings.get_setting("language", None)
     if lang is not None:
         translator = QTranslator()
