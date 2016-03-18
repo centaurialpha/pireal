@@ -66,8 +66,6 @@ class Pireal(QMainWindow):
         'create_new_relation',
         'remove_relation',
         'edit_relation',
-        #'add_tuple',
-        #'delete_tuple'
         '',
         'execute_queries'
     ]
@@ -188,17 +186,20 @@ class Pireal(QMainWindow):
                         qaction.triggered.connect(slot)
 
         # Install toolbar
+        self.__install_toolbar(toolbar_items)
+        # Disable some actions
+        self.set_enabled_db_actions(False)
+        self.set_enabled_relation_actions(False)
+        self.set_enabled_query_actions(False)
+        self.set_enabled_editor_actions(False)
+
+    def __install_toolbar(self, toolbar_items):
         for action in Pireal.TOOLBAR_ITEMS:
             qaction = toolbar_items.get(action, None)
             if qaction is not None:
                 self.toolbar.addAction(qaction)
             else:
                 self.toolbar.addSeparator()
-
-        self.set_enabled_db_actions(False)
-        self.set_enabled_relation_actions(False)
-        self.set_enabled_query_actions(False)
-        self.set_enabled_editor_actions(False)
 
     def __show_status_message(self, msg):
         status = Pireal.get_service("status")
