@@ -59,7 +59,7 @@ class PSettings:
     LANGUAGE = ""
     THEME = "Fusion"  # Default style
     LAST_OPEN_FOLDER = ""
-    RECENT_DB = []
+    RECENT_DBS = []
     HIGHLIGHT_CURRENT_LINE = False
     MATCHING_PARENTHESIS = True
     if LINUX:
@@ -100,7 +100,7 @@ def load_settings():
     PSettings.THEME = settings.value('theme', "Fusion", type='QString')
     PSettings.LAST_OPEN_FOLDER = settings.value("last_open_folder", "",
                                                 type='QString')
-    PSettings.RECENT_DB = settings.value("recentDB", [])
+    PSettings.RECENT_DBS = settings.value("recentDB", [])
     PSettings.HIGHLIGHT_CURRENT_LINE = settings.value("highlight_current_line",
                                                       False, type=bool)
     PSettings.MATCHING_PARENTHESIS = settings.value("matching_parenthesis",

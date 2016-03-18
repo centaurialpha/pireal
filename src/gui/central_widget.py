@@ -66,22 +66,36 @@ class CentralWidget(QWidget):
         self.stacked = QStackedWidget()
         box.addWidget(self.stacked)
 
-        self.__created = False
+        self.created = False
         self.__last_open_folder = None
-        self.__recent_files = set()
+        self.__recent_dbs = []
 
         Pireal.load_service("central", self)
+
+    @property
+    def recent_databases(self):
+        recent_dbs_settings = settings.get_setting("recentDB", [])
+        for f in recent_dbs_settings:
+            if f not in self.__recent_dbs:
+                self.__recent_dbs.append(f)
+        return self.__recent_dbs
+
+    @recent_databases.setter
+    def recent_databases(self, database_file):
+        if database_file not in self.__recent_dbs:
+            self.__recent_dbs.append(database_file)
 
     def create_database(self):
         """ Show a wizard widget to create a new database,
         only have one database open at time.
         """
 
-        if self.__created:
+        if self.created:
             QMessageBox.information(self,
                                     self.tr("Information"),
                                     self.tr("You may only have one database"
                                             " open at time."))
+            DEBUG("Ya existe una base de datos abierta")
             return
         wizard = database_wizard.DatabaseWizard(self)
         wizard.wizardFinished.connect(
@@ -116,11 +130,12 @@ class CentralWidget(QWidget):
             # Enable db actions
             pireal.set_enabled_db_actions(True)
             pireal.set_enabled_relation_actions(True)
-            self.__created = True
+            self.created = True
 
         # If data or not, show menubar and toolbar again
         pireal.show_hide_menubar()
         pireal.show_hide_toolbar()
+        DEBUG("Base de datos creada correctamente")
 
     def open_database(self, filename=''):
         """ This function opens a database and set this on the UI """
@@ -142,6 +157,8 @@ class CentralWidget(QWidget):
 
             # Remember the folder
             self.__last_open_folder = file_manager.get_path(filename)
+
+        DEBUG("Abriendo la base de datos: '{}'".format(filename))
 
         # If filename provide
         try:
@@ -180,8 +197,8 @@ class CentralWidget(QWidget):
         pireal.change_title(db_name)
         pireal.set_enabled_db_actions(True)
         pireal.set_enabled_relation_actions(True)
-        # Add to recent files
-        self.__recent_files.add(filename)
+        # Add to recent databases
+        self.recent_databases = filename
         self.created = True
 
     def open_query(self):
@@ -252,43 +269,38 @@ class CentralWidget(QWidget):
     def close_database(self):
         """ Close the database and return to the main widget """
 
-        mcontainer = self.get_active_db()
-        if mcontainer is not None:
-            if mcontainer.modified:
-                msgbox = QMessageBox(self)
-                msgbox.setIcon(QMessageBox.Question)
-                msgbox.setWindowTitle(self.tr("Save Changes?"))
-                msgbox.setText(self.tr("The <b>{}</b> database has ben"
-                                       " modified.<br>Do you want save "
-                                       "your changes?".format(
-                                           mcontainer.dbname())))
-                cancel_btn = msgbox.addButton(self.tr("Cancel"),
-                                              QMessageBox.RejectRole)
-                msgbox.addButton(self.tr("No"),
-                                 QMessageBox.NoRole)
-                yes_btn = msgbox.addButton(self.tr("Yes"),
-                                           QMessageBox.YesRole)
-                msgbox.exec_()
-                r = msgbox.clickedButton()
-                if r == cancel_btn:
-                    return
-                if r == yes_btn:
-                    self.save_database()
+        db = self.get_active_db()
+        if db.modified:
+            msgbox = QMessageBox(self)
+            msgbox.setIcon(QMessageBox.Question)
+            msgbox.setWindowTitle(self.tr("Save Changes?"))
+            msgbox.setText(self.tr("The <b>{}</b> database has ben"
+                                   " modified.<br>Do you want save "
+                                   "your changes?".format(
+                                       db.dbname())))
+            cancel_btn = msgbox.addButton(self.tr("Cancel"),
+                                          QMessageBox.RejectRole)
+            msgbox.addButton(self.tr("No"),
+                             QMessageBox.NoRole)
+            yes_btn = msgbox.addButton(self.tr("Yes"),
+                                       QMessageBox.YesRole)
+            msgbox.exec_()
+            r = msgbox.clickedButton()
+            if r == cancel_btn:
+                return
+            if r == yes_btn:
+                self.save_database()
 
-            self.stacked.removeWidget(mcontainer)
+        self.stacked.removeWidget(db)
 
-            del mcontainer
-
-            pireal = Pireal.get_service("pireal")
-            pireal.set_enabled_db_actions(False)
-            pireal.set_enabled_relation_actions(False)
-            self.created = False
+        pireal = Pireal.get_service("pireal")
+        pireal.set_enabled_db_actions(False)
+        pireal.set_enabled_relation_actions(False)
+        self.created = False
+        DEBUG("Se cerró la base de datos: '{}'".format(db.dbname()))
+        del db
 
     def new_query(self, filename=''):
-        # if not self.created:
-        #    QMessageBox.information(self, self.tr("Information"),
-        #                           self.tr("First create or open a database"))
-        #  return
         pireal = Pireal.get_service("pireal")
         pireal.set_enabled_query_actions(True)
         db_container = self.get_active_db()
@@ -342,7 +354,6 @@ class CentralWidget(QWidget):
 
     def create_new_relation(self):
         data = new_relation_dialog.create_relation()
-        print(data)
         if data is not None:
             db = self.get_active_db()
             rela, rela_name = data
@@ -400,14 +411,6 @@ class CentralWidget(QWidget):
         sp = start_page.StartPage()
         self.add_widget(sp)
 
-    def __get_created(self):
-        return self.__created
-
-    def __set_created(self, value):
-        self.__created = value
-
-    created = property(__get_created, __set_created)
-
     def show_settings(self):
         """ Show settings dialog on stacked """
 
@@ -432,12 +435,6 @@ class CentralWidget(QWidget):
 
         index = self.stacked.addWidget(widget)
         self.stacked.setCurrentIndex(index)
-
-    @property
-    def recent_files(self):
-        """ Returns recent database files """
-
-        return self.__recent_files
 
     def _settings_closed(self):
         self.stacked.removeWidget(self.widget(1))

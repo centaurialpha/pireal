@@ -39,9 +39,6 @@ class Pireal(QMainWindow):
     Main Window class
 
     This class is responsible for installing all application services.
-    The services are in a dictionary that can be accessed
-    from the class methods.
-
     """
 
     __SERVICES = {}
@@ -264,13 +261,6 @@ class Pireal(QMainWindow):
             qaction = Pireal.get_action(action)
             qaction.setEnabled(value)
 
-    def show_hide_lateral(self):
-        lateral = Pireal.get_service("lateral")
-        if lateral.isVisible():
-            lateral.hide()
-        else:
-            lateral.show()
-
     def about_qt(self):
         """ Show about qt dialog """
 
@@ -311,9 +301,8 @@ class Pireal(QMainWindow):
 
         # Recent databases
         central_widget = Pireal.get_service("central")
-        recent_files = qsettings.value('recentDB', set())
-        qsettings.setValue("recentDB",
-                           recent_files.union(central_widget.recent_files))
+        recent_dbs = central_widget.recent_databases
+        qsettings.setValue("recentDB", recent_dbs)
 
         db = central_widget.get_active_db()
         if db is not None:

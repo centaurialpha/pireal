@@ -72,11 +72,11 @@ class StartPage(QWidget):
         central_widget.create_database()
 
     def load_items(self):
+        # central_widget = Pireal.get_service("central")
+        # print(central_widget.recent_databases)
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        recent_files = qsettings.value('recentDB', set())
-        if recent_files:
-            for file_ in recent_files:
+        recent_dbs = qsettings.value('recentDB', [])
+        if recent_dbs:
+            for file_ in recent_dbs:
                 name = os.path.splitext(os.path.basename(file_))[0]
                 self.__root.loadItem(name, file_)
-        # else:
-        #    self.__root.show_empty_text()
