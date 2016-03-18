@@ -11,6 +11,10 @@ Rectangle {
         listModel.append({"name": name, "path": path})
     }
 
+    function clear() {
+        listModel.clear();
+    }
+
     Component.onCompleted: {
         listModel.clear();
     }

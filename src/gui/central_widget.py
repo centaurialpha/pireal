@@ -74,16 +74,18 @@ class CentralWidget(QWidget):
 
     @property
     def recent_databases(self):
-        recent_dbs_settings = settings.get_setting("recentDB", [])
-        for f in recent_dbs_settings:
-            if f not in self.__recent_dbs:
-                self.__recent_dbs.append(f)
         return self.__recent_dbs
 
     @recent_databases.setter
     def recent_databases(self, database_file):
-        if database_file not in self.__recent_dbs:
-            self.__recent_dbs.append(database_file)
+        recent_dbs = settings.get_setting("recentDB", [])
+        if database_file not in recent_dbs:
+            recent_dbs.insert(0, database_file)
+        else:
+            recent_dbs.remove(database_file)
+            recent_dbs.insert(0, database_file)
+        self.__recent_dbs = recent_dbs
+        settings.set_setting("recentDB", self.__recent_dbs)
 
     def create_database(self):
         """ Show a wizard widget to create a new database,

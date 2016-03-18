@@ -50,7 +50,6 @@ class StartPage(QWidget):
         vbox.addWidget(widget)
 
         self.__root = view.rootObject()
-        self.load_items()
 
         # Connections
         self.__root.openDatabase.connect(self.__open_database)
@@ -72,11 +71,15 @@ class StartPage(QWidget):
         central_widget.create_database()
 
     def load_items(self):
-        # central_widget = Pireal.get_service("central")
-        # print(central_widget.recent_databases)
-        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        recent_dbs = qsettings.value('recentDB', [])
+        self.__root.clear()
+        recent_dbs = settings.get_setting("recentDB", [])
         if recent_dbs:
             for file_ in recent_dbs:
                 name = os.path.splitext(os.path.basename(file_))[0]
                 self.__root.loadItem(name, file_)
+
+    def showEvent(self, event):
+        """ Load list view every time the start page is displayed """
+
+        super(StartPage, self).showEvent(event)
+        self.load_items()

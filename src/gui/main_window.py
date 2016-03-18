@@ -299,11 +299,7 @@ class Pireal(QMainWindow):
             qsettings.setValue('window_pos', self.pos())
             qsettings.setValue('window_size', self.size())
 
-        # Recent databases
         central_widget = Pireal.get_service("central")
-        recent_dbs = central_widget.recent_databases
-        qsettings.setValue("recentDB", recent_dbs)
-
         db = central_widget.get_active_db()
         if db is not None:
             db.save_sizes()
