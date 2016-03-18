@@ -79,11 +79,6 @@ def __get_versions():
     }
 
 
-def detect_language(system_lang):
-    languages = {'es': 'Spanish'}
-    return languages.get(system_lang, None)
-
-
 if __name__ == "__main__":
 
     # Create dir
@@ -113,13 +108,10 @@ if __name__ == "__main__":
     qapp.setWindowIcon(QIcon(":img/icon"))
 
     # System and app language
-    locale = QLocale.system().name().split('_')[0]
-    sys_lang = detect_language(locale)
-    lang = settings.get_setting('language', "")
-    if not lang:
-        lang = sys_lang
-    translator = QTranslator()
-    if settings.PSettings.LANGUAGE:
+
+    lang = settings.get_setting("language", None)
+    if lang is not None:
+        translator = QTranslator()
         translator.load(os.path.join(settings.LANG_PATH, lang + '.qm'))
         qapp.installTranslator(translator)
 
