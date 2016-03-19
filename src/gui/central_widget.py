@@ -79,11 +79,12 @@ class CentralWidget(QWidget):
     @recent_databases.setter
     def recent_databases(self, database_file):
         recent_dbs = settings.get_setting("recentDB", [])
-        if database_file in recent_dbs:
-            recent_dbs.remove(database_file)
-        recent_dbs.insert(0, database_file)
-        self.__recent_dbs = recent_dbs
-        settings.set_setting("recentDB", self.__recent_dbs)
+        if recent_dbs is not None:
+            if database_file in recent_dbs:
+                recent_dbs.remove(database_file)
+            recent_dbs.insert(0, database_file)
+            self.__recent_dbs = recent_dbs
+            settings.set_setting("recentDB", self.__recent_dbs)
 
     def create_database(self):
         """ Show a wizard widget to create a new database,
@@ -296,6 +297,7 @@ class CentralWidget(QWidget):
         pireal = Pireal.get_service("pireal")
         pireal.set_enabled_db_actions(False)
         pireal.set_enabled_relation_actions(False)
+        pireal.set_enabled_query_actions(False)
         self.created = False
         DEBUG("Se cerró la base de datos: '{}'".format(db.dbname()))
         del db
