@@ -85,7 +85,7 @@ MENU['edit'] = {
     }, "-", {
         'name': translate("Pireal", "Zoom In"),
         'slot': "central:zoom_in"
-    }, "-", {
+    }, {
         'name': translate("Pireal", "Zoom Out"),
         'slot': "central:zoom_out"
     }, "-", {
