@@ -304,7 +304,9 @@ class Pireal(QMainWindow):
         central_widget = Pireal.get_service("central")
         db = central_widget.get_active_db()
         if db is not None:
+            # Save splitters size
             db.save_sizes()
+            # Databases unsaved
             if db.modified:
                 msg = QMessageBox(self)
                 msg.setIcon(QMessageBox.Question)
@@ -321,4 +323,25 @@ class Pireal(QMainWindow):
                 if r == yes_btn:
                     central_widget.save_database()
                 if r == cancel_btn:
+                    event.ignore()
+            # Query files
+            unsaved_editors = central_widget.get_unsaved_queries()
+            if unsaved_editors:
+                msg = QMessageBox(self)
+                msg.setIcon(QMessageBox.Question)
+                msg.setWindowTitle(self.tr("Unsaved Queries"))
+                text = '\n'.join([editor.name for editor in unsaved_editors])
+                msg.setText(self.tr("{files}\n\nDo you want to "
+                                    "save them?".format(files=text)))
+                cancel_btn = msg.addButton(self.tr("Cancel"),
+                                           QMessageBox.RejectRole)
+                msg.addButton(self.tr("No"),
+                              QMessageBox.NoRole)
+                yes_btn = msg.addButton(self.tr("Yes"),
+                                        QMessageBox.YesRole)
+                msg.exec_()
+                if msg.clickedButton() == yes_btn:
+                    for editor in unsaved_editors:
+                        central_widget.save_query(editor)
+                if msg.clickedButton() == cancel_btn:
                     event.ignore()

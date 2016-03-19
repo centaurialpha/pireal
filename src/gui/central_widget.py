@@ -213,9 +213,9 @@ class CentralWidget(QWidget):
         # FIXME: mejorar éste y new_query
         self.new_query(filename)
 
-    def save_query(self):
+    def save_query(self, editor=None):
         db = self.get_active_db()
-        fname = db.save_query()
+        fname = db.save_query(editor)
         if fname:
             self.querySaved.emit(self.tr("Query saved: {}".format(fname)))
 
@@ -460,6 +460,10 @@ class CentralWidget(QWidget):
         if isinstance(widget, database_container.DatabaseContainer):
             return widget
         return None
+
+    def get_unsaved_queries(self):
+        query_container = self.get_active_db().query_container
+        return query_container.get_unsaved_queries()
 
     def undo_action(self):
         query_container = self.get_active_db().query_container

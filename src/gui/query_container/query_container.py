@@ -99,6 +99,14 @@ class QueryContainer(QWidget):
         tc = widget.get_editor().textCursor()
         tc.insertText(data + ' ')
 
+    def get_unsaved_queries(self):
+        weditors = []
+        for index in range(self.count()):
+            weditor = self._tabs.widget(index).get_editor()
+            if weditor.modified:
+                weditors.append(weditor)
+        return weditors
+
     def count(self):
         return self._tabs.count()
 
