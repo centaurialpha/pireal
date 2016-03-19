@@ -2,6 +2,24 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="es_AR">
 <context>
+    <name>StartPage</name>
+    <message>
+        <location filename="src/gui/qml/StartPage.qml" line="35"/>
+        <source>No recent databases</source>
+        <translation>Sin archivos recientes</translation>
+    </message>
+    <message>
+        <location filename="src/gui/qml/StartPage.qml" line="166"/>
+        <source>Opens a recent database or </source>
+        <translation>Abre una base de datos reciente o </translation>
+    </message>
+    <message>
+        <location filename="src/gui/qml/StartPage.qml" line="172"/>
+        <source>Create a new database</source>
+        <translation>Crear una nueva base de datos</translation>
+    </message>
+</context>
+<context>
     <name>AboutDialog</name>
     <message>
         <location filename="src/gui/dialogs/about_dialog.py" line="41"/>
@@ -32,24 +50,6 @@
         <location filename="src/gui/dialogs/about_dialog.py" line="101"/>
         <source>Done</source>
         <translation>Aceptar</translation>
-    </message>
-</context>
-<context>
-    <name>StartPage</name>
-    <message>
-        <location filename="src/gui/qml/StartPage.qml" line="35"/>
-        <source>No recent databases</source>
-        <translation>Sin archivos recientes</translation>
-    </message>
-    <message>
-        <location filename="src/gui/qml/StartPage.qml" line="166"/>
-        <source>Opens a recent database or </source>
-        <translation>Abre una base de datos reciente o </translation>
-    </message>
-    <message>
-        <location filename="src/gui/qml/StartPage.qml" line="172"/>
-        <source>Create a new database</source>
-        <translation>Crea una nueva</translation>
     </message>
 </context>
 <context>
@@ -395,54 +395,64 @@
         <translation>Pegar</translation>
     </message>
     <message>
-        <location filename="src/gui/menu_actions.py" line="86"/>
+        <location filename="src/gui/menu_actions.py" line="92"/>
         <source>Preferences</source>
         <translation>Preferencias</translation>
     </message>
     <message>
-        <location filename="src/gui/menu_actions.py" line="92"/>
+        <location filename="src/gui/menu_actions.py" line="98"/>
         <source>&amp;Relation</source>
         <translation>&amp;Relación</translation>
     </message>
     <message>
-        <location filename="src/gui/menu_actions.py" line="94"/>
+        <location filename="src/gui/menu_actions.py" line="100"/>
         <source>New Relation</source>
         <translation>Nueva Relación</translation>
     </message>
     <message>
-        <location filename="src/gui/menu_actions.py" line="97"/>
+        <location filename="src/gui/menu_actions.py" line="103"/>
         <source>Delete Relation</source>
         <translation>Eliminar Relación</translation>
     </message>
     <message>
-        <location filename="src/gui/menu_actions.py" line="100"/>
+        <location filename="src/gui/menu_actions.py" line="106"/>
         <source>Load Relation</source>
         <translation>Cargar Relación</translation>
     </message>
     <message>
-        <location filename="src/gui/menu_actions.py" line="103"/>
+        <location filename="src/gui/menu_actions.py" line="109"/>
         <source>Edit Relation</source>
         <translation>Editar Relación</translation>
     </message>
     <message>
-        <location filename="src/gui/menu_actions.py" line="106"/>
+        <location filename="src/gui/menu_actions.py" line="112"/>
         <source>Execute Queries</source>
         <translation>Ejecutar Consultas</translation>
     </message>
     <message>
-        <location filename="src/gui/menu_actions.py" line="112"/>
+        <location filename="src/gui/menu_actions.py" line="118"/>
         <source>&amp;Help</source>
         <translation>A&amp;yuda</translation>
     </message>
     <message>
-        <location filename="src/gui/menu_actions.py" line="114"/>
+        <location filename="src/gui/menu_actions.py" line="120"/>
         <source>About Pireal</source>
         <translation>Acerca de Pireal</translation>
     </message>
     <message>
-        <location filename="src/gui/menu_actions.py" line="117"/>
+        <location filename="src/gui/menu_actions.py" line="123"/>
         <source>About Qt</source>
         <translation>Acerca de Qt</translation>
+    </message>
+    <message>
+        <location filename="src/gui/menu_actions.py" line="86"/>
+        <source>Zoom In</source>
+        <translation>Acercar</translation>
+    </message>
+    <message>
+        <location filename="src/gui/menu_actions.py" line="89"/>
+        <source>Zoom Out</source>
+        <translation>Alejar</translation>
     </message>
 </context>
 <context>
@@ -589,7 +599,7 @@
 <context>
     <name>QueryWidget</name>
     <message>
-        <location filename="src/gui/query_container/query_container.py" line="288"/>
+        <location filename="src/gui/query_container/query_container.py" line="298"/>
         <source>Ok</source>
         <translation>Aceptar</translation>
     </message>
