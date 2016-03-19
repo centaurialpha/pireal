@@ -139,6 +139,10 @@ class QueryContainer(QWidget):
         central = Pireal.get_service("central")
         table_widget = central.get_active_db().table_widget
 
+        # Restore
+        relations.clear()
+        self.currentWidget().clear_results()
+
         # Ignore comments
         for line in text.splitlines():
             if line.startswith('--') or not line:
@@ -306,6 +310,16 @@ class QueryWidget(QWidget):
     def showEvent(self, event):
         super(QueryWidget, self).showEvent(event)
         self._hsplitter.setSizes([1, self.width() / 3])
+
+    def clear_results(self):
+        self._result_list.clear_items()
+        i = self._stack_tables.count()
+        while i >= 0:
+            widget = self._stack_tables.widget(i)
+            self._stack_tables.removeWidget(widget)
+            if widget is not None:
+                widget.deleteLater()
+            i -= 1
 
     def add_table(self, rela, rname):
         wtable = custom_table.Table()
