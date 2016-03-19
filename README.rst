@@ -109,7 +109,7 @@ Syntax
 ******
 
 - The name of the database is the name of ``.pdb`` file.
-- To define a table, in the first row must place the name followed fields, like this: ``@relation_name:field1,field2`.` 
+- To define a table, in the first row must place the name followed fields, like this: ``@relation_name:field1,field2``. 
 - The tuples separated by commas.
 
 Example of a ``database.pdb`` file:
