@@ -207,6 +207,16 @@ class QueryContainer(QWidget):
         if weditor.hasFocus():
             weditor.paste()
 
+    def zoom_in(self):
+        weditor = self.currentWidget().get_editor()
+        if weditor.hasFocus():
+            weditor.zoom_in()
+
+    def zoom_out(self):
+        weditor = self.currentWidget().get_editor()
+        if weditor.hasFocus():
+            weditor.zoom_out()
+
 
 class QueryWidget(QWidget):
     editorModified = pyqtSignal(bool)

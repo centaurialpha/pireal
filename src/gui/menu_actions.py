@@ -83,6 +83,12 @@ MENU['edit'] = {
         'name': translate("Pireal", "Paste"),
         'slot': "central:paste_action"
     }, "-", {
+        'name': translate("Pireal", "Zoom In"),
+        'slot': "central:zoom_in"
+    }, "-", {
+        'name': translate("Pireal", "Zoom Out"),
+        'slot': "central:zoom_out"
+    }, "-", {
         'name': translate("Pireal", "Preferences"),
         'slot': "central:show_settings"}]}
 

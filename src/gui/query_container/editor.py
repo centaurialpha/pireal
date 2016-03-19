@@ -207,6 +207,20 @@ class Editor(QPlainTextEdit):
             block = block.previous()
             start = None
 
+    def zoom_in(self):
+        font = self.document().defaultFont()
+        point_size = font.pointSize()
+        point_size += 1
+        font.setPointSize(point_size)
+        self.document().setDefaultFont(font)
+
+    def zoom_out(self):
+        font = self.document().defaultFont()
+        point_size = font.pointSize()
+        point_size -= 1
+        font.setPointSize(point_size)
+        self.document().setDefaultFont(font)
+
     def saved(self):
         self.modified = False
         self.document().setModified(self.modified)

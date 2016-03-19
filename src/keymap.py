@@ -40,6 +40,8 @@ KEYMAP = {
     'cut_action': QKeySequence(Qt.CTRL + Qt.Key_X),
     'copy_action': QKeySequence(Qt.CTRL + Qt.Key_C),
     'paste_action': QKeySequence(Qt.CTRL + Qt.Key_V),
+    'zoom_in': QKeySequence(Qt.CTRL + Qt.Key_Plus),
+    'zoom_out': QKeySequence(Qt.CTRL + Qt.Key_Minus),
     'show_settings': QKeySequence(Qt.CTRL + Qt.Key_P),
     'create_new_relation': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_N),
     'remove_relation': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_W),

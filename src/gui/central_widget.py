@@ -471,5 +471,13 @@ class CentralWidget(QWidget):
         query_container = self.get_active_db().query_container
         query_container.paste()
 
+    def zoom_in(self):
+        query_container = self.get_active_db().query_container
+        query_container.zoom_in()
+
+    def zoom_out(self):
+        query_container = self.get_active_db().query_container
+        query_container.zoom_out()
+
 
 central = CentralWidget()
