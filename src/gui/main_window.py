@@ -254,7 +254,9 @@ class Pireal(QMainWindow):
             'redo_action',
             'copy_action',
             'cut_action',
-            'paste_action'
+            'paste_action',
+            'zoom_in',
+            'zoom_out'
         ]
 
         for action in actions:

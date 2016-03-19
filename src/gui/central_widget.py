@@ -304,9 +304,17 @@ class CentralWidget(QWidget):
 
     def new_query(self, filename=''):
         pireal = Pireal.get_service("pireal")
-        pireal.set_enabled_query_actions(True)
         db_container = self.get_active_db()
         db_container.new_query(filename)
+        # Enable editor actions
+        # FIXME: refactoring
+        pireal.set_enabled_query_actions(True)
+        zoom_in_action = Pireal.get_action("zoom_in")
+        zoom_in_action.setEnabled(True)
+        zoom_out_action = Pireal.get_action("zoom_out")
+        zoom_out_action.setEnabled(True)
+        paste_action = Pireal.get_action("paste_action")
+        paste_action.setEnabled(True)
 
     def execute_queries(self):
         db_container = self.get_active_db()

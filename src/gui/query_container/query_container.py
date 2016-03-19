@@ -277,10 +277,9 @@ class QueryWidget(QWidget):
     def __on_copy_available(self, value):
         """ Change states of cut and copy action """
 
-        pireal = Pireal.get_service("pireal")
-        cut_action = pireal.get_action("cut_action")
+        cut_action = Pireal.get_action("cut_action")
         cut_action.setEnabled(value)
-        copy_action = pireal.get_action("copy_action")
+        copy_action = Pireal.get_action("copy_action")
         copy_action.setEnabled(value)
 
     def show_relation(self, item):
