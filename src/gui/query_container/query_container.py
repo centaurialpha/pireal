@@ -141,7 +141,7 @@ class QueryContainer(QWidget):
 
         # Ignore comments
         for line in text.splitlines():
-            if line.startswith('--'):
+            if line.startswith('--') or not line:
                 continue
 
             parts = line.split('=', 1)
