@@ -69,27 +69,33 @@ Implemented Operators
 #####################
 The operations are implemented in `relation.py <https://github.com/centaurialpha/pireal/blob/master/src/core/relation.py>`_.
 
-+--------------+-----------+
-| Operator     | Supported |
-+==============+===========+
-| Selection    |    Yes    |
-+--------------+-----------+
-| Projection   |    Yes    |
-+--------------+-----------+
-| Rename       |    No     |
-+--------------+-----------+
-| Product      |    Yes    |
-+--------------+-----------+
-| Union        |    Yes    |
-+--------------+-----------+
-| Difference   |    Yes    |
-+--------------+-----------+
-| Natural Join |    Yes    |
-+--------------+-----------+
-| Intersection |    Yes    |
-+--------------+-----------+
-| Division     |    No     |
-+--------------+-----------+
++------------------+-----------+
+| Operator         | Supported |
++==================+===========+
+| Selection        |    Yes    |
++------------------+-----------+
+| Projection       |    Yes    |
++------------------+-----------+
+| Rename           |    No     |
++------------------+-----------+
+| Product          |    Yes    |
++------------------+-----------+
+| Union            |    Yes    |
++------------------+-----------+
+| Difference       |    Yes    |
++------------------+-----------+
+| Natural Join     |    Yes    |
++------------------+-----------+
+| Left Outer Join  |    No     |
++------------------+-----------+
+| Right Outer Join |    No     |
++------------------+-----------+
+| Full Outer Join  |    No     |
++------------------+-----------+
+| Intersection     |    Yes    |
++------------------+-----------+
+| Division         |    No     |
++------------------+-----------+
 
 Tutorial
 ########
@@ -103,7 +109,7 @@ Syntax
 ******
 
 - The name of the database is the name of ``.pdb`` file.
-- To define a table, in the first row must place the name followed fields, like this: ``@relation_name:field1,field2``.
+- To define a table, in the first row must place the name followed fields, like this: ``@relation_name:field1,field2`.` 
 - The tuples separated by commas.
 
 Example of a ``database.pdb`` file:
@@ -119,31 +125,6 @@ Example of a ``database.pdb`` file:
     002,Python
     003,Linux
 
-The result:
-
-**people**
-
-+---------+---------+---------+
-| id      | name    |     age |
-+=========+=========+=========+
-| 001     | Mike    | 15      |
-+---------+---------+---------+
-| 002     | Gabriel | 24      |
-+---------+---------+---------+
-| 003     | Linus   | 45      |
-+---------+---------+---------+
-
-
-**skills**
-
-+-------+-------+
-| id    | skill |
-+=======+=======+
-| 002   | Python|
-+-------+-------+
-| 003   | Linux |
-+-------+-------+
-
 How to create a table/relation
 ******************************
 
@@ -157,7 +138,7 @@ Syntax
 
 There are two ways to create a relationship or table:
 
-- From the menu: ``Relation/Create a Relation`` (Previously created database).
+- From the menu: ``Relation/New Relation``.
 - Or creating a file.
 
 
