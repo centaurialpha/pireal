@@ -79,11 +79,9 @@ class CentralWidget(QWidget):
     @recent_databases.setter
     def recent_databases(self, database_file):
         recent_dbs = settings.get_setting("recentDB", [])
-        if database_file not in recent_dbs:
-            recent_dbs.insert(0, database_file)
-        else:
+        if database_file in recent_dbs:
             recent_dbs.remove(database_file)
-            recent_dbs.insert(0, database_file)
+        recent_dbs.insert(0, database_file)
         self.__recent_dbs = recent_dbs
         settings.set_setting("recentDB", self.__recent_dbs)
 
