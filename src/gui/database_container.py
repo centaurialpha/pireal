@@ -155,7 +155,7 @@ class DatabaseContainer(QSplitter):
             current_row = self.lateral_widget.row()
         if len(selected_items) > 1:
             msg = self.tr("Are you sure you want to delete "
-                          "the selected relations")
+                          "the selected relations?")
         else:
             msg = self.tr("Are you sure you want to delete "
                           "the relation <b>{}</b>?".format(
