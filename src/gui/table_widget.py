@@ -29,7 +29,6 @@ from src.gui import (
     custom_table,
     fader_widget
 )
-from src.gui.main_window import Pireal
 
 
 class TableWidget(QWidget):
@@ -84,20 +83,10 @@ class TableWidget(QWidget):
     def add_table(self, rela, name):
         """ Add new table from New Relation Dialog """
 
-        ptable = custom_table.Table()
-        model = ptable.model()
-        model.setHorizontalHeaderLabels(rela.header)
-
-        # Populate table
-        for row_count, row in enumerate(rela.content):
-            for col_count, i in enumerate(row):
-                item = QStandardItem(i)
-                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
-                # item.setSelectable(False)
-                model.setItem(row_count, col_count, item)
-
+        # Create table
+        table = self.create_table(rela)
         self.add_relation(name, rela)
-        self.stacked.addWidget(ptable)
+        self.stacked.addWidget(table)
 
     def create_table(self, rela):
         table = custom_table.Table()
