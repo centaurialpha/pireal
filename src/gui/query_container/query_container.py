@@ -163,6 +163,15 @@ class QueryContainer(QWidget):
                                      reason.__str__())
                 return
 
+            if relation_name in relations:
+                QMessageBox.critical(self,
+                                     self.tr("Query Error"),
+                                     self.tr("<b>{}</b> is a duplicate "
+                                             "relation name.<br><br> "
+                                             "Please choose a unique name and "
+                                             "re-execute the queries.".format(
+                                                 relation_name)))
+                return
             relations[relation_name] = rela
             self.__add_table(rela, relation_name)
 
