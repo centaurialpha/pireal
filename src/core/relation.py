@@ -91,7 +91,9 @@ class Relation(object):
                     d[attr] = float(register[e])
                 else:
                     d[attr] = register[e]
-                print(v)
+                # Remove leading and trailing zeros of expression
+                expression = expression.replace(
+                    expression.split()[-1], expression.split()[-1].strip('0'))
             # The expression is evaluated
             try:
                 if eval(expression, {}, d):
@@ -287,4 +289,4 @@ if __name__ == "__main__":
     data2 = {('1', 'Python'), ('32', 'C++')}
     for reg in data2:
         r2.insert(reg)
-    print(r1.select("id == 01"))
+    print(r1.select("name == 'Gabriel'"))
