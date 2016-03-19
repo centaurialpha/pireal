@@ -86,11 +86,12 @@ class Relation(object):
             for e, attr in enumerate(self.__header):
                 # Is a digit?
                 v = register[e].replace('.', '').replace('-', '')
+
                 if v.isdigit():
                     d[attr] = float(register[e])
                 else:
                     d[attr] = register[e]
-
+                print(v)
             # The expression is evaluated
             try:
                 if eval(expression, {}, d):
@@ -286,4 +287,4 @@ if __name__ == "__main__":
     data2 = {('1', 'Python'), ('32', 'C++')}
     for reg in data2:
         r2.insert(reg)
-    print(r1.select("name == 'Gabriel'"))
+    print(r1.select("id == 01"))
