@@ -57,9 +57,18 @@ class LateralWidget(QTreeWidget):
         self.clear()
 
     def update_item(self, tuple_count):
-        item = self.currentItem()
+        item = self.current_item()
         item.ntuples = tuple_count
         item.setText(0, item.display_name)
+
+    def current_item(self):
+        """ Returns the current item in the tree. If item is None
+        returns item in the index 0 """
+
+        item = self.currentItem()
+        if item is None:
+            item = self.topLevelItem(0)
+        return item
 
 
 class Item(QTreeWidgetItem):
