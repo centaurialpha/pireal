@@ -79,12 +79,13 @@ class CentralWidget(QWidget):
     @recent_databases.setter
     def recent_databases(self, database_file):
         recent_dbs = settings.get_setting("recentDB", [])
-        if recent_dbs is not None:
-            if database_file in recent_dbs:
-                recent_dbs.remove(database_file)
-            recent_dbs.insert(0, database_file)
-            self.__recent_dbs = recent_dbs
-            settings.set_setting("recentDB", self.__recent_dbs)
+        if recent_dbs is None:
+            recent_dbs = []
+        if database_file in recent_dbs:
+            recent_dbs.remove(database_file)
+        recent_dbs.insert(0, database_file)
+        self.__recent_dbs = recent_dbs
+        settings.set_setting("recentDB", self.__recent_dbs)
 
     def create_database(self):
         """ Show a wizard widget to create a new database,
@@ -132,11 +133,12 @@ class CentralWidget(QWidget):
             pireal.set_enabled_db_actions(True)
             pireal.set_enabled_relation_actions(True)
             self.created = True
+            DEBUG("Base de datos creada correctamente: '{}'".format(
+                data['filename']))
 
         # If data or not, show menubar and toolbar again
         pireal.show_hide_menubar()
         pireal.show_hide_toolbar()
-        DEBUG("Base de datos creada correctamente")
 
     def open_database(self, filename=''):
         """ This function opens a database and set this on the UI """
