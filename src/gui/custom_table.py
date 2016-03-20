@@ -34,13 +34,14 @@ class Table(QTableView):
         super(Table, self).resizeEvent(event)
         size = self.width()
         col_count = self.model().columnCount()
-        remaining_width = size % col_count
-        for ncol in range(self.model().columnCount()):
-            if remaining_width > 0:
-                self.setColumnWidth(ncol, int(size / col_count) + 1)
-                remaining_width -= 1
-            else:
-                self.setColumnWidth(ncol, int(size / col_count))
+        if col_count > 0:
+            remaining_width = size % col_count
+            for ncol in range(self.model().columnCount()):
+                if remaining_width > 0:
+                    self.setColumnWidth(ncol, int(size / col_count) + 1)
+                    remaining_width -= 1
+                else:
+                    self.setColumnWidth(ncol, int(size / col_count))
 
 
 class Header(QHeaderView):
