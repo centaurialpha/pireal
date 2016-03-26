@@ -77,7 +77,10 @@ class NewRelationDialog(edit_relation_dialog.EditRelationDialog):
             tuples = []
             for column in range(ncol):
                 item = model.item(row, column)
-                if item is None or item.text().strip():
+                try:
+                    if not item.text().strip():
+                        raise Exception
+                except:
                     QMessageBox.critical(self, "Error",
                                          self.tr("Field '{0}:{1}'"
                                                  "is empty!".format(
