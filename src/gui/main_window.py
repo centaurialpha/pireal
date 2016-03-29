@@ -311,7 +311,8 @@ class Pireal(QMainWindow):
                 msg = QMessageBox(self)
                 msg.setIcon(QMessageBox.Question)
                 msg.setWindowTitle(self.tr("Some changes where not saved"))
-                msg.setText(self.tr("Do you want to save them?"))
+                msg.setText(
+                    self.tr("Do you want to save changes to the database?"))
                 cancel_btn = msg.addButton(self.tr("Cancel"),
                                            QMessageBox.RejectRole)
                 msg.addButton(self.tr("No"),

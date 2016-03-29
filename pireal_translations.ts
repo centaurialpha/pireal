@@ -279,20 +279,20 @@
     <message>
         <location filename="src/gui/main_window.py" line="314"/>
         <source>Do you want to save them?</source>
-        <translation>Quieres salvarlos?</translation>
+        <translation type="obsolete">Quieres salvarlos?</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="336"/>
+        <location filename="src/gui/main_window.py" line="337"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="338"/>
+        <location filename="src/gui/main_window.py" line="339"/>
         <source>No</source>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="340"/>
+        <location filename="src/gui/main_window.py" line="341"/>
         <source>Yes</source>
         <translation>Si</translation>
     </message>
@@ -437,14 +437,19 @@
         <translation>Alejar</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="332"/>
+        <location filename="src/gui/main_window.py" line="333"/>
         <source>Unsaved Queries</source>
         <translation>Consultas sin guardar</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="334"/>
+        <location filename="src/gui/main_window.py" line="335"/>
         <source>{files}&lt;br&gt;&lt;br&gt;Do you want to save them?</source>
         <translation>{files}&lt;br&gt;&lt;br&gt;Quieres guardar las consultas?</translation>
+    </message>
+    <message>
+        <location filename="src/gui/main_window.py" line="314"/>
+        <source>Do you want to save changes to the database?</source>
+        <translation>Quieres guardar los cambios en la base de datos?</translation>
     </message>
 </context>
 <context>
