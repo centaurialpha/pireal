@@ -2,24 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="es_AR">
 <context>
-    <name>StartPage</name>
-    <message>
-        <location filename="src/gui/qml/StartPage.qml" line="35"/>
-        <source>No recent databases</source>
-        <translation>Sin archivos recientes</translation>
-    </message>
-    <message>
-        <location filename="src/gui/qml/StartPage.qml" line="166"/>
-        <source>Opens a recent database or </source>
-        <translation>Abre una base de datos reciente o </translation>
-    </message>
-    <message>
-        <location filename="src/gui/qml/StartPage.qml" line="172"/>
-        <source>Create a new database</source>
-        <translation>Crear una nueva base de datos</translation>
-    </message>
-</context>
-<context>
     <name>AboutDialog</name>
     <message>
         <location filename="src/gui/dialogs/about_dialog.py" line="41"/>
@@ -55,77 +37,77 @@
 <context>
     <name>CentralWidget</name>
     <message>
-        <location filename="src/gui/central_widget.py" line="94"/>
+        <location filename="src/gui/central_widget.py" line="96"/>
         <source>Information</source>
         <translation>Información</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="94"/>
+        <location filename="src/gui/central_widget.py" line="96"/>
         <source>You may only have one database open at time.</source>
         <translation>Solo puede tener una base de datos abierta al mismo tiempo.</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="150"/>
+        <location filename="src/gui/central_widget.py" line="153"/>
         <source>Open Database</source>
         <translation>Abrir Base de datos</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="171"/>
+        <location filename="src/gui/central_widget.py" line="174"/>
         <source>The file couldn&apos;t be open</source>
         <translation>El archivo no pudo ser abierto</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="183"/>
+        <location filename="src/gui/central_widget.py" line="186"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="206"/>
+        <location filename="src/gui/central_widget.py" line="209"/>
         <source>Open Query</source>
         <translation>Abrir Consulta</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="219"/>
+        <location filename="src/gui/central_widget.py" line="222"/>
         <source>Query saved: {}</source>
         <translation>Consulta guardad: {}</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="276"/>
+        <location filename="src/gui/central_widget.py" line="279"/>
         <source>Save Changes?</source>
         <translation>Guardar Cambios?</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="277"/>
+        <location filename="src/gui/central_widget.py" line="280"/>
         <source>The &lt;b&gt;{}&lt;/b&gt; database has ben modified.&lt;br&gt;Do you want save your changes?</source>
         <translation>La base de datos &lt;b&gt;{}&lt;/b&gt; ha sido modificada.&lt;br&gt;Quiere guardar los cambios?</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="281"/>
+        <location filename="src/gui/central_widget.py" line="284"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="283"/>
+        <location filename="src/gui/central_widget.py" line="286"/>
         <source>No</source>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="285"/>
+        <location filename="src/gui/central_widget.py" line="288"/>
         <source>Yes</source>
         <translation>Si</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="345"/>
+        <location filename="src/gui/central_widget.py" line="357"/>
         <source>Database saved: {}</source>
         <translation>Base de datos guardada: {}</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="333"/>
+        <location filename="src/gui/central_widget.py" line="345"/>
         <source>Save Database As</source>
         <translation>Guardar Base de datos Como</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="394"/>
+        <location filename="src/gui/central_widget.py" line="406"/>
         <source>Open Relation File</source>
         <translation>Abrir Relación</translation>
     </message>
@@ -277,7 +259,7 @@
         <translation>Error en nombre de campo</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/new_relation_dialog.py" line="81"/>
+        <location filename="src/gui/dialogs/new_relation_dialog.py" line="84"/>
         <source>Field &apos;{0}:{1}&apos;is empty!</source>
         <translation>El campo &apos;{0}:{1}&apos; está vacío!</translation>
     </message>
@@ -290,27 +272,27 @@
         <translation>Pireal</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="309"/>
+        <location filename="src/gui/main_window.py" line="313"/>
         <source>Some changes where not saved</source>
         <translation>Algunos cambios no se han guardado</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="310"/>
+        <location filename="src/gui/main_window.py" line="314"/>
         <source>Do you want to save them?</source>
         <translation>Quieres salvarlos?</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="311"/>
+        <location filename="src/gui/main_window.py" line="336"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="313"/>
+        <location filename="src/gui/main_window.py" line="338"/>
         <source>No</source>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="315"/>
+        <location filename="src/gui/main_window.py" line="340"/>
         <source>Yes</source>
         <translation>Si</translation>
     </message>
@@ -454,6 +436,16 @@
         <source>Zoom Out</source>
         <translation>Alejar</translation>
     </message>
+    <message>
+        <location filename="src/gui/main_window.py" line="332"/>
+        <source>Unsaved Queries</source>
+        <translation>Consultas sin guardar</translation>
+    </message>
+    <message>
+        <location filename="src/gui/main_window.py" line="334"/>
+        <source>{files}&lt;br&gt;&lt;br&gt;Do you want to save them?</source>
+        <translation>{files}&lt;br&gt;&lt;br&gt;Quieres guardar las consultas?</translation>
+    </message>
 </context>
 <context>
     <name>Preferences</name>
@@ -586,12 +578,12 @@
 <context>
     <name>QueryContainer</name>
     <message>
-        <location filename="src/gui/query_container/query_container.py" line="171"/>
+        <location filename="src/gui/query_container/query_container.py" line="179"/>
         <source>Query Error</source>
         <translation>Error de Consulta</translation>
     </message>
     <message>
-        <location filename="src/gui/query_container/query_container.py" line="171"/>
+        <location filename="src/gui/query_container/query_container.py" line="179"/>
         <source>&lt;b&gt;{}&lt;/b&gt; is a duplicate relation name.&lt;br&gt;&lt;br&gt; Please choose a unique name and re-execute the queries.</source>
         <translation>&lt;b&gt;{}&lt;/b&gt; es un nombre de relación duplicado.&lt;br&gt;&lt;br&gt; Por favor elija un nombre único y vuelva a ejecutar las consultas.</translation>
     </message>
@@ -599,9 +591,27 @@
 <context>
     <name>QueryWidget</name>
     <message>
-        <location filename="src/gui/query_container/query_container.py" line="298"/>
+        <location filename="src/gui/query_container/query_container.py" line="305"/>
         <source>Ok</source>
         <translation>Aceptar</translation>
+    </message>
+</context>
+<context>
+    <name>StartPage</name>
+    <message>
+        <location filename="src/gui/qml/StartPage.qml" line="35"/>
+        <source>No recent databases</source>
+        <translation>Sin archivos recientes</translation>
+    </message>
+    <message>
+        <location filename="src/gui/qml/StartPage.qml" line="166"/>
+        <source>Opens a recent database or </source>
+        <translation>Abre una base de datos reciente o </translation>
+    </message>
+    <message>
+        <location filename="src/gui/qml/StartPage.qml" line="172"/>
+        <source>Create a new database</source>
+        <translation>Crear una nueva base de datos</translation>
     </message>
 </context>
 <context>

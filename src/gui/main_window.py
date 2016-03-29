@@ -331,7 +331,7 @@ class Pireal(QMainWindow):
                 msg.setIcon(QMessageBox.Question)
                 msg.setWindowTitle(self.tr("Unsaved Queries"))
                 text = '\n'.join([editor.name for editor in unsaved_editors])
-                msg.setText(self.tr("{files}\n\nDo you want to "
+                msg.setText(self.tr("{files}<br><br>Do you want to "
                                     "save them?".format(files=text)))
                 cancel_btn = msg.addButton(self.tr("Cancel"),
                                            QMessageBox.RejectRole)
