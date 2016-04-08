@@ -19,6 +19,8 @@
 
 import re
 
+from src.core.rtypes import RelationStr
+
 IS_VALID_FIELD_NAME = re.compile("^[_á-úa-zA-Z][_á-úa-zA-Z0-9]*$")
 
 
@@ -84,16 +86,7 @@ class Relation(object):
         d = {}
         for register in self.content:
             for e, attr in enumerate(self.__header):
-                # Is a digit?
-                v = register[e].replace('.', '').replace('-', '')
-
-                if v.isdigit():
-                    d[attr] = float(register[e])
-                else:
-                    d[attr] = register[e]
-                # Remove leading and trailing zeros of expression
-                expression = expression.replace(
-                    expression.split()[-1], expression.split()[-1].strip('0'))
+                d[attr] = RelationStr(register[e]).cast()
             # The expression is evaluated
             try:
                 if eval(expression, {}, d):

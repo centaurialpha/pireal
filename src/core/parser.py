@@ -122,6 +122,6 @@ def convert_to_python(query):
 
 if __name__ == "__main__":
     # Test
-    #tokens = Node(parse("project name, age (select id == 1 (people))"))
+    # tokens = Node(parse("project name, age (select id == 1 (people))"))
     tokens = Node(parse("people njoin skills"))
     print(tokens.to_python())
