@@ -100,32 +100,9 @@ class Preferences(QDialog):
             self._combo_lang.setCurrentText(settings.PSettings.LANGUAGE)
         box.addWidget(QLabel(self.tr("(Requires restart)")))
 
-        # Stylesheet
-        group_style = QGroupBox("Theme")
-        box = QVBoxLayout(group_style)
-        self.combo_themes = QComboBox()
-        styles = QStyleFactory.keys()
-        self.combo_themes.addItems(styles)
-        current_style = QApplication.instance().style().objectName()
-        # FIXME: this sucks!
-        try:
-            index = styles.index(current_style.upper())
-        except:
-            try:
-                index = styles.index(current_style.title())
-            except:
-                try:
-                    index = styles.index(current_style[:7].title() +
-                                         current_style[7:].title())
-                except:
-                    index = styles.index('WindowsXP')
-        self.combo_themes.setCurrentIndex(index)
-        box.addWidget(self.combo_themes)
-
         # Add widgets
         left_container.addWidget(group_gral)
         left_container.addWidget(group_language)
-        left_container.addWidget(group_style)
         left_container.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
                                            QSizePolicy.Expanding))
 
@@ -241,8 +218,6 @@ class Preferences(QDialog):
         btn_reset.clicked.connect(self._reset_settings)
         btn_updates.clicked.connect(self._check_for_updates)
         # self.thread.finished.connect(self._on_thread_finished)
-        self.combo_themes.currentIndexChanged['QString'].connect(
-            self._change_theme)
         self._combo_font.currentFontChanged.connect(
             self._change_font)
         self._combo_font_size.currentTextChanged.connect(
@@ -352,9 +327,3 @@ class Preferences(QDialog):
         lang = self._combo_lang.itemText(index)
         settings.set_setting('language', lang)
 
-    def _change_theme(self, style):
-        """ Change theme style """
-
-        QApplication.setStyle(style)
-        settings.set_setting('theme', style)
-        settings.PSettings.THEME = style

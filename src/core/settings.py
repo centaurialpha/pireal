@@ -57,7 +57,6 @@ QML_FILES = os.path.join(PATH, "src", "gui", "qml")
 
 class PSettings:
     LANGUAGE = ""
-    THEME = "Fusion"  # Default style
     LAST_OPEN_FOLDER = ""
     RECENT_DBS = []
     HIGHLIGHT_CURRENT_LINE = False
@@ -97,7 +96,6 @@ def load_settings():
 
     settings = QSettings(SETTINGS_PATH, QSettings.IniFormat)
     PSettings.LANGUAGE = settings.value('language', "", type='QString')
-    PSettings.THEME = settings.value('theme', "Fusion", type='QString')
     PSettings.LAST_OPEN_FOLDER = settings.value("last_open_folder", "",
                                                 type='QString')
     PSettings.RECENT_DBS = settings.value("recentDB", [])
