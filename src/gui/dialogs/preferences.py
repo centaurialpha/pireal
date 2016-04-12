@@ -236,10 +236,12 @@ class Preferences(QDialog):
         central = Pireal.get_service("central")
         mcontainer = central.get_active_db()
         if mcontainer is not None:
-            weditor = mcontainer.query_container.currentWidget().get_editor()
-            if weditor is not None:
-                weditor.set_font(font)
-        settings.set_setting("font", font)
+            query_widget = mcontainer.query_container.currentWidget()
+            if query_widget is not None:
+                weditor = query_widget.get_editor()
+                if weditor is not None:
+                    weditor.set_font(font)
+                    settings.set_setting("font", font)
 
     def _change_font_size(self, size):
         # FIXME: un quilombo esto
@@ -248,10 +250,12 @@ class Preferences(QDialog):
         central = Pireal.get_service("central")
         mcontainer = central.get_active_db()
         if mcontainer is not None:
-            weditor = mcontainer.query_container.currentWidget().get_editor()
-            if weditor is not None:
-                weditor.set_font(font)
-        settings.set_setting("font", font)
+            query_widget = mcontainer.query_container.currentWidget()
+            if query_widget is not None:
+                weditor = query_widget.get_editor()
+                if weditor is not None:
+                    weditor.set_font(font)
+                    settings.set_setting("font", font)
 
     def showEvent(self, event):
         super(Preferences, self).showEvent(event)
@@ -287,7 +291,8 @@ class Preferences(QDialog):
                 version = self.thread.version
                 msg.setWindowTitle(self.tr("New version available!"))
                 msg.setText(self.tr("Check the web site to "
-                                    "download <b>Pireal {}</b>".format(version)))
+                                    "download <b>Pireal {}</b>".format(
+                                        version)))
                 download_btn = msg.addButton(self.tr("Download!"),
                                              QMessageBox.YesRole)
                 msg.addButton(self.tr("Cancel"),
@@ -326,4 +331,3 @@ class Preferences(QDialog):
     def _change_lang(self, index):
         lang = self._combo_lang.itemText(index)
         settings.set_setting('language', lang)
-
