@@ -38,26 +38,28 @@ XPStyle on
 !define MUI_UNICON "icon.ico"
 !define MUI_ABORTWARNING
 !define MUI_LANGDLL_ALLLANGUAGES
-#!define MUI_FINISHPAGE_RUN "$INSTDIR\pireal.exe"
+!define MUI_FINISHPAGE_RUN "$INSTDIR\pireal.exe"
 !define MUI_FINISHPAGE_NOREBOOTSUPPORT
-#!define MUI_COMPONENTSPAGE_SMALLDESC
-
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "header.bmp"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "sidebar.bmp"
 !define MUI_LICENSEPAGE
-#!define MUI_COMPONENTSPAGE_NODESC
 
-# !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "COPYING"
 # !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
-!insertmacro MUI_UNPAGE_FINISH
-
-# !insertmacro MUI_UNPAGE_WELCOME
+!insertmacro MUI_PAGE_FINISH
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
+
+#!define MUI_COMPONENTSPAGE_SMALLDESC
+#!define MUI_COMPONENTSPAGE_NODESC
+
+# !insertmacro MUI_PAGE_WELCOME
+# !insertmacro MUI_PAGE_COMPONENTS
+
+# !insertmacro MUI_UNPAGE_WELCOME
 
 ######################################################################
 # Languages
@@ -90,8 +92,6 @@ XPStyle on
 
 !insertmacro MUI_RESERVEFILE_LANGDLL
 
-#################
-
 InstallDirRegKey HKLM "Software\Pireal" ""
 
 Section "Pireal core"
@@ -108,7 +108,6 @@ Section "Pireal core"
   WriteUninstaller "Uninstall.exe"
   WriteRegStr HKLM SOFTWARE\${NAME} "InstallDir" $INSTDIR
   WriteRegStr HKLM SOFTWARE\${NAME} "Version" "${VERSION}"
-  Exec "explorer $SMPROGRAMS\${NAME}\"
 SectionEnd
 
 #Section /o "Samples"
