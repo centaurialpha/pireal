@@ -300,6 +300,7 @@ class CentralWidget(QWidget):
         pireal.set_enabled_db_actions(False)
         pireal.set_enabled_relation_actions(False)
         pireal.set_enabled_query_actions(False)
+        pireal.set_enabled_editor_actions(False)
         self.created = False
         DEBUG("Se cerró la base de datos: '{}'".format(db.dbname()))
         del db
