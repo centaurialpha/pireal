@@ -28,7 +28,7 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QDialog,
     QPushButton,
-    QMenu
+    QAction
 )
 from PyQt5.QtGui import QStandardItem
 from PyQt5.QtCore import (
@@ -284,16 +284,15 @@ class QueryWidget(QWidget):
             self.show_relation)
 
     def __show_context_menu(self, point):
-        menu = QMenu(self)
+        popup_menu = self._query_editor.createStandardContextMenu()
 
-        exec_selection = menu.addAction(self.tr("Execute Selection"))
-        # exec_selection.triggered.connect(self.__execute_selection)
-        undock_editor = menu.addAction(self.tr("Undock"))
+        undock_editor = QAction(self.tr("Undock"), self)
+        popup_menu.insertAction(popup_menu.actions()[0],
+                                undock_editor)
+        popup_menu.insertSeparator(popup_menu.actions()[1])
         undock_editor.triggered.connect(self.__undock_editor)
-        menu.addSeparator()
-        clear = menu.addAction(self.tr("Clear"))
 
-        menu.exec_(self.mapToGlobal(point))
+        popup_menu.exec_(self.mapToGlobal(point))
 
     def __undock_editor(self):
         new_editor = editor.Editor()
