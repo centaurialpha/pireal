@@ -27,7 +27,8 @@ from PyQt5.QtWidgets import (
     QStackedWidget,
     QMessageBox,
     QDialog,
-    QPushButton
+    QPushButton,
+    QMenu
 )
 from PyQt5.QtGui import QStandardItem
 from PyQt5.QtCore import (
@@ -84,6 +85,18 @@ class QueryContainer(QWidget):
 
     def set_focus_editor_tab(self, index):
         self._tabs.setCurrentIndex(index)
+
+    def current_index(self):
+        """ This property holds the index position of the current tab page """
+
+        return self._tabs.currentIndex()
+
+    def tab_text(self, index):
+        """
+        Returns the label text for the tab on the page at position index
+        """
+
+        return self._tabs.tabText(index)
 
     def __hide(self):
         if self.count() == 0:
@@ -248,6 +261,8 @@ class QueryWidget(QWidget):
 
         self._query_editor = editor.Editor()
         # Editor connections
+        self._query_editor.customContextMenuRequested.connect(
+            self.__show_context_menu)
         self._query_editor.modificationChanged[bool].connect(
             self.__editor_modified)
         self._query_editor.undoAvailable[bool].connect(
@@ -267,6 +282,32 @@ class QueryWidget(QWidget):
                 self._result_list.row()))
         self._result_list.itemDoubleClicked.connect(
             self.show_relation)
+
+    def __show_context_menu(self, point):
+        menu = QMenu(self)
+
+        exec_selection = menu.addAction(self.tr("Execute Selection"))
+        # exec_selection.triggered.connect(self.__execute_selection)
+        undock_editor = menu.addAction(self.tr("Undock"))
+        undock_editor.triggered.connect(self.__undock_editor)
+        menu.addSeparator()
+        clear = menu.addAction(self.tr("Clear"))
+
+        menu.exec_(self.mapToGlobal(point))
+
+    def __undock_editor(self):
+        new_editor = editor.Editor()
+        actual_doc = self._query_editor.document()
+        new_editor.setDocument(actual_doc)
+        new_editor.resize(900, 400)
+        # Set text cursor
+        tc = self._query_editor.textCursor()
+        new_editor.setTextCursor(tc)
+        # Set title
+        db = Pireal.get_service("central").get_active_db()
+        qc = db.query_container
+        new_editor.setWindowTitle(qc.tab_text(qc.current_index()))
+        new_editor.show()
 
     def __on_undo_available(self, value):
         """ Change state of undo action """

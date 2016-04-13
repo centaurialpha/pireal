@@ -52,6 +52,9 @@ class Editor(QPlainTextEdit):
 
         self.__cursor_position_changed()
 
+        # Menu
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+
         # Connection
         self.updateRequest['const QRect&', int].connect(
             self._sidebar.update_area)
