@@ -18,6 +18,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import csv
 
 from PyQt5.QtWidgets import (
     QWidget,
@@ -253,11 +254,9 @@ class CentralWidget(QWidget):
                 table_dict['header'] = line.split(',')
                 table_dict['tuples'] = []
             else:
-                # Strip whitespace
-                line = list(map(str.strip, line.split(',')))
-                line = [l.strip() for l in line if l]
-                if table_dict['name'] == table_name:
-                    table_dict['tuples'].append(line)
+                for l in csv.reader([line]):
+                    if table_dict['name'] == table_name:
+                        table_dict['tuples'].append(l)
             if not table_dict['tuples']:
                 data_dict['tables'].append(table_dict)
 

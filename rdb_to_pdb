@@ -47,7 +47,7 @@ def convert(rdb_content):
             if not line:
                 continue
             for l in line.splitlines():
-                l = l.replace('\'', '')
+                l = l.replace("'", '"')
                 line = l
             content += line
         content += '\n'
