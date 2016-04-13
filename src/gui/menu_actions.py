@@ -109,6 +109,9 @@ MENU['relation'] = {
         'name': translate("Pireal", "Edit Relation"),
         'slot': "central:edit_relation"
     }, "-", {
+        'name': translate("Pireal", "Execute Selection"),
+        'slot': "central:execute_selection"
+    }, {
         'name': translate("Pireal", "Execute Queries"),
         'slot': "central:execute_queries"}]}
 

@@ -152,10 +152,12 @@ class QueryContainer(QWidget):
     def __on_save_editor(self, editor):
         self.saveEditor.emit(editor)
 
-    def execute_queries(self):
-        # Get the text from editor
-        weditor = self.currentWidget().get_editor()
-        text = weditor.toPlainText()
+    def execute_queries(self, query=''):
+        if not query:
+            # Get the text from editor
+            weditor = self.currentWidget().get_editor()
+            text = weditor.toPlainText()
+            query = text
         relations = self.currentWidget().relations
         central = Pireal.get_service("central")
         table_widget = central.get_active_db().table_widget
@@ -165,7 +167,7 @@ class QueryContainer(QWidget):
         self.currentWidget().clear_results()
 
         # Ignore comments
-        for line in text.splitlines():
+        for line in query.splitlines():
             if line.startswith('--') or not line:
                 continue
 

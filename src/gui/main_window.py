@@ -239,7 +239,8 @@ class Pireal(QMainWindow):
         """ Public method. Enables or disables queries QAction """
 
         actions = [
-            'execute_queries'
+            'execute_queries',
+            'execute_selection'
         ]
 
         for action in actions:

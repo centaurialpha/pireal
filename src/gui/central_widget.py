@@ -323,6 +323,10 @@ class CentralWidget(QWidget):
         db_container = self.get_active_db()
         db_container.execute_queries()
 
+    def execute_selection(self):
+        db_container = self.get_active_db()
+        db_container.execute_selection()
+
     def save_database(self):
 
         db = self.get_active_db()
