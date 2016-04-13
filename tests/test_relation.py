@@ -68,7 +68,7 @@ class RelationTestCase(unittest.TestCase):
         self.assertEqual(expected, project)
 
     def test_selection(self):
-         # σ id == 23 (r2)
+        # σ id == 23 (r2)
         expected = {('23', 'Rodrigo', 'Belén')}
         rselect = self.r1.select("id == 23")
         select = rselect.content
@@ -102,6 +102,15 @@ class RelationTestCase(unittest.TestCase):
         # project_idr1 ∩ project_idr2
         intersection = project_idr1.intersect(project_idr2).content
         self.assertEqual(expected, intersection)
+
+    def test_intersection_alternative(self):
+        project_idr1 = self.r1.project("id")
+        project_idr2 = self.r2.project("id")
+        expected = {('1',)}
+        # Intersection using difference r1 - (r1 - r2)
+        diff = project_idr1.difference(project_idr2)
+        union = project_idr1.difference(diff).content
+        self.assertEqual(expected, union)
 
     def test_difference(self):
         # r4 - r2

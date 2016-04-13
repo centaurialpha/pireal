@@ -26,5 +26,3 @@ __email__ = "acostadariogabriel at gmail"
 __version__ = "1.0"
 __source_code__ = "https://github.com/centaurialpha/pireal"
 __license__ = "http://www.gnu.org/licenses/gpl-3.0"
-__updates__ = \
-"https://raw.githubusercontent.com/centaurialpha/pireal/gh-pages/version.json"

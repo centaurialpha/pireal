@@ -28,8 +28,6 @@ class StatusBar(QStatusBar):
 
         Pireal.load_service("status", self)
 
-        #self.connect(self, SIGNAL("messageChanged(QString)"),
-                     #self.__message_end)
         self.messageChanged['QString'].connect(self.__message_end)
 
     def show_message(self, msg, timeout=4000):

@@ -18,6 +18,3 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 # This necesary for sphinx
-#from PyQt4.QtGui import QApplication
-
-#app = QApplication([])
