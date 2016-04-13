@@ -13,5 +13,4 @@ before_install:
     - pip install pep8
 
 script:
-    - python -m unittest -v
-    - pep8 --exclude='src/resources.py' src -v
+    - ./run_tests
