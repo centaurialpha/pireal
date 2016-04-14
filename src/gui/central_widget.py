@@ -272,6 +272,8 @@ class CentralWidget(QWidget):
         """ Close the database and return to the main widget """
 
         db = self.get_active_db()
+        query_container = db.query_container
+
         if db.modified:
             msgbox = QMessageBox(self)
             msgbox.setIcon(QMessageBox.Question)
@@ -292,6 +294,31 @@ class CentralWidget(QWidget):
                 return
             if r == yes_btn:
                 self.save_database()
+
+        # Check if editor is modified
+        weditor = query_container.currentWidget().get_editor()
+        if weditor is not None:
+            # TODO: duplicate code, see tab widget
+            if weditor.modified:
+                msgbox = QMessageBox(self)
+                msgbox.setIcon(QMessageBox.Question)
+                msgbox.setWindowTitle(self.tr("File modified"))
+                msgbox.setText(self.tr("The file <b>{}</b> has unsaved "
+                                       "changes. You want to keep "
+                                       "them?".format(
+                                           weditor.name)))
+                cancel_btn = msgbox.addButton(self.tr("Cancel"),
+                                              QMessageBox.RejectRole)
+                msgbox.addButton(self.tr("No"),
+                                 QMessageBox.NoRole)
+                yes_btn = msgbox.addButton(self.tr("Yes"),
+                                           QMessageBox.YesRole)
+                msgbox.exec_()
+                r = msgbox.clickedButton()
+                if r == cancel_btn:
+                    return
+                if r == yes_btn:
+                    self.save_query(weditor)
 
         self.stacked.removeWidget(db)
 
