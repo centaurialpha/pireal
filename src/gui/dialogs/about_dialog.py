@@ -35,9 +35,6 @@ class AboutDialog(QDialog):
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
-        self.setStyleSheet("QDialog { border: 1px solid lightgray;"
-                           "border-radius: 3px;}")
-        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.setWindowTitle(self.tr("About Pireal"))
         vbox = QVBoxLayout(self)
         # Banner

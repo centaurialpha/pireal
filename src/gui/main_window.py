@@ -19,7 +19,9 @@
 
 """ Pireal Main Window """
 
+import webbrowser
 from collections import Callable
+
 from PyQt5.QtWidgets import (
     QMainWindow,
     QMessageBox,
@@ -275,6 +277,11 @@ class Pireal(QMainWindow):
         from src.gui.dialogs import about_dialog
         dialog = about_dialog.AboutDialog(self)
         dialog.exec_()
+
+    def report_issue(self):
+        """ Open in the browser the page to create new  issue """
+
+        webbrowser.open("http://github.com/centaurialpha/pireal/issues/new")
 
     def show_hide_menubar(self):
         """ Change visibility of menu bar """
