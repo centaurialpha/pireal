@@ -4,112 +4,127 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="src/gui/dialogs/about_dialog.py" line="41"/>
+        <location filename="src/gui/dialogs/about_dialog.py" line="40"/>
         <source>About Pireal</source>
         <translation>Acerca de Pireal</translation>
     </message>
     <message>
         <location filename="src/gui/dialogs/about_dialog.py" line="50"/>
         <source>&lt;a href=&apos;{0}&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;Version {1}&lt;/span&gt;&lt;/a&gt;</source>
-        <translation>&lt;a href=&apos;{0}&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;Versión {1}&lt;/span&gt;&lt;/a&gt;</translation>
+        <translation type="obsolete">&lt;a href=&apos;{0}&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;Versión {1}&lt;/span&gt;&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="src/gui/dialogs/about_dialog.py" line="63"/>
         <source>&lt;br&gt;&lt;br&gt;Relational Algebra query evaluator</source>
-        <translation>&lt;br&gt;&lt;br&gt;Relational Algebra query evaluator</translation>
+        <translation type="obsolete">&lt;br&gt;&lt;br&gt;Relational Algebra query evaluator</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/about_dialog.py" line="72"/>
+        <location filename="src/gui/dialogs/about_dialog.py" line="83"/>
         <source>&lt;br&gt;This sotfware is licensed under &lt;a href=&apos;{0}&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;GNU GPL&lt;/span&gt;&lt;/a&gt; version 3,&lt;br&gt;source code is available on &lt;a href=&apos;{1}&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;GitHub.&lt;/span&gt;&lt;/a&gt;</source>
         <translation>&lt;br&gt;Este software se distribuye bajo la licencia &lt;a href=&apos;{0}&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;GNU GPL&lt;/span&gt;&lt;/a&gt; versión 3,&lt;br&gt;el código fuente esta disponible en &lt;a href=&apos;{1}&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;GitHub.&lt;/span&gt;&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="src/gui/dialogs/about_dialog.py" line="89"/>
         <source>&lt;br&gt;&lt;br&gt;&lt;b&gt;Author: &lt;/b&gt;Gabriel Acosta &quot;gabo&quot; &amp;lt;&lt;a href=&apos;mailto:acostadariogabriel@gmail.com&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;acostadariogabriel@gmail.com&lt;/span&gt;&lt;/a&gt;&amp;gt;</source>
-        <translation>&lt;br&gt;&lt;br&gt;&lt;b&gt;Autor: &lt;/b&gt;Gabriel Acosta &quot;gabo&quot; &amp;lt;&lt;a href=&apos;mailto:acostadariogabriel@gmail.com&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;acostadariogabriel@gmail.com&lt;/span&gt;&lt;/a&gt;&amp;gt;</translation>
+        <translation type="obsolete">&lt;br&gt;&lt;br&gt;&lt;b&gt;Autor: &lt;/b&gt;Gabriel Acosta &quot;gabo&quot; &amp;lt;&lt;a href=&apos;mailto:acostadariogabriel@gmail.com&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;acostadariogabriel@gmail.com&lt;/span&gt;&lt;/a&gt;&amp;gt;</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/about_dialog.py" line="101"/>
+        <location filename="src/gui/dialogs/about_dialog.py" line="102"/>
         <source>Done</source>
         <translation>Aceptar</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/about_dialog.py" line="57"/>
+        <source>Relational Algebra query evaluator</source>
+        <translation></translation>
     </message>
 </context>
 <context>
     <name>CentralWidget</name>
     <message>
-        <location filename="src/gui/central_widget.py" line="96"/>
+        <location filename="src/gui/central_widget.py" line="97"/>
         <source>Information</source>
         <translation>Información</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="96"/>
+        <location filename="src/gui/central_widget.py" line="97"/>
         <source>You may only have one database open at time.</source>
         <translation>Solo puede tener una base de datos abierta al mismo tiempo.</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="153"/>
+        <location filename="src/gui/central_widget.py" line="154"/>
         <source>Open Database</source>
         <translation>Abrir Base de datos</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="174"/>
+        <location filename="src/gui/central_widget.py" line="175"/>
         <source>The file couldn&apos;t be open</source>
         <translation>El archivo no pudo ser abierto</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="186"/>
+        <location filename="src/gui/central_widget.py" line="187"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="209"/>
+        <location filename="src/gui/central_widget.py" line="210"/>
         <source>Open Query</source>
         <translation>Abrir Consulta</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="222"/>
+        <location filename="src/gui/central_widget.py" line="223"/>
         <source>Query saved: {}</source>
         <translation>Consulta guardad: {}</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="279"/>
+        <location filename="src/gui/central_widget.py" line="280"/>
         <source>Save Changes?</source>
         <translation>Guardar Cambios?</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="280"/>
+        <location filename="src/gui/central_widget.py" line="281"/>
         <source>The &lt;b&gt;{}&lt;/b&gt; database has ben modified.&lt;br&gt;Do you want save your changes?</source>
         <translation>La base de datos &lt;b&gt;{}&lt;/b&gt; ha sido modificada.&lt;br&gt;Quiere guardar los cambios?</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="284"/>
+        <location filename="src/gui/central_widget.py" line="312"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="286"/>
+        <location filename="src/gui/central_widget.py" line="314"/>
         <source>No</source>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="288"/>
+        <location filename="src/gui/central_widget.py" line="316"/>
         <source>Yes</source>
         <translation>Si</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="357"/>
+        <location filename="src/gui/central_widget.py" line="390"/>
         <source>Database saved: {}</source>
         <translation>Base de datos guardada: {}</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="345"/>
+        <location filename="src/gui/central_widget.py" line="378"/>
         <source>Save Database As</source>
         <translation>Guardar Base de datos Como</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="406"/>
+        <location filename="src/gui/central_widget.py" line="439"/>
         <source>Open Relation File</source>
         <translation>Abrir Relación</translation>
+    </message>
+    <message>
+        <location filename="src/gui/central_widget.py" line="307"/>
+        <source>File modified</source>
+        <translation>Archivo modificado</translation>
+    </message>
+    <message>
+        <location filename="src/gui/central_widget.py" line="308"/>
+        <source>The file &lt;b&gt;{}&lt;/b&gt; has unsaved changes. You want to keep them?</source>
+        <translation>El archivo &lt;b&gt;{}&lt;/b&gt; tiene cambios sin guardar. Guardarlos?</translation>
     </message>
 </context>
 <context>
@@ -267,12 +282,12 @@
 <context>
     <name>Pireal</name>
     <message>
-        <location filename="src/gui/main_window.py" line="72"/>
+        <location filename="src/gui/main_window.py" line="74"/>
         <source>Pireal</source>
         <translation>Pireal</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="313"/>
+        <location filename="src/gui/main_window.py" line="321"/>
         <source>Some changes where not saved</source>
         <translation>Algunos cambios no se han guardado</translation>
     </message>
@@ -282,17 +297,17 @@
         <translation type="obsolete">Quieres salvarlos?</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="337"/>
+        <location filename="src/gui/main_window.py" line="345"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="339"/>
+        <location filename="src/gui/main_window.py" line="347"/>
         <source>No</source>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="341"/>
+        <location filename="src/gui/main_window.py" line="349"/>
         <source>Yes</source>
         <translation>Si</translation>
     </message>
@@ -407,22 +422,22 @@
         <translation>Editar Relación</translation>
     </message>
     <message>
-        <location filename="src/gui/menu_actions.py" line="112"/>
+        <location filename="src/gui/menu_actions.py" line="115"/>
         <source>Execute Queries</source>
         <translation>Ejecutar Consultas</translation>
     </message>
     <message>
-        <location filename="src/gui/menu_actions.py" line="118"/>
+        <location filename="src/gui/menu_actions.py" line="121"/>
         <source>&amp;Help</source>
         <translation>A&amp;yuda</translation>
     </message>
     <message>
-        <location filename="src/gui/menu_actions.py" line="120"/>
+        <location filename="src/gui/menu_actions.py" line="126"/>
         <source>About Pireal</source>
         <translation>Acerca de Pireal</translation>
     </message>
     <message>
-        <location filename="src/gui/menu_actions.py" line="123"/>
+        <location filename="src/gui/menu_actions.py" line="129"/>
         <source>About Qt</source>
         <translation>Acerca de Qt</translation>
     </message>
@@ -437,19 +452,29 @@
         <translation>Alejar</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="333"/>
+        <location filename="src/gui/main_window.py" line="341"/>
         <source>Unsaved Queries</source>
         <translation>Consultas sin guardar</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="335"/>
+        <location filename="src/gui/main_window.py" line="343"/>
         <source>{files}&lt;br&gt;&lt;br&gt;Do you want to save them?</source>
         <translation>{files}&lt;br&gt;&lt;br&gt;Quieres guardar las consultas?</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="314"/>
+        <location filename="src/gui/main_window.py" line="322"/>
         <source>Do you want to save changes to the database?</source>
         <translation>Quieres guardar los cambios en la base de datos?</translation>
+    </message>
+    <message>
+        <location filename="src/gui/menu_actions.py" line="112"/>
+        <source>Execute Selection</source>
+        <translation>Ejecutar Selección</translation>
+    </message>
+    <message>
+        <location filename="src/gui/menu_actions.py" line="123"/>
+        <source>Report Issue...</source>
+        <translation>Reportar un problema...</translation>
     </message>
 </context>
 <context>
@@ -475,107 +500,107 @@
         <translation>(Requiere reinicar)</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="137"/>
+        <location filename="src/gui/dialogs/preferences.py" line="114"/>
         <source>Editor Configurations</source>
         <translation>Configuración del editor</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="140"/>
+        <location filename="src/gui/dialogs/preferences.py" line="117"/>
         <source>Highlight Current Line</source>
         <translation>Resaltar Línea Actual</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="148"/>
+        <location filename="src/gui/dialogs/preferences.py" line="125"/>
         <source>Matching Parenthesis</source>
         <translation>Resaltar Paréntesis</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="155"/>
+        <location filename="src/gui/dialogs/preferences.py" line="132"/>
         <source>Font</source>
         <translation>Fuente</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="157"/>
+        <location filename="src/gui/dialogs/preferences.py" line="134"/>
         <source>Family</source>
         <translation>Familia</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="161"/>
+        <location filename="src/gui/dialogs/preferences.py" line="138"/>
         <source>Point Size</source>
         <translation>Tamaño de Fuente</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="186"/>
+        <location filename="src/gui/dialogs/preferences.py" line="163"/>
         <source>Back</source>
         <translation>Volver</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="188"/>
+        <location filename="src/gui/dialogs/preferences.py" line="165"/>
         <source>Reset Configurations</source>
         <translation>Reestablecer Configuraciones</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="313"/>
+        <location filename="src/gui/dialogs/preferences.py" line="292"/>
         <source>New version available!</source>
         <translation>Nueva versión disponible!</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="314"/>
+        <location filename="src/gui/dialogs/preferences.py" line="293"/>
         <source>Check the web site to download &lt;b&gt;Pireal {}&lt;/b&gt;</source>
         <translation>Visita el sitio web para descargar &lt;b&gt;Pireal {}&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="316"/>
+        <location filename="src/gui/dialogs/preferences.py" line="296"/>
         <source>Download!</source>
         <translation>Descargar!</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="318"/>
+        <location filename="src/gui/dialogs/preferences.py" line="298"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="326"/>
+        <location filename="src/gui/dialogs/preferences.py" line="306"/>
         <source>Information</source>
         <translation>Información</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="327"/>
+        <location filename="src/gui/dialogs/preferences.py" line="307"/>
         <source>Last version installed</source>
         <translation>Última versión instalada</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="328"/>
+        <location filename="src/gui/dialogs/preferences.py" line="308"/>
         <source>Ok</source>
         <translation>Aceptar</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="332"/>
+        <location filename="src/gui/dialogs/preferences.py" line="312"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="332"/>
+        <location filename="src/gui/dialogs/preferences.py" line="312"/>
         <source>Connection error</source>
         <translation>Error de conexión</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="339"/>
+        <location filename="src/gui/dialogs/preferences.py" line="319"/>
         <source>Reset Settings</source>
         <translation>Reestablecer configuraciones</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="340"/>
+        <location filename="src/gui/dialogs/preferences.py" line="320"/>
         <source>Are you sure you want to clear all settings?</source>
         <translation>Está seguro que desea borrar todas las configuraciones?</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="342"/>
+        <location filename="src/gui/dialogs/preferences.py" line="322"/>
         <source>No</source>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="343"/>
+        <location filename="src/gui/dialogs/preferences.py" line="323"/>
         <source>Yes</source>
         <translation>Yes</translation>
     </message>
@@ -583,12 +608,12 @@
 <context>
     <name>QueryContainer</name>
     <message>
-        <location filename="src/gui/query_container/query_container.py" line="179"/>
+        <location filename="src/gui/query_container/query_container.py" line="194"/>
         <source>Query Error</source>
         <translation>Error de Consulta</translation>
     </message>
     <message>
-        <location filename="src/gui/query_container/query_container.py" line="179"/>
+        <location filename="src/gui/query_container/query_container.py" line="194"/>
         <source>&lt;b&gt;{}&lt;/b&gt; is a duplicate relation name.&lt;br&gt;&lt;br&gt; Please choose a unique name and re-execute the queries.</source>
         <translation>&lt;b&gt;{}&lt;/b&gt; es un nombre de relación duplicado.&lt;br&gt;&lt;br&gt; Por favor elija un nombre único y vuelva a ejecutar las consultas.</translation>
     </message>
@@ -596,9 +621,14 @@
 <context>
     <name>QueryWidget</name>
     <message>
-        <location filename="src/gui/query_container/query_container.py" line="305"/>
+        <location filename="src/gui/query_container/query_container.py" line="347"/>
         <source>Ok</source>
         <translation>Aceptar</translation>
+    </message>
+    <message>
+        <location filename="src/gui/query_container/query_container.py" line="291"/>
+        <source>Undock</source>
+        <translation>Desacoplar Editor</translation>
     </message>
 </context>
 <context>
