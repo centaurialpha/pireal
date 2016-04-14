@@ -17,8 +17,8 @@ before_install:
     # Cached Downloads
     - sudo mkdir -p /downloads
     - sudo chmod a+rw /downloads
-    - wget --quiet --output-document=downloads/sip.tar.gz http://downloads.sourceforge.net/project/pyqt/sip/sip-4.18/sip-4.18.tar.gz
-    - wget --quiet --output-document=downloads/pyqt5.tar.gz http://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-5.5.1/PyQt-gpl-5.5.1.tar.gz
+    - if [ ! -f /downloads/sip.tar.gz ];   then curl -L -o /downloads/sip.tar.gz http://sourceforge.net/projects/pyqt/files/sip/sip-4.18/sip-4.18.tar.gz; fi
+    - if [ ! -f /downloads/pyqt5.tar.gz ]; then curl -L -o /downloads/pyqt5.tar.gz http://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-5.5.1/PyQt-gpl-5.5.1.tar.gz; fi
     # Builds
     - sudo mkdir -p /builds
     - sudo chmod a+rw /builds
