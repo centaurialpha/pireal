@@ -18,7 +18,7 @@ before_install:
     - sudo mkdir -p /downloads
     - sudo chmod a+rw /downloads
     - wget --quiet --output-document=downloads/sip.tar.gz http://downloads.sourceforge.net/project/pyqt/sip/sip-4.18/sip-4.18.tar.gz
-    - wget --quiet --output-document=downloads/pyqt5.tar.gz http://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-5.4/PyQt-gpl-5.4.tar.gz
+    - wget --quiet --output-document=downloads/pyqt5.tar.gz http://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-5.5.1/PyQt-gpl-5.5.1.tar.gz
     # Builds
     - sudo mkdir -p /builds
     - sudo chmod a+rw /builds
@@ -32,15 +32,15 @@ install:
     - pushd /builds
     # SIP
     - tar xzf /downloads/sip.tar.gz --keep-newer-files
-    - pushd sip-4.16.5
+    - pushd sip-4.18
     - python configure.py
     - make
     - sudo make install
     - popd
     # PyQt5
-    - source /opt/qt54/bin/qt54-env.sh  # switch to Qt5
+    - source /opt/qt55/bin/qt55-env.sh  # switch to Qt5
     - tar xzf /downloads/pyqt5.tar.gz --keep-newer-files
-    - pushd PyQt-gpl-5.4
+    - pushd PyQt-gpl-5.5.1
     - python configure.py -c --confirm-license --no-designer-plugin -e QtCore -e QtGui -e QtWidgets
     - make
     - sudo make install
