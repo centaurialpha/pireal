@@ -55,3 +55,8 @@ install:
 
 script:
     - ./run_tests
+
+cache:
+    directories:
+        - /downloads
+    apt: true
