@@ -38,6 +38,7 @@ install:
     - sudo make install
     - popd
     # PyQt5
+    - ls /opt
     - source /opt/qt55/bin/qt55-env.sh  # switch to Qt5
     - tar xzf /downloads/pyqt5.tar.gz --keep-newer-files
     - pushd PyQt-gpl-5.5.1
