@@ -49,7 +49,8 @@ before_install:
     #- popd
 
 script:
-    - ./run_tests
+    - python -m unittest -v
+    - pep8 --exclude='src/resources.py' src -v
 
 # cache:
 #    directories:

@@ -34,14 +34,14 @@ class RTypesTestCase(unittest.TestCase):
         self.assertEqual(year, date.year)
         self.assertEqual(month, date.month)
         self.assertEqual(day, date.day)
-        self.assertIsInstance(date, datetime.datetime)
+        self.assertIsInstance(date, rtypes.RelationDate)
 
     def test_hour(self):
         hour = rtypes.RelationStr('15:59').cast()
         h, m = 15, 59
         self.assertEqual(h, hour.hour)
-        self.assertEqual(m, hour.minute)
-        self.assertIsInstance(hour, datetime.time)
+        self.assertEqual(m, hour.min)
+        self.assertIsInstance(hour, rtypes.RelationHour)
 
 if __name__ == "__main__":
     unittest.main()

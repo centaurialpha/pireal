@@ -1,5 +1,0 @@
-#!/bin/sh
-
-python3 -m unittest -v
-pep8 --exclude='src/resources.py' src -v
-
