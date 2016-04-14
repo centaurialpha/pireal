@@ -42,19 +42,26 @@ class RelationStr(str):
         elif RelationStr.IS_FLOAT.match(self.value):
             return float(self.value)
         elif RelationStr.IS_DATE.match(self.value):
-            return RDate(self.value)
+            return RelationDate(self.value)
         elif RelationStr.IS_HOUR.match(self.value):
-            return RHour(self.value)
+            return RelationHour(self.value)
         return self.value
 
 
-class RHour(object):
+class RelationHour(object):
+    """ This class represents a hour """
 
-    def __new__(cls, value):
-        return datetime.strptime(value, "%H:%M").time()
+    def __init__(self, str_hour):
+        hour = datetime.strptime(str_hour, "%H:%M").time()
+        self.hour = hour.hour
+        self.min = hour.minute
 
 
-class RDate(object):
+class RelationDate(object):
+    """ This class represents a date """
 
-    def __new__(cls, value):
-        return datetime.strptime(value, "%Y/%m/%d")
+    def __init__(self, value):
+        date = datetime.strptime(value, "%Y/%m/%d")
+        self.year = date.year
+        self.day = date.day
+        self.month = date.month
