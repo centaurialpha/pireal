@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
+
 from PyQt5.QtWidgets import (
     QDialog,
     QVBoxLayout,
@@ -44,26 +46,38 @@ class AboutDialog(QDialog):
         vbox.addWidget(banner)
 
         # Version
-        lbl_version = QLabel(self.tr("<a href='{0}'><span style='color: "
-                                     "#3465a4'>Version {1}"
-                                     "</span></a>".format(
-                                         gui.__source_code__,
-                                         gui.__version__)))
-        lbl_version.setOpenExternalLinks(True)
+        lbl_version = QLabel("{0}".format(gui.__version__))
         lbl_version.setAlignment(Qt.AlignHCenter)
         font = lbl_version.font()
-        font.setPointSize(13)
+        font.setPointSize(10)
         lbl_version.setFont(font)
         vbox.addWidget(lbl_version)
 
         # Description
         description = QLabel(
-            self.tr("<br><br>Relational Algebra query evaluator"))
+            self.tr("Relational Algebra query evaluator"))
         description.setAlignment(Qt.AlignHCenter)
         font = description.font()
         font.setPointSize(13)
         description.setFont(font)
         vbox.addWidget(description)
+
+        # Web
+        web_lbl = QLabel("<a href='{0}'><span style='color: #3465a4'>"
+                         "www.centaurialpha.github.io/pireal</span></a>")
+        web_lbl.setOpenExternalLinks(True)
+        web_lbl.setAlignment(Qt.AlignHCenter)
+        vbox.addWidget(web_lbl)
+
+        # Copyright
+        copy = QLabel("<br>Copyright © 2015-{year} - "
+                      "Gabriel 'gabo' Acosta".format(
+                          year=datetime.today().year))
+        copy.setAlignment(Qt.AlignHCenter)
+        font = copy.font()
+        font.setPointSize(9)
+        copy.setFont(font)
+        vbox.addWidget(copy)
 
         # License and source
         lbl_license_source = QLabel(self.tr("<br>This sotfware is licensed "
@@ -81,16 +95,6 @@ class AboutDialog(QDialog):
         font.setPointSize(13)
         lbl_license_source.setFont(font)
         vbox.addWidget(lbl_license_source)
-
-        # Author
-        lbl_author = QLabel(self.tr("<br><br><b>Author: </b>Gabriel Acosta "
-                                    "\"gabo\" &lt;<a href='mailto:acostadario"
-                                    "gabriel@gmail.com'><span "
-                                    "style='color: #3465a4'>"
-                                    "acostadariogabriel@gmail.com"
-                                    "</span></a>&gt;"))
-        lbl_author.setOpenExternalLinks(True)
-        vbox.addWidget(lbl_author)
 
         # Buttons
         hbox = QHBoxLayout()
