@@ -61,7 +61,10 @@ class RelationDate(object):
     """ This class represents a date """
 
     def __init__(self, value):
-        date = datetime.strptime(value, "%Y/%m/%d")
+        try:
+            date = datetime.strptime(value, "%d/%m/%Y")
+        except ValueError:
+            date = datetime.strptime(value, "%Y/%m/%d")
         self.year = date.year
         self.day = date.day
         self.month = date.month
