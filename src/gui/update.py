@@ -23,6 +23,7 @@ from urllib.error import URLError
 from PyQt5.QtCore import QThread
 
 from src.core.logger import PirealLogger
+from src import gui
 
 logger = PirealLogger(__name__)
 DEBUG = logger.debug
@@ -40,8 +41,9 @@ class Update(QThread):
     def run(self):
         try:
             web_version = urlopen(URL).read().decode('utf8').strip()
-            if "1.0" < web_version:
-                self.version = web_version
+            web_version = tuple(web_version.split('.'))
+            if gui.__version__ < web_version:
+                self.version = '.'.join(web_version)
         except URLError as reason:
             self.error = True
             DEBUG("Connection error: {}".format(reason))
