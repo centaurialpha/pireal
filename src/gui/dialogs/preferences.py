@@ -20,7 +20,6 @@
 import webbrowser
 
 from PyQt5.QtWidgets import (
-    QApplication,
     QDialog,
     QGroupBox,
     QVBoxLayout,
@@ -33,7 +32,6 @@ from PyQt5.QtWidgets import (
     QCheckBox,
     QMessageBox,
     QComboBox,
-    QStyleFactory,
     QFontComboBox,
     QLabel
 )

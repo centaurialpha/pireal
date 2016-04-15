@@ -33,6 +33,7 @@ from PyQt5.QtCore import (
     QSize
 )
 from src.core import settings
+from src.gui import update
 
 
 class Pireal(QMainWindow):
@@ -103,6 +104,11 @@ class Pireal(QMainWindow):
         central_widget.querySaved.connect(notification_widget.show_text)
         self.setCentralWidget(central_widget)
         central_widget.add_start_page()
+
+        # Check for updates
+        self.thread_updates = update.Update()
+        self.thread_updates.finished.connect(self.__on_thread_update_finished)
+        self.thread_updates.start()
 
         # Install service
         Pireal.load_service("pireal", self)
@@ -203,6 +209,25 @@ class Pireal(QMainWindow):
     def __show_status_message(self, msg):
         status = Pireal.get_service("status")
         status.show_message(msg)
+
+    def __on_thread_update_finished(self):
+        msg = QMessageBox(self)
+        if not self.thread_updates.error:
+            if self.thread_updates.version:
+                version = self.thread_updates.version
+                msg.setWindowTitle(self.tr("New version available!"))
+                msg.setText(self.tr("Check the web site to "
+                                    "download <b>Pireal {}</b>".format(
+                                        version)))
+                download_btn = msg.addButton(self.tr("Download!"),
+                                             QMessageBox.YesRole)
+                msg.addButton(self.tr("Cancel"),
+                              QMessageBox.RejectRole)
+                msg.exec_()
+                r = msg.clickedButton()
+                if r == download_btn:
+                    webbrowser.open_new(
+                        "http://centaurialpha.github.io/pireal")
 
     def change_title(self, title):
         self.setWindowTitle("Pireal " + '[' + title + ']')
