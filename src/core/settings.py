@@ -36,7 +36,8 @@ else:
 
 
 # Supported files
-SUPPORTED_FILES = ("Pireal Database File (*.pdb);;Pireal Query File (*.pqf);;"
+SUPPORTED_FILES = ("Pireal Database File (*.pdb *.txt);;"
+                   "Pireal Query File (*.pqf);;"
                    "Pireal Relation File (*.prf)")
 
 # Paths used by Pireal
