@@ -282,12 +282,12 @@
 <context>
     <name>Pireal</name>
     <message>
-        <location filename="src/gui/main_window.py" line="74"/>
+        <location filename="src/gui/main_window.py" line="75"/>
         <source>Pireal</source>
         <translation>Pireal</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="321"/>
+        <location filename="src/gui/main_window.py" line="346"/>
         <source>Some changes where not saved</source>
         <translation>Algunos cambios no se han guardado</translation>
     </message>
@@ -297,17 +297,17 @@
         <translation type="obsolete">Quieres salvarlos?</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="345"/>
+        <location filename="src/gui/main_window.py" line="370"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="347"/>
+        <location filename="src/gui/main_window.py" line="372"/>
         <source>No</source>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="349"/>
+        <location filename="src/gui/main_window.py" line="374"/>
         <source>Yes</source>
         <translation>Si</translation>
     </message>
@@ -452,17 +452,17 @@
         <translation>Alejar</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="341"/>
+        <location filename="src/gui/main_window.py" line="366"/>
         <source>Unsaved Queries</source>
         <translation>Consultas sin guardar</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="343"/>
+        <location filename="src/gui/main_window.py" line="368"/>
         <source>{files}&lt;br&gt;&lt;br&gt;Do you want to save them?</source>
         <translation>{files}&lt;br&gt;&lt;br&gt;Quieres guardar las consultas?</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="322"/>
+        <location filename="src/gui/main_window.py" line="347"/>
         <source>Do you want to save changes to the database?</source>
         <translation>Quieres guardar los cambios en la base de datos?</translation>
     </message>
@@ -476,131 +476,146 @@
         <source>Report Issue...</source>
         <translation>Reportar un problema...</translation>
     </message>
-</context>
-<context>
-    <name>Preferences</name>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="81"/>
-        <source>General</source>
-        <translation>General</translation>
-    </message>
-    <message>
-        <location filename="src/gui/dialogs/preferences.py" line="84"/>
-        <source>Check for updates</source>
-        <translation>Comprobar si hay nueva versión</translation>
-    </message>
-    <message>
-        <location filename="src/gui/dialogs/preferences.py" line="87"/>
-        <source>Language</source>
-        <translation>Idioma</translation>
-    </message>
-    <message>
-        <location filename="src/gui/dialogs/preferences.py" line="101"/>
-        <source>(Requires restart)</source>
-        <translation>(Requiere reinicar)</translation>
-    </message>
-    <message>
-        <location filename="src/gui/dialogs/preferences.py" line="114"/>
-        <source>Editor Configurations</source>
-        <translation>Configuración del editor</translation>
-    </message>
-    <message>
-        <location filename="src/gui/dialogs/preferences.py" line="117"/>
-        <source>Highlight Current Line</source>
-        <translation>Resaltar Línea Actual</translation>
-    </message>
-    <message>
-        <location filename="src/gui/dialogs/preferences.py" line="125"/>
-        <source>Matching Parenthesis</source>
-        <translation>Resaltar Paréntesis</translation>
-    </message>
-    <message>
-        <location filename="src/gui/dialogs/preferences.py" line="132"/>
-        <source>Font</source>
-        <translation>Fuente</translation>
-    </message>
-    <message>
-        <location filename="src/gui/dialogs/preferences.py" line="134"/>
-        <source>Family</source>
-        <translation>Familia</translation>
-    </message>
-    <message>
-        <location filename="src/gui/dialogs/preferences.py" line="138"/>
-        <source>Point Size</source>
-        <translation>Tamaño de Fuente</translation>
-    </message>
-    <message>
-        <location filename="src/gui/dialogs/preferences.py" line="163"/>
-        <source>Back</source>
-        <translation>Volver</translation>
-    </message>
-    <message>
-        <location filename="src/gui/dialogs/preferences.py" line="165"/>
-        <source>Reset Configurations</source>
-        <translation>Reestablecer Configuraciones</translation>
-    </message>
-    <message>
-        <location filename="src/gui/dialogs/preferences.py" line="292"/>
+        <location filename="src/gui/main_window.py" line="218"/>
         <source>New version available!</source>
         <translation>Nueva versión disponible!</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="293"/>
+        <location filename="src/gui/main_window.py" line="219"/>
         <source>Check the web site to download &lt;b&gt;Pireal {}&lt;/b&gt;</source>
         <translation>Visita el sitio web para descargar &lt;b&gt;Pireal {}&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="296"/>
+        <location filename="src/gui/main_window.py" line="222"/>
+        <source>Download!</source>
+        <translation>Descargar!</translation>
+    </message>
+</context>
+<context>
+    <name>Preferences</name>
+    <message>
+        <location filename="src/gui/dialogs/preferences.py" line="79"/>
+        <source>General</source>
+        <translation>General</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/preferences.py" line="82"/>
+        <source>Check for updates</source>
+        <translation>Comprobar si hay nueva versión</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/preferences.py" line="85"/>
+        <source>Language</source>
+        <translation>Idioma</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/preferences.py" line="99"/>
+        <source>(Requires restart)</source>
+        <translation>(Requiere reinicar)</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/preferences.py" line="112"/>
+        <source>Editor Configurations</source>
+        <translation>Configuración del editor</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/preferences.py" line="115"/>
+        <source>Highlight Current Line</source>
+        <translation>Resaltar Línea Actual</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/preferences.py" line="123"/>
+        <source>Matching Parenthesis</source>
+        <translation>Resaltar Paréntesis</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/preferences.py" line="130"/>
+        <source>Font</source>
+        <translation>Fuente</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/preferences.py" line="132"/>
+        <source>Family</source>
+        <translation>Familia</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/preferences.py" line="136"/>
+        <source>Point Size</source>
+        <translation>Tamaño de Fuente</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/preferences.py" line="161"/>
+        <source>Back</source>
+        <translation>Volver</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/preferences.py" line="163"/>
+        <source>Reset Configurations</source>
+        <translation>Reestablecer Configuraciones</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/preferences.py" line="290"/>
+        <source>New version available!</source>
+        <translation>Nueva versión disponible!</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/preferences.py" line="291"/>
+        <source>Check the web site to download &lt;b&gt;Pireal {}&lt;/b&gt;</source>
+        <translation>Visita el sitio web para descargar &lt;b&gt;Pireal {}&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/preferences.py" line="294"/>
         <source>Download!</source>
         <translation>Descargar!</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="298"/>
+        <location filename="src/gui/dialogs/preferences.py" line="296"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="306"/>
+        <location filename="src/gui/dialogs/preferences.py" line="304"/>
         <source>Information</source>
         <translation>Información</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="307"/>
+        <location filename="src/gui/dialogs/preferences.py" line="305"/>
         <source>Last version installed</source>
         <translation>Última versión instalada</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="308"/>
+        <location filename="src/gui/dialogs/preferences.py" line="306"/>
         <source>Ok</source>
         <translation>Aceptar</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="312"/>
+        <location filename="src/gui/dialogs/preferences.py" line="310"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="312"/>
+        <location filename="src/gui/dialogs/preferences.py" line="310"/>
         <source>Connection error</source>
         <translation>Error de conexión</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="319"/>
+        <location filename="src/gui/dialogs/preferences.py" line="317"/>
         <source>Reset Settings</source>
         <translation>Reestablecer configuraciones</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="320"/>
+        <location filename="src/gui/dialogs/preferences.py" line="318"/>
         <source>Are you sure you want to clear all settings?</source>
         <translation>Está seguro que desea borrar todas las configuraciones?</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="322"/>
+        <location filename="src/gui/dialogs/preferences.py" line="320"/>
         <source>No</source>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="323"/>
+        <location filename="src/gui/dialogs/preferences.py" line="321"/>
         <source>Yes</source>
         <translation>Yes</translation>
     </message>
