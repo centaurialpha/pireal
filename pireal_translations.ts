@@ -41,87 +41,87 @@
 <context>
     <name>CentralWidget</name>
     <message>
-        <location filename="src/gui/central_widget.py" line="97"/>
+        <location filename="src/gui/central_widget.py" line="149"/>
         <source>Information</source>
         <translation>Información</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="97"/>
+        <location filename="src/gui/central_widget.py" line="149"/>
         <source>You may only have one database open at time.</source>
         <translation>Solo puede tener una base de datos abierta al mismo tiempo.</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="154"/>
+        <location filename="src/gui/central_widget.py" line="161"/>
         <source>Open Database</source>
         <translation>Abrir Base de datos</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="175"/>
+        <location filename="src/gui/central_widget.py" line="182"/>
         <source>The file couldn&apos;t be open</source>
         <translation>El archivo no pudo ser abierto</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="187"/>
+        <location filename="src/gui/central_widget.py" line="194"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="210"/>
+        <location filename="src/gui/central_widget.py" line="217"/>
         <source>Open Query</source>
         <translation>Abrir Consulta</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="223"/>
+        <location filename="src/gui/central_widget.py" line="230"/>
         <source>Query saved: {}</source>
         <translation>Consulta guardad: {}</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="280"/>
+        <location filename="src/gui/central_widget.py" line="287"/>
         <source>Save Changes?</source>
         <translation>Guardar Cambios?</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="281"/>
+        <location filename="src/gui/central_widget.py" line="288"/>
         <source>The &lt;b&gt;{}&lt;/b&gt; database has ben modified.&lt;br&gt;Do you want save your changes?</source>
         <translation>La base de datos &lt;b&gt;{}&lt;/b&gt; ha sido modificada.&lt;br&gt;Quiere guardar los cambios?</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="312"/>
+        <location filename="src/gui/central_widget.py" line="319"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="314"/>
+        <location filename="src/gui/central_widget.py" line="321"/>
         <source>No</source>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="316"/>
+        <location filename="src/gui/central_widget.py" line="323"/>
         <source>Yes</source>
         <translation>Si</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="390"/>
+        <location filename="src/gui/central_widget.py" line="397"/>
         <source>Database saved: {}</source>
         <translation>Base de datos guardada: {}</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="378"/>
+        <location filename="src/gui/central_widget.py" line="385"/>
         <source>Save Database As</source>
         <translation>Guardar Base de datos Como</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="439"/>
+        <location filename="src/gui/central_widget.py" line="446"/>
         <source>Open Relation File</source>
         <translation>Abrir Relación</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="307"/>
+        <location filename="src/gui/central_widget.py" line="314"/>
         <source>File modified</source>
         <translation>Archivo modificado</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="308"/>
+        <location filename="src/gui/central_widget.py" line="315"/>
         <source>The file &lt;b&gt;{}&lt;/b&gt; has unsaved changes. You want to keep them?</source>
         <translation>El archivo &lt;b&gt;{}&lt;/b&gt; tiene cambios sin guardar. Guardarlos?</translation>
     </message>

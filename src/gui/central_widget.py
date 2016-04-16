@@ -145,6 +145,13 @@ class CentralWidget(QWidget):
         """ This function opens a database and set this on the UI """
 
         # If not filename provide, then open dialog to select
+        if self.created:
+            QMessageBox.information(self,
+                                    self.tr("Information"),
+                                    self.tr("You may only have one database"
+                                            " open at time."))
+            DEBUG("Ya existe una base de datos abierta")
+            return
         if not filename:
             if self.__last_open_folder is None:
                 directory = os.path.expanduser("~")
