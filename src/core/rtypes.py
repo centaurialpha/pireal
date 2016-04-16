@@ -28,7 +28,8 @@ class RelationStr(str):
     # Positive or negative floats
     IS_FLOAT = re.compile(r'^[\-]?\d+(\.\d*)$')
     # YYYY/MM/DD
-    IS_DATE = re.compile(r'^[\d+]{4}[\/][\d+]{2}[\/][\d+]{2}$')
+    IS_DATE = re.compile(
+        r'^([\d+]{2}|[\d+]{4})[\/][\d+]{2}[\/]([\d+]{2}|[\d+]{4})$')
     # HH:MM
     IS_HOUR = re.compile(r'^[\d+]{2}:[\d+]{2}$')
 
