@@ -218,7 +218,7 @@ class DatabaseContainer(QSplitter):
             self.__nquery += 1
 
     def save_query(self, editor):
-        if editor is None:
+        if not editor:
             editor = self.query_container.currentWidget().get_editor()
         if editor.is_new:
             return self.save_query_as(editor)

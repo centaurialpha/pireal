@@ -238,7 +238,6 @@ class Pireal(QMainWindow):
         actions = [
             'new_query',
             'open_query',
-            'save_query',
             'close_database',
             'save_database',
             'save_database_as',
@@ -267,7 +266,8 @@ class Pireal(QMainWindow):
 
         actions = [
             'execute_queries',
-            'execute_selection'
+            'execute_selection',
+            'save_query'
         ]
 
         for action in actions:
