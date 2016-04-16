@@ -1,7 +1,8 @@
 SOURCES += \
 	src/gui/main_window.py \
 	src/gui/menu_actions.py \
-	src/gui/central_widget.py \
+        src/gui/central_widget.py \
+        src/gui/lateral_widget.py \
 	src/gui/database_container.py \
 	src/gui/dialogs/database_wizard.py \
 	src/gui/dialogs/edit_relation_dialog.py \

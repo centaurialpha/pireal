@@ -242,6 +242,14 @@
     </message>
 </context>
 <context>
+    <name>LateralWidget</name>
+    <message>
+        <location filename="src/gui/lateral_widget.py" line="33"/>
+        <source>Relations</source>
+        <translation>Relaciones</translation>
+    </message>
+</context>
+<context>
     <name>NewRelationDialog</name>
     <message>
         <location filename="src/gui/dialogs/new_relation_dialog.py" line="32"/>
@@ -651,17 +659,17 @@
     <message>
         <location filename="src/gui/qml/StartPage.qml" line="35"/>
         <source>No recent databases</source>
-        <translation>Sin archivos recientes</translation>
+        <translation type="obsolete">Sin archivos recientes</translation>
     </message>
     <message>
         <location filename="src/gui/qml/StartPage.qml" line="166"/>
         <source>Opens a recent database or </source>
-        <translation>Abre una base de datos reciente o </translation>
+        <translation type="obsolete">Abre una base de datos reciente o </translation>
     </message>
     <message>
         <location filename="src/gui/qml/StartPage.qml" line="172"/>
         <source>Create a new database</source>
-        <translation>Crear una nueva base de datos</translation>
+        <translation type="obsolete">Crear una nueva base de datos</translation>
     </message>
 </context>
 <context>
