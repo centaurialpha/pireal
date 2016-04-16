@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="es_AR">
+<!DOCTYPE TS><TS version="2.0" language="es_AR" sourcelanguage="">
 <context>
     <name>AboutDialog</name>
     <message>
@@ -11,12 +10,12 @@
     <message>
         <location filename="src/gui/dialogs/about_dialog.py" line="50"/>
         <source>&lt;a href=&apos;{0}&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;Version {1}&lt;/span&gt;&lt;/a&gt;</source>
-        <translation type="obsolete">&lt;a href=&apos;{0}&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;Versión {1}&lt;/span&gt;&lt;/a&gt;</translation>
+        <translation>&lt;a href=&apos;{0}&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;Versión {1}&lt;/span&gt;&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="src/gui/dialogs/about_dialog.py" line="63"/>
         <source>&lt;br&gt;&lt;br&gt;Relational Algebra query evaluator</source>
-        <translation type="obsolete">&lt;br&gt;&lt;br&gt;Relational Algebra query evaluator</translation>
+        <translation>&lt;br&gt;&lt;br&gt;Relational Algebra query evaluator</translation>
     </message>
     <message>
         <location filename="src/gui/dialogs/about_dialog.py" line="83"/>
@@ -26,7 +25,7 @@
     <message>
         <location filename="src/gui/dialogs/about_dialog.py" line="89"/>
         <source>&lt;br&gt;&lt;br&gt;&lt;b&gt;Author: &lt;/b&gt;Gabriel Acosta &quot;gabo&quot; &amp;lt;&lt;a href=&apos;mailto:acostadariogabriel@gmail.com&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;acostadariogabriel@gmail.com&lt;/span&gt;&lt;/a&gt;&amp;gt;</source>
-        <translation type="obsolete">&lt;br&gt;&lt;br&gt;&lt;b&gt;Autor: &lt;/b&gt;Gabriel Acosta &quot;gabo&quot; &amp;lt;&lt;a href=&apos;mailto:acostadariogabriel@gmail.com&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;acostadariogabriel@gmail.com&lt;/span&gt;&lt;/a&gt;&amp;gt;</translation>
+        <translation>&lt;br&gt;&lt;br&gt;&lt;b&gt;Autor: &lt;/b&gt;Gabriel Acosta &quot;gabo&quot; &amp;lt;&lt;a href=&apos;mailto:acostadariogabriel@gmail.com&apos;&gt;&lt;span style=&apos;color: #3465a4&apos;&gt;acostadariogabriel@gmail.com&lt;/span&gt;&lt;/a&gt;&amp;gt;</translation>
     </message>
     <message>
         <location filename="src/gui/dialogs/about_dialog.py" line="102"/>
@@ -302,7 +301,7 @@
     <message>
         <location filename="src/gui/main_window.py" line="314"/>
         <source>Do you want to save them?</source>
-        <translation type="obsolete">Quieres salvarlos?</translation>
+        <translation>Quieres salvarlos?</translation>
     </message>
     <message>
         <location filename="src/gui/main_window.py" line="370"/>
@@ -625,7 +624,7 @@
     <message>
         <location filename="src/gui/dialogs/preferences.py" line="321"/>
         <source>Yes</source>
-        <translation>Yes</translation>
+        <translation>Si</translation>
     </message>
 </context>
 <context>

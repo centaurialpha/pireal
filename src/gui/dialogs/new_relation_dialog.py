@@ -22,10 +22,10 @@ from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtCore import Qt
 
 from src.core import relation
-from src.gui.dialogs import edit_relation_dialog
+from src.gui.dialogs import relation_dialog
 
 
-class NewRelationDialog(edit_relation_dialog.EditRelationDialog):
+class NewRelationDialog(relation_dialog.RelationDialog):
 
     def __init__(self, parent=None):
         super(NewRelationDialog, self).__init__(parent)
