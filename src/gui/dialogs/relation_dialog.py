@@ -68,7 +68,7 @@ class RelationDialog(QDialog):
         # Save and cancel button
         hbox = QHBoxLayout()
         hbox.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
-        save_btn = QPushButton(self.tr("Save"))
+        save_btn = QPushButton(self.tr("Ok"))
         hbox.addWidget(save_btn)
         cancel_btn = QPushButton(self.tr("Cancel"))
         hbox.addWidget(cancel_btn)
@@ -98,8 +98,8 @@ class RelationDialog(QDialog):
         if selection.hasSelection():
             r = QMessageBox.question(self,
                                      self.tr("Confirm tuple delete"),
-                                     self.tr("Are you sure you want to "
-                                             "to delete the selected"
+                                     self.tr("Are you sure you want "
+                                             "to delete the selected "
                                              "tuple(s)?"),
                                      QMessageBox.Yes | QMessageBox.No)
             if r == QMessageBox.Yes:

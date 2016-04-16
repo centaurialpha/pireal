@@ -655,21 +655,69 @@
     </message>
 </context>
 <context>
+    <name>RelationDialog</name>
+    <message>
+        <location filename="src/gui/dialogs/relation_dialog.py" line="41"/>
+        <source>Relation Editor</source>
+        <translation>Editor de Relación</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/relation_dialog.py" line="52"/>
+        <source>Add Tuple</source>
+        <translation>Agregar Registro</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/relation_dialog.py" line="54"/>
+        <source>Delete Tuple</source>
+        <translation>Eliminar Registro</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/relation_dialog.py" line="56"/>
+        <source>Add Column</source>
+        <translation>Agregar Columna</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/relation_dialog.py" line="58"/>
+        <source>Delete Column</source>
+        <translation>Eliminar Columna</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/relation_dialog.py" line="73"/>
+        <source>Cancel</source>
+        <translation>Cancelar</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/relation_dialog.py" line="99"/>
+        <source>Confirm tuple delete</source>
+        <translation>Confirmación</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/relation_dialog.py" line="71"/>
+        <source>Ok</source>
+        <translation>Aceptar</translation>
+    </message>
+    <message>
+        <location filename="src/gui/dialogs/relation_dialog.py" line="99"/>
+        <source>Are you sure you want to delete the selected tuple(s)?</source>
+        <translation>Está seguro que quiere eliminar la/s tupla/s seleccionada/s?</translation>
+    </message>
+</context>
+<context>
     <name>StartPage</name>
     <message>
         <location filename="src/gui/qml/StartPage.qml" line="35"/>
         <source>No recent databases</source>
-        <translation type="obsolete">Sin archivos recientes</translation>
+        <translation>Sin archivos recientes</translation>
     </message>
     <message>
         <location filename="src/gui/qml/StartPage.qml" line="166"/>
         <source>Opens a recent database or </source>
-        <translation type="obsolete">Abre una base de datos reciente o </translation>
+        <translation>Abre una base de datos reciente o </translation>
     </message>
     <message>
         <location filename="src/gui/qml/StartPage.qml" line="172"/>
         <source>Create a new database</source>
-        <translation type="obsolete">Crear una nueva base de datos</translation>
+        <translation>Crear una nueva base de datos</translation>
     </message>
 </context>
 <context>

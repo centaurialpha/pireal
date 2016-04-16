@@ -3,7 +3,8 @@ SOURCES += \
 	src/gui/menu_actions.py \
         src/gui/central_widget.py \
         src/gui/lateral_widget.py \
-	src/gui/database_container.py \
+        src/gui/database_container.py \
+        src/gui/dialogs/relation_dialog.py \
 	src/gui/dialogs/database_wizard.py \
 	src/gui/dialogs/edit_relation_dialog.py \
 	src/gui/dialogs/new_relation_dialog.py \
