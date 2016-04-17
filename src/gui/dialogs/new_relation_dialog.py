@@ -86,7 +86,7 @@ class NewRelationDialog(relation_dialog.RelationDialog):
                                                  "is empty!".format(
                                                      row + 1, column + 1)))
                     return
-                tuples.append(item.text())
+                tuples.append(item.text().strip())
             rela.insert(tuples)
 
         # Data
