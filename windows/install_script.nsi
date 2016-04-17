@@ -1,7 +1,7 @@
 ;NSIS Script Installer for Pireal
 #######################################################################
 # Startup
-!define VERSION "1.0"
+!define VERSION "1.0.2"
 !define NAME "Pireal"
 !define DISPLAY_NAME "Pireal ${VERSION}"
 !define WEB_SITE "http://centaurialpha.github.io/pireal"
