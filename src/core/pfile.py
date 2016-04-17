@@ -22,7 +22,8 @@ import os
 from PyQt5.QtCore import (
     QFile,
     QIODevice,
-    QTextStream
+    QTextStream,
+    QTextCodec
 )
 
 
@@ -76,8 +77,9 @@ class PFile(object):
         file_ = QFile(self.filename)
         if not file_.open(QIODevice.ReadOnly | QIODevice.Text):
             raise Exception(file_.errorString())
+        codec = QTextCodec.codecForLocale()
         fstream = QTextStream(file_)
-        fstream.setCodec('utf-8')
+        fstream.setCodec(codec)
         return fstream.readAll()
 
     def write(self, content, new_fname=''):
@@ -92,7 +94,7 @@ class PFile(object):
             raise Exception(file_.errorString())
 
         stream = QTextStream(file_)
-        stream.setCodec('utf-8')
+        stream.setCodec(QTextCodec.codecForLocale())
         stream << content
         stream.flush()
         file_.close()
