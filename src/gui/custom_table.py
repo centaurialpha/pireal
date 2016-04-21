@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (
 
     QAbstractItemView
 )
-from PyQt5.QtGui import QStandardItemModel
+
 from PyQt5.QtCore import (
     Qt,
     QModelIndex
@@ -26,9 +26,6 @@ class Table(QTableView):
         self.horizontalHeader().setStretchLastSection(True)
         self.verticalHeader().hide()
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
-        # Model
-        model = QStandardItemModel()
-        self.setModel(model)
 
     def resizeEvent(self, event):
         super(Table, self).resizeEvent(event)

@@ -28,7 +28,10 @@ from PyQt5.QtCore import (
     Qt,
     QSettings
 )
-from PyQt5.QtGui import QStandardItem
+from PyQt5.QtGui import (
+    QStandardItem,
+    QStandardItemModel
+)
 
 from src.gui import (
     table_widget,
@@ -101,7 +104,8 @@ class DatabaseContainer(QSplitter):
 
             # Table view widget
             table_view = custom_table.Table()
-            model = table_view.model()
+            # Model
+            model = QStandardItemModel()
             model.setHorizontalHeaderLabels(header)
 
             # Populate table view
@@ -114,6 +118,9 @@ class DatabaseContainer(QSplitter):
                     model.setItem(row_count, col_count, item)
                 rela.insert(row)
                 row_count += 1
+
+            # Set table model
+            table_view.setModel(model)
             # Add relation to relations dict
             self.table_widget.add_relation(table_name, rela)
             # Add table to stacked
