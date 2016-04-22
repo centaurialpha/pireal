@@ -23,6 +23,7 @@ Pireal settings
 
 import sys
 import os
+
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QSettings
 
@@ -41,7 +42,6 @@ SUPPORTED_FILES = ("Pireal Database File (*.pdb *.txt);;"
                    "Pireal Relation File (*.prf)")
 
 # Paths used by Pireal
-# Create folder (settings and logging)
 if getattr(sys, 'frozen', ''):
     PATH = os.path.realpath(os.path.dirname(sys.argv[0]))
 else:
@@ -55,17 +55,41 @@ SETTINGS_PATH = os.path.join(PIREAL_DIR, "pireal_settings.ini")
 LANG_PATH = os.path.join(PATH, "src", "lang")
 QML_FILES = os.path.join(PATH, "src", "gui", "qml")
 
+# Settings
+LANGUAGE = ""
+LAST_OPEN_FOLDER = ""
+RECENT_DBS = []
+HIGHLIGHT_CURRENT_LINE = False
+MATCHING_PARENTHESIS = True
+if LINUX:
+    FONT = QFont("Monospace", 12)
+else:
+    FONT = QFont("Courier", 10)
 
-class PSettings:
-    LANGUAGE = ""
-    LAST_OPEN_FOLDER = ""
-    RECENT_DBS = []
-    HIGHLIGHT_CURRENT_LINE = False
-    MATCHING_PARENTHESIS = True
-    if LINUX:
-        FONT = QFont("Monospace", 12)
-    else:
-        FONT = QFont("Courier", 10)
+
+def load_settings():
+    """ Load settings from INI file """
+
+    settings = QSettings(SETTINGS_PATH, QSettings.IniFormat)
+
+    global LANGUAGE
+    global LAST_OPEN_FOLDER
+    global RECENT_DBS
+    global HIGHLIGHT_CURRENT_LINE
+    global MATCHING_PARENTHESIS
+    global FONT
+
+    LANGUAGE = settings.value('language', "", type='QString')
+    LAST_OPEN_FOLDER = settings.value("last_open_folder", "",
+                                      type='QString')
+    RECENT_DBS = settings.value("recentDB", [])
+    HIGHLIGHT_CURRENT_LINE = settings.value("highlight_current_line",
+                                            False, type=bool)
+    MATCHING_PARENTHESIS = settings.value("matching_parenthesis",
+                                          True, type=bool)
+    font = settings.value("font", None)
+    if font is not None:
+        FONT = font
 
 
 def create_dir():
@@ -90,20 +114,3 @@ def set_setting(key, value):
 
     psettings = QSettings(SETTINGS_PATH, QSettings.IniFormat)
     psettings.setValue(key, value)
-
-
-def load_settings():
-    """ Load settings from .ini file """
-
-    settings = QSettings(SETTINGS_PATH, QSettings.IniFormat)
-    PSettings.LANGUAGE = settings.value('language', "", type='QString')
-    PSettings.LAST_OPEN_FOLDER = settings.value("last_open_folder", "",
-                                                type='QString')
-    PSettings.RECENT_DBS = settings.value("recentDB", [])
-    PSettings.HIGHLIGHT_CURRENT_LINE = settings.value("highlight_current_line",
-                                                      False, type=bool)
-    PSettings.MATCHING_PARENTHESIS = settings.value("matching_parenthesis",
-                                                    True, type=bool)
-    font = settings.value("font", None)
-    if font is not None:
-        PSettings.FONT = font

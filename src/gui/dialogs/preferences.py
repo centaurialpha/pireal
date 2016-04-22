@@ -94,8 +94,8 @@ class Preferences(QDialog):
         self._combo_lang.addItems(languages)
         self._combo_lang.currentIndexChanged[int].connect(
             self._change_lang)
-        if settings.PSettings.LANGUAGE:
-            self._combo_lang.setCurrentText(settings.PSettings.LANGUAGE)
+        if settings.LANGUAGE:
+            self._combo_lang.setCurrentText(settings.LANGUAGE)
         box.addWidget(QLabel(self.tr("(Requires restart)")))
 
         # Add widgets
@@ -115,14 +115,14 @@ class Preferences(QDialog):
         self._highlight_current_line = QCheckBox(
             self.tr("Highlight Current Line"))
         self._highlight_current_line.setChecked(
-            settings.PSettings.HIGHLIGHT_CURRENT_LINE)
+            settings.HIGHLIGHT_CURRENT_LINE)
         self._highlight_current_line.stateChanged[int].connect(
             self.__current_line_value_changed)
         box_editor.addWidget(self._highlight_current_line)
         # Matching paren
         self._matching_paren = QCheckBox(self.tr("Matching Parenthesis"))
         self._matching_paren.setChecked(
-            settings.PSettings.MATCHING_PARENTHESIS)
+            settings.MATCHING_PARENTHESIS)
         self._matching_paren.stateChanged[int].connect(
             self.__set_enabled_matching_parenthesis)
         box_editor.addWidget(self._matching_paren)
@@ -131,14 +131,14 @@ class Preferences(QDialog):
         font_grid = QGridLayout(font_group)
         font_grid.addWidget(QLabel(self.tr("Family")), 0, 0)
         self._combo_font = QFontComboBox()
-        self._combo_font.setCurrentFont(settings.PSettings.FONT)
+        self._combo_font.setCurrentFont(settings.FONT)
         font_grid.addWidget(self._combo_font, 0, 1)
         font_grid.addWidget(QLabel(self.tr("Point Size")), 1, 0)
         self._combo_font_size = QComboBox()
         fdb = QFontDatabase()
-        combo_sizes = fdb.pointSizes(settings.PSettings.FONT.family())
+        combo_sizes = fdb.pointSizes(settings.FONT.family())
         current_size_index = combo_sizes.index(
-            settings.PSettings.FONT.pointSize())
+            settings.FONT.pointSize())
 
         self._combo_font_size.addItems([str(f) for f in combo_sizes])
         self._combo_font_size.setCurrentIndex(current_size_index)
@@ -223,11 +223,11 @@ class Preferences(QDialog):
 
     def __current_line_value_changed(self, value):
         settings.set_setting("highlight_current_line", value)
-        settings.PSettings.HIGHLIGHT_CURRENT_LINE = value
+        settings.HIGHLIGHT_CURRENT_LINE = value
 
     def __set_enabled_matching_parenthesis(self, value):
         settings.set_setting("matching_parenthesis", value)
-        settings.PSettings.MATCHING_PARENTHESIS = value
+        settings.MATCHING_PARENTHESIS = value
 
     def _change_font(self, font):
         # FIXME: un quilombo esto
