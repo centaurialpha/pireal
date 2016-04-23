@@ -21,9 +21,8 @@ class Table(QTableView):
         # Stretch horizontal header
         self.setAlternatingRowColors(True)
         self.horizontalHeader().setSectionResizeMode(
-            QHeaderView.Interactive)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.horizontalHeader().setStretchLastSection(True)
+            QHeaderView.ResizeToContents)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.verticalHeader().hide()
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
