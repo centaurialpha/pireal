@@ -30,10 +30,11 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import (
     QSettings,
-    QSize
+    QSize,
+    QThread
 )
 from src.core import settings
-from src.gui import update
+from src.gui import updater
 
 
 class Pireal(QMainWindow):
@@ -106,9 +107,14 @@ class Pireal(QMainWindow):
         central_widget.add_start_page()
 
         # Check for updates
-        self.thread_updates = update.Update()
-        self.thread_updates.finished.connect(self.__on_thread_update_finished)
-        self.thread_updates.start()
+        self._thread = QThread()
+        self._updater = updater.Updater()
+        self._updater.moveToThread(self._thread)
+        self._thread.started.connect(self._updater.check_updates)
+        self._updater.finished.connect(self.__on_thread_update_finished)
+        self._thread.start()
+        notification_widget.show_text(
+            self.tr("Checking for updates..."), time_out=0)
 
         # Install service
         Pireal.load_service("pireal", self)
@@ -211,10 +217,15 @@ class Pireal(QMainWindow):
         status.show_message(msg)
 
     def __on_thread_update_finished(self):
+        self._thread.quit()
+        # Clear notificator
+        notification_widget = Pireal.get_service("notification")
+        notification_widget.clear()
+
         msg = QMessageBox(self)
-        if not self.thread_updates.error:
-            if self.thread_updates.version:
-                version = self.thread_updates.version
+        if not self._updater.error:
+            if self._updater.version:
+                version = self._updater.version
                 msg.setWindowTitle(self.tr("New version available!"))
                 msg.setText(self.tr("Check the web site to "
                                     "download <b>Pireal {}</b>".format(
@@ -228,6 +239,8 @@ class Pireal(QMainWindow):
                 if r == download_btn:
                     webbrowser.open_new(
                         "http://centaurialpha.github.io/pireal")
+        self._thread.deleteLater()
+        self._updater.deleteLater()
 
     def change_title(self, title):
         self.setWindowTitle("Pireal " + '[' + title + ']')

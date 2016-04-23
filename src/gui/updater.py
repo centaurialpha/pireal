@@ -20,7 +20,10 @@
 from urllib.request import urlopen
 from urllib.error import URLError
 
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import (
+    QObject,
+    pyqtSignal
+)
 
 from src.core.logger import PirealLogger
 from src import gui
@@ -31,19 +34,22 @@ DEBUG = logger.debug
 URL = "http://centaurialpha.github.io/pireal/version"
 
 
-class Update(QThread):
+class Updater(QObject):
+    finished = pyqtSignal()
 
     def __init__(self):
-        super(Update, self).__init__()
+        QObject.__init__(self)
         self.version = ""
         self.error = False
 
-    def run(self):
+    def check_updates(self):
         try:
             web_version = urlopen(URL).read().decode('utf8').strip()
             web_version = tuple(web_version.split('.'))
-            if gui.__version__ < web_version:
+            if ('1', '0', '0') < web_version:
                 self.version = '.'.join(web_version)
         except URLError as reason:
             self.error = True
             DEBUG("Connection error: {}".format(reason))
+        print("Hola")
+        self.finished.emit()

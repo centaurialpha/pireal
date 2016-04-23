@@ -41,6 +41,7 @@ from PyQt5.QtCore import (
     QParallelAnimationGroup,
     QRect,
     QSettings,
+    QThread,
     pyqtSignal
 )
 
@@ -51,7 +52,7 @@ from src.core import (
 from src.gui.main_window import Pireal
 from src.gui import (
     overlay_widget,
-    update
+    updater
 )
 
 
@@ -273,20 +274,24 @@ class Preferences(QDialog):
 
     def _check_for_updates(self):
         # Thread
-        self.thread = update.Update()
-        self.thread.finished.connect(self.__on_thread_update_finished)
+        self._thread = QThread()
+        self._updater = updater.Updater()
+        self._updater.moveToThread(self._thread)
+        self._thread.started.connect(self._updater.check_updates)
+        self._updater.finished.connect(self.__on_thread_update_finished)
         # Show overlay widget
         self.overlay.show()
         # Start thread
-        self.thread.start()
+        self._thread.start()
 
     def __on_thread_update_finished(self):
         # Hide overlay widget
         self.overlay.hide()
+        self._thread.quit()
         msg = QMessageBox(self)
-        if not self.thread.error:
-            if self.thread.version:
-                version = self.thread.version
+        if not self._updater.error:
+            if self._updater.version:
+                version = self._updater.version
                 msg.setWindowTitle(self.tr("New version available!"))
                 msg.setText(self.tr("Check the web site to "
                                     "download <b>Pireal {}</b>".format(
@@ -309,6 +314,9 @@ class Preferences(QDialog):
         else:
             msg.critical(self, self.tr("Error"),
                          self.tr("Connection error"))
+
+        self._thread.deleteLater()
+        self._updater.deleteLater()
 
     def _reset_settings(self):
         """ Remove all settings """

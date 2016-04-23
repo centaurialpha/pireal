@@ -47,7 +47,8 @@ class Notification(QWidget):
         self.notificator.clear()
 
     def show_text(self, text, time_out=3000):
-        self.timer.start(time_out)
+        if time_out != 0:
+            self.timer.start(time_out)
         self.notificator.setText(text)
 
 notif = Notification()
