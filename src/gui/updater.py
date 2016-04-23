@@ -46,10 +46,10 @@ class Updater(QObject):
         try:
             web_version = urlopen(URL).read().decode('utf8').strip()
             web_version = tuple(web_version.split('.'))
-            if ('1', '0', '0') < web_version:
+            if gui.__version__ < web_version:
                 self.version = '.'.join(web_version)
         except URLError as reason:
             self.error = True
             DEBUG("Connection error: {}".format(reason))
-        print("Hola")
+
         self.finished.emit()
