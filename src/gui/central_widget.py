@@ -262,6 +262,8 @@ class CentralWidget(QWidget):
                 table_dict['tuples'] = []
             else:
                 for l in csv.reader([line]):
+                    # Remove spaces
+                    l = list(map(str.strip, l))
                     if table_dict['name'] == table_name:
                         table_dict['tuples'].append(l)
             if not table_dict['tuples']:
