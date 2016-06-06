@@ -128,30 +128,63 @@ class Lexer(object):
                     return Token(ASSIGNMENT, ':=')
 
             # Operators
+            # Less, not-equal and less-equal
+            if self.sc.char == '<':
+                self.sc.next()
+                if self.sc.char == '>':
+                    self.sc.next()
+                    return Token(NOTEQUAL, '<>')
+                elif self.sc.char == '=':
+                    self.sc.next()
+                    return Token(LESSEQUAL, '<=')
+                return Token(LESS, '<')
+
+            # Equal
+            if self.sc.char == '=':
+                self.sc.next()
+                return Token(EQUAL, '=')
+
+            # Greater and greater-equal
+            if self.sc.char == '>':
+                self.sc.next()
+                if self.sc.char == '=':
+                    self.sc.next()
+                    return Token(GREATEREQUAL, '>=')
+                return Token(GREATER, '>')
+
+            """
             if self.sc.char == '>':
                 self.sc.next()
                 return Token(GREATER, '>')
 
             if self.sc.char == '<':
                 self.sc.next()
-                return Token(LESS, '<')
+                if self.sc.char != '>' and self.sc.char != '=':
+                    return Token(LESS, '<')
 
-            if self.sc.char == '>=':
+            if self.sc.char == '>':
                 self.sc.next()
-                return Token(GREATEREQUAL, '>=')
+                if self.sc.char == '=':
+                    self.sc.next()
+                    return Token(GREATEREQUAL, '>=')
 
-            if self.sc.char == '<=':
+            if self.sc.char == '<':
                 self.sc.next()
-                return Token(LESSEQUAL, '<=')
+                if self.sc.char == '=':
+                    self.sc.next()
+                    return Token(LESSEQUAL, '<=')
 
-            if self.sc.char == '<>':
+            if self.sc.char == '<':
                 self.sc.next()
-                return Token(NOTEQUAL, '<>')
+                if self.sc.char == '>':
+                    self.sc.next()
+                    return Token(NOTEQUAL, '<>')
 
             if self.sc.char == '=':
                 self.sc.next()
                 return Token(EQUAL, '=')
 
+            """
             # Semicolon
             if self.sc.char == ';':
                 self.sc.next()

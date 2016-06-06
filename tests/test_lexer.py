@@ -7,6 +7,11 @@ from src.core.interpreter.token import (
     IDENTIFIER,
     ASSIGNMENT,
     GREATER,
+    LESS,
+    LESSEQUAL,
+    GREATEREQUAL,
+    NOTEQUAL,
+    EQUAL,
     NUMBER,
     LPAREN,
     RPAREN,
@@ -23,6 +28,21 @@ class LexerTestCase(unittest.TestCase):
         lex = lexer.Lexer(sc)
         tkn = lex.next_token()
         self.assertEqual(tkn.type, STRING)
+
+    def test_operators_tokens(self):
+        sc = scanner.Scanner("= > < >= <> <=")
+        lex = lexer.Lexer(sc)
+        tokens = [
+            EQUAL,
+            GREATER,
+            LESS,
+            GREATEREQUAL,
+            NOTEQUAL,
+            LESSEQUAL
+        ]
+        for token in tokens:
+            tkn = lex.next_token()
+            self.assertEqual(tkn.type, token)
 
     def test_tokens(self):
         sc = scanner.Scanner(("q1 := select id > 12 (people njoin skills);"
