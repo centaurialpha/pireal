@@ -152,39 +152,6 @@ class Lexer(object):
                     return Token(GREATEREQUAL, '>=')
                 return Token(GREATER, '>')
 
-            """
-            if self.sc.char == '>':
-                self.sc.next()
-                return Token(GREATER, '>')
-
-            if self.sc.char == '<':
-                self.sc.next()
-                if self.sc.char != '>' and self.sc.char != '=':
-                    return Token(LESS, '<')
-
-            if self.sc.char == '>':
-                self.sc.next()
-                if self.sc.char == '=':
-                    self.sc.next()
-                    return Token(GREATEREQUAL, '>=')
-
-            if self.sc.char == '<':
-                self.sc.next()
-                if self.sc.char == '=':
-                    self.sc.next()
-                    return Token(LESSEQUAL, '<=')
-
-            if self.sc.char == '<':
-                self.sc.next()
-                if self.sc.char == '>':
-                    self.sc.next()
-                    return Token(NOTEQUAL, '<>')
-
-            if self.sc.char == '=':
-                self.sc.next()
-                return Token(EQUAL, '=')
-
-            """
             # Semicolon
             if self.sc.char == ';':
                 self.sc.next()
