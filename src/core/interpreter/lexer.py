@@ -49,9 +49,11 @@ ISDATE = re.compile(
 class Lexer(object):
     """ This is the first stage of analysys.
 
-    The Lexer serves to break up the source text into chuncks, "tokens",
-    it calls the `next()` method to get characters one at time and organizes
-    them into tokens and token types. For example, if the source text is:
+    The Lexer serves to break up the source text into chuncks, "tokens".
+    It calls the Scanner to get characters one at a time and organizes them
+    into token types.
+
+    For example, if the source text is:
 
     query_1 := people njoin skills
 
@@ -62,8 +64,6 @@ class Lexer(object):
     Token(IDENTIFIER, 'people')
     Token(KEYWORD, 'njoin')
     Token(IDENTIFIER, 'skills')
-
-
     """
 
     __slots__ = ('sc', 'token')
@@ -78,6 +78,8 @@ class Lexer(object):
             self.sc.next()
 
     def _get_identifier_or_keyword(self):
+        """ Handle identifiers and reserved keywords """
+
         var = ''
         while self.sc.char is not None and not self.sc.char.isspace():
             # Recognize identifiers like: query_1, query2323
@@ -98,7 +100,7 @@ class Lexer(object):
         return KEYWORDS.get(var, Token(IDENTIFIER, var))
 
     def _get_number(self):
-        """ Returns a multidigit token """
+        """ Returns a multidigit integer """
 
         number = ''
         if self.sc.char == '-':
@@ -110,6 +112,12 @@ class Lexer(object):
         return int(number)
 
     def next_token(self):
+        """ Lexical analyzer.
+
+        This method is responsible for breaking a sentence apart
+        into tokens. One token at a time
+        """
+
         while self.sc.char is not None:
             # Recognize identifiers and keywords
             if self.sc.char.isalpha():

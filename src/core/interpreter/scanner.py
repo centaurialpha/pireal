@@ -54,7 +54,7 @@ class Scanner(object):
         self.index += 1
 
     def next_char(self):
-        """ Returns the new character """
+        """ Returns the next character in the source text"""
 
         self.next()
         return self.char
