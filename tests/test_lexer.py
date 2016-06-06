@@ -25,8 +25,8 @@ class LexerTestCase(unittest.TestCase):
         self.assertEqual(tkn.type, STRING)
 
     def test_tokens(self):
-        sc = scanner.Scanner(("q := select id > 12 (people njoin skills);"
-                              "qq := project name, age (q);"))
+        sc = scanner.Scanner(("q1 := select id > 12 (people njoin skills);"
+                              "q_2 := project name, age (q1);"))
         lex = lexer.Lexer(sc)
         tkn = lex.next_token()
         self.assertEqual(tkn.type, IDENTIFIER)

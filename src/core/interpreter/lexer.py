@@ -78,10 +78,20 @@ class Lexer(object):
             self.sc.next()
 
     def _get_identifier_or_keyword(self):
-        # FIXME: Recognize identifiers like: var_foo, foo_1
         var = ''
-
-        while self.sc.char is not None and self.sc.char.isalpha():
+        while self.sc.char is not None and not self.sc.char.isspace():
+            # Recognize identifiers like: query_1, query2323
+            # FIXME: improve this
+            if self.sc.char == '_':
+                var += '_'
+                self.sc.next()
+                continue
+            if self.sc.char.isdigit():
+                var += self.sc.char
+                self.sc.next()
+                continue
+            if not self.sc.char.isalpha():
+                break
             var += self.sc.char
             self.sc.next()
 
@@ -194,7 +204,7 @@ class Lexer(object):
                 return Token(COMA, ',')
 
             raise Exception("Invalid Syntax {0}:{1}".format(
-                self.lineno, self.colno))
+                self.sc.lineno, self.sc.colno))
         return Token(EOF, None)
 
     def __str__(self):
