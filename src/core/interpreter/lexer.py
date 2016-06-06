@@ -33,7 +33,7 @@ from src.core.interpreter.token import (
     STRING,
     DATE,
     EQUAL,
-    NEQUAL,
+    NOTEQUAL,
     GREATER,
     GREATEREQUAL,
     LESS,
@@ -66,48 +66,24 @@ class Lexer(object):
 
     """
 
-    __slots__ = ('_text', '_index', 'char', 'token', 'lineno', 'colno')
+    __slots__ = ('sc', 'token')
 
-    def __init__(self, text):
-        self._text = text
-        self.lineno = 1
-        self.colno = -1
-        self._index = 0
-        # Current char in position 0
-        self.char = self._text[self._index]
+    def __init__(self, scanner):
+        self.sc = scanner
         # Current token
         self.token = None
 
-    def next(self):
-        """ Advance one position in the source text and set current char """
-
-        self._index += 1
-
-        if self._index < len(self._text):
-            # Current char in the new position
-            self.char = self._text[self._index]
-            if self.char == '\n':
-                # We are in a new line, therefore we increase the line
-                # number and restart the column number
-                self.lineno += 1
-                self.colno = -1
-        else:
-            # End of file
-            self.char = None
-
-        self.colno += 1
-
     def _skip_whitespace(self):
-        while self.char is not None and self.char.isspace():
-            self.next()
+        while self.sc.char is not None and self.sc.char.isspace():
+            self.sc.next()
 
     def _get_identifier_or_keyword(self):
         # FIXME: Recognize identifiers like: var_foo, foo_1
         var = ''
 
-        while self.char is not None and self.char.isalpha():
-            var += self.char
-            self.next()
+        while self.sc.char is not None and self.sc.char.isalpha():
+            var += self.sc.char
+            self.sc.next()
 
         return KEYWORDS.get(var, Token(IDENTIFIER, var))
 
@@ -115,62 +91,87 @@ class Lexer(object):
         """ Returns a multidigit token """
 
         number = ''
-        if self.char == '-':
-            number += self.char
-            self.next()
-        while self.char is not None and self.char.isdigit():
-            number += self.char
-            self.next()
+        if self.sc.char == '-':
+            number += self.sc.char
+            self.sc.next()
+        while self.sc.char is not None and self.sc.char.isdigit():
+            number += self.sc.char
+            self.sc.next()
         return int(number)
 
     def next_token(self):
-        while self.char is not None:
+        while self.sc.char is not None:
             # Recognize identifiers and keywords
-            if self.char.isalpha():
+            if self.sc.char.isalpha():
                 return self._get_identifier_or_keyword()
 
             # Ignore any whitespace characters or any comments
-            if self.char.isspace():
+            if self.sc.char.isspace():
                 self._skip_whitespace()
                 continue
 
             # Manage assignment
-            if self.char == ':':
-                self.next()
-                if self.char == '=':
-                    self.next()
+            if self.sc.char == ':':
+                self.sc.next()
+                if self.sc.char == '=':
+                    self.sc.next()
                     return Token(ASSIGNMENT, ':=')
 
             # Operators
-            if self.char == '>':
-                self.next()
+            if self.sc.char == '>':
+                self.sc.next()
                 return Token(GREATER, '>')
 
+            if self.sc.char == '<':
+                self.sc.next()
+                return Token(LESS, '<')
+
+            if self.sc.char == '>=':
+                self.sc.next()
+                return Token(GREATEREQUAL, '>=')
+
+            if self.sc.char == '<=':
+                self.sc.next()
+                return Token(LESSEQUAL, '<=')
+
+            if self.sc.char == '<>':
+                self.sc.next()
+                return Token(NOTEQUAL, '<>')
+
+            if self.sc.char == '=':
+                self.sc.next()
+                return Token(EQUAL, '=')
+
+            # Semicolon
+            if self.sc.char == ';':
+                self.sc.next()
+                return Token(SEMI, ';')
+
             # Numbers
-            if self.char == '-' or self.char.isdigit():
+            if self.sc.char == '-' or self.sc.char.isdigit():
                 number = self._get_number()
                 return Token(NUMBER, number)
 
             # Strings, date
-            if self.char == "'":
+            if self.sc.char == "'":
                 var = ''
-                self.next()
+                self.sc.next()
                 while True:
-                    if self.char is None:
+                    if self.sc.char is None:
                         raise Exception("Missing end quote")
-                    if self.char.isspace():
+                    if self.sc.char.isspace():
                         var += ' '
-                    if self.char == '/':
-                        var += self.char
-                    if self.char.isdigit():
-                        var += self.char
-                    if self.char == "'":
+                    if self.sc.char == '/':
+                        var += self.sc.char
+                    if self.sc.char.isdigit():
+                        var += self.sc.char
+                    if self.sc.char == "'":
                         break
-                    if self.char.isalpha():
-                        var += self.char
-                    self.next()
+                    if self.sc.char.isalpha():
+                        var += self.sc.char
+                    self.sc.next()
 
-                if self.char == "'":
+                if self.sc.char == "'":
                     if ISDATE.match(var):
                         return Token(DATE, var)
                     else:
@@ -178,18 +179,18 @@ class Lexer(object):
                         return Token(STRING, var)
 
             # Left parenthesis
-            if self.char == '(':
-                self.next()
+            if self.sc.char == '(':
+                self.sc.next()
                 return Token(LPAREN, '(')
 
             # Right parenthesis
-            if self.char == ')':
-                self.next()
+            if self.sc.char == ')':
+                self.sc.next()
                 return Token(RPAREN, ')')
 
             # Coma
-            if self.char == ',':
-                self.next()
+            if self.sc.char == ',':
+                self.sc.next()
                 return Token(COMA, ',')
 
             raise Exception("Invalid Syntax {0}:{1}".format(

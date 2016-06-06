@@ -1,5 +1,8 @@
 import unittest
-from src.core.interpreter import lexer
+from src.core.interpreter import (
+    lexer,
+    scanner
+)
 from src.core.interpreter.token import (
     IDENTIFIER,
     ASSIGNMENT,
@@ -8,37 +11,23 @@ from src.core.interpreter.token import (
     LPAREN,
     RPAREN,
     COMA,
-    STRING
+    STRING,
+    SEMI
 )
 
 
 class LexerTestCase(unittest.TestCase):
 
-    def test_next(self):
-        lex = lexer.Lexer("hola\na todos !")
-        self.assertEqual(lex.char, 'h')
-        for i in range(5):
-            lex.next()
-        self.assertEqual(lex.char, 'a')
-
-    def test_position(self):
-        lex = lexer.Lexer("\n\n\n      gabo")
-        lex.next()
-        lex.next()
-        self.assertEqual(lex.lineno, 3)
-        self.assertEqual(lex.colno, 0)
-        for i in range(8):
-            lex.next()
-        self.assertEqual(lex.colno, 8)
-
     def test_string_token(self):
-        lex = lexer.Lexer("'test     string'")
+        sc = scanner.Scanner("'test    string'")
+        lex = lexer.Lexer(sc)
         tkn = lex.next_token()
         self.assertEqual(tkn.type, STRING)
 
     def test_tokens(self):
-        lex = lexer.Lexer(("q := select id > 12 (people njoin skills)"
-                           "qq := project name, age (q)"))
+        sc = scanner.Scanner(("q := select id > 12 (people njoin skills);"
+                              "qq := project name, age (q);"))
+        lex = lexer.Lexer(sc)
         tkn = lex.next_token()
         self.assertEqual(tkn.type, IDENTIFIER)
         tkn = lex.next_token()
@@ -62,6 +51,8 @@ class LexerTestCase(unittest.TestCase):
         tkn = lex.next_token()
         self.assertEqual(tkn.type, RPAREN)
         tkn = lex.next_token()
+        self.assertEqual(tkn.type, SEMI)
+        tkn = lex.next_token()
         self.assertEqual(tkn.type, IDENTIFIER)
         tkn = lex.next_token()
         self.assertEqual(tkn.type, ASSIGNMENT)
@@ -79,6 +70,8 @@ class LexerTestCase(unittest.TestCase):
         self.assertEqual(tkn.type, IDENTIFIER)
         tkn = lex.next_token()
         self.assertEqual(tkn.type, RPAREN)
+        tkn = lex.next_token()
+        self.assertEqual(tkn.type, SEMI)
 
 
 if __name__ == '__main__':
