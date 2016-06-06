@@ -19,6 +19,10 @@
 
 
 class Scanner(object):
+    """
+    The Scanner is used to step through text character by character
+    and keep track of the line and column number of each passed character
+    """
     __slots__ = ('lineno', 'colno', 'index', '_text')
 
     def __init__(self, text):
@@ -29,6 +33,8 @@ class Scanner(object):
 
     @property
     def char(self):
+        """ Returns a character in the current index """
+
         if self.index < len(self._text):
             return self._text[self.index]
 
