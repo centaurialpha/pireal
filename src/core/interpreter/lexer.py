@@ -20,7 +20,6 @@
 # This module is responsible for organizing called "tokens" pieces,
 # each of these tokens has a meaning in language
 
-import re
 from src.core.interpreter.token import (
     Token,
     IDENTIFIER,
@@ -41,9 +40,6 @@ from src.core.interpreter.token import (
     EOF,
     KEYWORDS
 )
-
-ISDATE = re.compile(
-    r'^([\d+]{2}|[\d+]{4})[\/][\d+]{2}[\/]([\d+]{2}|[\d+]{4})$')
 
 
 class Lexer(object):
@@ -170,31 +166,16 @@ class Lexer(object):
                 number = self._get_number()
                 return Token(NUMBER, number)
 
-            # Strings, date
+            # Strings
             if self.sc.char == "'":
-                var = ''
-                self.sc.next()
+                string = ""
                 while True:
                     if self.sc.char is None:
-                        raise Exception("Missing end quote")
-                    if self.sc.char.isspace():
-                        var += ' '
-                    if self.sc.char == '/':
-                        var += self.sc.char
-                    if self.sc.char.isdigit():
-                        var += self.sc.char
-                    if self.sc.char == "'":
                         break
-                    if self.sc.char.isalpha():
-                        var += self.sc.char
+                    string += self.sc.char
                     self.sc.next()
-
-                if self.sc.char == "'":
-                    if ISDATE.match(var):
-                        return Token(DATE, var)
-                    else:
-                        var = "'" + var + "'"
-                        return Token(STRING, var)
+                string = "'" + string + "'"
+                return Token(STRING, string)
 
             # Left parenthesis
             if self.sc.char == '(':
