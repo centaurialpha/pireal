@@ -20,6 +20,15 @@
 # This module is responsible for organizing called "tokens" pieces,
 # each of these tokens has a meaning in language
 
+from src.core.interpreter.token import (
+    SEMI,
+    IDENTIFIER,
+    ASSIGNMENT,
+    LPAREN,
+    RPAREN,
+    COMA
+)
+
 
 class AST(object):
     """ Base class for all nodes """
@@ -38,6 +47,13 @@ class Variable(AST):
     def __init__(self, token):
         self.token = token
         self.value = token.value
+
+
+class ProjectExpr(AST):
+
+    def __init__(self, attrs, expr):
+        self.attrs = attrs
+        self.expr = expr
 
 
 class NodeVisitor(object):
@@ -94,4 +110,144 @@ class Parser(object):
                                 token_type, self.token.type))
 
     def parse(self):
+        """
+        QueryDef : Query;
+                 | AssignmentStatement;
+        AssignmentStatement : RELATION_NAME := Query
+        Query : Expression
+        Expression : (Expression)
+                   | SelectExpression
+                   | ProjectExpression
+                   | BinaryExpression
+        SelectExpression : SELECT Condition (Expr)
+        ProjectExpression : PROJECT Attributes (Expr)
+        BinaryExpression : (Expr) BinaryOperator (Expr)
+        Expr : ID
+             | Expression
+        Condition : AndCondition
+                  | AndCondition OR Condition
+        AndCondition : RelationFormula
+                     | RelationFormula AND AndCondition
+        RelationFormula : Operand RelationOperator Operand
+                        | (Operand)
+        BinaryOperator : UNION
+                       | INTERSECT
+                       | DIFFERENCE
+                       | PRODUCT
+                       | NJOIN
+        Attributes : ID
+                   | ID, Attributes
+        Operand : ID
+                | CONSTANT
+        RelationOperator : =
+                         | <>
+                         | <
+                         | >
+                         | <=
+                         | >=
+        """
+
+        tree = self._query_definition()
+        self.consume(SEMI)
+        return tree
+
+    def _query_definition(self):
+        """
+        QueryDef : Query;
+                 | AssignmentStatement;
+        """
+
+        if self.token.type == IDENTIFIER:
+            node = self._assignment_statement()
+        else:
+            node = self._query()
+
+        return node
+
+    def _assignment_statement(self):
+        """
+        AssignmentStatement : RELATION_NAME := Query
+        """
+        relation_name = Variable(self.token)
+        self.consume(IDENTIFIER)
+        self.consume(ASSIGNMENT)
+        query = self._query()
+        node = AssignmentExpr(relation_name, query)
+        return node
+
+    def _query(self):
+        """
+        Query : Expression
+        """
+        node = self._expression()
+        return node
+
+    def _expression(self):
+        """
+        Expression : (Expression)
+                   | SelectExpression
+                   | ProjectExpression
+                   | BinaryExpression
+        """
+
+        if self.token.type == LPAREN:
+            self.consume(LPAREN)
+            node = self._expression()
+            self.consume(RPAREN)
+        elif self.token.value == 'select':
+            node = self._select_expression()
+        elif self.token.value == 'project':
+            node = self._project_expression()
+        return node
+
+    def _select_expression(self):
+        """
+        SelectExpression : SELECT Condition (Expr)
+        """
         pass
+
+    def _project_expression(self):
+        """
+        ProjectExpression : PROJECT Attributes (Expr)
+        """
+
+        self.consume('KEYWORD')
+        attributes = self._attributes()
+        self.consume(LPAREN)
+        expr = self._expr()
+        self.consume(RPAREN)
+        node = ProjectExpr(attributes, expr)
+        return node
+
+    def _expr(self):
+        """
+        Expr : ID
+             | Expression
+        """
+
+        if self.token.type == IDENTIFIER:
+            node = Variable(self.token)
+            self.consume(IDENTIFIER)
+        else:
+            node = self._expression()
+
+        return node
+
+    def _attributes(self):
+        """
+        Attributes : ID
+                   | ID, Attributes
+        """
+
+        node = Variable(self.token)
+        self.consume(IDENTIFIER)
+
+        results = [node]
+        append = results.append
+
+        while self.token.type == COMA:
+            self.consume(COMA)
+            append(Variable(self.token))
+            self.consume(IDENTIFIER)
+
+        return results
