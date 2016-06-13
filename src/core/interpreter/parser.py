@@ -26,6 +26,20 @@ class AST(object):
     pass
 
 
+class AssignmentExpr(AST):
+
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
+
+class Variable(AST):
+
+    def __init__(self, token):
+        self.token = token
+        self.value = token.value
+
+
 class NodeVisitor(object):
     """ Visitor pattern
 

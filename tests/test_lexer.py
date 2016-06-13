@@ -23,26 +23,66 @@ from src.core.interpreter.token import (
 
 class LexerTestCase(unittest.TestCase):
 
-    def test_string_token(self):
-        sc = scanner.Scanner("'test    string'")
+    def make_lexer(self, text):
+        sc = scanner.Scanner(text)
         lex = lexer.Lexer(sc)
-        tkn = lex.next_token()
-        self.assertEqual(tkn.type, STRING)
+        return lex
 
-    def test_operators_tokens(self):
-        sc = scanner.Scanner("= > < >= <> <=")
-        lex = lexer.Lexer(sc)
-        tokens = [
-            EQUAL,
-            GREATER,
-            LESS,
-            GREATEREQUAL,
-            NOTEQUAL,
-            LESSEQUAL
-        ]
-        for token in tokens:
-            tkn = lex.next_token()
-            self.assertEqual(tkn.type, token)
+    def test_number(self):
+        lex = self.make_lexer("9282")
+        token = lex.next_token()
+        self.assertEqual(token.type, NUMBER)
+        self.assertEqual(token.value, 9282)
+
+    def test_paren(self):
+        lex = self.make_lexer("()")
+        tokens = (
+            (LPAREN, '('),
+            (RPAREN, ')')
+        )
+        for tkn_type, tkn_value in tokens:
+            token = lex.next_token()
+            self.assertEqual(token.type, tkn_type)
+            self.assertEqual(token.value, tkn_value)
+
+    def test_operators(self):
+        lex = self.make_lexer("< > <> >= <= =")
+        tokens = (
+            (LESS, '<'),
+            (GREATER, '>'),
+            (NOTEQUAL, '<>'),
+            (GREATEREQUAL, '>='),
+            (LESSEQUAL, '<='),
+            (EQUAL, '=')
+        )
+        for tkn_type, tkn_value in tokens:
+            token = lex.next_token()
+            self.assertEqual(token.type, tkn_type)
+            self.assertEqual(token.value, tkn_value)
+
+    def test_string(self):
+        lex = self.make_lexer("'esto    es un  string'")
+        token = lex.next_token()
+        self.assertEqual(token.type, STRING)
+        self.assertEqual(token.value, "'esto    es un  string'")
+
+    def test_assignment(self):
+        lex = self.make_lexer(":=")
+        token = lex.next_token()
+        self.assertEqual(token.type, ASSIGNMENT)
+        self.assertEqual(token.value, ':=')
+
+    def test_semi(self):
+        lex = self.make_lexer(",")
+        token = lex.next_token()
+        self.assertEqual(token.type, COMA)
+        self.assertEqual(token.value, ',')
+
+    def test_semicolon(self):
+        lex = self.make_lexer(";")
+        token = lex.next_token()
+        self.assertEqual(token.type, SEMI)
+        self.assertEqual(token.value, ';')
 
     def test_tokens(self):
         sc = scanner.Scanner(("q1 := select id > 12 (people njoin skills);"

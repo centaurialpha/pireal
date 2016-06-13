@@ -174,7 +174,6 @@ class Lexer(object):
                         break
                     string += self.sc.char
                     self.sc.next()
-                string = "'" + string + "'"
                 return Token(STRING, string)
 
             # Left parenthesis
