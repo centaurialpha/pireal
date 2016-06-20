@@ -20,26 +20,53 @@
 # This module is responsible for organizing called "tokens" pieces,
 # each of these tokens has a meaning in language
 
-from src.core.interpreter.token import (
-    Token,
-    IDENTIFIER,
+from src.core.interpreter.tokens import (
+    ID,
     ASSIGNMENT,
     LPAREN,
     RPAREN,
-    COMA,
-    SEMI,
     NUMBER,
     STRING,
-    DATE,
+    SEMI,
+    SEMICOLON,
+    LESS,
+    GREATER,
+    LEQUAL,
+    GEQUAL,
     EQUAL,
     NOTEQUAL,
-    GREATER,
-    GREATEREQUAL,
-    LESS,
-    LESSEQUAL,
-    EOF,
-    KEYWORDS
+    KEYWORDS,
+    EOF
 )
+
+
+class Token(object):
+    """ A Token is the kind of thing that Lexer returns.
+    It holds:
+    - The value of the token
+    - The type of token that it is
+    """
+
+    __slots__ = ('type', 'value')
+
+    def __init__(self, type, value):
+        self.type = type
+        self.value = value
+
+    def __str__(self):
+        """ Returns a representation of token. For example:
+
+        Token(SEMICOLON, ';')
+        Token(IDENTIFIER, foo)
+        """
+
+        return 'Token({type}, {value})'.format(
+            type=self.type,
+            value=self.value
+        )
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class Lexer(object):
@@ -58,7 +85,7 @@ class Lexer(object):
     Token(IDENTIFIER, 'query_1')
     Token(ASSIGNMENT, ':=')
     Token(IDENTIFIER, 'people')
-    Token(KEYWORD, 'njoin')
+    Token(NJOIN, 'njoin')
     Token(IDENTIFIER, 'skills')
     """
 
@@ -79,7 +106,7 @@ class Lexer(object):
         var = ''
         while self.sc.char is not None and not self.sc.char.isspace():
             # Recognize identifiers like: query_1, query2323
-            # FIXME: improve this
+            # FIXME: improve this, regex?
             if self.sc.char == '_':
                 var += '_'
                 self.sc.next()
@@ -93,11 +120,12 @@ class Lexer(object):
             var += self.sc.char
             self.sc.next()
 
-        return KEYWORDS.get(var, Token(IDENTIFIER, var))
+        return var
 
     def _get_number(self):
         """ Returns a multidigit integer """
 
+        # FIXME: check for --23
         number = ''
         if self.sc.char == '-':
             number += self.sc.char
@@ -106,6 +134,16 @@ class Lexer(object):
             number += self.sc.char
             self.sc.next()
         return int(number)
+
+    def peek(self):
+        index = self.sc.index
+        col = self.sc.colno
+        line = self.sc.lineno
+        token = self.next_token()
+        self.sc.index = index
+        self.sc.colno = col
+        self.sc.lineno = line
+        return token
 
     def next_token(self):
         """ Lexical analyzer.
@@ -117,7 +155,10 @@ class Lexer(object):
         while self.sc.char is not None:
             # Recognize identifiers and keywords
             if self.sc.char.isalpha():
-                return self._get_identifier_or_keyword()
+                _id = self._get_identifier_or_keyword()
+                if _id in KEYWORDS:
+                    return Token(KEYWORDS[_id], _id)
+                return Token(ID, _id)
 
             # Ignore any whitespace characters or any comments
             if self.sc.char.isspace():
@@ -140,7 +181,7 @@ class Lexer(object):
                     return Token(NOTEQUAL, '<>')
                 elif self.sc.char == '=':
                     self.sc.next()
-                    return Token(LESSEQUAL, '<=')
+                    return Token(LEQUAL, '<=')
                 return Token(LESS, '<')
 
             # Equal
@@ -153,13 +194,13 @@ class Lexer(object):
                 self.sc.next()
                 if self.sc.char == '=':
                     self.sc.next()
-                    return Token(GREATEREQUAL, '>=')
+                    return Token(GEQUAL, '>=')
                 return Token(GREATER, '>')
 
             # Semicolon
             if self.sc.char == ';':
                 self.sc.next()
-                return Token(SEMI, ';')
+                return Token(SEMICOLON, ';')
 
             # Numbers
             if self.sc.char == '-' or self.sc.char.isdigit():
@@ -189,10 +230,12 @@ class Lexer(object):
             # Coma
             if self.sc.char == ',':
                 self.sc.next()
-                return Token(COMA, ',')
+                return Token(SEMI, ',')
 
             raise Exception("Invalid Syntax {0}:{1}".format(
                 self.sc.lineno, self.sc.colno))
+
+        # EOF
         return Token(EOF, None)
 
     def __str__(self):

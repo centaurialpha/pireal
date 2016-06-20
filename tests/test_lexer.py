@@ -78,6 +78,12 @@ class LexerTestCase(unittest.TestCase):
         self.assertEqual(token.type, COMA)
         self.assertEqual(token.value, ',')
 
+    def test_peek(self):
+        lex = self.make_lexer("p njoin q")
+        token = lex.next_token()
+        # p = lex.peek()
+        # print(token, p)
+
     def test_semicolon(self):
         lex = self.make_lexer(";")
         token = lex.next_token()

@@ -17,18 +17,34 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-# This module is responsible for organizing called "tokens" pieces,
-# each of these tokens has a meaning in language
-
 import unittest
 from src.core.interpreter import (
     parser,
     scanner,
     lexer
 )
+from src.core import relation
 
 
 class ParserTestCase(unittest.TestCase):
 
     def test_parse(self):
-        pass
+        r = relation.Relation()
+        r.header = ['id', 'name']
+        for i in {('1', 'gabo'), ('22', 'mechi')}:
+            r.insert(i)
+
+        r2 = relation.Relation()
+        r2.header = ['id', 'skill']
+        for i in {('22', 'rocas'), ('1', 'Python')}:
+            r2.insert(i)
+
+        relas = {'p': r, 'q': r2}
+        sc = scanner.Scanner("q1 := project name (p njoin q);")
+        lex = lexer.Lexer(sc)
+        par = parser.Parser(lex)
+        p = parser.Interpreter(par)
+        expression = p.to_python()
+        print(expression)
+        # result = eval(expression, {}, relas)
+        # print(result)
