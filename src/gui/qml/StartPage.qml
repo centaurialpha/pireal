@@ -181,6 +181,7 @@ Rectangle {
     }
 
     Row {
+        spacing: 10
         anchors {
             bottom: parent.bottom
             right: parent.right
@@ -195,7 +196,7 @@ Rectangle {
         }
 
         Image { id: logoPython; source: "python-logo.png"; opacity: 0.7 }
-        Image { source: "qt-logo.png"; opacity: 0.7 }
+        Image { source: "bwqt.png"; opacity: 0.7 }
     }
 
 
