@@ -9,6 +9,8 @@
 
 **Pireal** is a tool to evaluate and display the results of queries written in the language of relational algebra.
 
+**NOTE:** *This is the development branch, we are currently working on a new interpreter, see the interpreter package.*
+
 .. image:: /src/images/pireal_logo-black.png
 
 Platforms
