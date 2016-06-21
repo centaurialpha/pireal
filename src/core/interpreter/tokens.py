@@ -41,6 +41,14 @@ UNION = 'UNION'
 DIFFERENCE = 'DIFFERENCE'
 KEYWORD = 'KEYWORD'
 EOF = 'EOF'
+BINARYOP = (
+    NJOIN,
+    PRODUCT,
+    INTERSECT,
+    DIFFERENCE,
+    UNION
+)
+
 KEYWORDS = {
     'select': SELECT,
     'project': PROJECT,

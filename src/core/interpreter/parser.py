@@ -21,23 +21,22 @@
 # each of these tokens has a meaning in language
 
 from src.core.interpreter.tokens import (
-    SEMI,
+    STRING,
     SEMICOLON,
-    ID,
-    CONSTANT,
     NUMBER,
-    ASSIGNMENT,
+    ID,
     LPAREN,
     RPAREN,
     SEMI,
     SELECT,
     PROJECT,
+    BINARYOP,
+    EQUAL,
+    NOTEQUAL,
     LESS,
     GREATER,
     LEQUAL,
     GEQUAL,
-    EQUAL,
-    NOTEQUAL,
     KEYWORDS
 )
 
@@ -59,6 +58,20 @@ class Variable(AST):
     def __init__(self, token):
         self.token = token
         self.value = token.value
+
+
+class Number(AST):
+
+    def __init__(self, token):
+        self.num = token.value
+        self.token = token
+
+
+class String(AST):
+
+    def __init__(self, token):
+        self.string = token.value
+        self.token = token
 
 
 class ProjectExpr(AST):
@@ -83,7 +96,7 @@ class BinaryOp(AST):
         self.right = right
 
 
-class Formula(AST):
+class Condition(AST):
 
     def __init__(self, op1, operator, op2):
         self.op1 = op1
@@ -120,186 +133,122 @@ class Parser(object):
 
     def parse(self):
         """
-        QueryDef : Query;
-                 | AssignmentStatement;
-        AssignmentStatement : RELATION_NAME := Query
-        Query : Expression
-        Expression : (Expression)
-                   | SelectExpression
-                   | ProjectExpression
-                   | BinaryExpression
-        SelectExpression : SELECT Condition (Expression)
-        ProjectExpression : PROJECT Attributes (Expression)
-        BinaryExpression : (Expression) BinaryOperator (Expression)
-        Condition : AndCondition
-                  | AndCondition OR Condition
-        AndCondition : RelationFormula
-                     | RelationFormula AND AndCondition
-        RelationFormula : Operand RelationOperator Operand
-                        | (Operand)
-        BinaryOperator : UNION
-                       | INTERSECT
-                       | DIFFERENCE
-                       | PRODUCT
-                       | NJOIN
-        Attributes : ID
-                   | ID, Attributes
-        Operand : ID
-                | CONSTANT
-        RelationOperator : =
-                         | <>
-                         | <
-                         | >
-                         | <=
-                         | >=
+        Query : Expression;
+
+        Expression : SELECT Condition (Expression)
+                   | PROJECT AttrList (Expression)
+                   | Expression NJOIN Expression
+                   | Expression PRODUCT Expression
+                   | Expression INTERSECT Expression
+                   | Expression UNION Expression
+                   | Expression DIFFERENCE Expression
+                   | (Expression)
+                   | NAME
+
+        AttrList : NAME
+                 | NAME, AttrsList
+
+        Condition : Compared Comp Compared
+                  | (Condition)
+                  | Condition AND Condition
+                  | Condition OR Condition
+
+        Compared : ATTRIBUTE
+                 | Data
+
+        Comp : =
+             | <>
+             | <
+             | >
+             | <=
+             | >=
+
+        Data : NUMBER
+             | STRING
         """
 
-        tree = self._query_definition()
-        self.consume(SEMICOLON)
-        return tree
-
-    def _query_definition(self):
-        """
-        QueryDef : Query;
-                 | AssignmentStatement;
-        """
-
-        peek_token = self.lexer.peek()
-        if self.token.type == ID and peek_token.type == ASSIGNMENT:
-            node = self._assignment_statement()
-        else:
-            node = self._query()
-
-        return node
-
-    def _assignment_statement(self):
-        """
-        AssignmentStatement : RELATION_NAME := Query
-        """
-        relation_name = Variable(self.token)
-        self.consume(ID)
-        self.consume(ASSIGNMENT)
-        query = self._query()
-        node = AssignmentExpr(relation_name, query)
-        return node
-
-    def _query(self):
-        """
-        Query : Expression
-        """
         node = self._expression()
+        self.consume(SEMICOLON)
         return node
 
     def _expression(self):
         """
-        Expression : ID
+        Expression : NAME
+                   | SELECT Condition (Expression)
+                   | PROJECT AttrList (Expression)
+                   | Expression NJOIN Expression
+                   | Expression PRODUCT Expression
+                   | Expression INTERSECT Expression
+                   | Expression UNION Expression
+                   | Expression DIFFERENCE Expression
                    | (Expression)
-                   | SelectExpression
-                   | ProjectExpression
-                   | BinaryExpression
         """
 
         if self.token.type == ID:
-            tkn_peek = self.lexer.peek().type
-            if tkn_peek.lower() in KEYWORDS:
-                node = self._binary_expression()
+            peek = self.lexer.peek()
+            if peek.type in BINARYOP:
+                # Binary
+                exp1 = Variable(self.token)
+                self.consume(ID)
+                op = self.token
+                self.consume(KEYWORDS[op.value])
+                exp2 = Variable(self.token)
+                self.consume(ID)
+                node = BinaryOp(exp1, op, exp2)
             else:
                 node = Variable(self.token)
                 self.consume(ID)
+
+        elif self.token.type == PROJECT:
+            self.consume(PROJECT)
+            attributes = self._attributes()
+            self.consume(LPAREN)
+            expression = self._expression()
+            self.consume(RPAREN)
+            node = ProjectExpr(attributes, expression)
+
+        elif self.token.type == SELECT:
+            self.consume(SELECT)
+            condition = self._condition()
+            self.consume(LPAREN)
+            expression = self._expression()
+            self.consume(RPAREN)
+            node = SelectExpr(condition, expression)
+
         elif self.token.type == LPAREN:
             self.consume(LPAREN)
             node = self._expression()
             self.consume(RPAREN)
-        elif self.token.type == SELECT:
-            node = self._select_expression()
-        elif self.token.type == PROJECT:
-            node = self._project_expression()
 
-        return node
-
-    def _binary_expression(self):
-        """
-        BinaryExpression : Expression BinaryOp Expression
-        """
-
-        node_left = self._expression()
-        operator = self._binary_operator()
-        node_right = self._expression()
-        root = BinaryOp(node_left, operator, node_right)
-        return root
-
-    def _binary_operator(self):
-        """
-        BinaryOperator : UNION
-                       | DIFFERENCE
-                       | INTERSECT
-                       | PRODUCT
-                       | NJOIN
-        """
-
-        tkn_value = self.token.value
-        tkn_type = KEYWORDS.get(tkn_value)
-        self.consume(tkn_type)
-        return tkn_type
-
-    def _select_expression(self):
-        """
-        SelectExpression : SELECT Condition (Expression)
-        """
-
-        self.consume('SELECT')
-        condition = self._condition()
-        self.consume(LPAREN)
-        expr = self._expression()
-        self.consume(RPAREN)
-        node = SelectExpr(condition, expr)
         return node
 
     def _condition(self):
         """
-        Condition : AndCondition
-                  | AndCondition OR Condition
-        """
-        # FIXME: OR
-        and_condition = self._and_condition()
-        return and_condition
-
-    def _and_condition(self):
-        """
-        AndCondition : RelationFormula
-                     | RelationFormula AND AndCondition
+        Condition : Compared Comp Compared
+                  | (Condition)
+                  | Condition AND Condition
+                  | Condition OR Condition
         """
 
-        rformula = self._relation_formula()
-        return rformula
+        # FIXME: incomplete derivations
+        compared = self._compared()
+        comp = self._comp()
+        compared2 = self._compared()
+        node = Condition(compared, comp, compared2)
+        return node
 
-    def _relation_formula(self):
+    def _comp(self):
         """
-        RelationFormula : Operand RelationOperator Operand
-                        | (Operand)
-        """
-
-        op1 = Variable(self.token)
-        self.consume(ID)
-        operator = self._operator()
-        op2 = Variable(self.token)
-        # FIXME: consume NUMBER and STRING, DATE
-        # CONSTANT ?
-        self.consume(NUMBER)
-        formula = Formula(op1, operator, op2)
-        return formula
-
-    def _operator(self):
-        """
-        RelationOperator : =
-                         | <>
-                         | <
-                         | >
-                         | <=
-                         | >=
+        Comp : =
+             | <>
+             | <
+             | >
+             | <=
+             | >=
         """
 
-        tkn = self.token
+        node = self.token
+
         if self.token.type == EQUAL:
             self.consume(EQUAL)
         elif self.token.type == NOTEQUAL:
@@ -313,36 +262,50 @@ class Parser(object):
         elif self.token.type == GEQUAL:
             self.consume(GEQUAL)
 
-        return tkn
+        return node
 
-    def _project_expression(self):
+    def _compared(self):
         """
-        ProjectExpression : PROJECT Attributes (Expr)
+        Compared : ATTRIBUTE
+                 | Data
         """
 
-        self.consume('PROJECT')
-        attributes = self._attributes()
-        self.consume(LPAREN)
-        expr = self._expression()
-        self.consume(RPAREN)
-        node = ProjectExpr(attributes, expr)
+        if self.token.type == ID:
+            node = Variable(self.token)
+            self.consume(ID)
+        else:
+            node = self._data()
+
+        return node
+
+    def _data(self):
+        """
+        Data : NUMBER
+             | STRING
+        """
+
+        if self.token.type == NUMBER:
+            node = Number(self.token)
+            self.consume(NUMBER)
+        else:
+            node = String(self.token)
+            self.consume(STRING)
         return node
 
     def _attributes(self):
         """
-        Attributes : ID
-                   | ID, Attributes
+        AttrList : NAME
+                 | NAME, AttrsList
         """
 
         node = Variable(self.token)
         self.consume(ID)
 
         results = [node]
-        append = results.append
 
         while self.token.type == SEMI:
             self.consume(SEMI)
-            append(Variable(self.token))
+            results.append(Variable(self.token))
             self.consume(ID)
 
         return results
@@ -376,38 +339,3 @@ class NodeVisitor(object):
         """ Called if not explicit visitor function exists for a node """
 
         raise Exception("No visit_{} method".format(node.__class__.__name__))
-
-
-class Interpreter(NodeVisitor):
-
-    def __init__(self, parser):
-        self.parser = parser
-        self._q = ""
-
-    def to_python(self):
-        tree = self.parser.parse()
-        return self.visit(tree)
-
-    def visit_AssignmentExpr(self, node):
-        return self.visit(node.right)
-
-    def visit_ProjectExpr(self, node):
-        attrs = [self.visit(i) for i in node.attrs]
-        proj_expr = "{0}.project({1})".format(
-            self.visit(node.expr),
-            ', '.join("'{0}'".format(i) for i in attrs)
-        )
-        return proj_expr
-
-    def visit_Variable(self, node):
-        return node.value
-
-    def visit_BinaryOp(self, node):
-        left = self.visit(node.left)
-        right = self.visit(node.right)
-        expr = '{0}.{1}({2})'.format(
-            left,
-            node.op.value,
-            right
-        )
-        return expr

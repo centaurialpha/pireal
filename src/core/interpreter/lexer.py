@@ -209,15 +209,21 @@ class Lexer(object):
 
             # Strings
             if self.sc.char == "'":
+                self.sc.next()
                 string = ""
+
                 while True:
-                    if self.sc.char is None:
+                    if self.sc.char == "'":
                         break
-                    string += self.sc.char
+                    try:
+                        string += self.sc.char
+                    except TypeError:
+                        raise Exception("Missing quote")
                     self.sc.next()
+
+                self.sc.next()
                 return Token(STRING, string)
 
-            # Left parenthesis
             if self.sc.char == '(':
                 self.sc.next()
                 return Token(LPAREN, '(')

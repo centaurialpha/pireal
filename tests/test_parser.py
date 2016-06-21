@@ -29,6 +29,7 @@ from src.core import relation
 class ParserTestCase(unittest.TestCase):
 
     def test_parse(self):
+        """
         r = relation.Relation()
         r.header = ['id', 'name']
         for i in {('1', 'gabo'), ('22', 'mechi')}:
@@ -40,11 +41,9 @@ class ParserTestCase(unittest.TestCase):
             r2.insert(i)
 
         relas = {'p': r, 'q': r2}
-        sc = scanner.Scanner("q1 := project name (p njoin q);")
+        """
+        sc = scanner.Scanner("project name, id (people);")
         lex = lexer.Lexer(sc)
         par = parser.Parser(lex)
-        p = parser.Interpreter(par)
-        expression = p.to_python()
-        print(expression)
-        # result = eval(expression, {}, relas)
-        # print(result)
+        tree = par.parse()
+        print(tree)
