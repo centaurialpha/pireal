@@ -339,3 +339,62 @@ class NodeVisitor(object):
         """ Called if not explicit visitor function exists for a node """
 
         raise Exception("No visit_{} method".format(node.__class__.__name__))
+
+
+class Interpreter(NodeVisitor):
+
+    def __init__(self, parser):
+        self.parser = parser
+
+    def to_python(self):
+        tree = self.parser.parse()
+        return self.visit(tree)
+
+    def visit_BinaryOp(self, node):
+        left = self.visit(node.left)
+        right = self.visit(node.right)
+        return '{0}.{1}({2})'.format(
+            left,
+            node.token.value,
+            right
+        )
+
+    def visit_Number(self, node):
+        return node.num
+
+    def visit_ProjectExpr(self, node):
+        attrs = [i.value for i in node.attrs]
+        expr = self.visit(node.expr)
+        return '{0}.project({1})'.format(
+            expr,
+            ', '.join("'{0}'".format(i) for i in attrs)
+        )
+
+    def visit_SelectExpr(self, node):
+        cond = self.visit(node.condition)
+        expr = self.visit(node.expr)
+        return '{0}.select("{1}")'.format(
+            expr,
+            cond
+        )
+
+    def visit_Condition(self, node):
+        op1 = self.visit(node.op1)
+        op2 = self.visit(node.op2)
+        operator = node.operator.value
+        if operator == '=':
+            operator += '='
+        if operator == '<>':
+            operator = '!='
+
+        return '{0} {1} {2}'.format(
+            op1,
+            operator,
+            op2
+        )
+
+    def visit_Variable(self, node):
+        return node.value
+
+    def visit_String(self, node):
+        return repr(node.string)

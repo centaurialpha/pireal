@@ -29,17 +29,4 @@ from src.core import relation
 class ParserTestCase(unittest.TestCase):
 
     def test_parse(self):
-        """
-        r = relation.Relation()
-        r.header = ['id', 'name']
-        for i in {('1', 'gabo'), ('22', 'mechi')}:
-            r.insert(i)
-
-        r2 = relation.Relation()
-        r2.header = ['id', 'skill']
-        for i in {('22', 'rocas'), ('1', 'Python')}:
-            r2.insert(i)
-
-        relas = {'p': r, 'q': r2}
-        """
         pass

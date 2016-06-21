@@ -4,10 +4,9 @@ from PyQt5.QtWidgets import (
     QTableView,
     QHeaderView,
     QLineEdit,
-
     QAbstractItemView
 )
-
+from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtCore import (
     Qt,
     QModelIndex
@@ -19,6 +18,9 @@ class Table(QTableView):
     def __init__(self):
         super(Table, self).__init__()
         # Stretch horizontal header
+        # FIXME: not set model here
+        model = QStandardItemModel()
+        self.setModel(model)
         self.setAlternatingRowColors(True)
         self.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeToContents)

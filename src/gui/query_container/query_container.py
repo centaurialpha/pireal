@@ -38,7 +38,11 @@ from PyQt5.QtCore import (
 )
 
 from src.core.logger import PirealLogger
-from src.core import parser
+from src.core.interpreter import (
+    scanner,
+    lexer,
+    parser
+)
 from src.gui import (
     custom_table,
     lateral_widget,
@@ -158,6 +162,7 @@ class QueryContainer(QWidget):
             weditor = self.currentWidget().get_editor()
             text = weditor.toPlainText()
             query = text
+
         relations = self.currentWidget().relations
         central = Pireal.get_service("central")
         table_widget = central.get_active_db().table_widget
@@ -166,40 +171,44 @@ class QueryContainer(QWidget):
         relations.clear()
         self.currentWidget().clear_results()
 
-        # Ignore comments
-        for line in query.splitlines():
-            if line.startswith('--') or not line:
-                continue
+        for i in query.split(';'):
+            if i:
+                p = i.split(':=', 1)
+                if len(p) == 2 and self.__validName.match(p[0].strip()):
+                    relation_name = p[0].strip()
+                    q = p[1].strip() + ';'
+                else:
+                    relation_name = "query_{}".format(self.__nquery)
+                    self.__nquery += 1
+                try:
+                    # Parse
+                    sc = scanner.Scanner(q)
+                    lex = lexer.Lexer(sc)
+                    par = parser.Parser(lex)
+                    interprete = parser.Interpreter(par)
+                    expression = interprete.to_python()
+                    relations.update(table_widget.relations)
+                    rela = eval(expression, {}, relations)
+                    print(rela)
+                except Exception as reason:
+                    QMessageBox.critical(self,
+                                         self.tr("Query Error"),
+                                         reason.__str__())
+                    return
 
-            parts = line.split('=', 1)
-            if len(parts) == 2 and self.__validName.match(parts[0].strip()):
-                relation_name = parts[0].strip()
-                line = parts[1].strip()
-            else:
-                relation_name = "query_{}".format(self.__nquery)
-                self.__nquery += 1
+                if relation_name in relations:
+                    QMessageBox.critical(self,
+                                         self.tr("Query Error"),
+                                         self.tr("<b>{}</b> is a duplicate "
+                                                 "relation name.<br><br> "
+                                                 "Please choose a unique name "
+                                                 "and re-execute the "
+                                                 "queries.".format(
+                                                     relation_name)))
+                    return
 
-            try:
-                expression = parser.convert_to_python(line)
-                relations.update(table_widget.relations)
-                rela = eval(expression, {}, relations)
-            except Exception as reason:
-                QMessageBox.critical(self,
-                                     self.tr("Query Error"),
-                                     reason.__str__())
-                return
-
-            if relation_name in relations:
-                QMessageBox.critical(self,
-                                     self.tr("Query Error"),
-                                     self.tr("<b>{}</b> is a duplicate "
-                                             "relation name.<br><br> "
-                                             "Please choose a unique name and "
-                                             "re-execute the queries.".format(
-                                                 relation_name)))
-                return
-            relations[relation_name] = rela
-            self.__add_table(rela, relation_name)
+                relations[relation_name] = rela
+                self.__add_table(rela, relation_name)
 
     def __add_table(self, rela, rname):
         self.currentWidget().add_table(rela, rname)
