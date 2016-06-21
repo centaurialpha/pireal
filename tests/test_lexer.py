@@ -1,24 +1,45 @@
-"""
+# -*- coding: utf-8 -*-
+#
+# Copyright 2015-2016 - Gabriel Acosta <acostadariogabriel@gmail.com>
+#
+# This file is part of Pireal.
+#
+# Pireal is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# any later version.
+#
+# Pireal is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Pireal; If not, see <http://www.gnu.org/licenses/>.
+
 import unittest
 from src.core.interpreter import (
     lexer,
     scanner
 )
-from src.core.interpreter.token import (
-    IDENTIFIER,
-    ASSIGNMENT,
+from src.core.interpreter.tokens import (
+    ID,
     GREATER,
     LESS,
-    LESSEQUAL,
-    GREATEREQUAL,
+    LEQUAL,
+    GEQUAL,
     NOTEQUAL,
     EQUAL,
     NUMBER,
     LPAREN,
     RPAREN,
-    COMA,
+    SEMI,
     STRING,
-    SEMI
+    SEMICOLON,
+    PROJECT,
+    SELECT,
+    NJOIN,
+    EOF
 )
 
 
@@ -52,8 +73,8 @@ class LexerTestCase(unittest.TestCase):
             (LESS, '<'),
             (GREATER, '>'),
             (NOTEQUAL, '<>'),
-            (GREATEREQUAL, '>='),
-            (LESSEQUAL, '<='),
+            (GEQUAL, '>='),
+            (LEQUAL, '<='),
             (EQUAL, '=')
         )
         for tkn_type, tkn_value in tokens:
@@ -65,82 +86,73 @@ class LexerTestCase(unittest.TestCase):
         lex = self.make_lexer("'esto    es un  string'")
         token = lex.next_token()
         self.assertEqual(token.type, STRING)
-        self.assertEqual(token.value, "'esto    es un  string'")
-
-    def test_assignment(self):
-        lex = self.make_lexer(":=")
-        token = lex.next_token()
-        self.assertEqual(token.type, ASSIGNMENT)
-        self.assertEqual(token.value, ':=')
+        self.assertEqual(token.value, "esto    es un  string")
 
     def test_semi(self):
         lex = self.make_lexer(",")
         token = lex.next_token()
-        self.assertEqual(token.type, COMA)
+        self.assertEqual(token.type, SEMI)
         self.assertEqual(token.value, ',')
-
-    def test_peek(self):
-        lex = self.make_lexer("p njoin q")
-        token = lex.next_token()
-        # p = lex.peek()
-        # print(token, p)
 
     def test_semicolon(self):
         lex = self.make_lexer(";")
         token = lex.next_token()
-        self.assertEqual(token.type, SEMI)
+        self.assertEqual(token.type, SEMICOLON)
         self.assertEqual(token.value, ';')
 
     def test_tokens(self):
-        sc = scanner.Scanner(("q1 := select id > 12 (people njoin skills);"
-                              "q_2 := project name, age (q1);"))
-        lex = lexer.Lexer(sc)
+        lex = self.make_lexer("project name, age (select id=2 (p njoin q));")
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, IDENTIFIER)
+        self.assertEqual(PROJECT, tkn.type)
+        self.assertEqual('project', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, ASSIGNMENT)
+        self.assertEqual(ID, tkn.type)
+        self.assertEqual('name', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, 'KEYWORD')
+        self.assertEqual(SEMI, tkn.type)
+        self.assertEqual(',', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, IDENTIFIER)
+        self.assertEqual(ID, tkn.type)
+        self.assertEqual('age', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, GREATER)
+        self.assertEqual(LPAREN, tkn.type)
+        self.assertEqual('(', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, NUMBER)
+        self.assertEqual(SELECT, tkn.type)
+        self.assertEqual('select', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, LPAREN)
+        self.assertEqual(ID, tkn.type)
+        self.assertEqual('id', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, IDENTIFIER)
+        self.assertEqual(EQUAL, tkn.type)
+        self.assertEqual('=', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, 'KEYWORD')
+        self.assertEqual(NUMBER, tkn.type)
+        self.assertEqual(2, tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, IDENTIFIER)
+        self.assertEqual(LPAREN, tkn.type)
+        self.assertEqual('(', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, RPAREN)
+        self.assertEqual(ID, tkn.type)
+        self.assertEqual('p', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, SEMI)
+        self.assertEqual(NJOIN, tkn.type)
+        self.assertEqual('njoin', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, IDENTIFIER)
+        self.assertEqual(ID, tkn.type)
+        self.assertEqual('q', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, ASSIGNMENT)
+        self.assertEqual(RPAREN, tkn.type)
+        self.assertEqual(')', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, 'KEYWORD')
+        self.assertEqual(RPAREN, tkn.type)
+        self.assertEqual(')', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, IDENTIFIER)
+        self.assertEqual(SEMICOLON, tkn.type)
+        self.assertEqual(';', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(tkn.type, COMA)
-        tkn = lex.next_token()
-        self.assertEqual(tkn.type, IDENTIFIER)
-        tkn = lex.next_token()
-        self.assertEqual(tkn.type, LPAREN)
-        tkn = lex.next_token()
-        self.assertEqual(tkn.type, IDENTIFIER)
-        tkn = lex.next_token()
-        self.assertEqual(tkn.type, RPAREN)
-        tkn = lex.next_token()
-        self.assertEqual(tkn.type, SEMI)
-
+        self.assertEqual(EOF, tkn.type)
+        self.assertEqual(None, tkn.value)
 
 if __name__ == '__main__':
     unittest.main()
-"""

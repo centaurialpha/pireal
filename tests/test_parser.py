@@ -42,8 +42,4 @@ class ParserTestCase(unittest.TestCase):
 
         relas = {'p': r, 'q': r2}
         """
-        sc = scanner.Scanner("project name, id (people);")
-        lex = lexer.Lexer(sc)
-        par = parser.Parser(lex)
-        tree = par.parse()
-        print(tree)
+        pass
