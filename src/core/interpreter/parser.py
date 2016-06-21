@@ -17,9 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-# This module is responsible for organizing called "tokens" pieces,
-# each of these tokens has a meaning in language
-
 from src.core.interpreter.tokens import (
     STRING,
     SEMICOLON,
@@ -37,20 +34,14 @@ from src.core.interpreter.tokens import (
     GREATER,
     LEQUAL,
     GEQUAL,
-    KEYWORDS
+    KEYWORDS,
+    AND
 )
 
 
 class AST(object):
     """ Base class for all nodes """
     pass
-
-
-class AssignmentExpr(AST):
-
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
 
 
 class Variable(AST):
@@ -102,6 +93,14 @@ class Condition(AST):
         self.op1 = op1
         self.operator = operator
         self.op2 = op2
+
+
+class BoolOp(AST):
+
+    def __init__(self, op, left, right):
+        self.op = op
+        self.left = left
+        self.right = right
 
 
 class Parser(object):
@@ -230,11 +229,17 @@ class Parser(object):
                   | Condition OR Condition
         """
 
-        # FIXME: incomplete derivations
-        compared = self._compared()
-        comp = self._comp()
-        compared2 = self._compared()
-        node = Condition(compared, comp, compared2)
+        # FIXME: AND, OR
+        if self.token.type == LPAREN:
+            self.consume(LPAREN)
+            node = self._condition()
+            self.consume(RPAREN)
+        elif self.token.type == ID:
+            compared = self._compared()
+            comp = self._comp()
+            compared2 = self._compared()
+            node = Condition(compared, comp, compared2)
+
         return node
 
     def _comp(self):

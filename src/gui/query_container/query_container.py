@@ -171,6 +171,7 @@ class QueryContainer(QWidget):
         relations.clear()
         self.currentWidget().clear_results()
 
+        # FIXME: improve this!!!!!
         for i in query.split(';'):
             if i:
                 p = i.split(':=', 1)
@@ -180,6 +181,7 @@ class QueryContainer(QWidget):
                 else:
                     relation_name = "query_{}".format(self.__nquery)
                     self.__nquery += 1
+                    q = p[0].strip() + ';'
                 try:
                     # Parse
                     sc = scanner.Scanner(q)

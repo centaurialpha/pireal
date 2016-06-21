@@ -39,6 +39,8 @@ PRODUCT = 'PRODUCT'
 INTERSECT = 'INTERSECT'
 UNION = 'UNION'
 DIFFERENCE = 'DIFFERENCE'
+AND = 'AND'
+OR = 'OR'
 KEYWORD = 'KEYWORD'
 EOF = 'EOF'
 BINARYOP = (
@@ -56,5 +58,7 @@ KEYWORDS = {
     'product': PRODUCT,
     'intersect': INTERSECT,
     'union': UNION,
-    'difference': DIFFERENCE
+    'difference': DIFFERENCE,
+    'and': AND,
+    'or': OR
 }

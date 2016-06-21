@@ -165,13 +165,6 @@ class Lexer(object):
                 self._skip_whitespace()
                 continue
 
-            # Manage assignment
-            if self.sc.char == ':':
-                self.sc.next()
-                if self.sc.char == '=':
-                    self.sc.next()
-                    return Token(ASSIGNMENT, ':=')
-
             # Operators
             # Less, not-equal and less-equal
             if self.sc.char == '<':
