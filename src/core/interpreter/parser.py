@@ -149,6 +149,9 @@ class Parser(object):
 
     def parse(self):
         """
+        Compound : Assignment
+                 | Assignment; Compound
+
         Assignment : RNAME := Expression;
 
         Expression : SELECT Condition (Expression)
@@ -187,6 +190,11 @@ class Parser(object):
         return node
 
     def _compound(self):
+        """
+        Compound : Assignment
+                 | Assignment; Compound
+        """
+
         nodes = []
 
         while self.token.type != EOF:
@@ -198,6 +206,10 @@ class Parser(object):
         return compound
 
     def _assignment(self):
+        """
+        Assignment : RNAME := Expression;
+        """
+
         rname = Variable(self.token)
         self.consume(ID)
         self.consume(ASSIGNMENT)
