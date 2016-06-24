@@ -167,9 +167,16 @@ class Lexer(object):
                     self.sc.next()
                     return Token(ASSIGNMENT, ':=')
 
-            # Ignore any whitespace characters or any comments
+            # Ignore any whitespace characters
             if self.sc.char.isspace():
                 self._skip_whitespace()
+                continue
+
+            # Comments inline
+            if self.sc.char == '%':
+                while self.sc.char != '\n':
+                    self.sc.next()
+                self.sc.next()
                 continue
 
             # Operators
@@ -239,7 +246,9 @@ class Lexer(object):
                 return Token(SEMI, ',')
 
             raise Exception("Invalid Syntax {0}:{1}".format(
-                self.sc.lineno, self.sc.colno))
+                self.sc.lineno,
+                self.sc.colno
+            ))
 
         # EOF
         return Token(EOF, None)
