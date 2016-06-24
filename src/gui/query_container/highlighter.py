@@ -77,7 +77,7 @@ class Highlighter(QSyntaxHighlighter):
 
         # Comment format
         comment_format = QTextCharFormat()
-        comment_pattern = QRegExp("--[^\n]*")
+        comment_pattern = QRegExp("%[^\n]*")
         comment_format.setForeground(Qt.darkGreen)
         self._rules.append((comment_pattern, comment_format))
 
