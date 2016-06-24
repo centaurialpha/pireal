@@ -171,46 +171,40 @@ class QueryContainer(QWidget):
         relations.clear()
         self.currentWidget().clear_results()
 
-        # FIXME: improve this!!!!!
-        for i in query.split(';'):
-            if i:
-                p = i.split(':=', 1)
-                if len(p) == 2 and self.__validName.match(p[0].strip()):
-                    relation_name = p[0].strip()
-                    q = p[1].strip() + ';'
-                else:
-                    relation_name = "query_{}".format(self.__nquery)
-                    self.__nquery += 1
-                    q = p[0].strip() + ';'
-                try:
-                    # Parse
-                    sc = scanner.Scanner(q)
-                    lex = lexer.Lexer(sc)
-                    par = parser.Parser(lex)
-                    interprete = parser.Interpreter(par)
-                    expression = interprete.to_python()
-                    relations.update(table_widget.relations)
-                    rela = eval(expression, {}, relations)
-                    print(rela)
-                except Exception as reason:
-                    QMessageBox.critical(self,
-                                         self.tr("Query Error"),
-                                         reason.__str__())
-                    return
+        sc = scanner.Scanner(query)
+        lex = lexer.Lexer(sc)
+        try:
+            par = parser.Parser(lex)
+            interpreter = parser.Interpreter(par)
+            interpreter.to_python()
+        except Exception as reason:
+            QMessageBox.critical(self,
+                                 self.tr("Syntax Error"),
+                                 reason.__str__())
+            return
+        relations.update(table_widget.relations)
+        for relation_name, expression in list(interpreter.SCOPE.items()):
+            if relation_name in relations:
+                QMessageBox.critical(self,
+                                     self.tr("Query Error"),
+                                     self.tr("<b>{}</b> is a duplicate "
+                                             "relation name.<br><br> "
+                                             "Please choose a unique name "
+                                             "and re-execute the "
+                                             "queries.".format(
+                                                 relation_name)))
+                del interpreter.SCOPE[relation_name]
+                return
+            try:
+                new_relation = eval(expression, {}, relations)
+            except Exception as reason:
+                QMessageBox.critical(self,
+                                     self.tr("Query Error"),
+                                     reason.__str__())
+                return
 
-                if relation_name in relations:
-                    QMessageBox.critical(self,
-                                         self.tr("Query Error"),
-                                         self.tr("<b>{}</b> is a duplicate "
-                                                 "relation name.<br><br> "
-                                                 "Please choose a unique name "
-                                                 "and re-execute the "
-                                                 "queries.".format(
-                                                     relation_name)))
-                    return
-
-                relations[relation_name] = rela
-                self.__add_table(rela, relation_name)
+            relations[relation_name] = new_relation
+            self.__add_table(new_relation, relation_name)
 
     def __add_table(self, rela, rname):
         self.currentWidget().add_table(rela, rname)

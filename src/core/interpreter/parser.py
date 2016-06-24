@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+from collections import OrderedDict
+
 from src.core.interpreter.tokens import (
     STRING,
     SEMICOLON,
@@ -35,7 +37,9 @@ from src.core.interpreter.tokens import (
     LEQUAL,
     GEQUAL,
     KEYWORDS,
-    AND
+    # AND,
+    ASSIGNMENT,
+    EOF
 )
 
 
@@ -103,6 +107,19 @@ class BoolOp(AST):
         self.right = right
 
 
+class Assignment(AST):
+
+    def __init__(self, rname, query):
+        self.rname = rname
+        self.query = query
+
+
+class Compound(AST):
+
+    def __init__(self):
+        self.children = []
+
+
 class Parser(object):
     """ The Parser is the part that really understands the syntax of
     the language. It calls the Lexer to get tokens and processes the tokens
@@ -132,7 +149,7 @@ class Parser(object):
 
     def parse(self):
         """
-        Query : Expression;
+        Assignment : RNAME := Expression;
 
         Expression : SELECT Condition (Expression)
                    | PROJECT AttrList (Expression)
@@ -166,8 +183,29 @@ class Parser(object):
              | STRING
         """
 
-        node = self._expression()
+        node = self._compound()
+        return node
+
+    def _compound(self):
+        nodes = []
+
+        while self.token.type != EOF:
+            nodes.append(self._assignment())
+
+        compound = Compound()
+        compound.children = nodes
+
+        return compound
+
+    def _assignment(self):
+        rname = Variable(self.token)
+        self.consume(ID)
+        self.consume(ASSIGNMENT)
+        q = self._expression()
+
+        node = Assignment(rname, q)
         self.consume(SEMICOLON)
+
         return node
 
     def _expression(self):
@@ -348,12 +386,22 @@ class NodeVisitor(object):
 
 class Interpreter(NodeVisitor):
 
+    SCOPE = OrderedDict()
+
     def __init__(self, parser):
         self.parser = parser
 
     def to_python(self):
         tree = self.parser.parse()
         return self.visit(tree)
+
+    def visit_Compound(self, node):
+        for child in node.children:
+            self.visit(child)
+
+    def visit_Assignment(self, node):
+        rname = self.visit(node.rname)
+        self.SCOPE[rname] = self.visit(node.query)
 
     def visit_BinaryOp(self, node):
         left = self.visit(node.left)
@@ -403,3 +451,6 @@ class Interpreter(NodeVisitor):
 
     def visit_String(self, node):
         return repr(node.string)
+
+    def clear(self):
+        self.SCOPE.clear()

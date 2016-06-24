@@ -160,6 +160,13 @@ class Lexer(object):
                     return Token(KEYWORDS[_id], _id)
                 return Token(ID, _id)
 
+            # Assignment
+            if self.sc.char == ':':
+                self.sc.next()
+                if self.sc.char == '=':
+                    self.sc.next()
+                    return Token(ASSIGNMENT, ':=')
+
             # Ignore any whitespace characters or any comments
             if self.sc.char.isspace():
                 self._skip_whitespace()
