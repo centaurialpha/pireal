@@ -25,22 +25,18 @@ if sys.version_info.major != 3:
     sys.exit(-1)
 
 import os
-
-try:
-
-    from PyQt5.QtWidgets import (
-        QApplication,
-        QStyleFactory
-    )
-    from PyQt5.QtGui import QIcon
-    from PyQt5.QtCore import (
-        QLocale,
-        QTranslator,
-        QLibraryInfo,
-        QT_VERSION_STR
-    )
-except ImportError:
-    print("Pireal need PyQt 5 :(")
+from PyQt5.QtWidgets import (
+    QApplication,
+    QStyleFactory
+)
+from PyQt5.QtGui import QIcon, QColor, QPalette
+from PyQt5.QtCore import (
+    QLocale,
+    QTranslator,
+    QLibraryInfo,
+    QT_VERSION_STR,
+    Qt
+)
 
 INSTALL_DIR = "@ INSTALLED_BASE_DIR @"
 
@@ -100,7 +96,10 @@ if __name__ == "__main__":
 
     qapp = QApplication(sys.argv)
 
-    # Icon
+    # Fusion style
+    qapp.setStyle(QStyleFactory.create("fusion"))
+
+# Icon
     qapp.setWindowIcon(QIcon(":img/icon"))
 
     # Language
