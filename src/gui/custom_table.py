@@ -23,7 +23,7 @@ class Table(QTableView):
         self.setModel(model)
         self.setAlternatingRowColors(True)
         self.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeToContents)
+            QHeaderView.Interactive)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.verticalHeader().hide()
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
