@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2016 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -20,81 +20,60 @@
 import os
 
 from PyQt5.QtCore import (
+    QObject,
+    pyqtSignal,
     QFile,
-    QIODevice,
     QTextStream,
-    QTextCodec
+    QTextCodec,
+    QIODevice
 )
 
 
-class PFile(object):
-    """ This class represents a Pireal File, database file or query file """
+class File(QObject):
+
+    """ This class represents an object file"""
+
+    fileSaved = pyqtSignal('QString')
 
     def __init__(self, filename=''):
-        """
-        Recive the filename or set using the filename property
-        """
-
-        self.__is_new = True
-        self.__filename = filename
-        if self.exists:
-            self.__is_new = False
-
-    def __get_filename(self):
-        """ Returns the filename """
-
-        return self.__filename
-
-    def __set_filename(self, fname):
-        """ This function set the filename """
-
-        self.__filename = fname
-
-    filename = property(__get_filename, __set_filename)
+        QObject.__init__(self)
+        self.is_new = True
+        if filename:
+            self.is_new = False
+        self.filename = filename
 
     @property
-    def exists(self):
-        exists = False
-        if self.__filename and os.path.exists(self.__filename):
-            exists = True
-        return exists
-
-    @property
-    def name(self):
-        """ This function returns the display name """
+    def display_name(self):
+        """ Returns only the file name with extension, without the path"""
 
         return os.path.basename(self.filename)
 
-    @property
-    def is_new(self):
-        """ This function returns True is the file is new, False otherwise """
+    def save(self, data, path=None):
+        if path:
+            self.filename = path
+            self.is_new = False
 
-        return self.__is_new
+        _file = QFile(self.filename)
+        if not _file.open(QIODevice.WriteOnly | QIODevice.Truncate):
+            raise Exception(_file.errorString())
+
+        stream = QTextStream(_file)
+        stream.setCodec(QTextCodec.codecForLocale())
+        stream << data
+        stream.flush()
+        _file.close()
+        # Emit the signal
+        self.fileSaved.emit(self.filename)
 
     def read(self):
-        """ This function reads the file and returns the contents """
+        """ Reads the file and returns the content """
 
-        file_ = QFile(self.filename)
-        if not file_.open(QIODevice.ReadOnly | QIODevice.Text):
-            raise Exception(file_.errorString())
+        _file = QFile(self.filename)
+        if not _file.open(QIODevice.ReadOnly | QIODevice.Text):
+            raise Exception(_file.errorString())
+
+        # Codec
         codec = QTextCodec.codecForLocale()
-        fstream = QTextStream(file_)
-        fstream.setCodec(codec)
-        return fstream.readAll()
-
-    def write(self, content, new_fname=''):
-        """ This function write the file """
-
-        if new_fname:
-            self.__filename = new_fname
-            self.__is_new = False
-
-        file_ = QFile(self.filename)
-        if not file_.open(QIODevice.WriteOnly | QIODevice.Truncate):
-            raise Exception(file_.errorString())
-
-        stream = QTextStream(file_)
-        stream.setCodec(QTextCodec.codecForLocale())
-        stream << content
-        stream.flush()
-        file_.close()
+        stream = QTextStream(_file)
+        stream.setCodec(codec)
+        return stream.readAll()

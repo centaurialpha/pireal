@@ -121,7 +121,7 @@ class CentralWidget(QWidget):
             # Create a new data base container
             db_container = database_container.DatabaseContainer()
             # Associate the file name with the PFile object
-            pfile_object = pfile.PFile(data['filename'])
+            pfile_object = pfile.File(data['filename'])
             # Associate PFile object with data base container
             # and add widget to stacked
             db_container.pfile = pfile_object
@@ -174,7 +174,7 @@ class CentralWidget(QWidget):
         # If filename provide
         try:
             # Read pdb file
-            pfile_object = pfile.PFile(filename)
+            pfile_object = pfile.File(filename)
             db_data = pfile_object.read()
             # Create a dict to manipulate data more easy
             db_data = self.__sanitize_data(db_data)
@@ -375,7 +375,7 @@ class CentralWidget(QWidget):
         relations = db.table_widget.relations
         # Generate content
         content = file_manager.generate_database(relations)
-        db.pfile.write(content=content, new_fname='')
+        db.pfile.save(content=content)
         filename = db.pfile.filename
         # Emit signal
         self.databaseSaved.emit(
@@ -396,7 +396,7 @@ class CentralWidget(QWidget):
         relations = db.table_widget.relations
         # Content
         content = file_manager.generate_database(relations)
-        db.pfile.write(content, filename)
+        db.pfile.save(content, filename)
         self.databaseSaved.emit(
             self.tr("Database saved: {}".format(db.pfile.filename)))
 

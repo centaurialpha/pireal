@@ -86,7 +86,7 @@ class DatabaseContainer(QSplitter):
     def dbname(self):
         """ Return display name """
 
-        return self.pfile.name
+        return self.pfile.display_name
 
     def is_new(self):
         return self.pfile.is_new
@@ -213,7 +213,7 @@ class DatabaseContainer(QSplitter):
         else:
             query_widget = query_container.QueryWidget()
             # Create object file
-            ffile = pfile.PFile(filename)
+            ffile = pfile.File(filename)
             editor = query_widget.get_editor()
             editor.pfile = ffile
             if not filename:
@@ -221,7 +221,7 @@ class DatabaseContainer(QSplitter):
             else:
                 content = ffile.read()
                 editor.setPlainText(content)
-            self.query_container.add_tab(query_widget, ffile.name)
+            self.query_container.add_tab(query_widget, ffile.display_name)
             self.__nquery += 1
 
     def save_query(self, editor):
@@ -232,7 +232,7 @@ class DatabaseContainer(QSplitter):
         # Get content of editor
         content = editor.toPlainText()
         try:
-            editor.pfile.write(content=content)
+            editor.pfile.save(content=content)
         except Exception as reason:
             QMessageBox.critical(self, "Error",
                                  self.tr("The file couldn't be saved!"
@@ -251,7 +251,7 @@ class DatabaseContainer(QSplitter):
         # Get the content
         content = editor.toPlainText()
         # Write the file
-        editor.pfile.write(content=content, new_fname=filename)
+        editor.pfile.save(content=content, new_fname=filename)
         editor.saved()
 
     def execute_queries(self):
