@@ -37,7 +37,8 @@ from src.core.interpreter.tokens import (
     LEQUAL,
     GEQUAL,
     KEYWORDS,
-    # AND,
+    AND,
+    OR,
     ASSIGNMENT,
     EOF
 )
@@ -101,10 +102,9 @@ class Condition(AST):
 
 class BoolOp(AST):
 
-    def __init__(self, op, left, right):
-        self.op = op
-        self.left = left
-        self.right = right
+    def __init__(self):
+        self.ops = []
+        self.conditions = []
 
 
 class Assignment(AST):
@@ -233,6 +233,7 @@ class Parser(object):
                    | (Expression)
         """
 
+        # FIXME: improve select derivation
         if self.token.type == ID:
             peek = self.lexer.peek()
             if peek.type in BINARYOP:
@@ -259,6 +260,19 @@ class Parser(object):
         elif self.token.type == SELECT:
             self.consume(SELECT)
             condition = self._condition()
+            # Bool operation
+            bool_op = None
+            if self.token.type in (AND, OR):
+                bool_op = BoolOp()
+                bool_op.conditions.append(condition)
+                while self.token.type in (AND, OR):
+                    op = self.token.value
+                    self.consume(KEYWORDS[op])
+                    bool_op.ops.append(op)
+                    bool_op.conditions.append(self._condition())
+
+            if bool_op is not None:
+                condition = bool_op
             self.consume(LPAREN)
             expression = self._expression()
             self.consume(RPAREN)
@@ -275,11 +289,8 @@ class Parser(object):
         """
         Condition : Compared Comp Compared
                   | (Condition)
-                  | Condition AND Condition
-                  | Condition OR Condition
         """
 
-        # FIXME: AND, OR
         if self.token.type == LPAREN:
             self.consume(LPAREN)
             node = self._condition()
@@ -438,10 +449,20 @@ class Interpreter(NodeVisitor):
     def visit_SelectExpr(self, node):
         cond = self.visit(node.condition)
         expr = self.visit(node.expr)
+
         return '{0}.select("{1}")'.format(
             expr,
             cond
         )
+
+    def visit_BoolOp(self, node):
+        # FIXME: this sucks!
+        c = ''
+        for index in range(len(node.conditions) - 1):
+            c += self.visit(node.conditions[index]) + ' ' + node.ops[index] + ' '
+
+        c += self.visit(node.conditions[-1])
+        return c
 
     def visit_Condition(self, node):
         op1 = self.visit(node.op1)
@@ -463,6 +484,3 @@ class Interpreter(NodeVisitor):
 
     def visit_String(self, node):
         return repr(node.string)
-
-    def clear(self):
-        self.SCOPE.clear()

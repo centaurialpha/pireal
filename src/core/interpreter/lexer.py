@@ -135,11 +135,12 @@ class Lexer(object):
             self.sc.next()
         return int(number)
 
-    def peek(self):
+    def peek(self, n=1):
         index = self.sc.index
         col = self.sc.colno
         line = self.sc.lineno
-        token = self.next_token()
+        for i in range(n):
+            token = self.next_token()
         self.sc.index = index
         self.sc.colno = col
         self.sc.lineno = line

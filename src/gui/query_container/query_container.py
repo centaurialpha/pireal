@@ -197,6 +197,7 @@ class QueryContainer(QWidget):
                 return
             try:
                 new_relation = eval(expression, {}, relations)
+
             except Exception as reason:
                 QMessageBox.critical(self,
                                      self.tr("Query Error"),
