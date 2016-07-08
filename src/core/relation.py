@@ -87,7 +87,6 @@ class Relation(object):
         for register in self.content:
             for e, attr in enumerate(self.__header):
                 d[attr] = RelationStr(register[e]).cast()
-                #d[attr] = register[e]
             # The expression is evaluated
             try:
                 if eval(expression, {}, d):

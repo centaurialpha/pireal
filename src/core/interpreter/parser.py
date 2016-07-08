@@ -456,13 +456,8 @@ class Interpreter(NodeVisitor):
         )
 
     def visit_BoolOp(self, node):
-        # FIXME: this sucks!
-        c = ''
-        for index in range(len(node.conditions) - 1):
-            c += self.visit(node.conditions[index]) + ' ' + node.ops[index] + ' '
-
-        c += self.visit(node.conditions[-1])
-        return c
+        conditions = " '{}' ".join([self.visit(c) for c in node.conditions])
+        return conditions.format(*node.ops).replace("'", '')
 
     def visit_Condition(self, node):
         op1 = self.visit(node.op1)
