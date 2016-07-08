@@ -71,7 +71,7 @@ class Editor(QPlainTextEdit):
 
     @property
     def name(self):
-        return self.pfile.name
+        return self.pfile.display_name
 
     @property
     def is_new(self):
