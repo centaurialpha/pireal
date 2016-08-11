@@ -67,7 +67,7 @@ class DatabaseContainer(QSplitter):
 
         self.addWidget(self._hsplitter)
 
-        self.query_container = query_container.QueryContainer()
+        self.query_container = query_container.QueryContainer(self)
         self.addWidget(self.query_container)
 
         self.modified = False

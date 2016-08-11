@@ -28,11 +28,13 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QDialog,
     QPushButton,
-    QAction
+    QAction,
+    QToolTip
 )
 from PyQt5.QtGui import QStandardItem
 from PyQt5.QtCore import (
     Qt,
+    QPoint,
     pyqtSignal,
     QSettings
 )
@@ -64,8 +66,9 @@ ERROR = logger.error
 class QueryContainer(QWidget):
     saveEditor = pyqtSignal('PyQt_PyObject')
 
-    def __init__(self):
-        super(QueryContainer, self).__init__()
+    def __init__(self, parent=None):
+        super(QueryContainer, self).__init__(parent)
+        self._parent = parent
         box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 0, 0)
 
@@ -178,9 +181,11 @@ class QueryContainer(QWidget):
             interpreter = parser.Interpreter(par)
             interpreter.to_python()
         except Exception as reason:
-            QMessageBox.critical(self,
-                                 self.tr("Syntax Error"),
-                                 reason.__str__())
+            point = QPoint(self._parent.width(), self._parent.height())
+            rich = "<p style='color: red'><b>%s</b></p>%s"
+            text = rich % (self.tr("Syntax Error"),
+                           self.parse_error(reason.__str__()))
+            QToolTip.showText(point, text, self)
             return
         relations.update(table_widget.relations)
         for relation_name, expression in list(interpreter.SCOPE.items()):
@@ -199,13 +204,20 @@ class QueryContainer(QWidget):
                 new_relation = eval(expression, {}, relations)
 
             except Exception as reason:
-                QMessageBox.critical(self,
-                                     self.tr("Query Error"),
-                                     reason.__str__())
+                point = QPoint(self._parent.width(), self._parent.height())
+                rich = "<p style='color: red'><b>%s</b></p>%s"
+                text = rich % (self.tr("Query Error"), reason.__str__())
+                QToolTip.showText(point, text, self)
                 return
 
             relations[relation_name] = new_relation
             self.__add_table(new_relation, relation_name)
+
+    @staticmethod
+    def parse_error(text):
+        """ Replaces quotes by <b></b> tag """
+
+        return re.sub(r"\'(.*?)\'", r"<b>\1</b>", text)
 
     def __add_table(self, rela, rname):
         self.currentWidget().add_table(rela, rname)
