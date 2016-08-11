@@ -283,6 +283,8 @@ class Parser(object):
             node = self._expression()
             self.consume(RPAREN)
 
+        self.consume('EXPRESSION')
+
         return node
 
     def _condition(self):
@@ -300,6 +302,8 @@ class Parser(object):
             comp = self._comp()
             compared2 = self._compared()
             node = Condition(compared, comp, compared2)
+        else:
+            self.consume("CONDITION")
 
         return node
 
@@ -327,6 +331,8 @@ class Parser(object):
             self.consume(LEQUAL)
         elif self.token.type == GEQUAL:
             self.consume(GEQUAL)
+        else:
+            self.consume('COMPARATOR')
 
         return node
 
@@ -353,9 +359,11 @@ class Parser(object):
         if self.token.type == NUMBER:
             node = Number(self.token)
             self.consume(NUMBER)
-        else:
+        elif self.token.type == STRING:
             node = String(self.token)
             self.consume(STRING)
+        else:
+            self.consume('NUMBER/STRING')
         return node
 
     def _attributes(self):
