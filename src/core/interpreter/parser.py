@@ -282,8 +282,8 @@ class Parser(object):
             self.consume(LPAREN)
             node = self._expression()
             self.consume(RPAREN)
-
-        self.consume('EXPRESSION')
+        else:
+            self.consume('EXPRESSION')
 
         return node
 
