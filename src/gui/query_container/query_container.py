@@ -206,7 +206,8 @@ class QueryContainer(QWidget):
             except Exception as reason:
                 point = QPoint(self._parent.width(), self._parent.height())
                 rich = "<p style='color: red'><b>%s</b></p>%s"
-                text = rich % (self.tr("Query Error"), reason.__str__())
+                text = rich % (self.tr("Query Error"),
+                               self.parse_error(reason.__str__()))
                 QToolTip.showText(point, text, self)
                 return
 
