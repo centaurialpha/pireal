@@ -160,6 +160,10 @@ class QueryContainer(QWidget):
         self.saveEditor.emit(editor)
 
     def execute_queries(self, query=''):
+        # Hide tooltip if visible
+        if QToolTip.isVisible():
+            QToolTip.hideText()
+
         if not query:
             # Get the text from editor
             weditor = self.currentWidget().get_editor()
