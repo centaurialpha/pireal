@@ -140,7 +140,7 @@ class Parser(object):
             self.token = self.lexer.next_token()
         else:
             raise Exception("It is expected to find '{0}', "
-                            "but '{1}' found, Line: {2}, Col:{3}".format(
+                            "but '{1}' found, Line: {2}, Col: {3}".format(
                                 token_type,
                                 self.token.type,
                                 self.lexer.sc.lineno,
