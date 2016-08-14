@@ -511,7 +511,7 @@ class Interpreter(NodeVisitor):
         return node.value
 
     def visit_String(self, node):
-        return repr(str(node.string))
+        return repr(node.string)
 
     def clear(self):
         self.SCOPE.clear()
