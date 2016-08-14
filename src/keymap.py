@@ -42,6 +42,8 @@ KEYMAP = {
     'paste_action': QKeySequence(Qt.CTRL + Qt.Key_V),
     'zoom_in': QKeySequence(Qt.CTRL + Qt.Key_Plus),
     'zoom_out': QKeySequence(Qt.CTRL + Qt.Key_Minus),
+    'comment': QKeySequence(Qt.CTRL + Qt.Key_D),
+    'uncomment': QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_D),
     'show_settings': QKeySequence(Qt.CTRL + Qt.Key_P),
     'create_new_relation': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_N),
     'remove_relation': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_W),

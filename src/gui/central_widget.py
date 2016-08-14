@@ -356,6 +356,10 @@ class CentralWidget(QWidget):
         zoom_out_action.setEnabled(True)
         paste_action = Pireal.get_action("paste_action")
         paste_action.setEnabled(True)
+        comment_action = Pireal.get_action("comment")
+        comment_action.setEnabled(True)
+        uncomment_action = Pireal.get_action("uncomment")
+        uncomment_action.setEnabled(True)
 
     def execute_queries(self):
         db_container = self.get_active_db()
@@ -537,6 +541,14 @@ class CentralWidget(QWidget):
     def zoom_out(self):
         query_container = self.get_active_db().query_container
         query_container.zoom_out()
+
+    def comment(self):
+        query_container = self.get_active_db().query_container
+        query_container.comment()
+
+    def uncomment(self):
+        query_container = self.get_active_db().query_container
+        query_container.uncomment()
 
 
 central = CentralWidget()

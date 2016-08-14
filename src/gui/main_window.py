@@ -297,7 +297,9 @@ class Pireal(QMainWindow):
             'cut_action',
             'paste_action',
             'zoom_in',
-            'zoom_out'
+            'zoom_out',
+            'comment',
+            'uncomment'
         ]
 
         for action in actions:

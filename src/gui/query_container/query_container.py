@@ -263,6 +263,16 @@ class QueryContainer(QWidget):
         if weditor.hasFocus():
             weditor.zoom_out()
 
+    def comment(self):
+        weditor = self.currentWidget().get_editor()
+        if weditor.hasFocus():
+            weditor.comment()
+
+    def uncomment(self):
+        weditor = self.currentWidget().get_editor()
+        if weditor.hasFocus():
+            weditor.uncomment()
+
 
 class QueryWidget(QWidget):
     editorModified = pyqtSignal(bool)

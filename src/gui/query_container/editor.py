@@ -228,3 +228,39 @@ class Editor(QPlainTextEdit):
         self.modified = False
         self.document().setModified(self.modified)
         self.setFocus()
+
+    def comment(self):
+        """ Comment one or more lines """
+
+        tcursor = self.textCursor()
+        block_start = self.document().findBlock(tcursor.selectionStart())
+        block_end = self.document().findBlock(tcursor.selectionEnd()).next()
+
+        tcursor.beginEditBlock()
+
+        while block_start != block_end:
+            if block_start.text():
+                tcursor.setPosition(block_start.position())
+                if block_start.text()[0] != '%':
+                    tcursor.insertText("%")
+            block_start = block_start.next()
+
+        tcursor.endEditBlock()
+
+    def uncomment(self):
+        """ Uncomment one or more lines"""
+
+        tcursor = self.textCursor()
+        block_start = self.document().findBlock(tcursor.selectionStart())
+        block_end = self.document().findBlock(tcursor.selectionEnd()).next()
+
+        tcursor.beginEditBlock()
+
+        while block_start != block_end:
+            if block_start.text():
+                tcursor.setPosition(block_start.position())
+                if block_start.text()[0] == '%':
+                    tcursor.deleteChar()
+            block_start = block_start.next()
+
+        tcursor.endEditBlock()
