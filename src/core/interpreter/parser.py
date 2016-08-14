@@ -489,8 +489,8 @@ class Interpreter(NodeVisitor):
         )
 
     def visit_BoolOp(self, node):
-        conditions = " '{}' ".join([self.visit(c) for c in node.conditions])
-        return conditions.format(*node.ops).replace("'", '')
+        conditions = " \"{}\" ".join([self.visit(c) for c in node.conditions])
+        return conditions.format(*node.ops).replace("\"", '')
 
     def visit_Condition(self, node):
         op1 = self.visit(node.op1)
@@ -511,7 +511,7 @@ class Interpreter(NodeVisitor):
         return node.value
 
     def visit_String(self, node):
-        return repr(node.string)
+        return repr(str(node.string))
 
     def clear(self):
         self.SCOPE.clear()
