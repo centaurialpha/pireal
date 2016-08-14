@@ -25,7 +25,8 @@ from src.core.interpreter.tokens import (
     ASSIGNMENT,
     LPAREN,
     RPAREN,
-    NUMBER,
+    INTEGER,
+    REAL,
     STRING,
     SEMI,
     SEMICOLON,
@@ -100,6 +101,11 @@ class Lexer(object):
         while self.sc.char is not None and self.sc.char.isspace():
             self.sc.next()
 
+    def _skip_comment(self):
+        while self.sc.char is not None and self.sc.char != '\n':
+            self.sc.next()
+        self.sc.next()
+
     def _get_identifier_or_keyword(self):
         """ Handle identifiers and reserved keywords """
 
@@ -123,17 +129,26 @@ class Lexer(object):
         return var
 
     def _get_number(self):
-        """ Returns a multidigit integer """
+        """ Returns a multidigit integer or float """
 
-        # FIXME: check for --23
         number = ''
-        if self.sc.char == '-':
-            number += self.sc.char
-            self.sc.next()
         while self.sc.char is not None and self.sc.char.isdigit():
             number += self.sc.char
             self.sc.next()
-        return int(number)
+
+        if self.sc.char == '.':
+            number += self.sc.char
+            self.sc.next()
+
+            while self.sc.char is not None and self.sc.char.isdigit():
+                number += self.sc.char
+                self.sc.next()
+
+            token = Token(REAL, float(number))
+        else:
+            token = Token(INTEGER, int(number))
+
+        return token
 
     def peek(self, n=1):
         index = self.sc.index
@@ -175,9 +190,7 @@ class Lexer(object):
 
             # Comments inline
             if self.sc.char == '%':
-                while self.sc.char != '\n':
-                    self.sc.next()
-                self.sc.next()
+                self._skip_comment()
                 continue
 
             # Operators
@@ -210,10 +223,9 @@ class Lexer(object):
                 self.sc.next()
                 return Token(SEMICOLON, ';')
 
-            # Numbers
-            if self.sc.char == '-' or self.sc.char.isdigit():
-                number = self._get_number()
-                return Token(NUMBER, number)
+            # Number
+            if self.sc.char.isdigit():
+                return self._get_number()
 
             # Strings
             if self.sc.char == "'":
@@ -241,7 +253,7 @@ class Lexer(object):
                 self.sc.next()
                 return Token(RPAREN, ')')
 
-            # Coma
+            # Comma
             if self.sc.char == ',':
                 self.sc.next()
                 return Token(SEMI, ',')

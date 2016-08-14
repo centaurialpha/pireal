@@ -30,7 +30,8 @@ from src.core.interpreter.tokens import (
     GEQUAL,
     NOTEQUAL,
     EQUAL,
-    NUMBER,
+    INTEGER,
+    REAL,
     LPAREN,
     RPAREN,
     SEMI,
@@ -50,11 +51,17 @@ class LexerTestCase(unittest.TestCase):
         lex = lexer.Lexer(sc)
         return lex
 
-    def test_number(self):
+    def test_integer(self):
         lex = self.make_lexer("9282")
         token = lex.next_token()
-        self.assertEqual(token.type, NUMBER)
+        self.assertEqual(token.type, INTEGER)
         self.assertEqual(token.value, 9282)
+
+    def test_real(self):
+        lex = self.make_lexer("3.14")
+        token = lex.next_token()
+        self.assertEqual(token.type, REAL)
+        self.assertEqual(token.value, 3.14)
 
     def test_paren(self):
         lex = self.make_lexer("()")
@@ -127,7 +134,7 @@ class LexerTestCase(unittest.TestCase):
         self.assertEqual(EQUAL, tkn.type)
         self.assertEqual('=', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(NUMBER, tkn.type)
+        self.assertEqual(INTEGER, tkn.type)
         self.assertEqual(2, tkn.value)
         tkn = lex.next_token()
         self.assertEqual(LPAREN, tkn.type)

@@ -183,6 +183,7 @@ class QueryContainer(QWidget):
         try:
             par = parser.Parser(lex)
             interpreter = parser.Interpreter(par)
+            interpreter.clear()
             interpreter.to_python()
         except Exception as reason:
             point = QPoint(self._parent.width(), self._parent.height())

@@ -22,7 +22,8 @@ from collections import OrderedDict
 from src.core.interpreter.tokens import (
     STRING,
     SEMICOLON,
-    NUMBER,
+    INTEGER,
+    REAL,
     ID,
     LPAREN,
     RPAREN,
@@ -214,76 +215,97 @@ class Parser(object):
         self.consume(ID)
         self.consume(ASSIGNMENT)
         q = self._expression()
-
         node = Assignment(rname, q)
         self.consume(SEMICOLON)
 
         return node
 
+    def _binary_expression(self, left_node):
+        """
+        BinaryExpression : (Expression) BinaryOp (Expression)
+        """
+
+        operator = self.token
+        self.consume(KEYWORDS.get(operator.value))
+        right_node = self._expression()
+        return BinaryOp(left_node, operator, right_node)
+
+    def _variable(self):
+        node = Variable(self.token)
+        self.consume(ID)
+        return node
+
+    def _project_expression(self):
+        """
+        ProjectExpression : PROJECT AttrList (Expression)
+        """
+
+        self.consume(PROJECT)
+        attributes = self._attributes()
+        self.consume(LPAREN)
+        expression = self._expression()
+        self.consume(RPAREN)
+        return ProjectExpr(attributes, expression)
+
+    def _select_expression(self):
+        """
+        SelectExpression : SELECT Condition (Expression)
+        """
+
+        self.consume(SELECT)
+        condition = self._condition()
+        # Bool operation
+        bool_op = None
+        if self.token.type in (AND, OR):
+            bool_op = BoolOp()
+            bool_op.conditions.append(condition)
+
+            while self.token.type in (AND, OR):
+                op = self.token.value
+                self.consume(KEYWORDS.get(op))
+                bool_op.ops.append(op)
+                bool_op.conditions.append(self._condition())
+
+        if bool_op is not None:
+            condition = bool_op
+        self.consume(LPAREN)
+        expression = self._expression()
+        self.consume(RPAREN)
+        return SelectExpr(condition, expression)
+
     def _expression(self):
         """
-        Expression : NAME
-                   | SELECT Condition (Expression)
-                   | PROJECT AttrList (Expression)
-                   | Expression NJOIN Expression
-                   | Expression PRODUCT Expression
-                   | Expression INTERSECT Expression
-                   | Expression UNION Expression
-                   | Expression DIFFERENCE Expression
+        Expression : SelectExpression
+                   | ProjectExpression
                    | (Expression)
+                   | BinaryExpression
+                   | NAME
         """
 
-        # FIXME: improve select derivation
-        if self.token.type == ID:
-            peek = self.lexer.peek()
-            if peek.type in BINARYOP:
-                # Binary
-                exp1 = Variable(self.token)
-                self.consume(ID)
-                op = self.token
-                self.consume(KEYWORDS[op.value])
-                exp2 = Variable(self.token)
-                self.consume(ID)
-                node = BinaryOp(exp1, op, exp2)
-            else:
-                node = Variable(self.token)
-                self.consume(ID)
+        # Select
+        if self.token.type == SELECT:
+            node = self._select_expression()
 
+        # Project
         elif self.token.type == PROJECT:
-            self.consume(PROJECT)
-            attributes = self._attributes()
-            self.consume(LPAREN)
-            expression = self._expression()
-            self.consume(RPAREN)
-            node = ProjectExpr(attributes, expression)
+            node = self._project_expression()
 
-        elif self.token.type == SELECT:
-            self.consume(SELECT)
-            condition = self._condition()
-            # Bool operation
-            bool_op = None
-            if self.token.type in (AND, OR):
-                bool_op = BoolOp()
-                bool_op.conditions.append(condition)
-                while self.token.type in (AND, OR):
-                    op = self.token.value
-                    self.consume(KEYWORDS[op])
-                    bool_op.ops.append(op)
-                    bool_op.conditions.append(self._condition())
-
-            if bool_op is not None:
-                condition = bool_op
-            self.consume(LPAREN)
-            expression = self._expression()
-            self.consume(RPAREN)
-            node = SelectExpr(condition, expression)
-
+        # (Expression) or (Expression) BinaryOp (Expression)
         elif self.token.type == LPAREN:
             self.consume(LPAREN)
             node = self._expression()
             self.consume(RPAREN)
-        else:
-            self.consume('EXPRESSION')
+            # If next token is binary operator, them create BinaryOp node
+            if self.token.type in BINARYOP:
+                # Pass the left node
+                node = self._binary_expression(node)
+
+        # Var
+        elif self.token.type == ID:
+            node = self._variable()
+            if self.token.type in BINARYOP:
+                # Pass the left node
+                node = self._binary_expression(node)
 
         return node
 
@@ -352,18 +374,21 @@ class Parser(object):
 
     def _data(self):
         """
-        Data : NUMBER
+        Data : INTEGER
+             | REAL
              | STRING
         """
 
-        if self.token.type == NUMBER:
+        if self.token.type == INTEGER:
             node = Number(self.token)
-            self.consume(NUMBER)
-        elif self.token.type == STRING:
+            self.consume(INTEGER)
+        elif self.token.type == REAL:
+            node = Number(self.token)
+            self.consume(REAL)
+        else:
             node = String(self.token)
             self.consume(STRING)
-        else:
-            self.consume('NUMBER/STRING')
+
         return node
 
     def _attributes(self):
@@ -487,3 +512,6 @@ class Interpreter(NodeVisitor):
 
     def visit_String(self, node):
         return repr(node.string)
+
+    def clear(self):
+        self.SCOPE.clear()
