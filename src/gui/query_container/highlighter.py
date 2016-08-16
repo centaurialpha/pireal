@@ -70,7 +70,7 @@ class Highlighter(QSyntaxHighlighter):
 
         # String format
         string_format = QTextCharFormat()
-        string_pattern = QRegExp("\".*\"|\'.*\'")
+        string_pattern = QRegExp("\'.*\'")
         string_pattern.setMinimal(True)
         string_format.setForeground(Qt.darkMagenta)
         self._rules.append((string_pattern, string_format))
