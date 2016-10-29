@@ -187,7 +187,7 @@ class QueryContainer(QWidget):
             interpreter.to_python()
         except Exception as reason:
             point = QPoint(self._parent.width(), self._parent.height())
-            rich = "<p style='color: red'><b>%s</b></p>%s"
+            rich = "<p style='color: #f62e2e'><b>%s</b></p>%s"
             text = rich % (self.tr("Syntax Error"),
                            self.parse_error(reason.__str__()))
             QToolTip.showText(point, text, self)

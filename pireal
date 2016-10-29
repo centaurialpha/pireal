@@ -29,7 +29,11 @@ from PyQt5.QtWidgets import (
     QApplication,
     QStyleFactory
 )
-from PyQt5.QtGui import QIcon, QColor, QPalette
+from PyQt5.QtGui import (
+    QIcon,
+    QColor,
+    QPalette
+)
 from PyQt5.QtCore import (
     QLocale,
     QTranslator,
@@ -95,11 +99,14 @@ if __name__ == "__main__":
     from src import resources  # lint:ok
 
     qapp = QApplication(sys.argv)
+    palette = QPalette()
+    palette.setColor(QPalette.ToolTipBase, QColor(225, 225, 225))
+    qapp.setPalette(palette)
 
     # Fusion style
     qapp.setStyle(QStyleFactory.create("fusion"))
 
-# Icon
+    # Icon
     qapp.setWindowIcon(QIcon(":img/icon"))
 
     # Language
