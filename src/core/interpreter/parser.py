@@ -268,6 +268,7 @@ class Parser(object):
 
         if bool_op is not None:
             condition = bool_op
+        # FIXME: puede venir otra CONDITION
         self.consume(LPAREN)
         expression = self._expression()
         self.consume(RPAREN)
@@ -306,7 +307,8 @@ class Parser(object):
             if self.token.type in BINARYOP:
                 # Pass the left node
                 node = self._binary_expression(node)
-
+        else:
+            self.consume("EXPRESSION")
         return node
 
     def _condition(self):
@@ -385,9 +387,11 @@ class Parser(object):
         elif self.token.type == REAL:
             node = Number(self.token)
             self.consume(REAL)
-        else:
+        elif self.token.type == STRING:
             node = String(self.token)
             self.consume(STRING)
+        else:
+            self.consume("CONSTANT")
 
         return node
 
