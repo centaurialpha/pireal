@@ -46,7 +46,7 @@ class AboutDialog(QDialog):
         vbox.addWidget(banner)
 
         # Version
-        lbl_version = QLabel("{0}".format('.'.join(gui.__version__)))
+        lbl_version = QLabel("{0}".format(gui.__version__))
         lbl_version.setAlignment(Qt.AlignHCenter)
         font = lbl_version.font()
         font.setPointSize(10)
