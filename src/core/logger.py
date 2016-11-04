@@ -63,10 +63,10 @@ class PLogger(object):
     def __call__(self, name):
         if self._handler is None:
             if self._header is not None:
-                handler = CustomFileHandler(settings.LOG_FILE_PATH,
+                handler = CustomFileHandler(settings.LOG_PATH,
                                             self._header)
             else:
-                handler = logging.FileHandler(settings.LOG_FILE_PATH)
+                handler = logging.FileHandler(settings.LOG_PATH)
             formatter = logging.Formatter(fmt=LOG_FORMAT, datefmt=TIME_FORMAT)
             handler.setFormatter(formatter)
             self._handler = handler

@@ -3,8 +3,8 @@ import QtQuick 2.3
 Rectangle {
     id: button
 
-    color: "#f1f1f1"
-    border.color: "lightgray"
+    color: "#8fb7e7"
+    scale: mouseArea.pressed ? 0.9 : 1
     radius: 3
     property alias text: buttonText.text
     property alias pointSize: buttonText.font.pointSize
@@ -14,27 +14,28 @@ Rectangle {
     Text {
         id: buttonText
         anchors.centerIn: parent
-        color: "#838b8c"
+        color: "white"
     }
 
     MouseArea {
+        id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
 
         onEntered: {
-            button.color = "#f7f7f7"
+            button.color = "#a1c1e7"
         }
 
         onExited: {
-            button.color = "#f1f1f1"
+            button.color = "#8fb7e7"
         }
 
         onPressed: {
-            button.color = "#e3e3e3"
+            button.color = "#708fb5"
         }
 
         onReleased: {
-            button.color = "#f7f7f7"
+            button.color = "#8fb7e7"
         }
 
         onClicked: {

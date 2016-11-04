@@ -72,7 +72,7 @@ class IntroPage(QWizardPage):
         self._line_dblocation.button.clicked.connect(self.__select_location)
         grid.addWidget(self._line_dblocation, 1, 1)
         grid.addWidget(QLabel(self.tr("Database Folder: ")), 2, 0)
-        self._dbfolder = settings.PIREAL_PROJECTS
+        self._dbfolder = settings.PIREAL_DATABASES
         self._line_dbfilename = QLineEdit()
         self._line_dbfilename.setText(self._dbfolder)
         grid.addWidget(self._line_dbfilename, 2, 1)
@@ -107,7 +107,7 @@ class LineEdit(QLineEdit):
     def __init__(self):
         super(LineEdit, self).__init__()
         self.setReadOnly(True)
-        self.setText(settings.PIREAL_PROJECTS)
+        self.setText(settings.PIREAL_DATABASES)
         self.button = QToolButton(self)
         self.button.setText('...')
 

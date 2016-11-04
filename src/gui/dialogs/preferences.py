@@ -54,6 +54,7 @@ from src.gui import (
     overlay_widget,
     updater
 )
+PSetting = settings.PSetting
 
 
 class Preferences(QDialog):
@@ -87,7 +88,7 @@ class Preferences(QDialog):
         box = QVBoxLayout(group_language)
         # Find .qm files in language path
         available_langs = file_manager.get_files_from_folder(
-            settings.LANG_PATH)
+            settings.LANGUAGE_PATH)
 
         languages = ["English"] + available_langs
         self._combo_lang = QComboBox()
@@ -95,8 +96,8 @@ class Preferences(QDialog):
         self._combo_lang.addItems(languages)
         self._combo_lang.currentIndexChanged[int].connect(
             self._change_lang)
-        if settings.LANGUAGE:
-            self._combo_lang.setCurrentText(settings.LANGUAGE)
+        if PSetting.LANGUAGE:
+            self._combo_lang.setCurrentText(PSetting.LANGUAGE)
         box.addWidget(QLabel(self.tr("(Requires restart)")))
 
         # Add widgets
@@ -116,14 +117,14 @@ class Preferences(QDialog):
         self._highlight_current_line = QCheckBox(
             self.tr("Highlight Current Line"))
         self._highlight_current_line.setChecked(
-            settings.HIGHLIGHT_CURRENT_LINE)
+            PSetting.HIGHLIGHT_CURRENT_LINE)
         self._highlight_current_line.stateChanged[int].connect(
             self.__current_line_value_changed)
         box_editor.addWidget(self._highlight_current_line)
         # Matching paren
         self._matching_paren = QCheckBox(self.tr("Matching Parenthesis"))
         self._matching_paren.setChecked(
-            settings.MATCHING_PARENTHESIS)
+            PSetting.MATCHING_PARENTHESIS)
         self._matching_paren.stateChanged[int].connect(
             self.__set_enabled_matching_parenthesis)
         box_editor.addWidget(self._matching_paren)
@@ -132,14 +133,14 @@ class Preferences(QDialog):
         font_grid = QGridLayout(font_group)
         font_grid.addWidget(QLabel(self.tr("Family")), 0, 0)
         self._combo_font = QFontComboBox()
-        self._combo_font.setCurrentFont(settings.FONT)
+        self._combo_font.setCurrentFont(PSetting.FONT)
         font_grid.addWidget(self._combo_font, 0, 1)
         font_grid.addWidget(QLabel(self.tr("Point Size")), 1, 0)
         self._combo_font_size = QComboBox()
         fdb = QFontDatabase()
-        combo_sizes = fdb.pointSizes(settings.FONT.family())
+        combo_sizes = fdb.pointSizes(PSetting.FONT.family())
         current_size_index = combo_sizes.index(
-            settings.FONT.pointSize())
+            PSetting.FONT.pointSize())
 
         self._combo_font_size.addItems([str(f) for f in combo_sizes])
         self._combo_font_size.setCurrentIndex(current_size_index)
@@ -223,12 +224,14 @@ class Preferences(QDialog):
             self._change_font_size)
 
     def __current_line_value_changed(self, value):
-        settings.set_setting("highlight_current_line", value)
-        settings.HIGHLIGHT_CURRENT_LINE = value
+        qs = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        qs.setValue('highlight_current_line', value)
+        PSetting.HIGHLIGHT_CURRENT_LINE = value
 
     def __set_enabled_matching_parenthesis(self, value):
-        settings.set_setting("matching_parenthesis", value)
-        settings.MATCHING_PARENTHESIS = value
+        qs = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        qs.setValue("matching_parenthesis", value)
+        PSetting.MATCHING_PARENTHESIS = value
 
     def _change_font(self, font):
         # FIXME: un quilombo esto
@@ -239,8 +242,9 @@ class Preferences(QDialog):
             if query_widget is not None:
                 weditor = query_widget.get_editor()
                 if weditor is not None:
+                    qs = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
                     weditor.set_font(font)
-                    settings.set_setting("font", font)
+                    qs.setValue("font", font)
 
     def _change_font_size(self, size):
         # FIXME: un quilombo esto
@@ -253,8 +257,9 @@ class Preferences(QDialog):
             if query_widget is not None:
                 weditor = query_widget.get_editor()
                 if weditor is not None:
+                    qs = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
                     weditor.set_font(font)
-                    settings.set_setting("font", font)
+                    qs.setValue("font", font)
 
     def showEvent(self, event):
         super(Preferences, self).showEvent(event)
@@ -336,4 +341,5 @@ class Preferences(QDialog):
 
     def _change_lang(self, index):
         lang = self._combo_lang.itemText(index)
-        settings.set_setting('language', lang)
+        qs = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        qs.setValue('language', lang)

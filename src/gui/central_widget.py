@@ -51,6 +51,7 @@ from src.gui.dialogs import (
 logger = PirealLogger(__name__)
 CRITICAL = logger.critical
 DEBUG = logger.debug
+PSetting = settings.PSetting
 
 
 class CentralWidget(QWidget):
@@ -70,6 +71,8 @@ class CentralWidget(QWidget):
         self.created = False
         self.__last_open_folder = None
         self.__recent_dbs = []
+        if PSetting.RECENT_DBS:
+            self.__recent_dbs = PSetting.RECENT_DBS
 
         Pireal.load_service("central", self)
 
@@ -79,14 +82,10 @@ class CentralWidget(QWidget):
 
     @recent_databases.setter
     def recent_databases(self, database_file):
-        recent_dbs = settings.get_setting("recentDB", [])
-        if recent_dbs is None:
-            recent_dbs = []
-        if database_file in recent_dbs:
-            recent_dbs.remove(database_file)
-        recent_dbs.insert(0, database_file)
-        self.__recent_dbs = recent_dbs
-        settings.set_setting("recentDB", self.__recent_dbs)
+        if database_file in PSetting.RECENT_DBS:
+            PSetting.RECENT_DBS.remove(database_file)
+        PSetting.RECENT_DBS.insert(0, database_file)
+        self.__recent_dbs = PSetting.RECENT_DBS
 
     def create_database(self):
         """ Show a wizard widget to create a new database,

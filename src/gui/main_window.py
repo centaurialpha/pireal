@@ -350,6 +350,9 @@ class Pireal(QMainWindow):
             qsettings.setValue('window_size', self.size())
 
         central_widget = Pireal.get_service("central")
+        # Save recent databases
+        qsettings.setValue('recent_databases',
+                           central_widget.recent_databases)
         db = central_widget.get_active_db()
         if db is not None:
             # Save splitters size

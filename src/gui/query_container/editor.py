@@ -32,7 +32,7 @@ from src.gui.query_container import (
     highlighter,
     sidebar
 )
-from src.core import settings
+from src.core.settings import PSetting
 
 
 class Editor(QPlainTextEdit):
@@ -42,11 +42,11 @@ class Editor(QPlainTextEdit):
         self.pfile = pfile
         self.modified = False
         # Highlight current line
-        self._highlight_line = settings.HIGHLIGHT_CURRENT_LINE
+        self._highlight_line = PSetting.HIGHLIGHT_CURRENT_LINE
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
-        self.set_font(settings.FONT)
+        self.set_font(PSetting.FONT)
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
 
@@ -88,7 +88,7 @@ class Editor(QPlainTextEdit):
         extra_selections.append(_selection)
 
         # Highlight current line
-        if settings.HIGHLIGHT_CURRENT_LINE:
+        if PSetting.HIGHLIGHT_CURRENT_LINE:
             color = QColor(Qt.lightGray).lighter(125)
             _selection.format.setBackground(color)
             _selection.format.setProperty(
@@ -99,7 +99,7 @@ class Editor(QPlainTextEdit):
 
         # Paren matching
         extras = None
-        if settings.MATCHING_PARENTHESIS:
+        if PSetting.MATCHING_PARENTHESIS:
             extras = self.__check_brackets()
         if extras is not None:
             extra_selections.extend(extras)

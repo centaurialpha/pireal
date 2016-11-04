@@ -34,6 +34,7 @@ from PyQt5.QtCore import (
 )
 from src.gui.main_window import Pireal
 from src.core import settings
+PSetting = settings.PSetting
 
 
 class StartPage(QWidget):
@@ -43,7 +44,7 @@ class StartPage(QWidget):
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         view = QQuickView()
-        qml = os.path.join(settings.QML_FILES, "StartPage.qml")
+        qml = os.path.join(settings.QML_PATH, "StartPage.qml")
         view.setSource(QUrl.fromLocalFile(qml))
         view.setResizeMode(QQuickView.SizeRootObjectToView)
         widget = QWidget.createWindowContainer(view)
@@ -57,10 +58,8 @@ class StartPage(QWidget):
         self.__root.removeCurrent.connect(self.__remove_current)
 
     def __remove_current(self, path):
-        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        recent_files = qsettings.value('recentDB', set())
-        recent_files.remove(path)
-        qsettings.setValue('recentDB', recent_files)
+        central_widget = Pireal.get_service("central")
+        central_widget.recent_databases.remove(path)
 
     def __open_database(self, path):
         central_widget = Pireal.get_service("central")
@@ -72,9 +71,8 @@ class StartPage(QWidget):
 
     def load_items(self):
         self.__root.clear()
-        recent_dbs = settings.get_setting("recentDB", [])
-        if recent_dbs:
-            for file_ in recent_dbs:
+        if PSetting.RECENT_DBS:
+            for file_ in PSetting.RECENT_DBS:
                 name = os.path.splitext(os.path.basename(file_))[0]
                 self.__root.loadItem(name, file_)
 
