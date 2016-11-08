@@ -79,6 +79,11 @@ class DatabaseContainer(QSplitter):
         self.lateral_widget.itemClicked.connect(
             lambda: self.table_widget.stacked.show_display(
                 self.lateral_widget.row()))
+        # For change table widget item when up/down
+        # see issue #39
+        self.lateral_widget.itemSelectionChanged.connect(
+            lambda: self.table_widget.stacked.show_display(
+                self.lateral_widget.row()))
         self.query_container.saveEditor['PyQt_PyObject'].connect(
             self.save_query)
         self.setSizes([1, 1])
