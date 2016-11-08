@@ -34,29 +34,24 @@ class Table(QTableView):
 
     def __init__(self):
         super(Table, self).__init__()
-        # Stretch horizontal header
         # FIXME: not set model here
         model = QStandardItemModel()
         self.setModel(model)
         self.setAlternatingRowColors(True)
-        self.horizontalHeader().setSectionResizeMode(
-            QHeaderView.Interactive)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.verticalHeader().hide()
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
     def resizeEvent(self, event):
+        """ Resize all sections to content and user interactive """
+
         super(Table, self).resizeEvent(event)
-        size = self.width()
-        col_count = self.model().columnCount()
-        if col_count > 0:
-            remaining_width = size % col_count
-            for ncol in range(self.model().columnCount()):
-                if remaining_width > 0:
-                    self.setColumnWidth(ncol, int(size / col_count) + 1)
-                    remaining_width -= 1
-                else:
-                    self.setColumnWidth(ncol, int(size / col_count))
+        header = self.horizontalHeader()
+        for column in range(header.count()):
+            header.setSectionResizeMode(column, QHeaderView.ResizeToContents)
+            width = header.sectionSize(column)
+            header.setSectionResizeMode(column, QHeaderView.Interactive)
+            header.resizeSection(column, width)
 
 
 class Header(QHeaderView):
