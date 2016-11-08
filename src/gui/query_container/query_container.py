@@ -31,7 +31,10 @@ from PyQt5.QtWidgets import (
     QAction,
     QToolTip
 )
-from PyQt5.QtGui import QStandardItem
+from PyQt5.QtGui import (
+    QStandardItem,
+    QStandardItemModel
+)
 from PyQt5.QtCore import (
     Qt,
     QPoint,
@@ -415,16 +418,18 @@ class QueryWidget(QWidget):
 
     def add_table(self, rela, rname):
         wtable = custom_table.Table()
-
-        # wtable.setColumnCount(len(rela.fields))
-        wtable.model().setHorizontalHeaderLabels(rela.header)
+        # Model
+        model = QStandardItemModel()
+        wtable.setModel(model)
+        model.setHorizontalHeaderLabels(rela.header)
 
         for data in rela.content:
-            nrow = wtable.model().rowCount()
+            nrow = model.rowCount()
             # wtable.insertRow(nrow)
             for col, text in enumerate(data):
                 item = QStandardItem(text)
-                wtable.model().setItem(nrow, col, item)
+                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+                model.setItem(nrow, col, item)
 
         index = self._stack_tables.addWidget(wtable)
         self._stack_tables.setCurrentIndex(index)

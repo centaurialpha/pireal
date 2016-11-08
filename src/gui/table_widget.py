@@ -22,7 +22,10 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QStackedWidget
 )
-from PyQt5.QtGui import QStandardItem
+from PyQt5.QtGui import (
+    QStandardItem,
+    QStandardItemModel
+)
 from PyQt5.QtCore import Qt
 
 from src.gui import (
@@ -90,7 +93,8 @@ class TableWidget(QWidget):
 
     def create_table(self, rela):
         table = custom_table.Table()
-        model = table.model()
+        model = QStandardItemModel()
+        table.setModel(model)
         model.setHorizontalHeaderLabels(rela.header)
 
         for row_count, row in enumerate(rela.content):
