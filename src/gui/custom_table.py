@@ -60,7 +60,7 @@ class Header(QHeaderView):
     def __init__(self, orientation=Qt.Horizontal, parent=None):
         super(Header, self).__init__(orientation, parent)
         self.setSectionsClickable(True)
-        self.setSectionResizeMode(QHeaderView.Stretch)
+        self.setSectionResizeMode(QHeaderView.ResizeToContents)
         self.line = QLineEdit(parent=self.viewport())
         self.line.setAlignment(Qt.AlignTop)
         self.line.setHidden(True)

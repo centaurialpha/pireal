@@ -61,6 +61,8 @@ class RelationDialog(QDialog):
         # Table
         self.table = QTableView()
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.table.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
         # Editable header
         header = custom_table.Header()
         self.table.setHorizontalHeader(header)

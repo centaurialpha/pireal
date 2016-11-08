@@ -45,6 +45,7 @@ class EditRelationDialog(relation_dialog.RelationDialog):
             for col_count, data in enumerate(row):
                 item = QStandardItem()
                 item.setText(data)
+                item.setToolTip(data)
                 model.setItem(row_count, col_count, item)
 
     def save(self):
