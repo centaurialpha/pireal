@@ -34,9 +34,6 @@ class Table(QTableView):
 
     def __init__(self):
         super(Table, self).__init__()
-        # FIXME: not set model here
-        model = QStandardItemModel()
-        self.setModel(model)
         self.setAlternatingRowColors(True)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.verticalHeader().hide()
