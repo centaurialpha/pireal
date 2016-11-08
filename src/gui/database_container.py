@@ -30,7 +30,9 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtGui import (
     QStandardItem,
-    QStandardItemModel
+    QStandardItemModel,
+    QPalette,
+    QColor
 )
 
 from src.gui import (
@@ -178,6 +180,10 @@ class DatabaseContainer(QSplitter):
         msgbox.setText(msg)
         msgbox.addButton(self.tr("No"), QMessageBox.NoRole)
         yes_btn = msgbox.addButton(self.tr("Yes"), QMessageBox.YesRole)
+        palette = QPalette()
+        palette.setColor(QPalette.Button, QColor("#cc575d"))
+        palette.setColor(QPalette.ButtonText, QColor("white"))
+        yes_btn.setPalette(palette)
         msgbox.exec_()
         r = msgbox.clickedButton()
         if r == yes_btn:
