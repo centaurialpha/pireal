@@ -44,6 +44,7 @@ class Table(QTableView):
         # Scroll content per pixel
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.horizontalHeader().setHighlightSections(False)
 
     def resizeEvent(self, event):
         """ Resize all sections to content and user interactive """
