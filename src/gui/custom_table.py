@@ -41,6 +41,9 @@ class Table(QTableView):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.verticalHeader().hide()
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        # Scroll content per pixel
+        self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
 
     def resizeEvent(self, event):
         """ Resize all sections to content and user interactive """
