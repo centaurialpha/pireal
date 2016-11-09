@@ -287,7 +287,7 @@ class DatabaseContainer(QSplitter):
         if vsizes is not None:
             self.restoreState(vsizes)
         else:
-            self.setSizes([(self.height() / 3) * 2, self.height() / 3])
+            self.setSizes([self.height() / 3, self.height() / 3])
 
     def save_sizes(self):
         """ Save sizes of Splitters """
