@@ -28,10 +28,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtCore import Qt
 
-from src.gui import (
-    custom_table,
-    fader_widget
-)
+from src.gui import custom_table
 
 
 class TableWidget(QWidget):
@@ -45,7 +42,7 @@ class TableWidget(QWidget):
         self.relations = {}
 
         # Stack
-        self.stacked = StackedWidget()
+        self.stacked = QStackedWidget()
         vbox.addWidget(self.stacked)
 
     def count(self):
@@ -104,14 +101,3 @@ class TableWidget(QWidget):
                 model.setItem(row_count, col_count, item)
 
         return table
-
-
-class StackedWidget(QStackedWidget):
-
-    def setCurrentIndex(self, index):
-        self.fader_widget = fader_widget.FaderWidget(self.currentWidget(),
-                                                     self.widget(index))
-        QStackedWidget.setCurrentIndex(self, index)
-
-    def show_display(self, index):
-        self.setCurrentIndex(index)

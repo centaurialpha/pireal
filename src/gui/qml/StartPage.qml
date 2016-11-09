@@ -242,41 +242,6 @@ Rectangle {
                         right: parent.right
                         margins: 10
                     }
-                    Text {
-                        text: qsTr("How to create a Database")
-                        font.bold: true
-                        width: parent.width
-                        font.pixelSize: 32
-                        wrapMode: Text.WordWrap
-                        color: "#b2b2b2"
-                    }
-
-                    CustomText {
-                        text: qsTr("To create a database has many ways:" +
-                                   "<ul>" +
-                                   "<li>From the Start Page, click on the <b>Create a new database</b> " +
-                                   "button and complete the form.</li>" +
-                                   "<li><b>File</b> > <b>New Database</b>.</li>" +
-                                   "<li>Use the keyboard shortcut <b>Ctrl+N</b>.</li>" +
-                                   "<li>You can use your favorite text editor and create the database manually using the correct syntax.</li>" +
-                                   "</ul>")
-                    }
-                    Column {
-                        id: columnCode
-                        anchors {
-                            left: parent.left
-                            right: parent.right
-                        }
-                        Text {
-                            text: qsTr("<h3>Here an example using a text editor:</h3><p>The file is called <i>database_example.pdb</i>.")
-                            color: "#b2b2b2"
-                        }
-                        CustomText {
-                            text: qsTr("<p><b>Note:</b> The file must have <i>.pdb</i> extension.<br>"+
-                                       "Now open the Database:</p><ul><li>File > Open Database</li><li>With <b>Ctrl+O</b></li></ul>")
-                        }
-                    }
-
                 }
             }
         }

@@ -50,8 +50,7 @@ from src.core.interpreter import (
 )
 from src.gui import (
     custom_table,
-    lateral_widget,
-    fader_widget
+    lateral_widget
 )
 from src.gui.main_window import Pireal
 from src.gui.query_container import (
@@ -292,7 +291,7 @@ class QueryWidget(QWidget):
         self._result_list.header().hide()
         self._hsplitter.addWidget(self._result_list)
 
-        self._stack_tables = StackedWidget()
+        self._stack_tables = QStackedWidget()
         self._hsplitter.addWidget(self._stack_tables)
 
         self.relations = {}
@@ -316,7 +315,7 @@ class QueryWidget(QWidget):
 
         # Connections
         self._result_list.itemClicked.connect(
-            lambda index: self._stack_tables.show_display(
+            lambda index: self._stack_tables.setCurrentIndex(
                 self._result_list.row()))
         self._result_list.itemDoubleClicked.connect(
             self.show_relation)
@@ -435,14 +434,3 @@ class QueryWidget(QWidget):
         self._stack_tables.setCurrentIndex(index)
 
         self._result_list.add_item(rname, rela.count())
-
-
-class StackedWidget(QStackedWidget):
-
-    def setCurrentIndex(self, index):
-        self.fader_widget = fader_widget.FaderWidget(self.currentWidget(),
-                                                     self.widget(index))
-        QStackedWidget.setCurrentIndex(self, index)
-
-    def show_display(self, index):
-        self.setCurrentIndex(index)
