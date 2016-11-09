@@ -162,15 +162,19 @@ class QueryContainer(QWidget):
         self.saveEditor.emit(editor)
 
     def execute_queries(self, query=''):
+        """ This function executes queries """
+
         # Hide tooltip if visible
         if QToolTip.isVisible():
             QToolTip.hideText()
 
-        if not query:
-            # Get the text from editor
-            weditor = self.currentWidget().get_editor()
-            text = weditor.toPlainText()
-            query = text
+        # If text is selected, then this text is the query,
+        # otherwise the query is all text that has the editor
+        editor_widget = self.currentWidget().get_editor()
+        if editor_widget.textCursor().hasSelection():
+            query = editor_widget.textCursor().selectedText()
+        else:
+            query = editor_widget.toPlainText()
 
         relations = self.currentWidget().relations
         central = Pireal.get_service("central")
@@ -180,6 +184,7 @@ class QueryContainer(QWidget):
         relations.clear()
         self.currentWidget().clear_results()
 
+        # Parse query
         sc = scanner.Scanner(query)
         lex = lexer.Lexer(sc)
         try:

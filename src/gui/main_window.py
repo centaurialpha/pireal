@@ -279,7 +279,6 @@ class Pireal(QMainWindow):
 
         actions = [
             'execute_queries',
-            'execute_selection',
             'save_query'
         ]
 
