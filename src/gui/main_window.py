@@ -34,7 +34,10 @@ from PyQt5.QtCore import (
     QThread
 )
 from src.core import settings
-from src.gui import updater
+from src.gui import (
+    updater,
+    message_error
+)
 
 
 class Pireal(QMainWindow):
@@ -98,7 +101,8 @@ class Pireal(QMainWindow):
         # Load notification widget after toolbar actions
         notification_widget = Pireal.get_service("notification")
         self.toolbar.addWidget(notification_widget)
-
+        # Message error
+        self._msg_error_widget = message_error.MessageError(self)
         # Central widget
         central_widget = Pireal.get_service("central")
         central_widget.databaseSaved.connect(notification_widget.show_text)
@@ -337,6 +341,10 @@ class Pireal(QMainWindow):
             self.toolbar.hide()
         else:
             self.toolbar.show()
+
+    def show_error_message(self, text, syntax_error=True):
+        self._msg_error_widget.show_msg(text, syntax_error)
+        self._msg_error_widget.show()
 
     def closeEvent(self, event):
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)

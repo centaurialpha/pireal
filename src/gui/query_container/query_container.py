@@ -193,11 +193,8 @@ class QueryContainer(QWidget):
             interpreter.clear()
             interpreter.to_python()
         except Exception as reason:
-            point = QPoint(self._parent.width(), self._parent.height())
-            rich = "<p style='color: #f62e2e'><b>%s</b></p>%s"
-            text = rich % (self.tr("Syntax Error"),
-                           self.parse_error(reason.__str__()))
-            QToolTip.showText(point, text, self)
+            pireal = Pireal.get_service("pireal")
+            pireal.show_error_message(self.parse_error(reason.__str__()))
             return
         relations.update(table_widget.relations)
         for relation_name, expression in list(interpreter.SCOPE.items()):
@@ -216,11 +213,9 @@ class QueryContainer(QWidget):
                 new_relation = eval(expression, {}, relations)
 
             except Exception as reason:
-                point = QPoint(self._parent.width(), self._parent.height())
-                rich = "<p style='color: red'><b>%s</b></p>%s"
-                text = rich % (self.tr("Query Error"),
-                               self.parse_error(reason.__str__()))
-                QToolTip.showText(point, text, self)
+                pireal = Pireal.get_service("pireal")
+                pireal.show_error_message(self.parse_error(reason.__str__()),
+                                          syntax_error=False)
                 return
 
             relations[relation_name] = new_relation
