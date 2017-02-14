@@ -32,9 +32,9 @@ from PyQt5.QtCore import pyqtSignal
 from src.core import (
     settings,
     file_manager,
-    pfile
+    pfile,
 )
-from src.core.logger import PirealLogger
+from src.core.logger import Logger
 from src.gui.main_window import Pireal
 from src.gui import (
     start_page,
@@ -46,12 +46,9 @@ from src.gui.dialogs import (
     edit_relation_dialog,
     new_relation_dialog
 )
-
-# Logger
-logger = PirealLogger(__name__)
-CRITICAL = logger.critical
-DEBUG = logger.debug
 PSetting = settings.PSetting
+# Logger
+logger = Logger(__name__)
 
 
 class CentralWidget(QWidget):
@@ -93,12 +90,7 @@ class CentralWidget(QWidget):
         """
 
         if self.created:
-            QMessageBox.information(self,
-                                    self.tr("Information"),
-                                    self.tr("You may only have one database"
-                                            " open at time."))
-            DEBUG("Ya existe una base de datos abierta")
-            return
+            return self.__say_about_one_db_at_time()
         wizard = database_wizard.DatabaseWizard(self)
         wizard.wizardFinished.connect(
             self.__on_wizard_finished)
@@ -116,6 +108,7 @@ class CentralWidget(QWidget):
         if not data:
             # If it's canceled, remove wizard widget and return to Start Page
             self.remove_last_widget()
+            logger.debug("La creación de la base de datos ha sido cancelada")
         else:
             # Create a new data base container
             db_container = database_container.DatabaseContainer()
@@ -133,24 +126,26 @@ class CentralWidget(QWidget):
             pireal.set_enabled_db_actions(True)
             pireal.set_enabled_relation_actions(True)
             self.created = True
-            DEBUG("Base de datos creada correctamente: '{}'".format(
-                data['filename']))
+            logger.debug("La base de datos ha sido creada con éxito")
 
         # If data or not, show menubar and toolbar again
         pireal.show_hide_menubar()
         pireal.show_hide_toolbar()
 
+    def __say_about_one_db_at_time(self):
+        logger.info("Una base de datos a la vez")
+        QMessageBox.information(self,
+                                self.tr("Information"),
+                                self.tr("You may only have one database"
+                                        " open at time."))
+
     def open_database(self, filename=''):
         """ This function opens a database and set this on the UI """
 
-        # If not filename provide, then open dialog to select
         if self.created:
-            QMessageBox.information(self,
-                                    self.tr("Information"),
-                                    self.tr("You may only have one database"
-                                            " open at time."))
-            DEBUG("Ya existe una base de datos abierta")
-            return
+            return self.__say_about_one_db_at_time()
+
+        # If not filename provide, then open dialog to select
         if not filename:
             if self.__last_open_folder is None:
                 directory = os.path.expanduser("~")
@@ -168,10 +163,9 @@ class CentralWidget(QWidget):
             # Remember the folder
             self.__last_open_folder = file_manager.get_path(filename)
 
-        DEBUG("Abriendo la base de datos: '{}'".format(filename))
-
         # If filename provide
         try:
+            logger.debug("Intentando abrir el archivo {}".format(filename))
             # Read pdb file
             pfile_object = pfile.File(filename)
             db_data = pfile_object.read()
@@ -180,8 +174,9 @@ class CentralWidget(QWidget):
         except Exception as reason:
             QMessageBox.information(self,
                                     self.tr("The file couldn't be open"),
-                                    str(reason))
-            CRITICAL("Error al intentar abrir el archivo: {}".format(reason))
+                                    reason.__str__())
+            logger.debug("Error al abrir el archivo {0}: '{1}'".format(
+                filename, reason.__str__()))
             return
 
         # Create a database container widget
@@ -193,7 +188,8 @@ class CentralWidget(QWidget):
             QMessageBox.information(self,
                                     self.tr("Error"),
                                     str(reason))
-            CRITICAL("Error al crear la base de datos: {}".format(reason))
+            logger.debug("Error al crear la base de datos: {}".format(
+                reason.__str__()))
             return
 
         # Set the PFile object to the new database
@@ -339,7 +335,6 @@ class CentralWidget(QWidget):
         pireal.set_enabled_query_actions(False)
         pireal.set_enabled_editor_actions(False)
         self.created = False
-        DEBUG("Se cerró la base de datos: '{}'".format(db.dbname()))
         del db
 
     def new_query(self, filename=''):

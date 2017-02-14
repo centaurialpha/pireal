@@ -33,8 +33,10 @@ from PyQt5.QtCore import (
     QSize,
     QThread
 )
+from src import keymap
 from src.core import settings
 from src.gui import (
+    menu_actions,
     updater,
     message_error
 )
@@ -153,9 +155,6 @@ class Pireal(QMainWindow):
         also connects to a slot each QAction.
         """
 
-        from src.gui import menu_actions
-        from src import keymap
-
         # Keymap
         kmap = keymap.KEYMAP
         # Toolbar items
@@ -227,22 +226,20 @@ class Pireal(QMainWindow):
         notification_widget.clear()
 
         msg = QMessageBox(self)
-        if not self._updater.error:
-            if self._updater.version:
-                version = self._updater.version
-                msg.setWindowTitle(self.tr("New version available!"))
-                msg.setText(self.tr("Check the web site to "
-                                    "download <b>Pireal {}</b>".format(
-                                        version)))
-                download_btn = msg.addButton(self.tr("Download!"),
-                                             QMessageBox.YesRole)
-                msg.addButton(self.tr("Cancel"),
-                              QMessageBox.RejectRole)
-                msg.exec_()
-                r = msg.clickedButton()
-                if r == download_btn:
-                    webbrowser.open_new(
-                        "http://centaurialpha.github.io/pireal")
+        if not self._updater.error and self._updater.version:
+            version = self._updater.version
+            msg.setWindowTitle(self.tr("New version available!"))
+            msg.setText(self.tr("Check the web site to "
+                                "download <b>Pireal {}</b>".format(
+                                    version)))
+            download_btn = msg.addButton(self.tr("Download!"),
+                                         QMessageBox.YesRole)
+            msg.addButton(self.tr("Cancel"),
+                          QMessageBox.RejectRole)
+            msg.exec_()
+            r = msg.clickedButton()
+            if r == download_btn:
+                webbrowser.open_new("http://centaurialpha.github.io/pireal")
         self._thread.deleteLater()
         self._updater.deleteLater()
 

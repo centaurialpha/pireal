@@ -26,11 +26,8 @@ from PyQt5.QtCore import (
     pyqtSignal
 )
 
-from src.core.logger import PirealLogger
 from src import gui
 
-logger = PirealLogger(__name__)
-DEBUG = logger.debug
 
 URL = "http://centaurialpha.github.io/pireal/version"
 
@@ -50,6 +47,5 @@ class Updater(QObject):
                 self.version = web_version
         except URLError as reason:
             self.error = True
-            DEBUG("Connection error: {}".format(reason))
 
         self.finished.emit()

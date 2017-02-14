@@ -37,12 +37,11 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtCore import (
     Qt,
-    QPoint,
+    # QPoint,
     pyqtSignal,
     QSettings
 )
 
-from src.core.logger import PirealLogger
 from src.core.interpreter import (
     scanner,
     lexer,
@@ -58,11 +57,6 @@ from src.gui.query_container import (
     tab_widget
 )
 from src.core import settings
-
-# Logger
-logger = PirealLogger(__name__)
-DEBUG = logger.debug
-ERROR = logger.error
 
 
 class QueryContainer(QWidget):

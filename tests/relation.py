@@ -60,6 +60,21 @@ class RelationTestCase(unittest.TestCase):
         for i in data4:
             self.r4.insert(i)
 
+    def test_cartesian_product2(self):
+        expected = {
+            ('1', 'Gabriel', 'Belén', '3', 'Ruby'),
+            ('1', 'Gabriel', 'Belén', '1', 'Python'),
+            ('23', 'Rodrigo', 'Belén', '3', 'Ruby'),
+            ('23', 'Rodrigo', 'Belén', '1', 'Python')
+        }
+        rcartesian_product = self.r1.cartesian_product(self.r2)
+        content = rcartesian_product.content
+        self.assertEqual(expected, content)
+
+    def test_nn(self):
+        p = self.r1.cartesian_product(self.r2)
+        p.clean_product()
+
     def test_projection(self):
         # Π name (r1)
         expected = {('Gabriel',), ('Rodrigo',)}
@@ -126,3 +141,7 @@ class RelationTestCase(unittest.TestCase):
                     ('3', 'Ruby'), ('1', 'Python')}
         union = self.r2.union(self.r4).content
         self.assertEqual(expected, union)
+
+
+if __name__ == "__main__":
+    unittest.main()

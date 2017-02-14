@@ -48,11 +48,9 @@ from src.core import (
     file_manager,
     settings
 )
-from src.core.logger import PirealLogger
+from src.core.logger import Logger
 
-# Logger
-logger = PirealLogger(__name__)
-DEBUG = logger.debug
+logger = Logger(__name__)
 
 
 class DatabaseContainer(QSplitter):

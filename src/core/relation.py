@@ -23,6 +23,8 @@ from src.core.rtypes import RelationStr
 
 IS_VALID_FIELD_NAME = re.compile("^[_á-úa-zA-Z][_á-úa-zA-Z0-9]*$")
 
+# FIXME: test q1 := select id < 6666 (personas);
+
 
 class Relation(object):
     """

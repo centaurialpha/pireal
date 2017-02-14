@@ -39,7 +39,7 @@ class Editor(QPlainTextEdit):
 
     def __init__(self, pfile=None):
         super(Editor, self).__init__()
-        self.setStyleSheet("background-color: #ffffff; color: black;")
+        # self.setStyleSheet("background-color: #ffffff; color: black;")
         self.pfile = pfile
         self.modified = False
         # Highlight current line
