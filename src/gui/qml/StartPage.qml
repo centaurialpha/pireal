@@ -173,8 +173,11 @@ Rectangle {
 
                     Column {
                         anchors {
-                            fill: parent
-                            leftMargin: 30
+                            verticalCenter: parent.verticalCenter
+                            left: parent.left
+                            right: parent.right
+                            leftMargin: 20
+                            rightMargin: 20
                         }
 
                         Text {
