@@ -28,8 +28,7 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QDialog,
     QPushButton,
-    QAction,
-    QToolTip
+    QAction
 )
 from PyQt5.QtGui import (
     QStandardItem,
@@ -157,10 +156,6 @@ class QueryContainer(QWidget):
 
     def execute_queries(self, query=''):
         """ This function executes queries """
-
-        # Hide tooltip if visible
-        if QToolTip.isVisible():
-            QToolTip.hideText()
 
         # If text is selected, then this text is the query,
         # otherwise the query is all text that has the editor

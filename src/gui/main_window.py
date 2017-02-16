@@ -174,10 +174,9 @@ class Pireal(QMainWindow):
                     menu.addSeparator()
                 else:
                     action = menu_item['name']
-                    obj, connection = menu_item['slot'].split(':')
-                    if obj.startswith('central'):
-                        obj = central
-                    else:
+                    obj_name, connection = menu_item['slot'].split(':')
+                    obj = central
+                    if obj_name.startswith('pireal'):
                         obj = self
                     qaction = menu.addAction(action)
                     # Icon name is connection
