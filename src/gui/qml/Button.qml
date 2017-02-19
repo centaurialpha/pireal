@@ -3,7 +3,7 @@ import QtQuick 2.3
 Rectangle {
     id: button
 
-    color: "#8fb7e7"
+    color: "#7dbca9"
     scale: mouseArea.pressed ? 0.9 : 1
     radius: 3
     property alias text: buttonText.text
@@ -23,19 +23,19 @@ Rectangle {
         hoverEnabled: true
 
         onEntered: {
-            button.color = "#a1c1e7"
+            button.color = "#5b8a7c"
         }
 
         onExited: {
-            button.color = "#8fb7e7"
+            button.color = "#7dbca9"
         }
 
         onPressed: {
-            button.color = "#708fb5"
+            button.color = "#5b8a7c"
         }
 
         onReleased: {
-            button.color = "#8fb7e7"
+            button.color = "#7dbca9"
         }
 
         onClicked: {
