@@ -70,6 +70,7 @@ class PSetting(object):
     HIGHLIGHT_CURRENT_LINE = False
     MATCHING_PARENTHESIS = True
     RECENT_DBS = []
+    LAST_OPEN_FOLDER = None
     # FIXME: for Mac Os
     if LINUX:
         FONT = QFont("Monospace", 12)
@@ -83,6 +84,8 @@ def load_settings():
     qs = QSettings(SETTINGS_PATH, QSettings.IniFormat)
     PSetting.LANGUAGE = qs.value('language', "", type='QString')
     PSetting.RECENT_DBS = qs.value('recent_databases', [], type='QStringList')
+    PSetting.LAST_OPEN_FOLDER = qs.value('last_open_folder',
+                                         None, type='QString')
     PSetting.HIGHLIGHT_CURRENT_LINE = qs.value('highlight_current_line',
                                                False, type=bool)
     PSetting.MATCHING_PARENTHESIS = qs.value('matching_parenthesis',

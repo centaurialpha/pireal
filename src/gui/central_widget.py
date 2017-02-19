@@ -66,7 +66,10 @@ class CentralWidget(QWidget):
         box.addWidget(self.stacked)
 
         self.created = False
+        # Acá cacheo la última carpeta accedida
         self.__last_open_folder = None
+        if PSetting.LAST_OPEN_FOLDER:
+            self.__last_open_folder = PSetting.LAST_OPEN_FOLDER
         self.__recent_dbs = []
         if PSetting.RECENT_DBS:
             self.__recent_dbs = PSetting.RECENT_DBS
@@ -83,6 +86,10 @@ class CentralWidget(QWidget):
             PSetting.RECENT_DBS.remove(database_file)
         PSetting.RECENT_DBS.insert(0, database_file)
         self.__recent_dbs = PSetting.RECENT_DBS
+
+    @property
+    def last_open_folder(self):
+        return self.__last_open_folder
 
     def create_database(self):
         """ Show a wizard widget to create a new database,
@@ -208,13 +215,19 @@ class CentralWidget(QWidget):
         self.created = True
 
     def open_query(self):
+        if self.__last_open_folder is None:
+            directory = os.path.expanduser("~")
+        else:
+            directory = self.__last_open_folder
         filter_ = settings.SUPPORTED_FILES.split(';;')[1]
         filename, _ = QFileDialog.getOpenFileName(self,
                                                   self.tr("Open Query"),
-                                                  os.path.expanduser("~"),
+                                                  directory,
                                                   filter_)
         if not filename:
             return
+        # Cacheo la carpeta accedida
+        self.__last_open_folder = file_manager.get_path(filename)
         # FIXME: mejorar éste y new_query
         self.new_query(filename)
 

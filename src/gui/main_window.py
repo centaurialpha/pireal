@@ -356,6 +356,9 @@ class Pireal(QMainWindow):
         # Save recent databases
         qsettings.setValue('recent_databases',
                            central_widget.recent_databases)
+        # Última carpeta accedida
+        qsettings.setValue('last_open_folder',
+                           central_widget.last_open_folder)
         db = central_widget.get_active_db()
         if db is not None:
             # Save splitters size
