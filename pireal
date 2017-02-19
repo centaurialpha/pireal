@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import (
     QIcon,
     QColor,
-    QPalette
+    QPalette,
 )
 from PyQt5.QtCore import (
     QLocale,
@@ -124,6 +124,7 @@ if __name__ == "__main__":
     from src import resources  # lint:ok
 
     qapp = QApplication(sys.argv)
+    qapp.setAttribute(Qt.AA_EnableHighDpiScaling)
     palette = QPalette()
     palette.setColor(QPalette.ToolTipBase, QColor(225, 225, 225))
     qapp.setPalette(palette)

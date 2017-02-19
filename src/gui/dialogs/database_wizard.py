@@ -40,6 +40,7 @@ class DatabaseWizard(QWizard):
     def __init__(self, parent=None):
         super(DatabaseWizard, self).__init__(parent)
         self._intro_page = IntroPage()
+        self.setModal(True)
         self.addPage(self._intro_page)
 
     def done(self, result):

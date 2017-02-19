@@ -103,20 +103,17 @@ class CentralWidget(QWidget):
             self.__on_wizard_finished)
         # Hide menubar and toolbar
         pireal = Pireal.get_service("pireal")
-        pireal.show_hide_menubar()
-        pireal.show_hide_toolbar()
+        # pireal.show_hide_menubar()
+        # pireal.show_hide_toolbar()
+        wizard.show()
         # Add wizard widget to stacked
-        self.add_widget(wizard)
+        # self.add_widget(wizard)
 
     def __on_wizard_finished(self, data, wizard_widget):
         """ This slot execute when wizard to create a database is finished """
 
         pireal = Pireal.get_service("pireal")
-        if not data:
-            # If it's canceled, remove wizard widget and return to Start Page
-            self.remove_last_widget()
-            logger.debug("La creación de la base de datos ha sido cancelada")
-        else:
+        if data:
             # Create a new data base container
             db_container = database_container.DatabaseContainer()
             # Associate the file name with the PFile object
@@ -125,8 +122,6 @@ class CentralWidget(QWidget):
             # and add widget to stacked
             db_container.pfile = pfile_object
             self.add_widget(db_container)
-            # Remove wizard
-            self.stacked.removeWidget(wizard_widget)
             # Set window title
             pireal.change_title(file_manager.get_basename(data['filename']))
             # Enable db actions
@@ -134,10 +129,6 @@ class CentralWidget(QWidget):
             pireal.set_enabled_relation_actions(True)
             self.created = True
             logger.debug("La base de datos ha sido creada con éxito")
-
-        # If data or not, show menubar and toolbar again
-        pireal.show_hide_menubar()
-        pireal.show_hide_toolbar()
 
     def __say_about_one_db_at_time(self):
         logger.info("Una base de datos a la vez")
