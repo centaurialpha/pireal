@@ -77,8 +77,10 @@ class TableWidget(QWidget):
             for col_count, data in enumerate(row):
                 item = QStandardItem(data)
                 item.setFlags(item.flags() & ~Qt.ItemIsEditable)
-                # item.setSelectable(False)
                 model.setItem(row_count, col_count, item)
+
+        # Ajustar las columnas de acuerdo al nuevo contenido
+        current_table.adjust_columns()
 
     def add_table(self, rela, name):
         """ Add new table from New Relation Dialog """

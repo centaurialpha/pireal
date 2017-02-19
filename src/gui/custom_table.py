@@ -23,7 +23,6 @@ from PyQt5.QtWidgets import (
     QLineEdit,
     QAbstractItemView
 )
-from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtCore import (
     Qt,
     QModelIndex
@@ -44,9 +43,12 @@ class Table(QTableView):
         self.horizontalHeader().setHighlightSections(False)
 
     def resizeEvent(self, event):
+        super(Table, self).resizeEvent(event)
+        self.adjust_columns()
+
+    def adjust_columns(self):
         """ Resize all sections to content and user interactive """
 
-        super(Table, self).resizeEvent(event)
         header = self.horizontalHeader()
         for column in range(header.count()):
             header.setSectionResizeMode(column, QHeaderView.ResizeToContents)
