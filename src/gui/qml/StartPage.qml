@@ -63,7 +63,7 @@ Rectangle {
             top: parent.top
             margins: 10
         }
-        color: "#5c89a8"
+        color: "#4896b8"
         width: 30
         height: 30
         radius: width / 2
@@ -143,7 +143,7 @@ Rectangle {
                     }
                     height: 75
                     property bool current: ListView.isCurrentItem
-                    color: listItem.current ? "#5c89a8" : "#ebebeb"
+                    color: listItem.current ? "#4896b8" : "#ebebeb"
                     MouseArea {
                         anchors.fill: parent
                         hoverEnabled: true
@@ -248,7 +248,7 @@ Rectangle {
                     }
 
                     Text {
-                        color: "#5c89a8"
+                        color: "#4896b8"
                         font.pointSize: 22
                         font.bold: true
                         text: qsTr("¿What's is Pireal?")
