@@ -127,7 +127,7 @@ if __name__ == "__main__":
     qapp.setAttribute(Qt.AA_EnableHighDpiScaling)
     palette = QPalette()
     palette.setColor(QPalette.ToolTipBase, QColor(225, 225, 225))
-    palette.setColor(QPalette.Highlight, QColor("#91a7ff"))
+    palette.setColor(QPalette.Highlight, QColor("#5c89a8"))
     qapp.setPalette(palette)
 
     # Fusion style
