@@ -130,9 +130,6 @@ if __name__ == "__main__":
     palette.setColor(QPalette.Highlight, QColor("#5c89a8"))
     qapp.setPalette(palette)
 
-    # Fusion style
-    qapp.setStyle("fusion")
-
     # Icon
     qapp.setWindowIcon(QIcon(":img/icon"))
 
