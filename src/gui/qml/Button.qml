@@ -3,12 +3,13 @@ import QtQuick 2.3
 Rectangle {
     id: button
 
-    color: "#7dbca9"
+    color: "#3598db"
     scale: mouseArea.pressed ? 0.9 : 1
     radius: 3
     property alias text: buttonText.text
     property alias pointSize: buttonText.font.pointSize
     property int textWidth: buttonText.width + 10
+    property color darkColor: Qt.lighter("#3598db", 0.9)
     signal clicked
 
     Text {
@@ -23,19 +24,19 @@ Rectangle {
         hoverEnabled: true
 
         onEntered: {
-            button.color = "#5b8a7c"
+            button.color = darkColor
         }
 
         onExited: {
-            button.color = "#7dbca9"
+            button.color = "#3598db"
         }
 
         onPressed: {
-            button.color = "#5b8a7c"
+            button.color = darkColor
         }
 
         onReleased: {
-            button.color = "#7dbca9"
+            button.color = "#3598db"
         }
 
         onClicked: {

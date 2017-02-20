@@ -63,7 +63,7 @@ Rectangle {
             top: parent.top
             margins: 10
         }
-        color: "#7dbca9"
+        color: "#3598db"
         width: 30
         height: 30
         radius: width / 2
@@ -143,7 +143,7 @@ Rectangle {
                     }
                     height: 75
                     property bool current: ListView.isCurrentItem
-                    color: listItem.current ? "#7dbca9" : "#ebebeb"
+                    color: listItem.current ? "#3598db" : "#ebebeb"
                     MouseArea {
                         anchors.fill: parent
                         hoverEnabled: true
@@ -229,6 +229,7 @@ Rectangle {
             color: "#f5f5f5"
             border.color: "#dddddd"
             anchors.fill: parent
+
             radius: 3
 
             Flickable {
@@ -239,11 +240,26 @@ Rectangle {
                 boundsBehavior: Flickable.StopAtBounds
                 Column {
                     id: col
-                    spacing: 15
                     anchors {
                         left: parent.left
                         right: parent.right
-                        margins: 10
+                        top: parent.top
+                        margins: 20
+                    }
+
+                    Text {
+                        color: "#3598db"
+                        font.pointSize: 22
+                        font.bold: true
+                        text: qsTr("¿What's is Pireal?")
+                    }
+
+                    Text {
+                        color: "gray"
+                        font.pointSize: 12
+                        text: qsTr("<b>π</b>real is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.\n")
+                        width: parent.width
+                        wrapMode: Text.WordWrap
                     }
                 }
             }
