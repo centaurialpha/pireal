@@ -1,48 +1,41 @@
 import QtQuick 2.3
+import QtQuick.Controls 1.0
+import QtQuick.Controls.Styles 1.0
 
-Rectangle {
+Button {
     id: button
+    scale: pressed ? 0.9 : 1
+    property bool bold: false
+    property int fontSize: 12
+    property int radiuss: 0
 
-    color: "#4896b8"
-    scale: mouseArea.pressed ? 0.9 : 1
-    radius: 3
-    property alias text: buttonText.text
-    property alias pointSize: buttonText.font.pointSize
-    property int textWidth: buttonText.width + 10
-    property color darkColor: Qt.lighter("#4896b8", 0.9)
-    signal clicked
+    style: ButtonStyle {
+        background: Item {
+            anchors.fill: parent
+            implicitHeight: 40
+            Rectangle {
+                anchors.fill: parent
+                color: (button.checked || button.pressed)
+                       ? "#4896b8": (button.hovered ? "#4896b8": "white")
+                border.width: 1
+                border.color: "#4896b8"
+                radius: radiuss
 
-    Text {
-        id: buttonText
-        anchors.centerIn: parent
-        color: "white"
+                Behavior on color {
+                    ColorAnimation {}
+                }
+            }
+        }
+
+        label: Text {
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            text: button.text
+            smooth: true
+            color: button.hovered ? "white" : "#838b8c"
+            font.bold: bold
+            font.pointSize: fontSize
+            renderType: Text.NativeRendering
+        }
     }
-
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-
-        onEntered: {
-            button.color = darkColor
-        }
-
-        onExited: {
-            button.color = "#4896b8"
-        }
-
-        onPressed: {
-            button.color = darkColor
-        }
-
-        onReleased: {
-            button.color = "#4896b8"
-        }
-
-        onClicked: {
-            button.clicked()
-        }
-
-    }
-
 }

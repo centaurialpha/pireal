@@ -50,41 +50,30 @@ Rectangle {
     }
 
     onWidthChanged: {
-        if(root.width < 900) {
+        console.debug(root.width);
+        if(root.width < 1022) {
             root.compressed = true;
         } else {
             root.compressed = false;
         }
     }
 
-    Rectangle {
+    Button {
+        text: "?"
+        bold: true
+        fontSize: 12
+        width: 30; height: 30
+        radiuss: width / 2
         anchors {
             right: parent.right
             top: parent.top
             margins: 10
         }
-        color: "#4896b8"
-        width: 30
-        height: 30
-        radius: width / 2
-        scale: maarea.pressed ? 0.8 : 1
 
-        Text {
-            text: "?"
-            color: "white"
-            anchors.centerIn: parent
-        }
-
-        MouseArea {
-            id: maarea
-            anchors.fill: parent
-            onClicked: {
-                flipArea.flipped = !flipArea.flipped;
-            }
-
+        onClicked: {
+            flipArea.flipped = !flipArea.flipped;
         }
     }
-
 
     Flipable {
         id: flipArea
@@ -162,16 +151,11 @@ Rectangle {
                     }
 
                     Behavior on color {
-                        NumberAnimation {
-                            target: listItem
-                            property: "opacity"
-                            from: 0.7
-                            to: 1
-                            duration: 300
-                        }
+                        ColorAnimation {}
                     }
 
                     Column {
+                        spacing: 8
                         anchors {
                             verticalCenter: parent.verticalCenter
                             left: parent.left
@@ -185,6 +169,7 @@ Rectangle {
                             font.bold: true
                             font.pixelSize: 30
                             color: listItem.current ? "#fafbfb" : "#979dac"
+                            renderType: Text.NativeRendering
                         }
 
                         Text {
@@ -192,6 +177,8 @@ Rectangle {
                             color:listItem.current ? "#fafbfb" : "#979dac"
                             width: parent.width
                             elide: Text.ElideLeft
+                            renderType: Text.NativeRendering
+                            font.pixelSize: 16
                         }
                     }
 
@@ -252,6 +239,7 @@ Rectangle {
                         font.pointSize: 22
                         font.bold: true
                         text: qsTr("¿What's is Pireal?")
+                        renderType: Text.NativeRendering
                     }
 
                     Text {
@@ -260,6 +248,7 @@ Rectangle {
                         text: qsTr("<b>π</b>real is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.\n")
                         width: parent.width
                         wrapMode: Text.WordWrap
+                        renderType: Text.NativeRendering
                     }
                 }
             }
@@ -279,13 +268,12 @@ Rectangle {
             text: qsTr("Opens a recent database or ")
             color: "#838b8c"
             font.pixelSize: 16
+            renderType: Text.NativeRendering
         }
 
         Button {
             text: qsTr("Create a new database")
             anchors.verticalCenter: title.verticalCenter
-            width: textWidth; height: 40
-            pointSize: 10
 
             onClicked: {
                 root.newDatabase();
@@ -304,6 +292,7 @@ Rectangle {
 
         Text {
          text: "Powered by: "
+         color: "#838b8c"
          height: logoPython.height
          verticalAlignment: Text.AlignVCenter
          font.pixelSize: 12
@@ -315,6 +304,7 @@ Rectangle {
 
     Text {
         text: "Copyright © 2015-" + new Date().getFullYear() + " Gabriel Acosta. Pireal is distributed under the terms of the GNU GPLv3+ copyleft license"
+        color: "#838b8c"
         anchors {
             bottom: parent.bottom
             left: parent.left
@@ -323,7 +313,7 @@ Rectangle {
         }
         font.pixelSize: 12
         visible: root.compressed ? false : true
+        renderType: Text.NativeRendering
     }
-
 
 }
