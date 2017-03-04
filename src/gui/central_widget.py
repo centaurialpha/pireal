@@ -44,7 +44,8 @@ from src.gui.dialogs import (
     preferences,
     database_wizard,
     edit_relation_dialog,
-    new_relation_dialog
+    new_relation_dialog,
+    new_database_dialog
 )
 PSetting = settings.PSetting
 # Logger
@@ -98,32 +99,36 @@ class CentralWidget(QWidget):
 
         if self.created:
             return self.__say_about_one_db_at_time()
-        wizard = database_wizard.DatabaseWizard(self)
-        wizard.wizardFinished.connect(
-            self.__on_wizard_finished)
+        dialog = new_database_dialog.NewDatabaseDialog(self)
+        dialog.create.connect(self.__on_wizard_finished)
+        dialog.show()
+        # wizard = database_wizard.DatabaseWizard(self)
+        # wizard.wizardFinished.connect(
+        #    self.__on_wizard_finished)
         # Hide menubar and toolbar
-        pireal = Pireal.get_service("pireal")
+        # pireal = Pireal.get_service("pireal")
         # pireal.show_hide_menubar()
         # pireal.show_hide_toolbar()
-        wizard.show()
+        # wizard.show()
         # Add wizard widget to stacked
         # self.add_widget(wizard)
 
-    def __on_wizard_finished(self, data, wizard_widget):
+    def __on_wizard_finished(self, *data):
         """ This slot execute when wizard to create a database is finished """
 
         pireal = Pireal.get_service("pireal")
         if data:
+            db_name, location, fname = data
             # Create a new data base container
             db_container = database_container.DatabaseContainer()
             # Associate the file name with the PFile object
-            pfile_object = pfile.File(data['filename'])
+            pfile_object = pfile.File(fname)
             # Associate PFile object with data base container
             # and add widget to stacked
             db_container.pfile = pfile_object
             self.add_widget(db_container)
             # Set window title
-            pireal.change_title(file_manager.get_basename(data['filename']))
+            pireal.change_title(file_manager.get_basename(fname))
             # Enable db actions
             pireal.set_enabled_db_actions(True)
             pireal.set_enabled_relation_actions(True)

@@ -8,6 +8,7 @@ Button {
     property bool bold: false
     property int fontSize: 12
     property int radiuss: 0
+    property bool error: false
 
     style: ButtonStyle {
         background: Item {
@@ -16,7 +17,7 @@ Button {
             Rectangle {
                 anchors.fill: parent
                 color: (button.checked || button.pressed)
-                       ? "#4896b8": (button.hovered ? "#4896b8": "white")
+                       ? "#4896b8": (button.hovered ? (error ? "#e3757e": "#4896b8") : "white")
                 border.width: 1
                 border.color: "#4896b8"
                 radius: radiuss
@@ -28,6 +29,7 @@ Button {
         }
 
         label: Text {
+            id: txt
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             text: button.text
@@ -37,5 +39,8 @@ Button {
             font.pointSize: fontSize
             renderType: Text.NativeRendering
         }
+    }
+    function he() {
+        console.debug(txt.height);
     }
 }

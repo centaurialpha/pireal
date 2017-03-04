@@ -18,7 +18,7 @@
  */
 
 import QtQuick 2.3
-
+import "widgets"
 
 Rectangle {
     id: root
@@ -50,7 +50,6 @@ Rectangle {
     }
 
     onWidthChanged: {
-        console.debug(root.width);
         if(root.width < 1022) {
             root.compressed = true;
         } else {
