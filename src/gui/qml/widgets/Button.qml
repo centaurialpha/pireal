@@ -16,6 +16,7 @@ Button {
             implicitHeight: 40
             Rectangle {
                 anchors.fill: parent
+
                 color: (button.checked || button.pressed)
                        ? "#4896b8": (button.hovered ? (error ? "#e3757e": "#4896b8") : "white")
                 border.width: 1

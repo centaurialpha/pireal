@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2017 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -17,281 +17,124 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import webbrowser
-
 from PyQt5.QtWidgets import (
     QDialog,
-    QGroupBox,
     QVBoxLayout,
-    QHBoxLayout,
-    QGridLayout,
-    QSpacerItem,
-    QSizePolicy,
-    QGraphicsOpacityEffect,
-    QPushButton,
-    QCheckBox,
     QMessageBox,
-    QComboBox,
-    QFontComboBox,
-    QLabel
+    QFontDialog
 )
 from PyQt5.QtGui import QFontDatabase
+from PyQt5.QtQuickWidgets import QQuickWidget
 from PyQt5.QtCore import (
-    QPropertyAnimation,
-    QParallelAnimationGroup,
-    QRect,
+    QUrl,
+    pyqtSlot,
     QSettings,
+    pyqtSignal,
     QThread,
-    pyqtSignal
 )
-
 from src.core import (
     settings,
     file_manager
 )
+from src.gui import updater
 from src.gui.main_window import Pireal
-from src.gui import (
-    overlay_widget,
-    updater
-)
-PSetting = settings.PSetting
 
 
 class Preferences(QDialog):
-    # Signal to warn that the window is closed
     settingsClosed = pyqtSignal()
 
     def __init__(self, parent=None):
-        super(Preferences, self).__init__(parent)
+        QDialog.__init__(self, parent)
+        box = QVBoxLayout(self)
+        box.setContentsMargins(0, 0, 0, 0)
+        view = QQuickWidget()
+        view.setResizeMode(QQuickWidget.SizeRootObjectToView)
+        qml = os.path.join(settings.QML_PATH, "Preferences.qml")
+        view.setSource(QUrl.fromLocalFile(qml))
+        box.addWidget(view)
 
-        # Main container
-        # This contains a grid
-        main_box = QVBoxLayout(self)
-        main_box.setContentsMargins(200, 50, 200, 100)
-
-        # The grid contains two containers
-        # left container and right container
-        grid = QGridLayout()
-
-        # Left Container
-        left_container = QVBoxLayout()
-        left_container.setContentsMargins(0, 0, 0, 0)
-
-        # General
-        group_gral = QGroupBox(self.tr("General"))
-        box_gral = QVBoxLayout(group_gral)
-        # Updates
-        btn_updates = QPushButton(self.tr("Check for updates"))
-        box_gral.addWidget(btn_updates)
-        # Language
-        group_language = QGroupBox(self.tr("Language"))
-        box = QVBoxLayout(group_language)
-        # Find .qm files in language path
+        self.__root = view.rootObject()
+        # Lista de idiomas para el Combo qml
         available_langs = file_manager.get_files_from_folder(
             settings.LANGUAGE_PATH)
+        langs = ["English"] + available_langs
+        self.__root.addLangsToCombo(langs)
+        if settings.PSetting.LANGUAGE:
+            self.__root.setCurrentLanguage(settings.PSetting.LANGUAGE)
 
-        languages = ["English"] + available_langs
-        self._combo_lang = QComboBox()
-        box.addWidget(self._combo_lang)
-        self._combo_lang.addItems(languages)
-        self._combo_lang.currentIndexChanged[int].connect(
-            self._change_lang)
-        if PSetting.LANGUAGE:
-            self._combo_lang.setCurrentText(PSetting.LANGUAGE)
-        box.addWidget(QLabel(self.tr("(Requires restart)")))
+        # Fuentes
+        font = settings.PSetting.FONT
+        self.__root.setFontFamily(font.family(),
+                                  font.pointSize())
 
-        # Add widgets
-        left_container.addWidget(group_gral)
-        left_container.addWidget(group_language)
-        left_container.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
-                                           QSizePolicy.Expanding))
+        # Estados iniciales en los checkboxes
+        cur_line_state = settings.PSetting.HIGHLIGHT_CURRENT_LINE
+        match_paren_state = settings.PSetting.MATCHING_PARENTHESIS
+        self.__root.setInitialStates(cur_line_state, match_paren_state)
 
-        # Right Container
-        right_container = QVBoxLayout()
-        right_container.setContentsMargins(0, 0, 0, 0)
+        # Conexiones
+        self.__root.close.connect(lambda: self.settingsClosed.emit())
+        self.__root.resetSettings.connect(self.__reset_settings)
+        self.__root.checkForUpdates.connect(self.__check_for_updates)
+        self.__root.changeLanguage.connect(self.__change_language)
+        self.__root.stateCurrentLineChanged[bool].connect(
+            self.__on_state_current_line_changed)
+        self.__root.stateMatchingParenChanged[bool].connect(
+            self.__on_state_matching_parenthesis_changed)
+        self.__root.needChangeFont.connect(self.__change_font)
 
-        # Editor
-        editor_group = QGroupBox(self.tr("Editor Configurations"))
-        box_editor = QHBoxLayout(editor_group)
-        # Current line
-        self._highlight_current_line = QCheckBox(
-            self.tr("Highlight Current Line"))
-        self._highlight_current_line.setChecked(
-            PSetting.HIGHLIGHT_CURRENT_LINE)
-        self._highlight_current_line.stateChanged[int].connect(
-            self.__current_line_value_changed)
-        box_editor.addWidget(self._highlight_current_line)
-        # Matching paren
-        self._matching_paren = QCheckBox(self.tr("Matching Parenthesis"))
-        self._matching_paren.setChecked(
-            PSetting.MATCHING_PARENTHESIS)
-        self._matching_paren.stateChanged[int].connect(
-            self.__set_enabled_matching_parenthesis)
-        box_editor.addWidget(self._matching_paren)
-        # Font group
-        font_group = QGroupBox(self.tr("Font"))
-        font_grid = QGridLayout(font_group)
-        font_grid.addWidget(QLabel(self.tr("Family")), 0, 0)
-        self._combo_font = QFontComboBox()
-        self._combo_font.setCurrentFont(PSetting.FONT)
-        font_grid.addWidget(self._combo_font, 0, 1)
-        font_grid.addWidget(QLabel(self.tr("Point Size")), 1, 0)
-        self._combo_font_size = QComboBox()
-        fdb = QFontDatabase()
-        combo_sizes = fdb.pointSizes(PSetting.FONT.family())
-        current_size_index = combo_sizes.index(
-            PSetting.FONT.pointSize())
+    @pyqtSlot()
+    def __change_font(self):
+        initial_font = settings.PSetting.FONT
+        font, ok = QFontDialog.getFont(initial_font, self)
+        if ok:
+            # FIXME: cambiar aunque no esté el editor
+            central = Pireal.get_service("central")
+            mcontainer = central.get_active_db()
+            if mcontainer is not None:
+                query_widget = mcontainer.query_container.currentWidget()
+                if query_widget is not None:
+                    weditor = query_widget.get_editor()
+                    if weditor is not None:
+                        qs = QSettings(settings.SETTINGS_PATH,
+                                       QSettings.IniFormat)
+                        weditor.set_font(font)
+                        qs.setValue("font", font)
+            # Cambio el texto en la interfáz QML
+            self.__root.setFontFamily(font.family(), font.pointSize())
 
-        self._combo_font_size.addItems([str(f) for f in combo_sizes])
-        self._combo_font_size.setCurrentIndex(current_size_index)
-        font_grid.addWidget(self._combo_font_size, 1, 1)
+    @pyqtSlot(bool)
+    def __on_state_current_line_changed(self, state):
+        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        qsettings.setValue('highlight_current_line', state)
+        settings.PSetting.HIGHLIGHT_CURRENT_LINE = state
 
-        right_container.addWidget(editor_group)
-        right_container.addWidget(font_group)
-        right_container.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding,
-                                            QSizePolicy.Expanding))
+    @pyqtSlot(bool)
+    def __on_state_matching_parenthesis_changed(self, state):
+        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        qsettings.setValue('matching_parenthesis', state)
+        settings.PSetting.MATCHING_PARENTHESIS = state
 
-        # Add widgets
-        grid.addLayout(left_container, 0, 0)
-        grid.addLayout(right_container, 0, 1)
-        main_box.addLayout(grid)
+    @pyqtSlot('QString')
+    def __change_language(self, lang):
+        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        qsettings.setValue('language', lang)
 
-        # Button close and reset
-        hbox = QHBoxLayout()
-        hbox.setSpacing(20)
-        hbox.addItem(QSpacerItem(1, 0, QSizePolicy.Expanding))
-        btn_cancel = QPushButton(self.tr("Back"))
-        hbox.addWidget(btn_cancel)
-        btn_reset = QPushButton(self.tr("Reset Configurations"))
-        hbox.addWidget(btn_reset)
-        main_box.addLayout(hbox)
-
-        # Overlay
-        self.overlay = overlay_widget.OverlayWidget(self)
-        self.overlay.hide()
-
-        # Effect and animations
-        self.effect = QGraphicsOpacityEffect()
-        self.setGraphicsEffect(self.effect)
-        duration, x = 180, 150  # Animation duration
-        # Animation start
-        # Opacity animation
-        self.opacity_animation_s = QPropertyAnimation(self.effect, b"opacity")
-        self.opacity_animation_s.setDuration(duration)
-        self.opacity_animation_s.setStartValue(0.0)
-        self.opacity_animation_s.setEndValue(1.0)
-        # X animation
-        self.x_animation_s = QPropertyAnimation(self, b"geometry")
-        self.x_animation_s.setDuration(duration)
-        self.x_animation_s.setStartValue(QRect(x, 0, parent.width(),
-                                               parent.height()))
-        self.x_animation_s.setEndValue(QRect(0, 0, parent.width(),
-                                             parent.height()))
-        # Animation end
-        # Opacity animation
-        self.opacity_animation_e = QPropertyAnimation(self.effect, b"opacity")
-        self.opacity_animation_e.setDuration(duration)
-        self.opacity_animation_e.setStartValue(1.0)
-        self.opacity_animation_e.setEndValue(0.0)
-        # X animation
-        self.x_animation_e = QPropertyAnimation(self, b"geometry")
-        self.x_animation_e.setDuration(duration)
-        self.x_animation_e.setStartValue(QRect(0, 0, parent.width(),
-                                               parent.height()))
-        self.x_animation_e.setEndValue(QRect(-x, 0, parent.width(),
-                                             parent.height()))
-
-        # Group animation start
-        self.group_animation_s = QParallelAnimationGroup()
-        self.group_animation_s.addAnimation(self.opacity_animation_s)
-        self.group_animation_s.addAnimation(self.x_animation_s)
-
-        # Group animation end
-        self.group_animation_e = QParallelAnimationGroup()
-        self.group_animation_e.addAnimation(self.opacity_animation_e)
-        self.group_animation_e.addAnimation(self.x_animation_e)
-
-        # Connections
-        self.group_animation_e.finished.connect(
-            self._on_group_animation_finished)
-        btn_cancel.clicked.connect(self.close)
-        btn_reset.clicked.connect(self._reset_settings)
-        btn_updates.clicked.connect(self._check_for_updates)
-        # self.thread.finished.connect(self._on_thread_finished)
-        self._combo_font.currentFontChanged.connect(
-            self._change_font)
-        self._combo_font_size.currentTextChanged.connect(
-            self._change_font_size)
-
-    def __current_line_value_changed(self, value):
-        qs = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        qs.setValue('highlight_current_line', value)
-        PSetting.HIGHLIGHT_CURRENT_LINE = value
-
-    def __set_enabled_matching_parenthesis(self, value):
-        qs = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        qs.setValue("matching_parenthesis", value)
-        PSetting.MATCHING_PARENTHESIS = value
-
-    def _change_font(self, font):
-        # FIXME: un quilombo esto
-        central = Pireal.get_service("central")
-        mcontainer = central.get_active_db()
-        if mcontainer is not None:
-            query_widget = mcontainer.query_container.currentWidget()
-            if query_widget is not None:
-                weditor = query_widget.get_editor()
-                if weditor is not None:
-                    qs = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-                    weditor.set_font(font)
-                    qs.setValue("font", font)
-
-    def _change_font_size(self, size):
-        # FIXME: un quilombo esto
-        font = self._combo_font.currentFont()
-        font.setPointSize(int(size))
-        central = Pireal.get_service("central")
-        mcontainer = central.get_active_db()
-        if mcontainer is not None:
-            query_widget = mcontainer.query_container.currentWidget()
-            if query_widget is not None:
-                weditor = query_widget.get_editor()
-                if weditor is not None:
-                    qs = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-                    weditor.set_font(font)
-                    qs.setValue("font", font)
-
-    def showEvent(self, event):
-        super(Preferences, self).showEvent(event)
-        self.group_animation_s.start()
-
-    def resizeEvent(self, event):
-        self.overlay.resize(self.size())
-        event.accept()
-
-    def done(self, result):
-        self.res = result
-        self.group_animation_e.start()
-
-    def _on_group_animation_finished(self):
-        super(Preferences, self).done(self.res)
-        self.settingsClosed.emit()
-
-    def _check_for_updates(self):
+    @pyqtSlot()
+    def __check_for_updates(self):
         # Thread
         self._thread = QThread()
         self._updater = updater.Updater()
         self._updater.moveToThread(self._thread)
         self._thread.started.connect(self._updater.check_updates)
         self._updater.finished.connect(self.__on_thread_update_finished)
-        # Show overlay widget
-        self.overlay.show()
         # Start thread
         self._thread.start()
 
+    @pyqtSlot()
     def __on_thread_update_finished(self):
-        # Hide overlay widget
-        self.overlay.hide()
         self._thread.quit()
         msg = QMessageBox(self)
         if not self._updater.error:
@@ -311,6 +154,8 @@ class Preferences(QDialog):
                     webbrowser.open_new(
                         "http://centaurialpha.github.io/pireal")
             else:
+                # Cierro BusyIndicator de qml
+                self.__root.threadFinished()
                 msg.setWindowTitle(self.tr("Information"))
                 msg.setText(self.tr("Last version installed"))
                 msg.addButton(self.tr("Ok"),
@@ -323,7 +168,8 @@ class Preferences(QDialog):
         self._thread.deleteLater()
         self._updater.deleteLater()
 
-    def _reset_settings(self):
+    @pyqtSlot()
+    def __reset_settings(self):
         """ Remove all settings """
 
         msg = QMessageBox(self)
@@ -337,9 +183,4 @@ class Preferences(QDialog):
         r = msg.clickedButton()
         if r == yes_btn:
             QSettings(settings.SETTINGS_PATH, QSettings.IniFormat).clear()
-            self.close()
-
-    def _change_lang(self, index):
-        lang = self._combo_lang.itemText(index)
-        qs = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        qs.setValue('language', lang)
+            # self.close()
