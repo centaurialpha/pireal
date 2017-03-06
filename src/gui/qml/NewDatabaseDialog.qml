@@ -1,6 +1,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.0
 import "widgets"
+import "logic.js" as Logic
 
 Item {
     id: root
@@ -62,6 +63,7 @@ Item {
             focus: true
             placeholderText: qsTr("Database Name");
             onTextChanged: {
+                hasError = false;
                 // Emito la señal
                 databaseNameChanged(text);
             }
@@ -75,13 +77,15 @@ Item {
                 text: "..."
                 anchors {
                     right: parent.right
+                    top: parent.top
+                    bottom: parent.bottom
+                    topMargin: dbLocation.focus ? 1 : 0
+                    bottomMargin: dbLocation.focus ? 1: 0
+                    rightMargin: dbLocation.focus ? 1 : 0
                 }
                 bold: true
 
-                onClicked: {
-                    // Emito la señal
-                    locationChanged();
-                }
+                onClicked: { locationChanged(); }
             }
         }
 
@@ -102,21 +106,13 @@ Item {
         }
 
         Button {
-            text: "Save"
+            text: qsTr("Save")
             height: 30
-            onClicked: {
-                if(databaseName.text.length === 0) {
-                    databaseName.hasError = true;
-                } else {
-                    // Emito la señal con los datos de la DB
-                    create(databaseName.text, dbLocation.text, dbFilename.text);
-                    close();
-                }
-            }
+            onClicked: { Logic.onButtonSaveClicked(); }
         }
 
         Button {
-            text: "Cancel"
+            text: qsTr("Cancel")
             height: 30
             error: true
             onClicked: {

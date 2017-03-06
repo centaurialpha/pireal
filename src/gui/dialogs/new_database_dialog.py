@@ -57,7 +57,7 @@ class NewDatabaseDialog(QDialog):
 
         self.__root = view.rootObject()
         self.__location_folder = settings.PIREAL_DATABASES
-        self.__root.setFilename(self.__location_folder)
+        self.__root.setFolder(self.__location_folder)
 
         # Conexiones
         self.__root.close.connect(self.close)
