@@ -61,6 +61,7 @@ Item {
     GroupBox {
         id: container
         font.pointSize: 16
+        width: parent.width / 2.5
         anchors {
             top: parent.top
             horizontalCenter: parent.horizontalCenter
