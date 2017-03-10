@@ -106,7 +106,7 @@ Item {
         }
 
         Button {
-            text: qsTr("Save")
+            text: qsTr("Create")
             height: 30
             onClicked: { Logic.onButtonSaveClicked(); }
         }

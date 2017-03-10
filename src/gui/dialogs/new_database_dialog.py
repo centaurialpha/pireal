@@ -37,7 +37,9 @@ from src.core import settings
 
 class NewDatabaseDialog(QDialog):
 
-    create = pyqtSignal('QString', 'QString', 'QString')
+    # La señal se emite cuando se crea la DB, es decir
+    # cuando se clickea en el botón 'Crear' del diálogo
+    created = pyqtSignal('QString', 'QString', 'QString')
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent, Qt.Dialog | Qt.FramelessWindowHint)
@@ -55,9 +57,12 @@ class NewDatabaseDialog(QDialog):
         short_escape = QShortcut(QKeySequence(Qt.Key_Escape), self)
         short_escape.activated.connect(self.hide)
 
+        # Acceso a la interfáz QML
         self.__root = view.rootObject()
+
         self.__location_folder = settings.PIREAL_DATABASES
         self.__root.setFolder(self.__location_folder)
+        self.__root.setFilename(self.__location_folder)
 
         # Conexiones
         self.__root.close.connect(self.close)
@@ -66,7 +71,7 @@ class NewDatabaseDialog(QDialog):
         self.__root.locationChanged.connect(
             self.__select_location)
         self.__root.create.connect(
-            lambda db_name, location, filename: self.create.emit(
+            lambda db_name, location, filename: self.created.emit(
                 db_name, location, filename))
 
     @pyqtSlot()

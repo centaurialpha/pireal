@@ -242,8 +242,12 @@ class Pireal(QMainWindow):
         self._thread.deleteLater()
         self._updater.deleteLater()
 
-    def change_title(self, title):
-        self.setWindowTitle("Pireal " + '[' + title + ']')
+    def change_title(self, title=''):
+        if title:
+            _title = "Pireal " + '[' + title + ']'
+        else:
+            _title = "Pireal"
+        self.setWindowTitle(_title)
 
     def set_enabled_db_actions(self, value):
         """ Public method. Enables or disables db QAction """

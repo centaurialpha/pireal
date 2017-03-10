@@ -100,7 +100,7 @@ class CentralWidget(QWidget):
         if self.created:
             return self.__say_about_one_db_at_time()
         dialog = new_database_dialog.NewDatabaseDialog(self)
-        dialog.create.connect(self.__on_wizard_finished)
+        dialog.created.connect(self.__on_wizard_finished)
         dialog.show()
         # wizard = database_wizard.DatabaseWizard(self)
         # wizard.wizardFinished.connect(
@@ -343,6 +343,7 @@ class CentralWidget(QWidget):
         pireal.set_enabled_relation_actions(False)
         pireal.set_enabled_query_actions(False)
         pireal.set_enabled_editor_actions(False)
+        pireal.change_title()  # Título en la ventana principal 'Pireal'
         self.created = False
         del db
 
