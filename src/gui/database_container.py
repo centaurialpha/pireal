@@ -29,8 +29,6 @@ from PyQt5.QtCore import (
     QSettings
 )
 from PyQt5.QtGui import (
-    QStandardItem,
-    QStandardItemModel,
     QPalette,
     QColor
 )
@@ -38,7 +36,8 @@ from PyQt5.QtGui import (
 from src.gui import (
     table_widget,
     lateral_widget,
-    custom_table
+    custom_table,
+    table_model
 )
 
 from src.gui.query_container import query_container
@@ -103,33 +102,20 @@ class DatabaseContainer(QSplitter):
             header = table.get('header')
             tuples = table.get('tuples')
 
-            # Create relation
+            # Creo el objeto Relation
             rela = relation.Relation()
             rela.header = header
+            # Relleno el objeto con las tuplas
+            for _tuple in tuples:
+                rela.insert(_tuple)
 
-            # Table view widget
-            table_view = custom_table.Table()
-            # Model
-            model = QStandardItemModel()
-            model.setHorizontalHeaderLabels(header)
-
-            # Populate table view
-            row_count = 0
-            for row in tuples:
-                for col_count, i in enumerate(row):
-                    item = QStandardItem(i)
-                    # Set read only
-                    item.setFlags(item.flags() & ~Qt.ItemIsEditable)
-                    model.setItem(row_count, col_count, item)
-                rela.insert(row)
-                row_count += 1
-
-            # Set table model
-            table_view.setModel(model)
+            view = custom_table.Table()
+            model = table_model.Model(rela)
+            view.setModel(model)
             # Add relation to relations dict
             self.table_widget.add_relation(table_name, rela)
             # Add table to stacked
-            self.table_widget.stacked.addWidget(table_view)
+            self.table_widget.stacked.addWidget(view)
             # Add table name to list widget
             self.lateral_widget.add_item(table_name, rela.count())
         # Select first item
