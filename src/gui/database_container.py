@@ -36,8 +36,9 @@ from PyQt5.QtGui import (
 from src.gui import (
     table_widget,
     lateral_widget,
-    custom_table,
-    table_model
+    view,
+    model,
+    delegate
 )
 
 from src.gui.query_container import query_container
@@ -109,15 +110,17 @@ class DatabaseContainer(QSplitter):
             for _tuple in tuples:
                 rela.insert(_tuple)
 
-            view = custom_table.Table()
-            model = table_model.Model(rela)
-            view.setModel(model)
+            _view = view.View()
+            _model = model.Model(rela)
+            _view.setModel(_model)
+            _view.setItemDelegate(delegate.Delegate())
+            _view.setHorizontalHeader(view.Header())
             # Add relation to relations dict
             self.table_widget.add_relation(table_name, rela)
             # Add table to stacked
-            self.table_widget.stacked.addWidget(view)
+            self.table_widget.stacked.addWidget(_view)
             # Add table name to list widget
-            self.lateral_widget.add_item(table_name, rela.count())
+            self.lateral_widget.add_item(table_name, str(rela.cardinality()))
         # Select first item
         first_item = self.lateral_widget.topLevelItem(0)
         first_item.setSelected(True)

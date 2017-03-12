@@ -34,7 +34,7 @@ class Relation(object):
     """
 
     def __init__(self):
-        self.content = set()
+        self.content = Content()
         self.__header = list()
 
     def insert(self, record):
@@ -43,7 +43,7 @@ class Relation(object):
         :param record: A record (tuple)
         """
 
-        self.content.add(tuple(record))
+        self.content.add(record)
 
     def __set_header(self, header):
         """ Set header to the relation """
@@ -65,12 +65,20 @@ class Relation(object):
     def clear(self):
         """ Clear all content of the relation except the header """
 
-        self.content = set()
+        pass
 
-    def count(self):
-        """ Return the number of tuples in the relation """
+    def update(self, row, column, value):
+        self.content[row][column] = value
 
-        return str(len(self.content))
+    def cardinality(self):
+        """ Devuelve la cantidad de filas o tuplas de la relación """
+
+        return len(self.content)
+
+    def degree(self):
+        """ Devuelve el grado de la relación """
+
+        return len(self.header)
 
     def select(self, expression):
         """
@@ -123,7 +131,7 @@ class Relation(object):
         new_relation.header = header
 
         for rec in self.content:
-            new_relation.content.add(tuple(rec[index] for index in indexes))
+            new_relation.insert([rec[index] for index in indexes])
 
         return new_relation
 
@@ -270,18 +278,70 @@ class Relation(object):
         return header + content
 
 
+class Content(object):
+    """ Esta clase representa un objeto list pero que se comporta como un
+    set (conjunto).
+    - Por qué no usas set Gabo?
+    Por que necesito un objeto que pueda acceder mediante índices (un set
+    no permite eso), además el órden me importa (el órden es un concepto sin
+    sentido para los conjuntos y las matemáticas) pero esto es un problema
+    del mundo real ;)
+    """
+
+    def __init__(self):
+        self.content = []
+        self.__index = 0
+
+    def add(self, item):
+        if item not in self.content:
+            self.content.append(item)
+
+    def difference(self, other):
+        return list(filter(lambda x: x not in other, self))
+
+    def intersection(self, other):
+        return list(filter(lambda x: x in self, other))
+
+    def union(self, other):
+        return list(self) + list(filter(lambda x: x not in self, other))
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            item = self.content[self.__index]
+            self.__index += 1
+            return item
+        except IndexError:
+            self.__index = 0
+            raise StopIteration
+
+    def __str__(self):
+        return str([x for x in self])
+
+    def __len__(self):
+        return len(self.content)
+
+    def __getitem__(self, index):
+        return self.content[index]
+
+    def __setitem__(self, index, value):
+        self.content[index] = value
+
+
 if __name__ == "__main__":
     r1 = Relation()
     h1 = ['name', 'id', 'city']
     r1.header = h1
-    data1 = {('Gabriel', '1', 'Bel'), ('Rodrigo', '32', 'Bel')}
+    data1 = [['Gabriel', '1', 'Bel'], ['Rodrigo', '32', 'Bel']]
     for reg in data1:
         r1.insert(reg)
 
     r2 = Relation()
     h2 = ['id', 'skill']
     r2.header = h2
-    data2 = {('1', 'Python'), ('32', 'C++')}
+    data2 = [['1', 'Python'], ['32', 'C++']]
     for reg in data2:
         r2.insert(reg)
     print(r1.select("name == 'Gabriel'"))

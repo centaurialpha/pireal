@@ -28,7 +28,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtCore import Qt
 
-from src.gui import custom_table
+from src.gui import view, model
 
 
 class TableWidget(QWidget):
@@ -66,11 +66,14 @@ class TableWidget(QWidget):
         return False
 
     def update_table(self, data):
+        print(data)
+        """
         current_table = self.current_table()
         model = current_table.model()
         # Clear content
         model.clear()
         # Add new header and content
+
         model.setHorizontalHeaderLabels(data.header)
 
         for row_count, row in enumerate(data.content):
@@ -81,7 +84,7 @@ class TableWidget(QWidget):
 
         # Ajustar las columnas de acuerdo al nuevo contenido
         current_table.adjust_columns()
-
+        """
     def add_table(self, rela, name):
         """ Add new table from New Relation Dialog """
 
@@ -91,15 +94,9 @@ class TableWidget(QWidget):
         self.stacked.addWidget(table)
 
     def create_table(self, rela):
-        table = custom_table.Table()
-        model = QStandardItemModel()
-        table.setModel(model)
-        model.setHorizontalHeaderLabels(rela.header)
+        """ Se crea la vista y el modelo """
 
-        for row_count, row in enumerate(rela.content):
-            for col_count, data in enumerate(row):
-                item = QStandardItem(data)
-                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
-                model.setItem(row_count, col_count, item)
-
-        return table
+        _view = view.View()
+        _model = model.Model(rela)
+        _view.setModel(_model)
+        return _view

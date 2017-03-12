@@ -29,10 +29,11 @@ from PyQt5.QtCore import (
 )
 
 
-class Table(QTableView):
+class View(QTableView):
+    """ Vista """
 
     def __init__(self):
-        super(Table, self).__init__()
+        super(View, self).__init__()
         self.setAlternatingRowColors(True)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.verticalHeader().hide()
@@ -43,7 +44,7 @@ class Table(QTableView):
         self.horizontalHeader().setHighlightSections(False)
 
     def resizeEvent(self, event):
-        super(Table, self).resizeEvent(event)
+        super(View, self).resizeEvent(event)
         self.adjust_columns()
 
     def adjust_columns(self):
@@ -77,7 +78,8 @@ class Header(QHeaderView):
         geo = self.line.geometry()
         geo.setWidth(self.sectionSize(index))
         geo.moveLeft(self.sectionViewportPosition(index))
-        current_text = self.model().headerData(index, Qt.Horizontal)
+        current_text = self.model().headerData(index, Qt.Horizontal,
+                                               Qt.DisplayRole)
         self.line.setGeometry(geo)
         self.line.setHidden(False)
         self.line.blockSignals(False)
@@ -90,7 +92,8 @@ class Header(QHeaderView):
         self.line.blockSignals(True)
         self.line.setHidden(False)
         text = self.line.text()
-        self.model().setHeaderData(self.col, Qt.Horizontal, text)
+        self.model().setHeaderData(self.col, Qt.Horizontal, text,
+                                   Qt.DisplayRole)
         self.line.setText("")
         self.line.hide()
         self.setCurrentIndex(QModelIndex())

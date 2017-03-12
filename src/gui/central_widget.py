@@ -416,16 +416,15 @@ class CentralWidget(QWidget):
             db.modified = True
 
     def create_new_relation(self):
-        data = new_relation_dialog.create_relation()
-        if data is not None:
+        def create_relation(relation, relation_name):
             db = self.get_active_db()
-            rela, rela_name = data
-            # Add table
-            db.table_widget.add_table(rela, rela_name)
-            # Add item to lateral widget
-            db.lateral_widget.add_item(rela_name, rela.count())
-            # Set modified db
+            db.table_widget.add_table(relation, relation_name)
+            db.lateral_widget.add_item(relation_name, relation.cardinality())
             db.modified = True
+
+        dialog = new_relation_dialog.NewRelationDialog(self)
+        dialog.created.connect(create_relation)
+        dialog.show()
 
     def edit_relation(self):
         db = self.get_active_db()
@@ -435,15 +434,18 @@ class CentralWidget(QWidget):
             selected_relation = selected_items[0].text(0)
             relation_text = selected_relation.split()[0].strip()
             rela = db.table_widget.relations[relation_text]
-            data = edit_relation_dialog.edit_relation(rela)
-            if data is not None:
+            dialog = edit_relation_dialog.EditRelationDialog(
+                rela, relation_text, self)
+            dialog.show()
+            # data = edit_relation_dialog.edit_relation(rela)
+            # print(data)
                 # Update table
-                db.table_widget.update_table(data)
+            #    db.table_widget.update_table(data)
                 # Update relation
-                db.table_widget.relations[relation_text] = data
+            #    db.table_widget.relations[relation_text] = data
                 # Set modified db
-                db.modified = True
-                lateral.update_item(data.count())
+            #    db.modified = True
+            #    lateral.update_item(data.count())
 
     def load_relation(self, filename=''):
         """ Load Relation file """

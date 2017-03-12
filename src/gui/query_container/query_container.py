@@ -30,13 +30,8 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QAction
 )
-from PyQt5.QtGui import (
-    QStandardItem,
-    QStandardItemModel
-)
 from PyQt5.QtCore import (
     Qt,
-    # QPoint,
     pyqtSignal,
     QSettings
 )
@@ -47,7 +42,8 @@ from src.core.interpreter import (
     parser
 )
 from src.gui import (
-    custom_table,
+    view,
+    model,
     lateral_widget
 )
 from src.gui.main_window import Pireal
@@ -405,21 +401,10 @@ class QueryWidget(QWidget):
             i -= 1
 
     def add_table(self, rela, rname):
-        wtable = custom_table.Table()
-        # Model
-        model = QStandardItemModel()
-        wtable.setModel(model)
-        model.setHorizontalHeaderLabels(rela.header)
 
-        for data in rela.content:
-            nrow = model.rowCount()
-            # wtable.insertRow(nrow)
-            for col, text in enumerate(data):
-                item = QStandardItem(text)
-                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
-                model.setItem(nrow, col, item)
-
-        index = self._stack_tables.addWidget(wtable)
+        _view = view.View()
+        _model = model.Model(rela)
+        _view.setModel(_model)
+        index = self._stack_tables.addWidget(_view)
         self._stack_tables.setCurrentIndex(index)
-
-        self._result_list.add_item(rname, rela.count())
+        self._result_list.add_item(rname, rela.cardinality())
