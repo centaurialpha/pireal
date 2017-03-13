@@ -42,7 +42,6 @@ from src.gui import (
 )
 from src.gui.dialogs import (
     preferences,
-    database_wizard,
     edit_relation_dialog,
     new_relation_dialog,
     new_database_dialog

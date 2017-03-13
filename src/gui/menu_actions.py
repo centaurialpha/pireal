@@ -111,9 +111,18 @@ MENU['relation'] = {
     }, {
         'name': translate("Pireal", "Load Relation"),
         'slot': "central:load_relation"
+    }, "-", {
+        'name': translate("Pireal", "Add Tuple"),
+        'slot': "central:add_tuple"
     }, {
-        'name': translate("Pireal", "Edit Relation"),
-        'slot': "central:edit_relation"
+        'name': translate("Pireal", "Delete Tuple"),
+        'slot': "central:delete_tuple"
+    }, {
+        'name': translate("Pireal", "Add Column"),
+        'slot': "central:add_column"
+    }, {
+        'name': translate("Pireal", "Delete Column"),
+        'slot': "central:delete_column"
     }, "-", {
         'name': translate("Pireal", "Execute Queries"),
         'slot': "central:execute_queries"}]}
