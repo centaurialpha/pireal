@@ -177,25 +177,61 @@ class RelationTestCase(unittest.TestCase):
         union = self.r2.union(self.r4).content.content
         self.assertEqual(expected, union)
 
+    def test_append_row(self):
+        rela = relation.Relation()
+        rela.header = ['id', 'name', 'city']
+        content = [
+            ['1', 'Gabriel', 'Belén'],
+            ['23', 'Rodrigo', 'Belén']
+        ]
+        for t in content:
+            rela.insert(t)
+        expected_header = ['id', 'name', 'city']
+        expected_content = [
+            ['1', 'Gabriel', 'Belén'],
+            ['23', 'Rodrigo', 'Belén'],
+            ['null', 'null', 'null']
+        ]
+        rela.append_row()
+        print(rela)
+        self.assertEqual(expected_header, rela.header)
+        self.assertEqual(expected_content, rela.content.content)
+
     def test_append_column(self):
+        rela = relation.Relation()
+        rela.header = ['id', 'name', 'city']
+        content = [
+            ['1', 'Gabriel', 'Belén'],
+            ['23', 'Rodrigo', 'Belén']
+        ]
+        for t in content:
+            rela.insert(t)
         expected_header = ['id', 'name', 'city', 'null']
         expected_content = [
             ['1', 'Gabriel', 'Belén', 'null'],
             ['23', 'Rodrigo', 'Belén', 'null']
         ]
-        self.r1.append_column()
-        self.assertEqual(expected_header, self.r1.header)
-        self.assertEqual(expected_content, self.r1.content.content)
+        rela.append_column()
+        self.assertEqual(expected_header, rela.header)
+        self.assertEqual(expected_content, rela.content.content)
 
     def test_remove_column(self):
+        rela = relation.Relation()
+        rela.header = ['id', 'name', 'city']
+        content = [
+            ['1', 'Gabriel', 'Belén'],
+            ['23', 'Rodrigo', 'Belén']
+        ]
+        for t in content:
+            rela.insert(t)
         expected_header = ['id', 'city']
         expected_content = [
             ['1', 'Belén'],
             ['23', 'Belén']
         ]
-        self.r1.remove_column(1)
-        self.assertEqual(expected_header, self.r1.header)
-        self.assertEqual(expected_content, self.r1.content.content)
+        rela.remove_column(1)
+        self.assertEqual(expected_header, rela.header)
+        self.assertEqual(expected_content, rela.content.content)
 
 
 if __name__ == "__main__":

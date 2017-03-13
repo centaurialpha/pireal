@@ -45,6 +45,13 @@ class Relation(object):
 
         self.content.add(record)
 
+    def append_row(self):
+        """ Agrega una fila/tupla al final """
+
+        null_row = ['null' for i in range(self.degree())]
+        self.insert(null_row)
+        print(self)
+
     def append_column(self):
         """ Agrega una columna al final de la tabla con valores 'null' """
 
@@ -347,8 +354,8 @@ class Content(object):
         self.__index = 0
 
     def add(self, item):
-        if item not in self.content:
-            self.content.append(item)
+        # if item not in self.content:
+        self.content.append(item)
 
     def difference(self, other):
         return list(filter(lambda x: x not in other, self))
