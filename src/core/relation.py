@@ -190,6 +190,44 @@ class Relation(object):
 
         return new_relation.project(*ss)
 
+    def louther(self, other):
+        header = self.__header + other.header
+
+        new_relation = Relation()
+        new_relation.header = header
+
+        sharedf = set(self.__header).intersection(set(other.header))
+        ss = self.__header + [i for i in other.header if i not in sharedf]
+
+        indexes_rela = [self.__header.index(i) for i in sharedf]
+        indexes_other = [other.header.index(i) for i in sharedf]
+
+        for i in self.content:
+            added = False
+            for j in other.content:
+                for k in indexes_rela:
+                    for l in indexes_other:
+                        if i[k] == j[l]:
+                            # Esto es un producto cartesiano con la
+                            # condición equi-join
+                            new_relation.insert(i + j)
+                            added = True
+            if not added:
+                nulls = ['null' for i in range(len(other.header))]
+                new_relation.insert(i + nulls)
+
+        return new_relation.project(*ss)
+
+    def routher(self, other):
+        r = other.louther(self)
+        sharedf = [i for i in other.header if i not in self.header]
+        return r.project(*self.header + sharedf)
+
+    def fouther(self, other):
+        right = self.routher(other)
+        left = self.louther(other)
+        return right.union(left)
+
     def intersect(self, other_relation):
         """ The intersection is defined as: R ∩ S. corresponds to the set of
         all tuples in R and S, R and S compatible unions.
@@ -241,8 +279,8 @@ class Relation(object):
         :returns: A new relation
         """
 
-        if self.header != other_relation.header:
-            raise Exception("Not union compatible")
+        # if self.header != other_relation.header:
+        #    raise Exception("Not union compatible")
 
         new_relation = Relation()
         new_relation.header = self.header

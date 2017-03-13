@@ -42,7 +42,6 @@ from src.gui import (
 )
 from src.gui.dialogs import (
     preferences,
-    edit_relation_dialog,
     new_relation_dialog,
     new_database_dialog
 )
@@ -101,16 +100,6 @@ class CentralWidget(QWidget):
         dialog = new_database_dialog.NewDatabaseDialog(self)
         dialog.created.connect(self.__on_wizard_finished)
         dialog.show()
-        # wizard = database_wizard.DatabaseWizard(self)
-        # wizard.wizardFinished.connect(
-        #    self.__on_wizard_finished)
-        # Hide menubar and toolbar
-        # pireal = Pireal.get_service("pireal")
-        # pireal.show_hide_menubar()
-        # pireal.show_hide_toolbar()
-        # wizard.show()
-        # Add wizard widget to stacked
-        # self.add_widget(wizard)
 
     def __on_wizard_finished(self, *data):
         """ This slot execute when wizard to create a database is finished """
@@ -424,27 +413,6 @@ class CentralWidget(QWidget):
         dialog = new_relation_dialog.NewRelationDialog(self)
         dialog.created.connect(create_relation)
         dialog.show()
-
-    def edit_relation(self):
-        db = self.get_active_db()
-        lateral = db.lateral_widget
-        selected_items = lateral.selectedItems()
-        if selected_items:
-            selected_relation = selected_items[0].text(0)
-            relation_text = selected_relation.split()[0].strip()
-            rela = db.table_widget.relations[relation_text]
-            dialog = edit_relation_dialog.EditRelationDialog(
-                rela, relation_text, self)
-            dialog.show()
-            # data = edit_relation_dialog.edit_relation(rela)
-            # print(data)
-                # Update table
-            #    db.table_widget.update_table(data)
-                # Update relation
-            #    db.table_widget.relations[relation_text] = data
-                # Set modified db
-            #    db.modified = True
-            #    lateral.update_item(data.count())
 
     def load_relation(self, filename=''):
         """ Load Relation file """

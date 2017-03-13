@@ -45,11 +45,11 @@ The operations are implemented in `relation.py <https://github.com/centaurialpha
 +------------------+-----------+
 | Natural Join     |    Yes    |
 +------------------+-----------+
-| Left Outer Join  |    No     |
+| Left Outer Join  |    Yes    |
 +------------------+-----------+
-| Right Outer Join |    No     |
+| Right Outer Join |    Yes    |
 +------------------+-----------+
-| Full Outer Join  |    No     |
+| Full Outer Join  |    Yes    |
 +------------------+-----------+
 | Intersection     |    Yes    |
 +------------------+-----------+
