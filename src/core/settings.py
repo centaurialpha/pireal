@@ -59,6 +59,8 @@ LOG_PATH = os.path.join(PIREAL_DIR, 'pireal_log.log')
 LANGUAGE_PATH = os.path.join(ROOT_DIR, 'src', 'lang')
 # Path for QML files
 QML_PATH = os.path.join(ROOT_DIR, 'src', 'gui', 'qml')
+# Style sheet
+STYLE_SHEET = os.path.join(ROOT_DIR, 'src', 'style.qss')
 
 # Supported files
 SUPPORTED_FILES = ("Pireal Database File (*.pdb);;"

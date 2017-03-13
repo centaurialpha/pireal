@@ -1,0 +1,13 @@
+QHeaderView::section {
+    background-color: #656565;
+    color: white;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: 1px solid gray;
+}
+
+QTableView {
+    selection-background-color: green;
+}
