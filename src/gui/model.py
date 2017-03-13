@@ -25,12 +25,17 @@ from PyQt5.QtCore import (
     QAbstractTableModel,
     Qt,
     QVariant,
-    QModelIndex
+    QModelIndex,
+    pyqtSignal
 )
 
 
 class Model(QAbstractTableModel):
     """ Modelo """
+
+    modelModified = pyqtSignal(bool)
+    degreeChanged = pyqtSignal(int)
+    cardinalityChanged = pyqtSignal(int)
 
     def __init__(self, relation_obj):
         QAbstractTableModel.__init__(self)
@@ -75,7 +80,7 @@ class Model(QAbstractTableModel):
             self.__data.update(index.row(), index.column(), value)
             # Emito la señal
             self.dataChanged.emit(index, index)
-            self.modified = True
+            self.set_modified(True)
             return True
         return False
 
@@ -95,7 +100,7 @@ class Model(QAbstractTableModel):
             self.__data.header[section] = value
             # Emito la señal
             self.headerDataChanged.emit(orientation, section, section)
-            self.modified = True
+            self.set_modified(True)
             return True
 
     def flags(self, index):
@@ -107,10 +112,48 @@ class Model(QAbstractTableModel):
         return flags
 
     def insertRow(self, position, index=QModelIndex()):
+        """ Método reimplementado.
+        Inserta una fila al final de la tabla y emite una señal con
+        el nuevo valor de cardinalidad """
+
         self.beginInsertRows(QModelIndex(), position, position)
-        # FIXME: ver esto
-        self.__data.insert(['-' for i in range(self.__data.cardinality())])
+        self.__data.insert(['null' for i in range(self.__data.cardinality())])
+        self.cardinalityChanged.emit(self.__data.cardinality())
+        self.set_modified(True)
         self.endInsertRows()
+
+    def insertColumn(self, position, index=QModelIndex()):
+        """ Método reimplementado.
+        Inserta una columna al final de la tabla """
+
+        self.beginInsertColumns(QModelIndex(), position, position)
+        self.__data.append_column()
+        self.set_modified(True)
+        self.endInsertColumns()
+
+    def removeRow(self, row, parent=QModelIndex()):
+        """ Método reimplementado.
+        Elimina una fila del modelo y emite una señal con el nuevo
+        valor de cardinalidad """
+
+        self.beginRemoveRows(QModelIndex(), row, row)
+        del self.__data.content[row]
+        self.cardinalityChanged.emit(self.__data.cardinality())
+        self.set_modified(True)
+        self.endRemoveRows()
+
+    def removeColumn(self, col, parent=QModelIndex()):
+        """ Método reimplementado.
+        Elimina una columna del modelo """
+
+        self.beginRemoveColumns(QModelIndex(), col, col)
+        self.__data.remove_column(col)
+        self.set_modified(True)
+        self.endRemoveColumns()
+
+    def set_modified(self, val):
+        self.modified = val
+        self.modelModified.emit(val)
 
     def clear(self):
         self.__data.content.clear()

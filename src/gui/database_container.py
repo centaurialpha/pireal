@@ -26,7 +26,8 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import (
     Qt,
-    QSettings
+    QSettings,
+    pyqtSlot
 )
 from PyQt5.QtGui import (
     QPalette,
@@ -110,10 +111,19 @@ class DatabaseContainer(QSplitter):
             for _tuple in tuples:
                 rela.insert(_tuple)
 
+            # Se usa el patrón Modelo/Vista/Delegado
+            # Para entender más, leer el código de cáda módulo
+            # src.gui.model
+            # src.gui.view
+            # src.gui.delegate
             _view = view.View()
             _model = model.Model(rela)
+            _model.modelModified[bool].connect(self.__on_model_modified)
+            _model.cardinalityChanged[int].connect(
+                self.__on_cardinality_changed)
             _view.setModel(_model)
             _view.setItemDelegate(delegate.Delegate())
+            # Se agrega un header editable
             _view.setHorizontalHeader(view.Header())
             # Add relation to relations dict
             self.table_widget.add_relation(table_name, rela)
@@ -124,6 +134,14 @@ class DatabaseContainer(QSplitter):
         # Select first item
         first_item = self.lateral_widget.topLevelItem(0)
         first_item.setSelected(True)
+
+    @pyqtSlot(bool)
+    def __on_model_modified(self, modified):
+        self.modified = modified
+
+    @pyqtSlot(int)
+    def __on_cardinality_changed(self, value):
+        self.lateral_widget.update_item(value)
 
     def load_relation(self, filenames):
         for filename in filenames:

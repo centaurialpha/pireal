@@ -177,6 +177,26 @@ class RelationTestCase(unittest.TestCase):
         union = self.r2.union(self.r4).content.content
         self.assertEqual(expected, union)
 
+    def test_append_column(self):
+        expected_header = ['id', 'name', 'city', 'null']
+        expected_content = [
+            ['1', 'Gabriel', 'Belén', 'null'],
+            ['23', 'Rodrigo', 'Belén', 'null']
+        ]
+        self.r1.append_column()
+        self.assertEqual(expected_header, self.r1.header)
+        self.assertEqual(expected_content, self.r1.content.content)
+
+    def test_remove_column(self):
+        expected_header = ['id', 'city']
+        expected_content = [
+            ['1', 'Belén'],
+            ['23', 'Belén']
+        ]
+        self.r1.remove_column(1)
+        self.assertEqual(expected_header, self.r1.header)
+        self.assertEqual(expected_content, self.r1.content.content)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -93,6 +93,50 @@ class TableWidget(QWidget):
         self.add_relation(name, rela)
         self.stacked.addWidget(table)
 
+    def add_tuple(self):
+        current_view = self.current_table()
+        model = current_view.model()
+        model.insertRow(model.rowCount())
+
+    def add_column(self):
+        current_view = self.current_table()
+        model = current_view.model()
+        model.insertColumn(model.columnCount())
+
+    def delete_tuple(self):
+        current_view = self.current_table()
+        model = current_view.model()
+        selection = current_view.selectionModel()
+        if selection.hasSelection():
+            selection = selection.selection()
+            rows = set([index.row() for index in selection.indexes()])
+            rows = sorted(list(rows))
+            previous = -1
+            i = len(rows) - 1
+            while i >= 0:
+                current = rows[i]
+                if current != previous:
+                    model.removeRow(current)
+                i -= 1
+
+    def delete_column(self):
+        """ Elimina la/las columnas seleccionadas """
+
+        current_view = self.current_table()
+        model = current_view.model()
+        selection = current_view.selectionModel()
+        if selection.hasSelection():
+            selection = selection.selection()
+            columns = set([index.column() for index in selection.indexes()])
+            columns = sorted(list(columns))
+            previous = -1
+            i = len(columns) - 1
+            while i >= 0:
+                current = columns[i]
+                if current != previous:
+                    model.removeColumn(current)
+                i -= 1
+
     def create_table(self, rela):
         """ Se crea la vista y el modelo """
 

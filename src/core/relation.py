@@ -45,6 +45,22 @@ class Relation(object):
 
         self.content.add(record)
 
+    def append_column(self):
+        """ Agrega una columna al final de la tabla con valores 'null' """
+
+        self.__header.append('null')
+        for t in self.content:
+            t.append('null')
+
+    def remove_column(self, column):
+        """ Elimina la columna @column """
+
+        # Primero elimino el campo
+        del self.__header[column]
+        # Ahora elimino las tuplas en ese campo
+        for t in self.content:
+            del t[column]
+
     def __set_header(self, header):
         """ Set header to the relation """
 
@@ -366,6 +382,9 @@ class Content(object):
 
     def __setitem__(self, index, value):
         self.content[index] = value
+
+    def __delitem__(self, index):
+        del self.content[index]
 
 
 if __name__ == "__main__":

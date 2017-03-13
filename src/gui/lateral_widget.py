@@ -59,7 +59,7 @@ class LateralWidget(QTreeWidget):
 
     def update_item(self, tuple_count):
         item = self.current_item()
-        item.ntuples = tuple_count
+        item.ntuples = str(tuple_count)
         item.setText(0, item.display_name)
 
     def current_item(self):

@@ -526,5 +526,21 @@ class CentralWidget(QWidget):
         query_container = self.get_active_db().query_container
         query_container.uncomment()
 
+    def add_tuple(self):
+        tw = self.get_active_db().table_widget
+        tw.add_tuple()
+
+    def add_column(self):
+        tw = self.get_active_db().table_widget
+        tw.add_column()
+
+    def delete_tuple(self):
+        tw = self.get_active_db().table_widget
+        tw.delete_tuple()
+
+    def delete_column(self):
+        tw = self.get_active_db().table_widget
+        tw.delete_column()
+
 
 central = CentralWidget()
