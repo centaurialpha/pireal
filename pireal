@@ -145,8 +145,10 @@ if __name__ == "__main__":
     from src.gui import notification  # lint:ok
     from src.gui.main_window import Pireal
 
+    # Set stylesheet
     with open(settings.STYLE_SHEET) as f:
         qapp.setStyleSheet(f.read())
+
     gui = Pireal()
     gui.show()
 

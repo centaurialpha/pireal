@@ -21,7 +21,8 @@ from PyQt5.QtWidgets import (
     QTableView,
     QHeaderView,
     QLineEdit,
-    QAbstractItemView
+    QAbstractItemView,
+    QMessageBox
 )
 from PyQt5.QtCore import (
     Qt,
@@ -89,9 +90,15 @@ class Header(QHeaderView):
         self.col = index
 
     def __done_editing(self):
+        text = self.line.text()
+        if not text.strip():
+            # No debe ser vacío
+            QMessageBox.critical(self, "Error",
+                                 self.tr("El campo no debe ser vacío"))
+            self.line.hide()
+            return
         self.line.blockSignals(True)
         self.line.setHidden(False)
-        text = self.line.text()
         self.model().setHeaderData(self.col, Qt.Horizontal, text,
                                    Qt.DisplayRole)
         self.line.setText("")
