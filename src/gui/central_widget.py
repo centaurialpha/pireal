@@ -371,7 +371,7 @@ class CentralWidget(QWidget):
         relations = db.table_widget.relations
         # Generate content
         content = file_manager.generate_database(relations)
-        db.pfile.save(content=content)
+        db.pfile.save(data=content)
         filename = db.pfile.filename
         # Emit signal
         self.databaseSaved.emit(
@@ -383,7 +383,7 @@ class CentralWidget(QWidget):
         filter = settings.SUPPORTED_FILES.split(';;')[0]
         filename, _ = QFileDialog.getSaveFileName(self,
                                                   self.tr("Save Database As"),
-                                                  settings.PIREAL_PROJECTS,
+                                                  settings.PIREAL_DATABASES,
                                                   filter)
         if not filename:
             return
@@ -392,6 +392,9 @@ class CentralWidget(QWidget):
         relations = db.table_widget.relations
         # Content
         content = file_manager.generate_database(relations)
+        # Si no se provee la extensión, le agrego
+        if not os.path.splitext(filename)[1]:
+            filename += '.pdb'
         db.pfile.save(content, filename)
         self.databaseSaved.emit(
             self.tr("Database saved: {}".format(db.pfile.filename)))
