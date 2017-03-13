@@ -9,5 +9,9 @@ QHeaderView::section {
 }
 
 QTableView {
-    selection-background-color: green;
+    selection-background-color: #7b9cd2;
+}
+
+QTreeWidget {
+    font-size: 16px;
 }

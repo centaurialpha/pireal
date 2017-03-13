@@ -17,7 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import (
+    QColor,
+    QFont
+)
 from PyQt5.QtCore import (
     QAbstractTableModel,
     Qt,
@@ -54,11 +57,15 @@ class Model(QAbstractTableModel):
         row, col = index.row(), index.column()
         if role == Qt.DisplayRole:
             return self.__data.content[row][col]
-        if role == Qt.TextColorRole:
+        elif role == Qt.TextColorRole:
             value = self.__data.content[row][col]
             if value == 'null':
                 # Para las operaciones de left, right y full other join
                 return QColor('red')
+        elif role == Qt.FontRole:
+            font = QFont()
+            font.setPointSize(12)
+            return font
 
     def setData(self, index, value, role):
         """ Método reimplementado.
