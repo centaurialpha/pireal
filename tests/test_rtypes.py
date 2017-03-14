@@ -33,12 +33,12 @@ class RTypesTestCase(unittest.TestCase):
         date = rtypes.RelationStr('06/09/1993').cast()
         self.assertFalse(date < date2)
 
-    def stest_hour(self):
-        hour = rtypes.RelationStr('15:59').cast()
-        h, m = 15, 59
-        self.assertEqual(h, hour.hour)
-        self.assertEqual(m, hour.min)
-        self.assertIsInstance(hour, rtypes.RelationHour)
+    def test_hour(self):
+        time = rtypes.RelationStr('12:00').cast()
+        time2 = datetime.time(12, 00)
+        self.assertTrue(time == time2)
+        time = rtypes.RelationStr('12:59').cast()
+        self.assertTrue(time > time2)
 
 
 if __name__ == "__main__":
