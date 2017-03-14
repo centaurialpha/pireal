@@ -18,7 +18,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from datetime import datetime
+import datetime
 
 
 class RelationStr(str):
@@ -44,12 +44,14 @@ class RelationStr(str):
             return float(self.value)
         elif RelationStr.IS_DATE.match(self.value):
             try:
-                date = datetime.strptime(self.value, "%Y/%m/%d").date()
+                date = datetime.datetime.strptime(
+                    self.value, "%Y/%m/%d")
             except:
-                date = datetime.strptime(self.value, "%d/%m/%Y").date()
-            return date
+                date = datetime.datetime.strptime(
+                    self.value, "%d/%m/%Y")
+            return date.date()
         elif RelationStr.IS_HOUR.match(self.value):
-            return RelationHour(self.value)
+            return datetime.time(*list(map(int, self.value.split(':'))))
         return self.value
 
 

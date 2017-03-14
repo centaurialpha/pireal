@@ -117,7 +117,6 @@ class Model(QAbstractTableModel):
         el nuevo valor de cardinalidad """
 
         self.beginInsertRows(QModelIndex(), position, position)
-        # self.__data.insert(['null' for i in range(self.__data.cardinality())])
         self.__data.append_row()
         self.cardinalityChanged.emit(self.__data.cardinality())
         self.set_modified(True)

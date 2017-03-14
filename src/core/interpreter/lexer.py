@@ -30,6 +30,7 @@ from src.core.interpreter.tokens import (
     REAL,
     STRING,
     DATE,
+    TIME,
     SEMI,
     SEMICOLON,
     LESS,
@@ -41,8 +42,11 @@ from src.core.interpreter.tokens import (
     KEYWORDS,
     EOF
 )
+# Formato DD/MM/AAAA o también AAAA/MM/DD
 IS_DATE = re.compile(
     r'^([\d+]{2}|[\d+]{4})[\/][\d+]{2}[\/]([\d+]{2}|[\d+]{4})$')
+# Formato HH:MM
+IS_TIME = re.compile(r'^[\d+]{2}:[\d+]{2}$')
 
 
 class Token(object):
@@ -246,8 +250,12 @@ class Lexer(object):
                     self.sc.next()
 
                 self.sc.next()
+                # Tengo la cadena, ahora compruebo si es una fecha o un
+                # horario
                 if IS_DATE.match(string):
                     return Token(DATE, string)
+                elif IS_TIME.match(string):
+                    return Token(TIME, string)
                 return Token(STRING, string)
 
             if self.sc.char == '(':

@@ -23,6 +23,7 @@ import datetime
 from src.core.interpreter.tokens import (
     STRING,
     DATE,
+    TIME,
     SEMICOLON,
     INTEGER,
     REAL,
@@ -81,6 +82,13 @@ class Date(AST):
         except ValueError:
             date = datetime.datetime.strptime(token.value, "%Y/%m/%d").date()
         self.date = date
+
+
+class Time(AST):
+
+    def __init__(self, token):
+        hour, minute = map(int, token.value.split(':'))
+        self.time = datetime.time(hour, minute)
 
 
 class ProjectExpr(AST):
@@ -391,6 +399,7 @@ class Parser(object):
         Data : INTEGER
              | REAL
              | DATE
+             | TIME
              | STRING
         """
 
@@ -403,6 +412,9 @@ class Parser(object):
         elif self.token.type == DATE:
             node = Date(self.token)
             self.consume(DATE)
+        elif self.token.type == TIME:
+            node = Time(self.token)
+            self.consume(TIME)
         elif self.token.type == STRING:
             node = String(self.token)
             self.consume(STRING)
@@ -532,6 +544,9 @@ class Interpreter(NodeVisitor):
 
     def visit_Date(self, node):
         return repr(node.date)
+
+    def visit_Time(self, node):
+        return repr(node.time)
 
     def visit_String(self, node):
         return repr(node.string)
