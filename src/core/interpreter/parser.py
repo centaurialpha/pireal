@@ -79,7 +79,7 @@ class Date(AST):
         try:
             date = datetime.datetime.strptime(token.value, "%d/%m/%Y").date()
         except ValueError:
-            date = datetime.datetime.strptime(token.value, "%Y/%M/%d").date()
+            date = datetime.datetime.strptime(token.value, "%Y/%m/%d").date()
         self.date = date
 
 

@@ -17,12 +17,13 @@
  * along with Pireal; If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.3
+import QtQuick 2.6
+import QtQuick.Layouts 1.1
 import "widgets"
 
-Rectangle {
+Item {
     id: root
-    color: "#ffffff"
+
     property bool compressed: false
     signal openDatabase(string path)
     signal newDatabase
@@ -57,229 +58,300 @@ Rectangle {
         }
     }
 
-    Button {
-        text: "?"
-        bold: true
-        fontSize: 12
-        width: 30; height: 30
-        radiuss: width / 2
-        anchors {
-            right: parent.right
-            top: parent.top
-            margins: 10
-        }
+    RowLayout {
+        anchors.fill: parent
 
-        onClicked: {
-            flipArea.flipped = !flipArea.flipped;
-        }
-    }
+        Rectangle {
+            id: leftArea
 
-    Flipable {
-        id: flipArea
-        width: root.width / 2; height: root.height / 1.5
-        anchors.centerIn: parent
-        property bool flipped: false
 
-        transform: Rotation {
-            id: rotation
-            origin.x: flipArea.width / 2
-            origin.y: flipArea.height / 2
-            axis.x: 0; axis.y: 1; axis.z: 0
-            angle: 0
-        }
 
-        states: State {
-            name: "back"
-            PropertyChanges { target: rotation; angle: 180 }
-            when: flipArea.flipped
-        }
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.maximumWidth: 400
+            visible: root.compressed ? false : true
 
-        transitions: Transition {
-            NumberAnimation { target: rotation; property: "angle"; duration: 500 }
-        }
+            Image {
+                id: logo
+                source: "pireal_logo-black.png"
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
 
-        front: Rectangle {
-            id: container
-            anchors.fill: parent
-            color: "#f5f5f5"
-            border.color: "#dddddd"
-            border.width: 1
-            enabled: !parent.flipped
-            radius: 3
+            Text {
+                id: whatIsPireal
+                text: qsTr("<b>π</b>real is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.")
+                anchors.top: logo.bottom
+                anchors.left: parent.left
+                anchors.right: separator.left
+                anchors.margins: 20
+                wrapMode: Text.WordWrap
+                renderType: Text.NativeRendering
+                font.pointSize: 12
+            }
 
-            ListView {
-                id: listView
+            Text {
+                id: getStarted
+                text: qsTr("Getting Started")
+                anchors.top: whatIsPireal.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.topMargin: 50
+                renderType: Text.NativeRendering
+                font.pointSize: 18
+            }
+            ColumnLayout {
+                id: buttons
+                spacing: 10
+                anchors.top: getStarted.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.topMargin: 30
 
-                anchors {
-                    topMargin: 5
-                    fill: parent
+                Button {
+                    text: qsTr("Create a new Database")
+
                 }
-                width: parent.width / 2.5; height: parent.height / 1.5
-                model: listModel
-                spacing: 3
-                focus: true
-                clip: true
-                currentIndex: -1
-                property bool empty: listView.count == 0
-                delegate: Rectangle {
-                    id: listItem
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                        leftMargin: 5
-                        rightMargin: 5
-                    }
-                    height: 75
-                    property bool current: ListView.isCurrentItem
-                    color: listItem.current ? "#4896b8" : "#ebebeb"
-                    MouseArea {
-                        anchors.fill: parent
-                        hoverEnabled: true
 
-                        onHoveredChanged: {
-                            listView.currentIndex = index;
-                        }
+                Button {
+                    text: qsTr("Open a Database")
+                    implicitWidth: parent.width
+                }
 
-                        onExited: {
-                            listView.currentIndex = -1;
-                        }
 
-                        onClicked: {
-                            root.openDatabase(path);
-                        }
-                    }
+            }
 
-                    Behavior on color {
-                        ColorAnimation {}
-                    }
 
-                    Column {
-                        spacing: 8
+
+            Rectangle {
+                id: separator
+                color: "#ccc"
+                width: 1
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.topMargin: 20
+                anchors.bottomMargin: 20
+                anchors.left: parent.right
+
+            }
+
+
+        }
+
+        Item {
+            id: rightArea
+
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            Button {
+                text: "?"
+                bold: true
+                fontSize: 12
+                width: 30; height: 30
+                radiuss: width / 2
+                anchors {
+                    right: parent.right
+                    top: parent.top
+                    margins: 10
+                }
+
+                onClicked: {
+                    flipArea.flipped = !flipArea.flipped;
+                }
+            }
+
+            Flipable {
+                id: flipArea
+                width: root.width / 2; height: root.height / 1.5
+                anchors.centerIn: parent
+                property bool flipped: false
+
+                transform: Rotation {
+                    id: rotation
+                    origin.x: flipArea.width / 2
+                    origin.y: flipArea.height / 2
+                    axis.x: 0; axis.y: 1; axis.z: 0
+                    angle: 0
+                }
+
+                states: State {
+                    name: "back"
+                    PropertyChanges { target: rotation; angle: 180 }
+                    when: flipArea.flipped
+                }
+
+                transitions: Transition {
+                    NumberAnimation { target: rotation; property: "angle"; duration: 500 }
+                }
+
+                front: Rectangle {
+                    id: container
+                    anchors.fill: parent
+                    color: "#f5f5f5"
+                    border.color: "#dddddd"
+                    border.width: 1
+                    enabled: !parent.flipped
+                    radius: 3
+
+                    ListView {
+                        id: listView
+
                         anchors {
-                            verticalCenter: parent.verticalCenter
-                            left: parent.left
-                            right: parent.right
-                            leftMargin: 20
-                            rightMargin: 20
+                            topMargin: 5
+                            fill: parent
                         }
+                        width: parent.width / 2.5; height: parent.height / 1.5
+                        model: listModel
+                        spacing: 3
+                        focus: true
+                        clip: true
+                        currentIndex: -1
+                        property bool empty: listView.count == 0
+                        delegate: Rectangle {
+                            id: listItem
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                                leftMargin: 5
+                                rightMargin: 5
+                            }
+                            height: 75
+                            property bool current: ListView.isCurrentItem
+                            color: listItem.current ? "#4896b8" : "#ebebeb"
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
 
-                        Text {
-                            text: name
-                            font.bold: true
-                            font.pixelSize: 30
-                            color: listItem.current ? "#fafbfb" : "#979dac"
-                            renderType: Text.NativeRendering
-                        }
+                                onHoveredChanged: {
+                                    listView.currentIndex = index;
+                                }
 
-                        Text {
-                            text: path
-                            color:listItem.current ? "#fafbfb" : "#979dac"
-                            width: parent.width
-                            elide: Text.ElideLeft
-                            renderType: Text.NativeRendering
-                            font.pixelSize: 16
+                                onExited: {
+                                    listView.currentIndex = -1;
+                                }
+
+                                onClicked: {
+                                    root.openDatabase(path);
+                                }
+                            }
+
+                            Behavior on color {
+                                ColorAnimation {}
+                            }
+
+                            Column {
+                                spacing: 8
+                                anchors {
+                                    verticalCenter: parent.verticalCenter
+                                    left: parent.left
+                                    right: parent.right
+                                    leftMargin: 20
+                                    rightMargin: 20
+                                }
+
+                                Text {
+                                    text: name
+                                    font.bold: true
+                                    font.pixelSize: 30
+                                    color: listItem.current ? "#fafbfb" : "#979dac"
+                                    renderType: Text.NativeRendering
+                                }
+
+                                Text {
+                                    text: path
+                                    color:listItem.current ? "#fafbfb" : "#979dac"
+                                    width: parent.width
+                                    elide: Text.ElideLeft
+                                    renderType: Text.NativeRendering
+                                    font.pixelSize: 16
+                                }
+                            }
+
+                            Image {
+                                id: imgDelete
+                                source: "close.png"
+                                anchors {
+                                    right: parent.right
+                                    top: parent.top
+                                    topMargin: 15
+                                    rightMargin: 15
+                                }
+                                scale: ma.pressed ? 0.7 : 1
+                                visible: listItem.current ? true: false
+                                onVisibleChanged: NumberAnimation {
+                                    target: imgDelete; property: "scale"; from: 0; to: 1; duration: 200
+                                }
+
+                                MouseArea {
+                                    id: ma
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        root.removeCurrent(path);
+                                        listView.model.remove(index);
+                                    }
+                                }
+                            }
                         }
                     }
+                }
 
-                    Image {
-                        id: imgDelete
-                        source: "close.png"
-                        anchors {
-                            right: parent.right
-                            top: parent.top
-                            topMargin: 15
-                            rightMargin: 15
-                        }
-                        scale: ma.pressed ? 0.7 : 1
-                        visible: listItem.current ? true: false
-                        onVisibleChanged: NumberAnimation {
-                            target: imgDelete; property: "scale"; from: 0; to: 1; duration: 200
-                        }
+                back: Rectangle {
+                    id: backContainer
+                    enabled: parent.flipped
+                    color: "#f5f5f5"
+                    border.color: "#dddddd"
+                    anchors.fill: parent
 
-                        MouseArea {
-                            id: ma
-                            anchors.fill: parent
-                            onClicked: {
-                                root.removeCurrent(path);
-                                listView.model.remove(index);
+                    radius: 3
+
+                    Flickable {
+                        interactive: true
+                        clip: true
+                        anchors.fill: backContainer
+                        contentHeight: col.height
+                        boundsBehavior: Flickable.StopAtBounds
+                        Column {
+                            id: col
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                                top: parent.top
+                                margins: 20
+                            }
+
+                            Text {
+                                color: "#4896b8"
+                                font.pointSize: 22
+                                font.bold: true
+                                text: qsTr("¿What's is Pireal?")
+                                renderType: Text.NativeRendering
+                            }
+
+                            Text {
+                                color: "gray"
+                                font.pointSize: 12
+                                text: qsTr("<b>π</b>real is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.\n")
+                                width: parent.width
+                                wrapMode: Text.WordWrap
+                                renderType: Text.NativeRendering
                             }
                         }
                     }
                 }
             }
-        }
 
-        back: Rectangle {
-            id: backContainer
-            enabled: parent.flipped
-            color: "#f5f5f5"
-            border.color: "#dddddd"
-            anchors.fill: parent
+            Text {
+                id: title
 
-            radius: 3
-
-            Flickable {
-                interactive: true
-                clip: true
-                anchors.fill: backContainer
-                contentHeight: col.height
-                boundsBehavior: Flickable.StopAtBounds
-                Column {
-                    id: col
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                        top: parent.top
-                        margins: 20
-                    }
-
-                    Text {
-                        color: "#4896b8"
-                        font.pointSize: 22
-                        font.bold: true
-                        text: qsTr("¿What's is Pireal?")
-                        renderType: Text.NativeRendering
-                    }
-
-                    Text {
-                        color: "gray"
-                        font.pointSize: 12
-                        text: qsTr("<b>π</b>real is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.\n")
-                        width: parent.width
-                        wrapMode: Text.WordWrap
-                        renderType: Text.NativeRendering
-                    }
-                }
+                text: qsTr("Recents Database")
+                color: "#838b8c"
+                font.pixelSize: 18
+                renderType: Text.NativeRendering
+                anchors.left: flipArea.left
+                anchors.bottom: flipArea.top
+                anchors.bottomMargin: 10
+                visible: !flipArea.flipped
             }
         }
     }
-
-    Row {
-        anchors {
-            horizontalCenter: flipArea.horizontalCenter
-            bottom: flipArea.top
-            bottomMargin: 10
-        }
-
-        Text {
-            id: title
-
-            text: qsTr("Opens a recent database or ")
-            color: "#838b8c"
-            font.pixelSize: 16
-            renderType: Text.NativeRendering
-        }
-
-        Button {
-            text: qsTr("Create a new database")
-            anchors.verticalCenter: title.verticalCenter
-
-            onClicked: {
-                root.newDatabase();
-            }
-        }
-    }
-
     Row {
         spacing: 10
         anchors {

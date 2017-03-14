@@ -15,10 +15,8 @@ Button {
             implicitHeight: 40
             Rectangle {
                 anchors.fill: parent
-                color: (button.checked || button.pressed)
-                       ? ( error ? Qt.darker("#e3757e", 1.5) :
-                                   Qt.darker("#4896b8", 1.5)) :
-                         (button.hovered ? (error ? "#e3757e": "#4896b8") : "white")
+                color: button.pressed ? (error ? Qt.darker("#e3757e", 1.5) :
+                                                 Qt.darker("#4896b8", 1.5)) : "white"
                 border.width: 1
                 border.color: "#4896b8"
                 radius: radiuss
@@ -36,7 +34,7 @@ Button {
             verticalAlignment: Text.AlignVCenter
             text: button.text
             smooth: true
-            color: button.hovered ? "white" : "#838b8c"
+            color: button.pressed ? "white" : "#838b8c"
             font.bold: bold
             font.pointSize: fontSize
             renderType: Text.NativeRendering

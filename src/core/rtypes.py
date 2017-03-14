@@ -44,9 +44,9 @@ class RelationStr(str):
             return float(self.value)
         elif RelationStr.IS_DATE.match(self.value):
             try:
-                date = datetime.strptime(self.value, "%Y/%M/%d").date()
+                date = datetime.strptime(self.value, "%Y/%m/%d").date()
             except:
-                date = datetime.strptime(self.value, "%d/%M/%Y").date()
+                date = datetime.strptime(self.value, "%d/%m/%Y").date()
             return date
         elif RelationStr.IS_HOUR.match(self.value):
             return RelationHour(self.value)
