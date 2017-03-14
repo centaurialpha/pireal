@@ -36,10 +36,14 @@ from src.core.interpreter.tokens import (
     RPAREN,
     SEMI,
     STRING,
+    DATE,
     SEMICOLON,
     PROJECT,
     SELECT,
     NJOIN,
+    LEFT_OUTHER_JOIN,
+    RIGHT_OUTHER_JOIN,
+    FULL_OUTHER_JOIN,
     EOF
 )
 
@@ -107,8 +111,15 @@ class LexerTestCase(unittest.TestCase):
         self.assertEqual(token.type, SEMICOLON)
         self.assertEqual(token.value, ';')
 
+    def test_date(self):
+        lex = self.make_lexer("'20/01/1992'")
+        token = lex.next_token()
+        self.assertEqual(token.type, DATE)
+
     def test_tokens(self):
-        lex = self.make_lexer("project name, age (select id=2 (p njoin q));")
+        query = ("project name, age (select id=2 (p njoin (r louther "
+                 "(s routher (y fouther(q))))));")
+        lex = self.make_lexer(query)
         tkn = lex.next_token()
         self.assertEqual(PROJECT, tkn.type)
         self.assertEqual('project', tkn.value)
@@ -146,8 +157,50 @@ class LexerTestCase(unittest.TestCase):
         self.assertEqual(NJOIN, tkn.type)
         self.assertEqual('njoin', tkn.value)
         tkn = lex.next_token()
+        self.assertEqual(LPAREN, tkn.type)
+        self.assertEqual('(', tkn.value)
+        tkn = lex.next_token()
+        self.assertEqual(ID, tkn.type)
+        self.assertEqual('r', tkn.value)
+        tkn = lex.next_token()
+        self.assertEqual(LEFT_OUTHER_JOIN, tkn.type)
+        self.assertEqual('louther', tkn.value)
+        tkn = lex.next_token()
+        self.assertEqual(LPAREN, tkn.type)
+        self.assertEqual('(', tkn.value)
+        tkn = lex.next_token()
+        self.assertEqual(ID, tkn.type)
+        self.assertEqual('s', tkn.value)
+        tkn = lex.next_token()
+        self.assertEqual(RIGHT_OUTHER_JOIN, tkn.type)
+        self.assertEqual('routher', tkn.value)
+        tkn = lex.next_token()
+        self.assertEqual(LPAREN, tkn.type)
+        self.assertEqual('(', tkn.value)
+        tkn = lex.next_token()
+        self.assertEqual(ID, tkn.type)
+        self.assertEqual('y', tkn.value)
+        tkn = lex.next_token()
+        self.assertEqual(FULL_OUTHER_JOIN, tkn.type)
+        self.assertEqual('fouther', tkn.value)
+        tkn = lex.next_token()
+        self.assertEqual(LPAREN, tkn.type)
+        self.assertEqual('(', tkn.value)
+        tkn = lex.next_token()
         self.assertEqual(ID, tkn.type)
         self.assertEqual('q', tkn.value)
+        tkn = lex.next_token()
+        self.assertEqual(RPAREN, tkn.type)
+        self.assertEqual(')', tkn.value)
+        tkn = lex.next_token()
+        self.assertEqual(RPAREN, tkn.type)
+        self.assertEqual(')', tkn.value)
+        tkn = lex.next_token()
+        self.assertEqual(RPAREN, tkn.type)
+        self.assertEqual(')', tkn.value)
+        tkn = lex.next_token()
+        self.assertEqual(RPAREN, tkn.type)
+        self.assertEqual(')', tkn.value)
         tkn = lex.next_token()
         self.assertEqual(RPAREN, tkn.type)
         self.assertEqual(')', tkn.value)
@@ -160,6 +213,7 @@ class LexerTestCase(unittest.TestCase):
         tkn = lex.next_token()
         self.assertEqual(EOF, tkn.type)
         self.assertEqual(None, tkn.value)
+
 
 if __name__ == '__main__':
     unittest.main()

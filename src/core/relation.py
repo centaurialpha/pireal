@@ -25,6 +25,13 @@ IS_VALID_FIELD_NAME = re.compile("^[_á-úa-zA-Z][_á-úa-zA-Z0-9]*$")
 
 # FIXME: test q1 := select id < 6666 (personas);
 
+# FIXME: esto está bien? Al fin funciona!! :)
+# ver en el método Relation.select
+
+datetime_dict = {
+    'datetime': __import__('datetime')
+}
+
 
 class Relation(object):
     """
@@ -50,7 +57,6 @@ class Relation(object):
 
         null_row = ['null' for i in range(self.degree())]
         self.insert(null_row)
-        print(self)
 
     def append_column(self):
         """ Agrega una columna al final de la tabla con valores 'null' """
@@ -122,7 +128,7 @@ class Relation(object):
                 d[attr] = RelationStr(register[e]).cast()
             # The expression is evaluated
             try:
-                if eval(expression, {}, d):
+                if eval(expression, datetime_dict, d):
                     new_relation.insert(register)
             except SyntaxError:
                 raise Exception("Couldn't be evaluate the expression: "

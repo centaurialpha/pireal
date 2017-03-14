@@ -20,6 +20,7 @@
 # This module is responsible for organizing called "tokens" pieces,
 # each of these tokens has a meaning in language
 
+import re
 from src.core.interpreter.tokens import (
     ID,
     ASSIGNMENT,
@@ -28,6 +29,7 @@ from src.core.interpreter.tokens import (
     INTEGER,
     REAL,
     STRING,
+    DATE,
     SEMI,
     SEMICOLON,
     LESS,
@@ -39,6 +41,8 @@ from src.core.interpreter.tokens import (
     KEYWORDS,
     EOF
 )
+IS_DATE = re.compile(
+    r'^([\d+]{2}|[\d+]{4})[\/][\d+]{2}[\/]([\d+]{2}|[\d+]{4})$')
 
 
 class Token(object):
@@ -242,6 +246,8 @@ class Lexer(object):
                     self.sc.next()
 
                 self.sc.next()
+                if IS_DATE.match(string):
+                    return Token(DATE, string)
                 return Token(STRING, string)
 
             if self.sc.char == '(':

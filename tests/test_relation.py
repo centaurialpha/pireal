@@ -193,7 +193,6 @@ class RelationTestCase(unittest.TestCase):
             ['null', 'null', 'null']
         ]
         rela.append_row()
-        print(rela)
         self.assertEqual(expected_header, rela.header)
         self.assertEqual(expected_content, rela.content.content)
 

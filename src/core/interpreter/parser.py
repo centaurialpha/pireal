@@ -18,9 +18,11 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from collections import OrderedDict
+import datetime
 
 from src.core.interpreter.tokens import (
     STRING,
+    DATE,
     SEMICOLON,
     INTEGER,
     REAL,
@@ -69,6 +71,16 @@ class String(AST):
     def __init__(self, token):
         self.string = token.value
         self.token = token
+
+
+class Date(AST):
+
+    def __init__(self, token):
+        try:
+            date = datetime.datetime.strptime(token.value, "%d/%m/%Y").date()
+        except ValueError:
+            date = datetime.datetime.strptime(token.value, "%Y/%M/%d").date()
+        self.date = date
 
 
 class ProjectExpr(AST):
@@ -378,6 +390,7 @@ class Parser(object):
         """
         Data : INTEGER
              | REAL
+             | DATE
              | STRING
         """
 
@@ -387,6 +400,9 @@ class Parser(object):
         elif self.token.type == REAL:
             node = Number(self.token)
             self.consume(REAL)
+        elif self.token.type == DATE:
+            node = Date(self.token)
+            self.consume(DATE)
         elif self.token.type == STRING:
             node = String(self.token)
             self.consume(STRING)
@@ -513,6 +529,9 @@ class Interpreter(NodeVisitor):
 
     def visit_Variable(self, node):
         return node.value
+
+    def visit_Date(self, node):
+        return repr(node.date)
 
     def visit_String(self, node):
         return repr(node.string)

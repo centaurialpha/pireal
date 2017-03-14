@@ -371,6 +371,7 @@ class CentralWidget(QWidget):
         relations = db.table_widget.relations
         # Generate content
         content = file_manager.generate_database(relations)
+        # TODO: extension!!!!
         db.pfile.save(data=content)
         filename = db.pfile.filename
         # Emit signal
