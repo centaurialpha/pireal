@@ -23,11 +23,6 @@ from src.core.rtypes import RelationStr
 
 IS_VALID_FIELD_NAME = re.compile("^[_á-úa-zA-Z][_á-úa-zA-Z0-9]*$")
 
-# FIXME: test q1 := select id < 6666 (personas);
-
-# FIXME: esto está bien? Al fin funciona!! :)
-# ver en el método Relation.select
-
 datetime_dict = {
     'datetime': __import__('datetime')
 }
