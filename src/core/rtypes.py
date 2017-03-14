@@ -53,25 +53,3 @@ class RelationStr(str):
         elif RelationStr.IS_HOUR.match(self.value):
             return datetime.time(*list(map(int, self.value.split(':'))))
         return self.value
-
-
-class RelationHour(object):
-    """ This class represents a hour """
-
-    def __init__(self, str_hour):
-        hour = datetime.strptime(str_hour, "%H:%M").time()
-        self.hour = hour.hour
-        self.min = hour.minute
-
-
-class RelationDate(object):
-    """ This class represents a date """
-
-    def __init__(self, value):
-        try:
-            date = datetime.strptime(value, "%d/%m/%Y")
-        except ValueError:
-            date = datetime.strptime(value, "%Y/%m/%d")
-        self.year = date.year
-        self.day = date.day
-        self.month = date.month
