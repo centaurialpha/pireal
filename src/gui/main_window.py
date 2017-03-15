@@ -108,6 +108,7 @@ class Pireal(QMainWindow):
         central_widget = Pireal.get_service("central")
         central_widget.databaseSaved.connect(notification_widget.show_text)
         central_widget.querySaved.connect(notification_widget.show_text)
+        central_widget.databaseConected.connect(self.change_title)
         self.setCentralWidget(central_widget)
         central_widget.add_start_page()
 
@@ -243,7 +244,7 @@ class Pireal(QMainWindow):
 
     def change_title(self, title=''):
         if title:
-            _title = "Pireal " + '[' + title + ']'
+            _title = title + " - Pireal "
         else:
             _title = "Pireal"
         self.setWindowTitle(_title)

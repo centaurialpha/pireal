@@ -30,9 +30,49 @@ datetime_dict = {
 
 class Relation(object):
     """
-    This class represents a relation/table as a set of tuples.
-    Fields is a list, where indexes are connected with the
-    indexes of the tuples.
+    Esta clase representa un objeto Relation.
+    Un objeto Relation tiene dos atributos (content y header), el content o
+    contenido es una lista de listas, estas listas representan las tuplas o
+    filas de la relación (uso listas para poder modificar la relación), la
+    cantidad de filas o listas dentro de la lista content es la cardinalidad
+    de la relación (ver el método Relation.cardinality()).
+
+    El header es una lista con los nombres de campos, el tamaño del header
+    es el grado de la relación (ver el método Relation.degree()).
+
+    Un objeto de ésta clase tiene las operaciones básicas y derivadas
+    del Álgebra Relacional como: Selección, Proyección, Producto, Unión,
+    Intersección, Diferencia, Join Natural y Outher Joins (Left, Right y Full).
+
+    Ejemplo del uso de la clase:
+
+    - Creo el objeto y le agrego los campos o header
+    personas = Relation()
+    personas.header = ["id_persona", "nombre", "ciudad"]
+
+    - Creo una lista con los datos para cada campo
+    tuplas = [
+        ["1", "Gabriel", "Belén"],
+        ["32", "Mercedes", "SFV de Catamarca"],
+        ["23", "Rodrigo", "Belén"]
+    ]
+
+    - Agrego las tuplas a la relación
+    for t in tuplas:
+        personas.insert(t)
+
+    - Puedo ver la representación de la relación haciendo:
+    print(personas)
+
+    |  id_persona  |    nombre    |    ciudad    |
+    ----------------------------------------------
+    |      1       |   Gabriel    |    Belén     |
+    |      32      |   Mercedes   |  SFV de Catamarca  |
+    |      23      |   Rodrigo    |    Belén     |
+
+
+    - Ejemplo de Seleción:
+    personas.select("nombre == 'Gabriel'")
     """
 
     def __init__(self):

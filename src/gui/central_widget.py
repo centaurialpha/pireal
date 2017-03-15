@@ -54,6 +54,7 @@ class CentralWidget(QWidget):
     # This signals is used by notificator
     databaseSaved = pyqtSignal('QString')
     querySaved = pyqtSignal('QString')
+    databaseConected = pyqtSignal('QString')
 
     def __init__(self):
         QWidget.__init__(self)
@@ -191,7 +192,7 @@ class CentralWidget(QWidget):
         db_name = file_manager.get_basename(filename)
         # Update title with the new database name, and enable some actions
         pireal = Pireal.get_service("pireal")
-        pireal.change_title(db_name)
+        self.databaseConected.emit(self.tr("Conected to: {}".format(db_name)))
         pireal.set_enabled_db_actions(True)
         pireal.set_enabled_relation_actions(True)
         # Add to recent databases
