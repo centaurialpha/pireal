@@ -227,9 +227,8 @@ class CentralWidget(QWidget):
 
     def __sanitize_data(self, data):
         """
-        This function converts the data into a dictionary
-        for better handling then.
-        The argument 'data' is the content of the database.
+        Este método convierte el contenido de la base de datos a un
+        diccionario para un mejor manejo despues
         """
 
         # FIXME: controlar cuando al final de la línea hay una coma
@@ -240,7 +239,7 @@ class CentralWidget(QWidget):
             if not line:
                 continue
             if line.startswith('@'):
-                # This line is a header
+                # Esta línea es el header de una relación
                 tpoint = line.find(':')
                 if tpoint == -1:
                     raise Exception("Invalid syntax at line {}".format(
@@ -256,10 +255,8 @@ class CentralWidget(QWidget):
             else:
                 for l in csv.reader([line]):
                     # Remove spaces
-                    l = list(map(str.strip, l))
-                    # FIXME: this is necesary?
-                    if table_dict['name'] == table_name:
-                        table_dict['tuples'].append(l)
+                    tupla = list(map(str.strip, l))
+                    table_dict['tuples'].append(tupla)
             if not table_dict['tuples']:
                 data_dict['tables'].append(table_dict)
 
