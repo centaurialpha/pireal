@@ -53,6 +53,7 @@ class StartPage(QWidget):
         self.__root = view.rootObject()
 
         # Connections
+        self.__root.openRecentDatabase.connect(self.__open_database)
         self.__root.openDatabase.connect(self.__open_database)
         self.__root.newDatabase.connect(self.__new_database)
         self.__root.removeCurrent.connect(self.__remove_current)
@@ -61,7 +62,7 @@ class StartPage(QWidget):
         central_widget = Pireal.get_service("central")
         central_widget.recent_databases.remove(path)
 
-    def __open_database(self, path):
+    def __open_database(self, path=''):
         central_widget = Pireal.get_service("central")
         central_widget.open_database(path)
 

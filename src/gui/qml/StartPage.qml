@@ -25,8 +25,9 @@ Item {
     id: root
 
     property bool compressed: false
-    signal openDatabase(string path)
+    signal openRecentDatabase(string path)
     signal newDatabase
+    signal openDatabase
     signal removeCurrent(string path)
 
     function loadItem(name, path) {
@@ -109,12 +110,18 @@ Item {
 
                 Button {
                     text: qsTr("Create a new Database")
+                    onClicked: {
+                        newDatabase();
+                    }
 
                 }
 
                 Button {
                     text: qsTr("Open a Database")
-                    implicitWidth: parent.width
+                    implicitWidth: parent.width;
+                    onClicked: {
+                        openDatabase();
+                    }
                 }
 
 
@@ -231,7 +238,7 @@ Item {
                                 }
 
                                 onClicked: {
-                                    root.openDatabase(path);
+                                    root.openRecentDatabase(path);
                                 }
                             }
 
