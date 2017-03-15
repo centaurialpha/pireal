@@ -61,15 +61,17 @@ Item {
     RowLayout {
         anchors.fill: parent
 
-        Rectangle {
+        Item {
             id: leftArea
-
-
 
             Layout.fillWidth: true
             Layout.fillHeight: true
             Layout.maximumWidth: 400
-            visible: root.compressed ? false : true
+            visible: !root.compressed
+
+            onVisibleChanged: {
+                leftArea.width = Layout.maximumWidth
+            }
 
             Image {
                 id: logo
