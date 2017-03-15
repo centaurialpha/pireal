@@ -89,4 +89,4 @@ class NewDatabaseDialog(QDialog):
     @pyqtSlot('QString')
     def __update_filename(self, fname):
         new_fname = os.path.join(self.__location_folder, fname)
-        self.__root.setFilename(new_fname)
+        self.__root.setFilename(new_fname + '.pdb')
