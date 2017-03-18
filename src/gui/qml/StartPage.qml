@@ -19,6 +19,8 @@
 
 import QtQuick 2.6
 import QtQuick.Layouts 1.1
+import QtMultimedia 5.0
+import QtQuick.Controls 2.0
 import "widgets"
 
 Item {
@@ -59,147 +61,157 @@ Item {
         }
     }
 
-    RowLayout {
+    SwipeView {
+        id: view
+
+        currentIndex: 0
         anchors.fill: parent
 
-        Item {
-            id: leftArea
+        RowLayout {
+            id: rowLayout
 
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.maximumWidth: 400
-            visible: !root.compressed
+            Item {
+                id: leftArea
 
-            onVisibleChanged: {
-                leftArea.width = Layout.maximumWidth
-            }
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Layout.maximumWidth: 400
+                visible: !root.compressed
 
-            Image {
-                id: logo
-                source: "pireal_logo-black.png"
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
+                onVisibleChanged: {
+                    leftArea.width = Layout.maximumWidth
+                }
 
-            Text {
-                id: whatIsPireal
-                text: qsTr("<b>π</b>real is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.")
-                anchors.top: logo.bottom
-                anchors.left: parent.left
-                anchors.right: separator.left
-                anchors.margins: 20
-                wrapMode: Text.WordWrap
-                renderType: Text.NativeRendering
-                font.pointSize: 12
-            }
+                Image {
+                    id: logo
+                    source: "pireal_logo-black.png"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
 
-            Text {
-                id: getStarted
-                text: qsTr("Getting Started")
-                anchors.top: whatIsPireal.bottom
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.topMargin: 50
-                renderType: Text.NativeRendering
-                font.pointSize: 18
-            }
-            ColumnLayout {
-                id: buttons
-                spacing: 10
-                anchors.top: getStarted.bottom
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.topMargin: 30
+                Text {
+                    id: whatIsPireal
+                    text: qsTr("<b>π</b>real is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.")
+                    anchors.top: logo.bottom
+                    anchors.left: parent.left
+                    anchors.right: separator.left
+                    anchors.margins: 20
+                    wrapMode: Text.WordWrap
+                    renderType: Text.NativeRendering
+                    font.pointSize: 12
+                    color: "#5f6566"
+                }
 
-                Button {
-                    text: qsTr("Create a new Database")
-                    onClicked: {
-                        newDatabase();
+                Text {
+                    id: getStarted
+                    text: qsTr("Getting Started")
+                    anchors.top: whatIsPireal.bottom
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.topMargin: 50
+                    renderType: Text.NativeRendering
+                    font.pointSize: 18
+                    color: "#5f6566"
+                }
+                ColumnLayout {
+                    id: buttons
+                    spacing: 10
+                    anchors.top: getStarted.bottom
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.topMargin: 30
+
+                    Button {
+                        text: qsTr("Create a new Database")
+                        onClicked: {
+                            newDatabase();
+                        }
+
+                    }
+
+                    Button {
+                        text: qsTr("Open a Database")
+                        implicitWidth: parent.width;
+                        onClicked: {
+                            openDatabase();
+                        }
+                    }
+
+
+                }
+
+                Column {
+                    spacing: 10
+                    anchors.top: buttons.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.margins: 30
+
+                    Text {
+                        text: qsTr("• Open a recent database from the list.")
+                        font.pointSize: 12
+                        renderType: Text.NativeRendering
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        wrapMode: Text.WordWrap
+                        color: "#5f6566"
+                    }
+
+                    Text {
+                        text: qsTr("• <a href=\"#\">Press here</a> or slide the screen to the left to see an example.")
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        font.pointSize: 12
+                        renderType: Text.NativeRendering
+                        linkColor: "#4896b8"
+                        color: "#5f6566"
+                        wrapMode: Text.WordWrap
+                        onLinkActivated: {
+                            view.currentIndex = 1;
+                            player.play();
+                        }
                     }
 
                 }
 
-                Button {
-                    text: qsTr("Open a Database")
-                    implicitWidth: parent.width;
-                    onClicked: {
-                        openDatabase();
-                    }
+
+
+                Rectangle {
+                    id: separator
+                    color: "#ccc"
+                    width: 1
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.topMargin: 20
+                    anchors.bottomMargin: 20
+                    anchors.left: parent.right
+
                 }
 
 
             }
 
+            Item {
+                id: rightArea
 
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-            Rectangle {
-                id: separator
-                color: "#ccc"
-                width: 1
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                anchors.topMargin: 20
-                anchors.bottomMargin: 20
-                anchors.left: parent.right
-
-            }
-
-
-        }
-
-        Item {
-            id: rightArea
-
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-
-            Button {
-                text: "?"
-                bold: true
-                fontSize: 12
-                width: 30; height: 30
-                radiuss: width / 2
-                anchors {
-                    right: parent.right
-                    top: parent.top
-                    margins: 10
-                }
-
-                onClicked: {
-                    flipArea.flipped = !flipArea.flipped;
-                }
-            }
-
-            Flipable {
-                id: flipArea
-                width: root.width / 2; height: root.height / 1.5
-                anchors.centerIn: parent
-                property bool flipped: false
-
-                transform: Rotation {
-                    id: rotation
-                    origin.x: flipArea.width / 2
-                    origin.y: flipArea.height / 2
-                    axis.x: 0; axis.y: 1; axis.z: 0
-                    angle: 0
-                }
-
-                states: State {
-                    name: "back"
-                    PropertyChanges { target: rotation; angle: 180 }
-                    when: flipArea.flipped
-                }
-
-                transitions: Transition {
-                    NumberAnimation { target: rotation; property: "angle"; duration: 500 }
-                }
-
-                front: Rectangle {
+                Rectangle {
                     id: container
-                    anchors.fill: parent
+
+                    width: root.width / 2; height: root.height / 1.5
+                    anchors.centerIn: parent
                     color: "#f5f5f5"
                     border.color: "#dddddd"
                     border.width: 1
                     enabled: !parent.flipped
                     radius: 3
-
+                    Text {
+                        text: qsTr("No recent database")
+                        color: "#838b8c"
+                        anchors.centerIn: parent
+                        visible: listModel.count ? false : true
+                        font.pointSize: 20
+                        renderType: Text.NativeRendering
+                    }
                     ListView {
                         id: listView
 
@@ -224,7 +236,7 @@ Item {
                             }
                             height: 75
                             property bool current: ListView.isCurrentItem
-                            color: listItem.current ? "#4896b8" : "#ebebeb"
+                            color: listItem.current ? "#5294e2" : "#ebebeb"
                             MouseArea {
                                 anchors.fill: parent
                                 hoverEnabled: true
@@ -240,10 +252,6 @@ Item {
                                 onClicked: {
                                     root.openRecentDatabase(path);
                                 }
-                            }
-
-                            Behavior on color {
-                                ColorAnimation {}
                             }
 
                             Column {
@@ -301,65 +309,61 @@ Item {
                         }
                     }
                 }
+            }
+        }
 
-                back: Rectangle {
-                    id: backContainer
-                    enabled: parent.flipped
-                    color: "#f5f5f5"
-                    border.color: "#dddddd"
+        Item {
+            id: itemPlayer
+
+            Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.margins: 50
+                border.width: 1
+
+                MediaPlayer {
+                    id: player
+                    source: "/home/gabo/pireal.webm"
+                    property bool paused: false
+
+                    onStopped: {
+                        view.currentIndex = 0;
+                    }
+
+                }
+
+                VideoOutput {
+                    id: output
+                    source: player
                     anchors.fill: parent
 
-                    radius: 3
+                    MouseArea {
+                        anchors.fill: parent
 
-                    Flickable {
-                        interactive: true
-                        clip: true
-                        anchors.fill: backContainer
-                        contentHeight: col.height
-                        boundsBehavior: Flickable.StopAtBounds
-                        Column {
-                            id: col
-                            anchors {
-                                left: parent.left
-                                right: parent.right
-                                top: parent.top
-                                margins: 20
+                        onClicked: {
+                            if (!player.paused) {
+                                player.pause();
+                                player.paused = true;
+                            } else {
+                                player.play();
+                                player.paused = false;
                             }
+                        }
 
-                            Text {
-                                color: "#4896b8"
-                                font.pointSize: 22
-                                font.bold: true
-                                text: qsTr("¿What's is Pireal?")
-                                renderType: Text.NativeRendering
-                            }
-
-                            Text {
-                                color: "gray"
-                                font.pointSize: 12
-                                text: qsTr("<b>π</b>real is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.\n")
-                                width: parent.width
-                                wrapMode: Text.WordWrap
-                                renderType: Text.NativeRendering
-                            }
+                        onDoubleClicked:  {
+                            player.stop();
                         }
                     }
                 }
             }
-
-            Text {
-                id: title
-
-                text: qsTr("Recents Database")
-                color: "#838b8c"
-                font.pixelSize: 18
-                renderType: Text.NativeRendering
-                anchors.left: flipArea.left
-                anchors.bottom: flipArea.top
-                anchors.bottomMargin: 10
-                visible: !flipArea.flipped
-            }
         }
+    }
+
+    PageIndicator {
+          currentIndex: view.currentIndex
+          count: view.count
     }
     Row {
         spacing: 10

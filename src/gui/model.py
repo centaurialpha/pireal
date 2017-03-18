@@ -41,6 +41,7 @@ class Model(QAbstractTableModel):
         QAbstractTableModel.__init__(self)
         self.__data = relation_obj
         self.modified = False
+        self.editable = True
 
     def rowCount(self, parent=QModelIndex()):
         """ Método reimplementado.
@@ -75,7 +76,6 @@ class Model(QAbstractTableModel):
     def setData(self, index, value, role):
         """ Método reimplementado.
         Este método actualiza el modelo """
-
         if index.isValid() and role == Qt.EditRole:
             self.__data.update(index.row(), index.column(), value)
             # Emito la señal
@@ -108,7 +108,8 @@ class Model(QAbstractTableModel):
         Permite la edición en el modelo """
 
         flags = QAbstractTableModel.flags(self, index)
-        flags |= Qt.ItemIsEditable
+        if self.editable:
+            flags |= Qt.ItemIsEditable
         return flags
 
     def insertRow(self, position, index=QModelIndex()):

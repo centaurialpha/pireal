@@ -22,12 +22,6 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QStackedWidget
 )
-from PyQt5.QtGui import (
-    QStandardItem,
-    QStandardItemModel
-)
-from PyQt5.QtCore import Qt
-
 from src.gui import view, model
 
 
@@ -65,26 +59,6 @@ class TableWidget(QWidget):
             return True
         return False
 
-    def update_table(self, data):
-        print(data)
-        """
-        current_table = self.current_table()
-        model = current_table.model()
-        # Clear content
-        model.clear()
-        # Add new header and content
-
-        model.setHorizontalHeaderLabels(data.header)
-
-        for row_count, row in enumerate(data.content):
-            for col_count, data in enumerate(row):
-                item = QStandardItem(data)
-                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
-                model.setItem(row_count, col_count, item)
-
-        # Ajustar las columnas de acuerdo al nuevo contenido
-        current_table.adjust_columns()
-        """
     def add_table(self, rela, name):
         """ Add new table from New Relation Dialog """
 
@@ -137,10 +111,12 @@ class TableWidget(QWidget):
                     model.removeColumn(current)
                 i -= 1
 
-    def create_table(self, rela):
+    def create_table(self, rela, editable=True):
         """ Se crea la vista y el modelo """
 
         _view = view.View()
         _model = model.Model(rela)
+        if not editable:
+            _model.editable = False
         _view.setModel(_model)
         return _view

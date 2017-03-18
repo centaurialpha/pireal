@@ -1,4 +1,5 @@
-import QtQuick 2.3
+import QtQuick 2.6
+import "widgets"
 
 Rectangle {
     id: root
@@ -69,34 +70,19 @@ Rectangle {
         }
     }
 
-    Rectangle {
+    Button {
         id: btn
+
+        text: qsTr("Done")
         anchors {
-            bottom: root.bottom
-            left: root.left
-            right: root.right
-            leftMargin: 1
-            rightMargin: 1
-            bottomMargin: 1
-        }
-        color: "#f5f5f5"
-        height: root.height / 5
-        scale: ma.pressed ? 0.9 : 1
-
-        Text {
-            text: qsTr("Done");
-            font.pixelSize: 24
-            font.bold: true
-            color: "gray"
-            anchors.centerIn: parent
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+            margins: 1
         }
 
-        MouseArea {
-            id: ma
-            anchors.fill: parent
-            onClicked: {
-                root.close();
-            }
+        onClicked: {
+            close();
         }
     }
 }

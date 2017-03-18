@@ -1,5 +1,6 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.1
 import "widgets"
 import "logic.js" as Logic
 
@@ -48,8 +49,9 @@ Item {
     }
 
     // Formulario
-    Column {
+    ColumnLayout {
         spacing: 10
+
         anchors {
             left: parent.left
             right: parent.right
@@ -61,6 +63,7 @@ Item {
         TextField {
             id: databaseName
             focus: true
+            Layout.fillWidth: true
             placeholderText: qsTr("Database Name");
             onTextChanged: {
                 hasError = false;
@@ -69,22 +72,16 @@ Item {
             }
         }
 
-        TextField {
-            id: dbLocation
-            readOnly: true
-
+        RowLayout {
+            spacing: 0
+            TextField {
+                id: dbLocation
+                Layout.fillWidth: true
+                readOnly: true
+            }
             Button {
                 text: "..."
-                anchors {
-                    right: parent.right
-                    top: parent.top
-                    bottom: parent.bottom
-                    topMargin: dbLocation.focus ? 1 : 0
-                    bottomMargin: dbLocation.focus ? 1: 0
-                    rightMargin: dbLocation.focus ? 1 : 0
-                }
-                bold: true
-
+                implicitWidth: 30
                 onClicked: { locationChanged(); }
             }
         }
@@ -92,6 +89,7 @@ Item {
         TextField {
             id: dbFilename
             readOnly: true
+            Layout.fillWidth: true
         }
 
     }
@@ -114,7 +112,6 @@ Item {
         Button {
             text: qsTr("Cancel")
             height: 30
-            error: true
             onClicked: {
                 close();
             }

@@ -361,7 +361,7 @@ class QueryWidget(QWidget):
         dialog.setWindowTitle(item.name)
         box = QVBoxLayout(dialog)
         box.setContentsMargins(5, 5, 5, 5)
-        table = table_widget.create_table(rela)
+        table = table_widget.create_table(rela, editable=False)
         box.addWidget(table)
         hbox = QHBoxLayout()
         btn = QPushButton(self.tr("Ok"))
@@ -401,10 +401,9 @@ class QueryWidget(QWidget):
             i -= 1
 
     def add_table(self, rela, rname):
-
-        _view = view.View()
-        _model = model.Model(rela)
-        _view.setModel(_model)
+        central_widget = Pireal.get_service("central")
+        table_widget = central_widget.get_active_db().table_widget
+        _view = table_widget.create_table(rela, editable=False)
         index = self._stack_tables.addWidget(_view)
         self._stack_tables.setCurrentIndex(index)
         self._result_list.add_item(rname, rela.cardinality())
