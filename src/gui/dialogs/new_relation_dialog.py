@@ -41,7 +41,7 @@ class NewRelationDialog(QDialog):
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         self.setWindowTitle(self.tr("Relation Creator"))
-        self.setModal(True)
+        # self.setModal(True)
         self.resize(700, 500)
         self.data = None
         box = QVBoxLayout(self)
