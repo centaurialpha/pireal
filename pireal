@@ -40,7 +40,8 @@ from PyQt5.QtCore import (
     QTranslator,
     QLibraryInfo,
     QT_VERSION_STR,
-    Qt
+    Qt,
+    QTextCodec
 )
 
 from src.core.logger import Logger
@@ -119,6 +120,8 @@ if __name__ == "__main__":
 
     info = __get_versions()
     settings.load_settings()
+
+    QTextCodec.setCodecForLocale(QTextCodec.codecForName("utf8"))
 
     # Import resources
     from src import resources  # lint:ok

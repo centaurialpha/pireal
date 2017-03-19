@@ -19,7 +19,7 @@
 
 import QtQuick 2.6
 import QtQuick.Layouts 1.1
-import QtMultimedia 5.0
+//import QtMultimedia 5.0
 import QtQuick.Controls 2.0
 import "widgets"
 
@@ -165,7 +165,7 @@ Item {
                         wrapMode: Text.WordWrap
                         onLinkActivated: {
                             view.currentIndex = 1;
-                            player.play();
+                            //player.play();
                         }
                     }
 
@@ -323,7 +323,7 @@ Item {
                 anchors.margins: 50
                 border.width: 1
 
-                MediaPlayer {
+                /*MediaPlayer {
                     id: player
                     source: "/home/gabo/pireal.webm"
                     property bool paused: false
@@ -332,9 +332,9 @@ Item {
                         view.currentIndex = 0;
                     }
 
-                }
+                }*/
 
-                VideoOutput {
+                /*VideoOutput {
                     id: output
                     source: player
                     anchors.fill: parent
@@ -356,7 +356,7 @@ Item {
                             player.stop();
                         }
                     }
-                }
+                }*/
             }
         }
     }
