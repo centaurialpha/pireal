@@ -4,10 +4,12 @@ import QtQuick.Layouts 1.1
 import "widgets"
 import "logic.js" as Logic
 
-Item {
+Rectangle {
     id: root
 
     width: 550; height: 300
+    border.width: 1
+    border.color: "#a0a0a0"
 
     signal close;
     signal databaseNameChanged(string dbName);
