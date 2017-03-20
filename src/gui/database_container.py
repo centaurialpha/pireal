@@ -166,7 +166,7 @@ class DatabaseContainer(QSplitter):
                     return False
 
             self.table_widget.add_table(rel, relation_name)
-            self.lateral_widget.add_item(relation_name, rel.count())
+            self.lateral_widget.add_item(relation_name, rel.cardinality())
             return True
 
     def delete_relation(self):

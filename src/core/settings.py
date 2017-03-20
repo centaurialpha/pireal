@@ -64,7 +64,8 @@ STYLE_SHEET = os.path.join(ROOT_DIR, 'src', 'style.qss')
 
 # Supported files
 SUPPORTED_FILES = ("Pireal Database File (*.pdb);;"
-                   "Pireal Query File (*.pqf);;")
+                   "Pireal Query File (*.pqf);;"
+                   "Pireal Relation File (*.prf)")
 
 
 class PSetting(object):
