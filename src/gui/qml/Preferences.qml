@@ -54,8 +54,8 @@ Item {
     }
 
     function setInitialStates(curLineState, matchParenState) {
-        currentLineCheck.checkState = curLineState ? Qt.Checked : Qt.Unchecked;
-        matchParenCheck.checkState = matchParenState ? Qt.Checked : Qt.Unchecked;
+        currentLineCheck.checked = curLineState ? Qt.Checked : Qt.Unchecked;
+        matchParenCheck.checked = matchParenState ? Qt.Checked : Qt.Unchecked;
     }
 
     GroupBox {
@@ -83,24 +83,23 @@ Item {
             Row {
                 spacing: 20
 
-                CheckBox {
+                Switch {
                     id: currentLineCheck
                     text: qsTr("Highlight Current Line")
                     font.pointSize: 10
-                    onCheckStateChanged: {
-                        changeStateCurrentLine(checkState);
+                    onCheckedChanged: {
+                        changeStateCurrentLine(checked)
                     }
                 }
 
-                CheckBox {
+                Switch {
                     id: matchParenCheck
                     text: qsTr("Matching Parenthesis")
                     font.pointSize: 10
-                    onCheckStateChanged: {
-                        changeStateMatchingParen(checkState);
+                    onCheckedChanged: {
+                        changeStateMatchingParen(checked);
                     }
                 }
-
             }
 
             Button {

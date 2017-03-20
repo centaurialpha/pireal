@@ -54,9 +54,14 @@ class StartPage(QWidget):
 
         # Connections
         self.__root.openRecentDatabase.connect(self.__open_database)
+        self.__root.openPreferences.connect(self.__open_preferences)
         self.__root.openDatabase.connect(self.__open_database)
         self.__root.newDatabase.connect(self.__new_database)
         self.__root.removeCurrent.connect(self.__remove_current)
+
+    def __open_preferences(self):
+        central_widget = Pireal.get_service("central")
+        central_widget.show_settings()
 
     def __remove_current(self, path):
         central_widget = Pireal.get_service("central")
