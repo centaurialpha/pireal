@@ -118,9 +118,10 @@ class Pireal(QMainWindow):
         self._updater.moveToThread(self._thread)
         self._thread.started.connect(self._updater.check_updates)
         self._updater.finished.connect(self.__on_thread_update_finished)
-        self._thread.start()
-        notification_widget.show_text(
-            self.tr("Checking for updates..."), time_out=0)
+        # FIXME: quizás se elimine éste proceso en un futuro, problemas en Win
+        # self._thread.start()
+        # notification_widget.show_text(
+        #    self.tr("Checking for updates..."), time_out=0)
 
         # Install service
         Pireal.load_service("pireal", self)

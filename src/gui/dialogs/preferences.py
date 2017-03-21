@@ -167,6 +167,7 @@ class Preferences(QDialog):
 
         self._thread.deleteLater()
         self._updater.deleteLater()
+        self.__root.threadFinished()
 
     @pyqtSlot()
     def __reset_settings(self):
