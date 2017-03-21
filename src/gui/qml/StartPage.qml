@@ -71,7 +71,7 @@ Item {
 
         Text {
             id: whatIsPireal
-            text: qsTr("<b>π</b>real is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.")
+            text: qsTr("<b>Pireal</b> is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.")
             Layout.maximumWidth: parent.width
             wrapMode: Text.WordWrap
             renderType: Text.NativeRendering
@@ -120,7 +120,7 @@ Item {
             anchors.margins: 30
 
             Text {
-                text: qsTr("• Open a recent database from the list.")
+                text: qsTr("- Open a recent database from the list.")
                 font.pointSize: 12
                 renderType: Text.NativeRendering
                 anchors.left: parent.left
@@ -130,7 +130,7 @@ Item {
             }
 
             Text {
-                text: qsTr("• Change the language from the <a href=\"#\">Preferences</a>.")
+                text: qsTr("- Change the language from the <a href=\"#\">Preferences</a>.")
                 anchors.left: parent.left
                 anchors.right: parent.right
                 font.pointSize: 12

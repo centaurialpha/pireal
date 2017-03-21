@@ -1,3 +1,0 @@
-q1 = personas njoin aptitudes
-q2 = select aptitud == 'Python' (q1)
-resultado = project nombre, apellido, aptitud (q2)

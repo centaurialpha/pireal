@@ -33,3 +33,7 @@ class Delegate(QItemDelegate):
         data = editor.text().strip()
         if data:
             model.setData(index, data, Qt.EditRole)
+
+    def setEditorData(self, editor, index):
+        text = index.model().data(index, Qt.DisplayRole)
+        editor.setText(text)

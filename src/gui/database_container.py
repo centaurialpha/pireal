@@ -119,10 +119,6 @@ class DatabaseContainer(QSplitter):
             _view = view.View()
             _model = model.Model(rela)
             _model.modelModified[bool].connect(self.__on_model_modified)
-            # Ajusto las columnas cuando se modifica algun dato en el modelo
-            # esto es para cuando el nuevo dato es más 'largo' que el
-            # anterior e impide ver todo el contenido
-            _model.modelModified.connect(_view.adjust_columns)
             _model.cardinalityChanged[int].connect(
                 self.__on_cardinality_changed)
             _view.setModel(_model)
