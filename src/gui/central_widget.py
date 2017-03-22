@@ -247,11 +247,12 @@ class CentralWidget(QWidget):
 
                 table_name, line = line.split(':')
                 table_name = table_name[1:].strip()
-
                 table_dict = {}
                 table_dict['name'] = table_name
-                table_dict['header'] = line.split(',')
+                table_dict['header'] = list(map(str.strip, line.split(',')))
+
                 table_dict['tuples'] = []
+
             else:
                 for l in csv.reader([line]):
                     # Remove spaces

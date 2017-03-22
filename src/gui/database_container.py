@@ -248,7 +248,7 @@ class DatabaseContainer(QSplitter):
         # Get content of editor
         content = editor.toPlainText()
         try:
-            editor.pfile.save(content=content)
+            editor.pfile.save(data=content)
         except Exception as reason:
             QMessageBox.critical(self, "Error",
                                  self.tr("The file couldn't be saved!"
@@ -267,7 +267,7 @@ class DatabaseContainer(QSplitter):
         # Get the content
         content = editor.toPlainText()
         # Write the file
-        editor.pfile.save(content=content, new_fname=filename)
+        editor.pfile.save(data=content, path=filename)
         editor.saved()
 
     def execute_queries(self):
