@@ -28,12 +28,12 @@ from PyQt5.QtWidgets import (
     QVBoxLayout
 )
 from PyQt5.QtQuick import QQuickView
-from PyQt5.QtCore import (
-    QUrl,
-    QSettings
-)
+from PyQt5.QtCore import QUrl
 from src.gui.main_window import Pireal
-from src.core import settings
+from src.core import (
+    settings,
+    file_manager
+)
 PSetting = settings.PSetting
 
 
@@ -55,9 +55,17 @@ class StartPage(QWidget):
         # Connections
         self.__root.openRecentDatabase.connect(self.__open_database)
         self.__root.openPreferences.connect(self.__open_preferences)
+        self.__root.openExample.connect(self.__open_example)
         self.__root.openDatabase.connect(self.__open_database)
         self.__root.newDatabase.connect(self.__new_database)
         self.__root.removeCurrent.connect(self.__remove_current)
+
+    def __open_example(self):
+        central_widget = Pireal.get_service("central")
+        db_filename = os.path.join(settings.EXAMPLES, 'database.pdb')
+        central_widget.open_database(filename=db_filename, remember=False)
+        query_filename = os.path.join(settings.EXAMPLES, 'queries.pqf')
+        central_widget.open_query(filename=query_filename, remember=False)
 
     def __open_preferences(self):
         central_widget = Pireal.get_service("central")

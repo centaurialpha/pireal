@@ -61,6 +61,9 @@ LANGUAGE_PATH = os.path.join(ROOT_DIR, 'src', 'lang')
 QML_PATH = os.path.join(ROOT_DIR, 'src', 'gui', 'qml')
 # Style sheet
 STYLE_SHEET = os.path.join(ROOT_DIR, 'src', 'style.qss')
+# Carpeta de ejemplos
+EXAMPLES = os.path.join(ROOT_DIR, 'samples')
+
 
 # Supported files
 SUPPORTED_FILES = ("Pireal Database File (*.pdb);;"

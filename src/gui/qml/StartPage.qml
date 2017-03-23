@@ -28,6 +28,7 @@ Item {
 
     signal openRecentDatabase(string path)
     signal openPreferences();
+    signal openExample
     signal newDatabase
     signal openDatabase
     signal removeCurrent(string path)
@@ -140,6 +141,20 @@ Item {
                 wrapMode: Text.WordWrap
                 onLinkActivated: {
                     openPreferences();
+                }
+            }
+
+            Text {
+                text: qsTr("- See an <a href=\"#\">example</a>.")
+                anchors.left: parent.left
+                anchors.right: parent.right
+                font.pointSize: 12
+                renderType: Text.NativeRendering
+                linkColor: "#4896b8"
+                color: "#5f6566"
+                wrapMode: Text.WordWrap
+                onLinkActivated: {
+                    openExample();
                 }
             }
         }

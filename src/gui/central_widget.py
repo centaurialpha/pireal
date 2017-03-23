@@ -131,7 +131,7 @@ class CentralWidget(QWidget):
                                 self.tr("You may only have one database"
                                         " open at time."))
 
-    def open_database(self, filename=''):
+    def open_database(self, filename='', remember=True):
         """ This function opens a database and set this on the UI """
 
         if self.created:
@@ -151,9 +151,6 @@ class CentralWidget(QWidget):
             # If is canceled, return
             if not filename:
                 return
-
-            # Remember the folder
-            self.__last_open_folder = file_manager.get_path(filename)
 
         # If filename provide
         try:
@@ -195,24 +192,30 @@ class CentralWidget(QWidget):
         self.databaseConected.emit(self.tr("Conected to: {}".format(db_name)))
         pireal.set_enabled_db_actions(True)
         pireal.set_enabled_relation_actions(True)
-        # Add to recent databases
-        self.recent_databases = filename
+        if remember:
+            # Add to recent databases
+            self.recent_databases = filename
+            # Remember the folder
+            self.__last_open_folder = file_manager.get_path(filename)
         self.created = True
 
-    def open_query(self):
-        if self.__last_open_folder is None:
-            directory = os.path.expanduser("~")
-        else:
-            directory = self.__last_open_folder
-        filter_ = settings.SUPPORTED_FILES.split(';;')[1]
-        filename, _ = QFileDialog.getOpenFileName(self,
-                                                  self.tr("Open Query"),
-                                                  directory,
-                                                  filter_)
+    def open_query(self, filename='', remember=True):
         if not filename:
-            return
+            if self.__last_open_folder is None:
+                directory = os.path.expanduser("~")
+            else:
+                directory = self.__last_open_folder
+            filter_ = settings.SUPPORTED_FILES.split(';;')[1]
+            filename, _ = QFileDialog.getOpenFileName(self,
+                                                      self.tr("Open Query"),
+                                                      directory,
+                                                      filter_)
+            if not filename:
+                return
+        # Si @filename no es False
         # Cacheo la carpeta accedida
-        self.__last_open_folder = file_manager.get_path(filename)
+        if remember:
+            self.__last_open_folder = file_manager.get_path(filename)
         # FIXME: mejorar éste y new_query
         self.new_query(filename)
 
