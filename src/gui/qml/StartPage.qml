@@ -145,7 +145,7 @@ Item {
             }
 
             Text {
-                text: qsTr("- See an <a href=\"#\">example</a>.")
+                text: qsTr("- Open a full <a href=\"#\">example</a>.")
                 anchors.left: parent.left
                 anchors.right: parent.right
                 font.pointSize: 12

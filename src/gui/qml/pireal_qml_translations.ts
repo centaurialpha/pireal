@@ -78,37 +78,42 @@
 <context>
     <name>StartPage</name>
     <message>
-        <location filename="StartPage.qml" line="74"/>
+        <location filename="StartPage.qml" line="75"/>
         <source>&lt;b&gt;Pireal&lt;/b&gt; is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="StartPage.qml" line="84"/>
+        <location filename="StartPage.qml" line="85"/>
         <source>Getting Started</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="StartPage.qml" line="99"/>
+        <location filename="StartPage.qml" line="100"/>
         <source>Create a new Database</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="StartPage.qml" line="106"/>
+        <location filename="StartPage.qml" line="107"/>
         <source>Open a Database</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="StartPage.qml" line="123"/>
+        <location filename="StartPage.qml" line="124"/>
         <source>- Open a recent database from the list.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="StartPage.qml" line="133"/>
+        <location filename="StartPage.qml" line="134"/>
         <source>- Change the language from the &lt;a href=&quot;#&quot;&gt;Preferences&lt;/a&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="StartPage.qml" line="149"/>
+        <location filename="StartPage.qml" line="148"/>
+        <source>- Open a full &lt;a href=&quot;#&quot;&gt;example&lt;/a&gt;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="StartPage.qml" line="164"/>
         <source>&lt;b&gt;Pireal&lt;/b&gt; is Free Software and is mainly developed in
                        &lt;a href=&quot;http://python.org&quot;&gt;Python&lt;/a&gt; and &lt;a
                        href=&quot;http://qt.io&quot;&gt;Qt/QML&lt;/a&gt;, so if you want to collaborate,
@@ -117,7 +122,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="StartPage.qml" line="194"/>
+        <location filename="StartPage.qml" line="209"/>
         <source>No recent database</source>
         <translation type="unfinished"></translation>
     </message>
