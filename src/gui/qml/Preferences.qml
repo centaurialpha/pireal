@@ -39,20 +39,6 @@ Item {
         fontBtn.text = btnText;
     }
 
-    function changeStateCurrentLine(state) {
-        var newState = false;
-        if( state === Qt.Checked )
-            newState = true
-        stateCurrentLineChanged(newState);
-    }
-
-    function changeStateMatchingParen(state) {
-        var newState = false;
-        if( state === Qt.Checked )
-            newState = true;
-        stateMatchingParenChanged(newState);
-    }
-
     function setInitialStates(curLineState, matchParenState) {
         currentLineCheck.checked = curLineState ? Qt.Checked : Qt.Unchecked;
         matchParenCheck.checked = matchParenState ? Qt.Checked : Qt.Unchecked;
@@ -88,7 +74,7 @@ Item {
                     text: qsTr("Highlight Current Line")
                     font.pointSize: 10
                     onCheckedChanged: {
-                        changeStateCurrentLine(checked)
+                        stateCurrentLineChanged(checked);
                     }
                 }
 
@@ -97,7 +83,7 @@ Item {
                     text: qsTr("Matching Parenthesis")
                     font.pointSize: 10
                     onCheckedChanged: {
-                        changeStateMatchingParen(checked);
+                        stateMatchingParenChanged(checked);
                     }
                 }
             }
