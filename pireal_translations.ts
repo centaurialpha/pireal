@@ -54,7 +54,7 @@
     <message>
         <location filename="src/gui/central_widget.py" line="192"/>
         <source>Conected to: {}</source>
-        <translation>Contectado a: {}</translation>
+        <translation>Conectado a: {}</translation>
     </message>
     <message>
         <location filename="src/gui/central_widget.py" line="209"/>
@@ -64,7 +64,7 @@
     <message>
         <location filename="src/gui/central_widget.py" line="226"/>
         <source>Query saved: {}</source>
-        <translation>Consulta guardada: {}</translation>
+        <translation>Consulta Guardada: {}</translation>
     </message>
     <message>
         <location filename="src/gui/central_widget.py" line="284"/>
@@ -74,7 +74,7 @@
     <message>
         <location filename="src/gui/central_widget.py" line="285"/>
         <source>The &lt;b&gt;{}&lt;/b&gt; database has ben modified.&lt;br&gt;Do you want save your changes?</source>
-        <translation>La base de datos &lt;b&gt;{}&lt;/b&gt; ha sido modificada.&lt;br&gt;Desea guardar sus cambios?</translation>
+        <translation>La base de datos &lt;b&gt;{}&lt;/b&gt; ha sido modificada.&lt;br&gt;Quiere guardar los cambios?</translation>
     </message>
     <message>
         <location filename="src/gui/central_widget.py" line="316"/>
@@ -99,7 +99,7 @@
     <message>
         <location filename="src/gui/central_widget.py" line="312"/>
         <source>The file &lt;b&gt;{}&lt;/b&gt; has unsaved changes. You want to keep them?</source>
-        <translation>El archivo &lt;b&gt;{}&lt;/b&gt; tiene cambios sin guardar. Quiere mantenerlos?</translation>
+        <translation>El archivo &lt;b&gt;{}&lt;/b&gt; tiene cambios sin guardar. Quiere guardarlos?</translation>
     </message>
     <message>
         <location filename="src/gui/central_widget.py" line="401"/>
@@ -112,7 +112,7 @@
         <translation>Guardar Base de Datos Como</translation>
     </message>
     <message>
-        <location filename="src/gui/central_widget.py" line="431"/>
+        <location filename="src/gui/central_widget.py" line="432"/>
         <source>Open Relation File</source>
         <translation>Abrir Archivo de Relación</translation>
     </message>
@@ -120,42 +120,42 @@
 <context>
     <name>DatabaseContainer</name>
     <message>
-        <location filename="src/gui/database_container.py" line="157"/>
+        <location filename="src/gui/database_container.py" line="166"/>
         <source>Information</source>
         <translation>Información</translation>
     </message>
     <message>
-        <location filename="src/gui/database_container.py" line="157"/>
+        <location filename="src/gui/database_container.py" line="166"/>
         <source>There is already a relationship with name &apos;{}&apos;</source>
-        <translation>Ya existe una relación con el nombre: &apos;{}&apos;</translation>
+        <translation>Ya existe una relación con el nombre &apos;{}&apos;</translation>
     </message>
     <message>
-        <location filename="src/gui/database_container.py" line="176"/>
+        <location filename="src/gui/database_container.py" line="185"/>
         <source>Are you sure you want to delete the selected relations?</source>
-        <translation>Está seguro que desea eliminar las relaciones seleccionadas?</translation>
+        <translation>Está seguro que quiere eliminar las relaciones seleccionadas?</translation>
     </message>
     <message>
-        <location filename="src/gui/database_container.py" line="179"/>
+        <location filename="src/gui/database_container.py" line="188"/>
         <source>Are you sure you want to delete the relation &lt;b&gt;{}&lt;/b&gt;?</source>
         <translation>Está seguro que quiere eliminar la relación &lt;b&gt;{}&lt;/b&gt;?</translation>
     </message>
     <message>
-        <location filename="src/gui/database_container.py" line="184"/>
+        <location filename="src/gui/database_container.py" line="193"/>
         <source>Confirmation</source>
         <translation>Confirmación</translation>
     </message>
     <message>
-        <location filename="src/gui/database_container.py" line="186"/>
+        <location filename="src/gui/database_container.py" line="195"/>
         <source>No</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/gui/database_container.py" line="187"/>
+        <location filename="src/gui/database_container.py" line="196"/>
         <source>Yes</source>
         <translation>Si</translation>
     </message>
     <message>
-        <location filename="src/gui/database_container.py" line="253"/>
+        <location filename="src/gui/database_container.py" line="262"/>
         <source>The file couldn&apos;t be saved!
 
 {}</source>
@@ -164,9 +164,17 @@
 {}</translation>
     </message>
     <message>
-        <location filename="src/gui/database_container.py" line="261"/>
+        <location filename="src/gui/database_container.py" line="270"/>
         <source>Save File</source>
         <translation>Guardar Archivo</translation>
+    </message>
+</context>
+<context>
+    <name>EditorWidget</name>
+    <message>
+        <location filename="src/gui/query_container/query_container.py" line="403"/>
+        <source>Undock</source>
+        <translation>Desacoplar</translation>
     </message>
 </context>
 <context>
@@ -182,7 +190,7 @@
     <message>
         <location filename="src/gui/dialogs/new_database_dialog.py" line="79"/>
         <source>Select Folder</source>
-        <translation>Selecciona la Carpeta</translation>
+        <translation>Seleccionar Carpeta</translation>
     </message>
     <message>
         <location filename="NewDatabaseDialog.qml" line="42"/>
@@ -192,7 +200,7 @@
     <message>
         <location filename="NewDatabaseDialog.qml" line="69"/>
         <source>Database Name</source>
-        <translation>Nombre de la base de datos</translation>
+        <translation>Nombre de la Base de Datos</translation>
     </message>
     <message>
         <location filename="NewDatabaseDialog.qml" line="109"/>
@@ -260,7 +268,7 @@
     <message>
         <location filename="src/gui/dialogs/new_relation_dialog.py" line="100"/>
         <source>Confirm tuple delete</source>
-        <translation>Confirmar la eliminación</translation>
+        <translation>Confirmación</translation>
     </message>
     <message>
         <location filename="src/gui/dialogs/new_relation_dialog.py" line="100"/>
@@ -270,7 +278,7 @@
     <message>
         <location filename="src/gui/dialogs/new_relation_dialog.py" line="131"/>
         <source>Relation name not specified</source>
-        <translation>El nombre de la relación no se ha especificado</translation>
+        <translation>No se ha especificado un nombre para la relación</translation>
     </message>
     <message>
         <location filename="src/gui/dialogs/new_relation_dialog.py" line="151"/>
@@ -280,65 +288,69 @@
     <message>
         <location filename="src/gui/dialogs/new_relation_dialog.py" line="165"/>
         <source>Field &apos;{0}:{1}&apos;is empty!</source>
-        <translation>El campo &apos;{0}:{1}&apos; está vacío!</translation>
+        <translation>El espacio en blanco es aburrido! agrega algo en el campo &apos;{0}:{1}&apos;.</translation>
     </message>
 </context>
 <context>
     <name>Pireal</name>
     <message>
-        <location filename="src/gui/main_window.py" line="80"/>
+        <location filename="src/gui/main_window.py" line="71"/>
         <source>Pireal</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="231"/>
+        <location filename="src/gui/main_window.py" line="222"/>
         <source>New version available!</source>
-        <translation>Nueva versión disponible</translation>
+        <translation>Nueva versión disponible!</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="232"/>
+        <location filename="src/gui/main_window.py" line="223"/>
         <source>Check the web site to download &lt;b&gt;Pireal {}&lt;/b&gt;</source>
         <translation>Visita el sitio web para descargar &lt;b&gt;Pireal {}&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="235"/>
+        <location filename="src/gui/main_window.py" line="226"/>
         <source>Download!</source>
         <translation>Descargar!</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="402"/>
+        <location filename="src/gui/main_window.py" line="393"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="378"/>
+        <location filename="src/gui/main_window.py" line="369"/>
         <source>Some changes where not saved</source>
         <translation>Algunos cambios no se guardaron</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="379"/>
+        <location filename="src/gui/main_window.py" line="370"/>
         <source>Do you want to save changes to the database?</source>
-        <translation>Desea guardar los cambios en la base de datos?</translation>
+        <translation>Quiere guardar los cambios a la base de datos?</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="404"/>
+        <location filename="src/gui/main_window.py" line="395"/>
         <source>No</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="406"/>
+        <location filename="src/gui/main_window.py" line="397"/>
         <source>Yes</source>
         <translation>Si</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="398"/>
+        <location filename="src/gui/main_window.py" line="389"/>
         <source>Unsaved Queries</source>
         <translation>Consultas no guardadas</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="400"/>
-        <source>{files}&lt;br&gt;&lt;br&gt;Do you want to save them?</source>
-        <translation>{files}&lt;br&gt;&lt;br&gt;Desea guardarlos?</translation>
+        <location filename="src/gui/main_window.py" line="391"/>
+        <source>{files}
+
+Do you want to save them?</source>
+        <translation>{files}
+
+Quiere conservar los cambios?</translation>
     </message>
     <message>
         <location filename="src/gui/menu_actions.py" line="37"/>
@@ -566,7 +578,7 @@
     <message>
         <location filename="src/gui/dialogs/preferences.py" line="178"/>
         <source>Are you sure you want to clear all settings?</source>
-        <translation>Está seguro que quiere borrar todas las configuraciones?</translation>
+        <translation>Está seguro que quiere eliminar todas las configuraciones?</translation>
     </message>
     <message>
         <location filename="src/gui/dialogs/preferences.py" line="180"/>
@@ -579,32 +591,32 @@
         <translation>Si</translation>
     </message>
     <message>
-        <location filename="Preferences.qml" line="75"/>
+        <location filename="Preferences.qml" line="61"/>
         <source>Check for updates</source>
-        <translation>Comprobar si hay nueva versión</translation>
+        <translation>Comprobar Actualizaciones</translation>
     </message>
     <message>
-        <location filename="Preferences.qml" line="88"/>
+        <location filename="Preferences.qml" line="74"/>
         <source>Highlight Current Line</source>
         <translation>Resaltar Línea Actual</translation>
     </message>
     <message>
-        <location filename="Preferences.qml" line="97"/>
+        <location filename="Preferences.qml" line="83"/>
         <source>Matching Parenthesis</source>
         <translation>Resaltar Paréntesis</translation>
     </message>
     <message>
-        <location filename="Preferences.qml" line="133"/>
+        <location filename="Preferences.qml" line="119"/>
         <source>(Requires restart Pireal)</source>
         <translation>(Es necesario reiniciar Pireal)</translation>
     </message>
     <message>
-        <location filename="Preferences.qml" line="153"/>
+        <location filename="Preferences.qml" line="139"/>
         <source>Back</source>
         <translation>Volver</translation>
     </message>
     <message>
-        <location filename="Preferences.qml" line="160"/>
+        <location filename="Preferences.qml" line="146"/>
         <source>Reset Configurations</source>
         <translation>Reestablecer Configuraciones</translation>
     </message>
@@ -612,12 +624,12 @@
 <context>
     <name>QueryContainer</name>
     <message>
-        <location filename="src/gui/query_container/query_container.py" line="187"/>
+        <location filename="src/gui/query_container/query_container.py" line="185"/>
         <source>Query Error</source>
         <translation>Error de Consulta</translation>
     </message>
     <message>
-        <location filename="src/gui/query_container/query_container.py" line="187"/>
+        <location filename="src/gui/query_container/query_container.py" line="185"/>
         <source>&lt;b&gt;{}&lt;/b&gt; is a duplicate relation name.&lt;br&gt;&lt;br&gt; Please choose a unique name and re-execute the queries.</source>
         <translation>&lt;b&gt;{}&lt;/b&gt; es un nombre de relación duplicado.&lt;br&gt;&lt;br&gt; Elija un nombre único y vuelva a ejecutar las consultas.</translation>
     </message>
@@ -625,12 +637,7 @@
 <context>
     <name>QueryWidget</name>
     <message>
-        <location filename="src/gui/query_container/query_container.py" line="311"/>
-        <source>Undock</source>
-        <translation>Desacoplar Editor</translation>
-    </message>
-    <message>
-        <location filename="src/gui/query_container/query_container.py" line="367"/>
+        <location filename="src/gui/query_container/query_container.py" line="309"/>
         <source>Ok</source>
         <translation>Aceptar</translation>
     </message>
@@ -684,55 +691,55 @@
 <context>
     <name>StartPage</name>
     <message>
-        <location filename="StartPage.qml" line="75"/>
+        <location filename="StartPage.qml" line="94"/>
         <source>&lt;b&gt;Pireal&lt;/b&gt; is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.</source>
         <translation>&lt;b&gt;Pireal&lt;/b&gt; es una herramienta de enseñanza para su uso en el aprendizaje de introducción a Base de Datos. Permite al estudiante experimentar interactivamente con Álgebra Relacional.</translation>
     </message>
     <message>
-        <location filename="StartPage.qml" line="85"/>
+        <location filename="StartPage.qml" line="104"/>
         <source>Getting Started</source>
         <translation>Empezando</translation>
     </message>
     <message>
-        <location filename="StartPage.qml" line="100"/>
+        <location filename="StartPage.qml" line="119"/>
         <source>Create a new Database</source>
         <translation>Crear una Base de Datos</translation>
     </message>
     <message>
-        <location filename="StartPage.qml" line="107"/>
+        <location filename="StartPage.qml" line="126"/>
         <source>Open a Database</source>
         <translation>Abrir una Base de Datos</translation>
     </message>
     <message>
-        <location filename="StartPage.qml" line="124"/>
+        <location filename="StartPage.qml" line="143"/>
         <source>- Open a recent database from the list.</source>
         <translation>- Abre una base de datos reciente desde la lista.</translation>
     </message>
     <message>
-        <location filename="StartPage.qml" line="134"/>
+        <location filename="StartPage.qml" line="153"/>
         <source>- Change the language from the &lt;a href=&quot;#&quot;&gt;Preferences&lt;/a&gt;.</source>
         <translation>- Cambia el idioma desde las &lt;a href=&quot;#&quot;&gt;Preferencias&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="StartPage.qml" line="148"/>
+        <location filename="StartPage.qml" line="167"/>
         <source>- Open a full &lt;a href=&quot;#&quot;&gt;example&lt;/a&gt;.</source>
         <translation>- Abre un &lt;a href=&quot;#&quot;&gt;ejemplo completo&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="StartPage.qml" line="164"/>
+        <location filename="StartPage.qml" line="183"/>
         <source>&lt;b&gt;Pireal&lt;/b&gt; is Free Software and is mainly developed in
                        &lt;a href=&quot;http://python.org&quot;&gt;Python&lt;/a&gt; and &lt;a
                        href=&quot;http://qt.io&quot;&gt;Qt/QML&lt;/a&gt;, so if you want to collaborate,
                        suggest something or just study it, the source code is available
                        &lt;a href=&quot;http://github.com/centaurialpha/pireal&quot;&gt;here&lt;/a&gt;.</source>
-        <translation>&lt;b&gt;Pireal&lt;/b&gt; es Software Libre y está desarrollado principalmente en 
+        <translation>&lt;b&gt;Pireal&lt;/b&gt; es Software Libre y está desarrollado principalmente en
                        &lt;a href=&quot;http://python.org&quot;&gt;Python&lt;/a&gt; y &lt;a
                        href=&quot;http://qt.io&quot;&gt;Qt/QML&lt;/a&gt;. Si quieres colaborar,
-                       sugerir algo o solo estudiarlo, el código fuente está disponible 
+                       sugerir algo, o simplemente estudiarlo, el código fuente está disponible 
                        &lt;a href=&quot;http://github.com/centaurialpha/pireal&quot;&gt;acá&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="StartPage.qml" line="209"/>
+        <location filename="StartPage.qml" line="228"/>
         <source>No recent database</source>
         <translation>No hay base de datos reciente</translation>
     </message>

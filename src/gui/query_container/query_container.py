@@ -28,12 +28,14 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QDialog,
     QPushButton,
-    QAction
+    QAction,
+    QToolBar
 )
 from PyQt5.QtCore import (
     Qt,
     pyqtSignal,
-    QSettings
+    QSettings,
+    QSize
 )
 
 from src.core.interpreter import (
@@ -276,20 +278,11 @@ class QueryWidget(QWidget):
         self._hsplitter.addWidget(self._stack_tables)
 
         self.relations = {}
-
-        self._query_editor = editor.Editor()
-        # Editor connections
-        self._query_editor.customContextMenuRequested.connect(
-            self.__show_context_menu)
-        self._query_editor.modificationChanged[bool].connect(
-            self.__editor_modified)
-        self._query_editor.undoAvailable[bool].connect(
-            self.__on_undo_available)
-        self._query_editor.redoAvailable[bool].connect(
-            self.__on_redo_available)
-        self._query_editor.copyAvailable[bool].connect(
-            self.__on_copy_available)
-        self._vsplitter.addWidget(self._query_editor)
+        # Editor widget
+        self._editor_widget = EditorWidget(self)
+        self._editor_widget.editorModified[bool].connect(
+            lambda modified: self.editorModified.emit(modified))
+        self._vsplitter.addWidget(self._editor_widget)
 
         self._vsplitter.addWidget(self._hsplitter)
         box.addWidget(self._vsplitter)
@@ -300,53 +293,6 @@ class QueryWidget(QWidget):
                 self._result_list.row()))
         self._result_list.itemDoubleClicked.connect(
             self.show_relation)
-
-    def __show_context_menu(self, point):
-        popup_menu = self._query_editor.createStandardContextMenu()
-
-        undock_editor = QAction(self.tr("Undock"), self)
-        popup_menu.insertAction(popup_menu.actions()[0],
-                                undock_editor)
-        popup_menu.insertSeparator(popup_menu.actions()[1])
-        undock_editor.triggered.connect(self.__undock_editor)
-
-        popup_menu.exec_(self.mapToGlobal(point))
-
-    def __undock_editor(self):
-        new_editor = editor.Editor()
-        actual_doc = self._query_editor.document()
-        new_editor.setDocument(actual_doc)
-        new_editor.resize(900, 400)
-        # Set text cursor
-        tc = self._query_editor.textCursor()
-        new_editor.setTextCursor(tc)
-        # Set title
-        db = Pireal.get_service("central").get_active_db()
-        qc = db.query_container
-        new_editor.setWindowTitle(qc.tab_text(qc.current_index()))
-        new_editor.show()
-
-    def __on_undo_available(self, value):
-        """ Change state of undo action """
-
-        pireal = Pireal.get_service("pireal")
-        action = pireal.get_action("undo_action")
-        action.setEnabled(value)
-
-    def __on_redo_available(self, value):
-        """ Change state of redo action """
-
-        pireal = Pireal.get_service("pireal")
-        action = pireal.get_action("redo_action")
-        action.setEnabled(value)
-
-    def __on_copy_available(self, value):
-        """ Change states of cut and copy action """
-
-        cut_action = Pireal.get_action("cut_action")
-        cut_action.setEnabled(value)
-        copy_action = Pireal.get_action("copy_action")
-        copy_action.setEnabled(value)
 
     def show_relation(self, item):
         central_widget = Pireal.get_service("central")
@@ -377,10 +323,7 @@ class QueryWidget(QWidget):
                            self._vsplitter.saveState())
 
     def get_editor(self):
-        return self._query_editor
-
-    def __editor_modified(self, modified):
-        self.editorModified.emit(modified)
+        return self._editor_widget.get_editor()
 
     def showEvent(self, event):
         super(QueryWidget, self).showEvent(event)
@@ -403,3 +346,100 @@ class QueryWidget(QWidget):
         index = self._stack_tables.addWidget(_view)
         self._stack_tables.setCurrentIndex(index)
         self._result_list.add_item(rname, rela.cardinality())
+
+
+class EditorWidget(QWidget):
+
+    TOOLBAR_ITEMS = [
+        'save_query',
+        '',
+        'undo_action',
+        'redo_action',
+        'cut_action',
+        'paste_action',
+        '',
+        'execute_queries'
+    ]
+
+    editorModified = pyqtSignal(bool)
+
+    def __init__(self, parent=None):
+        QWidget.__init__(self, parent)
+        hbox = QVBoxLayout(self)
+        hbox.setContentsMargins(0, 0, 0, 0)
+        hbox.setSpacing(0)
+        # Toolbar
+        self._toolbar = QToolBar(self)
+        self._toolbar.setIconSize(QSize(16, 16))
+        pireal = Pireal.get_service("pireal")
+        for action in self.TOOLBAR_ITEMS:
+            qaction = pireal.get_action(action)
+            if qaction is not None:
+                self._toolbar.addAction(qaction)
+            else:
+                self._toolbar.addSeparator()
+        hbox.addWidget(self._toolbar)
+        # Editor
+        self._editor = editor.Editor()
+        # Editor connections
+        self._editor.customContextMenuRequested.connect(
+            self.__show_context_menu)
+        self._editor.modificationChanged[bool].connect(
+            lambda modified: self.editorModified.emit(modified))
+        self._editor.undoAvailable[bool].connect(
+            self.__on_undo_available)
+        self._editor.redoAvailable[bool].connect(
+            self.__on_redo_available)
+        self._editor.copyAvailable[bool].connect(
+            self.__on_copy_available)
+        hbox.addWidget(self._editor)
+
+    def get_editor(self):
+        return self._editor
+
+    def __show_context_menu(self, point):
+        popup_menu = self._editor.createStandardContextMenu()
+
+        undock_editor = QAction(self.tr("Undock"), self)
+        popup_menu.insertAction(popup_menu.actions()[0],
+                                undock_editor)
+        popup_menu.insertSeparator(popup_menu.actions()[1])
+        undock_editor.triggered.connect(self.__undock_editor)
+
+        popup_menu.exec_(self.mapToGlobal(point))
+
+    def __undock_editor(self):
+        new_editor = editor.Editor()
+        actual_doc = self._editor.document()
+        new_editor.setDocument(actual_doc)
+        new_editor.resize(900, 400)
+        # Set text cursor
+        tc = self._editor.textCursor()
+        new_editor.setTextCursor(tc)
+        # Set title
+        db = Pireal.get_service("central").get_active_db()
+        qc = db.query_container
+        new_editor.setWindowTitle(qc.tab_text(qc.current_index()))
+        new_editor.show()
+
+    def __on_undo_available(self, value):
+        """ Change state of undo action """
+
+        pireal = Pireal.get_service("pireal")
+        action = pireal.get_action("undo_action")
+        action.setEnabled(value)
+
+    def __on_redo_available(self, value):
+        """ Change state of redo action """
+
+        pireal = Pireal.get_service("pireal")
+        action = pireal.get_action("redo_action")
+        action.setEnabled(value)
+
+    def __on_copy_available(self, value):
+        """ Change states of cut and copy action """
+
+        cut_action = Pireal.get_action("cut_action")
+        cut_action.setEnabled(value)
+        copy_action = Pireal.get_action("copy_action")
+        copy_action.setEnabled(value)

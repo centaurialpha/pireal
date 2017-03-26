@@ -61,18 +61,9 @@ class Pireal(QMainWindow):
         '',  # Is a separator!
         'new_query',
         'open_query',
-        'save_query',
-        '',
-        'undo_action',
-        'redo_action',
-        'cut_action',
-        'copy_action',
-        'paste_action',
         '',
         'create_new_relation',
         'remove_relation',
-        '',
-        'execute_queries'
     ]
 
     def __init__(self):
@@ -397,7 +388,7 @@ class Pireal(QMainWindow):
                 msg.setIcon(QMessageBox.Question)
                 msg.setWindowTitle(self.tr("Unsaved Queries"))
                 text = '\n'.join([editor.name for editor in unsaved_editors])
-                msg.setText(self.tr("{files}<br><br>Do you want to "
+                msg.setText(self.tr("{files}\n\nDo you want to "
                                     "save them?".format(files=text)))
                 cancel_btn = msg.addButton(self.tr("Cancel"),
                                            QMessageBox.RejectRole)
