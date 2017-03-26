@@ -41,9 +41,9 @@ from src.core.interpreter.tokens import (
     PROJECT,
     SELECT,
     NJOIN,
-    LEFT_OUTHER_JOIN,
-    RIGHT_OUTHER_JOIN,
-    FULL_OUTHER_JOIN,
+    LEFT_OUTER_JOIN,
+    RIGHT_OUTER_JOIN,
+    FULL_OUTER_JOIN,
     EOF
 )
 
@@ -117,8 +117,8 @@ class LexerTestCase(unittest.TestCase):
         self.assertEqual(token.type, DATE)
 
     def test_tokens(self):
-        query = ("project name, age (select id=2 (p njoin (r louther "
-                 "(s routher (y fouther(q))))));")
+        query = ("project name, age (select id=2 (p njoin (r louter "
+                 "(s router (y fouter(q))))));")
         lex = self.make_lexer(query)
         tkn = lex.next_token()
         self.assertEqual(PROJECT, tkn.type)
@@ -163,8 +163,8 @@ class LexerTestCase(unittest.TestCase):
         self.assertEqual(ID, tkn.type)
         self.assertEqual('r', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(LEFT_OUTHER_JOIN, tkn.type)
-        self.assertEqual('louther', tkn.value)
+        self.assertEqual(LEFT_OUTER_JOIN, tkn.type)
+        self.assertEqual('louter', tkn.value)
         tkn = lex.next_token()
         self.assertEqual(LPAREN, tkn.type)
         self.assertEqual('(', tkn.value)
@@ -172,8 +172,8 @@ class LexerTestCase(unittest.TestCase):
         self.assertEqual(ID, tkn.type)
         self.assertEqual('s', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(RIGHT_OUTHER_JOIN, tkn.type)
-        self.assertEqual('routher', tkn.value)
+        self.assertEqual(RIGHT_OUTER_JOIN, tkn.type)
+        self.assertEqual('router', tkn.value)
         tkn = lex.next_token()
         self.assertEqual(LPAREN, tkn.type)
         self.assertEqual('(', tkn.value)
@@ -181,8 +181,8 @@ class LexerTestCase(unittest.TestCase):
         self.assertEqual(ID, tkn.type)
         self.assertEqual('y', tkn.value)
         tkn = lex.next_token()
-        self.assertEqual(FULL_OUTHER_JOIN, tkn.type)
-        self.assertEqual('fouther', tkn.value)
+        self.assertEqual(FULL_OUTER_JOIN, tkn.type)
+        self.assertEqual('fouter', tkn.value)
         tkn = lex.next_token()
         self.assertEqual(LPAREN, tkn.type)
         self.assertEqual('(', tkn.value)

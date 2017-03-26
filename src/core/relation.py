@@ -254,7 +254,7 @@ class Relation(object):
 
         return new_relation.project(*ss)
 
-    def louther(self, other):
+    def louter(self, other):
         header = self.__header + other.header
 
         new_relation = Relation()
@@ -282,14 +282,14 @@ class Relation(object):
 
         return new_relation.project(*ss)
 
-    def routher(self, other):
-        r = other.louther(self)
+    def router(self, other):
+        r = other.louter(self)
         sharedf = [i for i in other.header if i not in self.header]
         return r.project(*self.header + sharedf)
 
-    def fouther(self, other):
-        right = self.routher(other)
-        left = self.louther(other)
+    def fouter(self, other):
+        right = self.router(other)
+        left = self.louter(other)
         return right.union(left)
 
     def intersect(self, other_relation):

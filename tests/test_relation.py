@@ -116,30 +116,30 @@ class RelationTestCase(unittest.TestCase):
         njoin = rjoin.content.content
         self.assertEqual(expected, njoin)
 
-    def test_louther(self):
+    def test_louter(self):
         expected = [
             ['1', 'Gabriel', 'Belén', 'Python'],
             ['23', 'Rodrigo', 'Belén', 'null']
         ]
-        louther = self.r1.louther(self.r2)
-        self.assertEqual(louther.content.content, expected)
+        louter = self.r1.louter(self.r2)
+        self.assertEqual(louter.content.content, expected)
 
-    def test_routher(self):
+    def test_router(self):
         expected = [
             ['3', 'null', 'null', 'Ruby'],
             ['1', 'Gabriel', 'Belén', 'Python']
         ]
-        routher = self.r1.routher(self.r2)
-        self.assertEqual(routher.content.content, expected)
+        router = self.r1.router(self.r2)
+        self.assertEqual(router.content.content, expected)
 
-    def test_fullouther(self):
+    def test_fullouter(self):
         expected = [
             ['3', 'null', 'null', 'Ruby'],
             ['1', 'Gabriel', 'Belén', 'Python'],
             ['23', 'Rodrigo', 'Belén', 'null'],
         ]
-        full_outher = self.r1.fouther(self.r2)
-        self.assertEqual(full_outher.content.content, expected)
+        full_outer = self.r1.fouter(self.r2)
+        self.assertEqual(full_outer.content.content, expected)
 
     def test_intersection(self):
         project_idr1 = self.r1.project("id")

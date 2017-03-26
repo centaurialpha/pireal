@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+    <title>Pireal - Relational Algebra Query Evaluator</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.png">
+    <link href='https://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-76621781-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+    <script type="text/javascript">
+//$(document).ready(function(){
+    function showDemo() {
+    /* Replace link if JavaScript are enabled */
+    var link = document.getElementById("link");
+    link.setAttribute('href', "#video");
+
+    /* Get iframe src attribute value i.e. YouTube video url
+    and store it in a variable */
+    var url = $("#demoPireal").attr('src');
+
+    /* Assign empty url value to the iframe src attribute when
+    modal hide, which stop the video playing */
+    $("#video").on('hide.bs.modal', function(){
+        $("#cartoonVideo").attr('src', '');
+    });
+
+    /* Assign the initially stored url back to the iframe src
+    attribute when modal is displayed again */
+    $("#video").on('show.bs.modal', function(){
+        $("#cartoonVideo").attr('src', url);
+    });
+}
+</script>
+</head>
+
+<body data-spy="scroll">
+    <!-- HEADER -->
+    <header id="header" class="header">
+        <div class="container">
+            <h1 class="logo pull-left">
+                <a class="scrollto" href="#promo">
+                    <span class="logo-title">Pireal</span>
+                </a>
+            </h1>
+            <nav id="main-nav" class="main-nav navbar-right" role="navigation">
+                <div class="navbar-header">
+q                    <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="navbar-collapse collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active nav-item sr-only"><a class="scrollto" href="#promo">Home</a></li>
+                        <li class="nav-item"><a class="scrollto" href="#about">About</a></li>
+                        <li class="nav-item"><a class="scrollto" href="#screenshots">Screenshots</a></li>
+                        <li class="nav-item last"><a class="scrollto" href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- PROMO -->
+    <section id="promo" class="promo section offset-header">
+        <div class="container text-center">
+            <h2 class="title">Π<span class="highlight">real</span></h2>
+            <p class="intro">A free cross-platform tool for working with Relational Algebra</p>
+            <div class="btns">
+                <a id="link" target="_blank" class="btn btn-cta-secondary" href="https://www.youtube.com/watch?v=UkfJpu6YlVM" data-toggle="modal" onclick="showDemo();">Demo</a>
+                <div id="video" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 class="modal-title">Pireal Demo</h4>
+                            </div>
+                            <div class="modal-body">
+                                <iframe id="demoPireal" width="560" height="315" src="https://www.youtube.com/embed/UkfJpu6YlVM" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <a class="btn btn-cta-primary" href="https://github.com/centaurialpha/pireal/releases" target="_blank">Downloads</a>
+            </div>
+            <ul class="meta list-inline">
+                <li><a href="https://github.com/centaurialpha/pireal" target="_blank">View source code on GitHub</a></li>
+                <!--<li><a href="https://github.com/twbs/bootstrap" target="_blank">Full Documentation</a></li>
+                <li>Developed by: <a href="http://centaurialpha.github.io" target="_blank">Gabriel Acosta</a></li>-->
+            </ul>
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="about section">
+        <div class="container">
+            <h2 class="title text-center">What is Pireal?</h2>
+            <p class="intro text-center">Pireal is a tool that allows to evaluate queries written in the language of relational algebra and visualize the result of a particular query. All this from an intuitive interface.<br>Queries are made to a database. A database contains tables/relationships, both the database and the relationships can be created/edited from Pireal or from a text editor.</p>
+            <div class="row">
+                <div class="item col-md-4 col-sm-6 col-xs-12">
+                    <div class="icon-holder">
+                        <i class="fa fa-university"></i>
+                    </div>
+                    <div class="content">
+                        <h3 class="sub-title">Developed for students</h3>
+                        <p>It was intended for use during learning Relational Algebra.</p>
+                    </div>
+                </div>
+                <div class="item col-md-4 col-sm-6 col-xs-12">
+                    <div class="icon-holder">
+                        <i class="fa fa-globe"></i>
+                    </div>
+                    <div class="content">
+                        <h3 class="sub-title">Multilanguage</h3>
+                        <p>It is available in English and Spanish. If you want to translate it into another language, <a href="#">read this</a>.</p>
+                    </div>
+                </div>
+                <div class="item col-md-4 col-sm-6 col-xs-12">
+                    <div class="icon-holder">
+                        <i class="fa fa-desktop"></i>
+                    </div>
+                    <div class="content">
+                        <h3 class="sub-title">Cross-platform</h3>
+                        <p>The core is written in Python, the GUI is developed in Qt and QML. These tools work very well on any platform.</p>
+                    </div>
+                </div>
+                <div class="clearfix visible-md"></div>
+            </div>
+        </div>
+    </section>
+    <section id="screenshots" class="about section">
+        <div class="container text-center">
+            <h2 class="title">Screenshots</h2>
+            <div class="row">
+                <div class="col-sm-4">
+                    <a class="thumbnail" href="#screen1" data-toggle="modal">
+                        <img src="assets/images/screenshot1.png">
+                    </a>
+                    <p>Start page with recent databases</p>
+                </div>
+                <div class="modal fade" id="screen1" tabindex="-1" role="dialog" aria-labelledby="screenlabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <br><br>
+                            <div class="modal-body">
+                                <img class="img-responsive" src="assets/images/screenshot1.png">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <a class="thumbnail" href="#screen2" data-toggle="modal">
+                        <img src="assets/images/screenshot2.png">
+                    </a>
+                    <p>Relation creator</p>
+                </div>
+                <div class="modal fade" id="screen2" tabindex="-1" role="dialog" aria-labelledby="screenlabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <br><br>
+                            <div class="modal-body">
+                                <img class="img-responsive" src="assets/images/screenshot2.png">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <a class="thumbnail" href="#screen3" data-toggle="modal">
+                        <img src="assets/images/screenshot3.png">
+                    </a>
+                    <p>Result of run some queries</p>
+                </div>
+                <div class="modal fade" id="screen3" tabindex="-1" role="dialog" aria-labelledby="screenlabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <br><br>
+                            <div class="modal-body">
+                                <img class="img-responsive" src="assets/images/screenshot3.png">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- FEATURES -->
+    <!--
+    <section id="features" class="features section">
+        <div class="container text-center">
+            <h2 class="title">Features</h2>
+            <ul class="feature-list list-unstyled">
+                <li><i class="fa fa-check"></i> Fully responsive</li>
+                <li><i class="fa fa-check"></i> HTML5 + CSS3</li>
+                <li><i class="fa fa-check"></i> Built on <a href="http://getbootstrap.com/" target="_blank">Bootstrap 3.3</a></li>
+                <li><i class="fa fa-check"></i> 400+ FontAwesome icons</li>
+                <li><i class="fa fa-check"></i> 4 colour schemes</li>
+                <li><i class="fa fa-check"></i> LESS files included</li>
+                <li><i class="fa fa-check"></i> Compatible with all modern browsers</li>
+            </ul>
+        </div>
+    </section>-->
+
+    <!-- ******DOCS****** -->
+    <!--
+    <section id="docs" class="docs section">
+        <div class="container">
+            <div class="docs-inner">
+            <h2 class="title text-center">Get Started</h2>
+            <div class="block">
+                <h3 class="sub-title text-center">HTML</h3>
+                <p><a href="http://prismjs.com/" target="_blank">PrismJS</a> is used as the syntax highlighter here.</p>
+                <p>Below are the details of the custom PrismJS build used in this template. You can <a href="http://prismjs.com/download.html" target="_blank">build your own version</a> via their website should you need to.</p>
+                <ul class="list-unstyled">
+                    <li><strong>Compression level:</strong> Minified</li>
+                    <li><strong>Theme:</strong> Okaidia</li>
+                    <li><strong>Languages:</strong> Markup, CSS, C-like, JavaScript, PHP and Python</li>
+                </ul>
+                <div class="code-block">
+
+                    <pre><code class="language-markup">
+    &ltp class="my-style"&gt
+      Hello World!
+    &lt/p&gt
+                     </code></pre>
+                </div>
+            </div>
+
+            <div class="block">
+                <h3 class="sub-title text-center">CSS</h3>
+                <p>Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus.</p>
+
+                <div class="code-block">
+
+                    <pre>
+    <code class="language-css">
+    /*
+     * Template Name: devAid - Responsive Website Template for developers
+     * Version: 1.0
+     * Author: Xiaoying Riley at 3rd Wave Media
+     * Website: http://themes.3rdwavemedia.com/
+     * Twitter: @3rdwave_themes
+    */
+    body {
+      font-family: 'Lato', arial, sans-serif;
+      color: #444444;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    </code></pre>
+                </div>
+            </div>
+
+            <div class="block">
+                <h3 class="sub-title text-center">JavaScript</h3>
+                <p>Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Lorem ipsum dolor sit amet, consectetuer adipiscing elit ligula eget dolor.</p>
+                <div class="code-block">
+                    <pre><code class="language-javascript">
+    if( awesome ){
+        console.log('This is Awesome');
+    }else{
+        $('body').addClass('give-me-awesome');
+    }
+                    </code></pre>
+                </div>
+            </div>
+            <div class="block">
+                <h3 class="sub-title text-center">Full Documentation</h3>
+                <p>If your documentation is very long you can host the full docs page (including FAQ etc) on GitHub and provide a Call to Action button below to direct users there.</p>
+                <p class="text-center">
+                    <a class="btn btn-cta-primary" href="https://github.com/twbs/bootstrap" target="_blank">More on GitHub</a>
+                </p>
+            </div>
+
+            </div>
+        </div>
+    </section>
+    -->
+
+    <!-- LICENSE -->
+    <!--
+    <section id="license" class="license section">
+        <div class="container">
+            <div class="license-inner">
+            <h2 class="title text-center">License</h2>
+                <div class="info">
+                    <p class="text-center">This software is distributed under the terms of the GPLv3+</p>
+
+                </div>
+                <div class="cta-container">
+                    <div class="speech-bubble">
+                        <p class="intro">If you are feeling generous and want to show your support to Gabo, you can buy her a beer via the PayPal donate button below. :)</p>
+                        <div class="icon-holder  text-center"><i class="fa fa-smile-o"></i></div>
+                    </div>
+                    <div class="btn-container  text-center">
+
+                        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                        <input type="hidden" name="cmd" value="_s-xclick">
+                        <input type="hidden" name="hosted_button_id" value="Y46LJNXGAVVWW">
+                        <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                        <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
+                        </form>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    -->
+
+    <!-- CONTACT -->
+    <section id="contact" class="contact section has-pattern">
+        <div class="container">
+            <div class="contact-inner">
+                <h2 class="title  text-center">Contact</h2>
+                <p class="intro  text-center">I hope you enjoy this software and find it useful.</p>
+                <div class="author-message">
+                    <div class="profile">
+                        <img class="img-responsive" src="assets/images/profile.jpg" alt="" />
+                    </div>
+                    <div class="speech-bubble">
+                        <h3 class="sub-title">Found a problem?</h3>
+
+                        <p>Please <a href="https:/github.com/centaurialpha/pireal/issues/new">open a new</a> issue and details the problem. You can also send an email to <a href="mailto:acostadariogabriel@gmail.com">acostadariogabriel at gmail</a> or <a href="mailto:gabriel.acosta@ninja-ide.org">gabriel.acosta at ninja-ide.org</a>.</p>
+                        <h3 class="sub-title">You want to collaborate with the project?</h3>
+                        <p>Tell your teacher about this tool, package for some distributions of GNU/Linux such as Debian/Ubuntu, Fedora, Arch, you can also translate into another language Pireal or you can buy me a beer ;).</p>
+                        <div class="source">
+                            <span class="name">See you!</span>
+                            <br/>
+                            <span class="title">Gabriel Acosta</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <div class="info text-center">
+                    <h4 class="sub-title">Get Connected</h4>
+                    <ul class="social-icons list-inline">
+                        <li><a href="https://twitter.com/_alfacentauri" target="_blank"><i class="fa fa-twitter"></i></a></li>
+                        <li><a href="https://github.com/centaurialpha/" target="_blank"><i class="fa fa-github"></i></a></li>
+                        <li class="last"><a href="mailto: acostadariogabriel@gmail.com"><i class="fa fa-envelope"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container text-center">
+            <small class="copyright">Copyright &copy; 2015-2017 Pireal - with <i class="fa fa-heart"></i> by <a href="#" target="_blank">Gabriel Acosta</a> </small>
+        </div>
+    </footer>
+
+    <!-- Javascript -->
+    <script type="text/javascript" src="assets/plugins/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery.easing.1.3.js"></script>
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/prism/prism.js"></script>
+    <script type="text/javascript" src="assets/js/main.js"></script>
+</body>
+</html>
