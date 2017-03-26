@@ -77,10 +77,15 @@ class Model(QAbstractTableModel):
         """ Método reimplementado.
         Este método actualiza el modelo """
         if index.isValid() and role == Qt.EditRole:
-            self.__data.update(index.row(), index.column(), value)
+            modified = False
+            old_value = self.__data.content[index.row()][index.column()]
+            if value != old_value:
+                # Si son distintos los datos, actualizo
+                self.__data.update(index.row(), index.column(), value)
+                modified = True
             # Emito la señal
             self.dataChanged.emit(index, index)
-            self.set_modified(True)
+            self.set_modified(modified)
             return True
         return False
 
@@ -96,11 +101,15 @@ class Model(QAbstractTableModel):
         Actualiza el nombre de una columna """
 
         if role == Qt.DisplayRole:
-            # Actualizo el nuevo dato
-            self.__data.header[section] = value
+            modified = False
+            old_value = self.__data.header[section]
+            if value != old_value:
+                # Actualizo el nuevo dato
+                self.__data.header[section] = value
+                modified = True
             # Emito la señal
             self.headerDataChanged.emit(orientation, section, section)
-            self.set_modified(True)
+            self.set_modified(modified)
             return True
 
     def flags(self, index):

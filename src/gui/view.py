@@ -63,6 +63,7 @@ class Header(QHeaderView):
 
     def __init__(self, orientation=Qt.Horizontal, parent=None):
         super(Header, self).__init__(orientation, parent)
+        self.editable = True
         self.setSectionsClickable(True)
         self.setSectionResizeMode(QHeaderView.ResizeToContents)
         self.line = QLineEdit(parent=self.viewport())
@@ -76,6 +77,8 @@ class Header(QHeaderView):
         self.line.editingFinished.connect(self.__done_editing)
 
     def __edit(self, index):
+        if not self.editable:
+            return
         geo = self.line.geometry()
         geo.setWidth(self.sectionSize(index))
         geo.moveLeft(self.sectionViewportPosition(index))

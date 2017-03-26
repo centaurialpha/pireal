@@ -41,11 +41,7 @@ from src.core.interpreter import (
     lexer,
     parser
 )
-from src.gui import (
-    view,
-    model,
-    lateral_widget
-)
+from src.gui import lateral_widget
 from src.gui.main_window import Pireal
 from src.gui.query_container import (
     editor,
@@ -402,8 +398,8 @@ class QueryWidget(QWidget):
 
     def add_table(self, rela, rname):
         central_widget = Pireal.get_service("central")
-        table_widget = central_widget.get_active_db().table_widget
-        _view = table_widget.create_table(rela, editable=False)
+        db = central_widget.get_active_db()
+        _view = db.create_table(rela, rname, editable=False)
         index = self._stack_tables.addWidget(_view)
         self._stack_tables.setCurrentIndex(index)
         self._result_list.add_item(rname, rela.cardinality())

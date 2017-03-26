@@ -116,15 +116,7 @@ class DatabaseContainer(QSplitter):
             # src.gui.model
             # src.gui.view
             # src.gui.delegate
-            _view = view.View()
-            _model = model.Model(rela)
-            _model.modelModified[bool].connect(self.__on_model_modified)
-            _model.cardinalityChanged[int].connect(
-                self.__on_cardinality_changed)
-            _view.setModel(_model)
-            _view.setItemDelegate(delegate.Delegate())
-            # Se agrega un header editable
-            _view.setHorizontalHeader(view.Header())
+            _view = self.create_table(rela, table_name)
             # Add relation to relations dict
             self.table_widget.add_relation(table_name, rela)
             # Add table to stacked
@@ -134,6 +126,23 @@ class DatabaseContainer(QSplitter):
         # Select first item
         first_item = self.lateral_widget.topLevelItem(0)
         first_item.setSelected(True)
+
+    def create_table(self, relation_obj, relation_name, editable=True):
+        """ Se crea la vista, el model y el delegado para @relation_obj """
+
+        _view = view.View()
+        header = view.Header()
+        _model = model.Model(relation_obj)
+        _model.modelModified[bool].connect(self.__on_model_modified)
+        _model.cardinalityChanged[int].connect(
+                self.__on_cardinality_changed)
+        if not editable:
+            _model.editable = False
+            header.editable = False
+        _view.setModel(_model)
+        _view.setItemDelegate(delegate.Delegate())
+        _view.setHorizontalHeader(header)
+        return _view
 
     @pyqtSlot(bool)
     def __on_model_modified(self, modified):

@@ -411,7 +411,8 @@ class CentralWidget(QWidget):
     def create_new_relation(self):
         def create_relation(relation, relation_name):
             db = self.get_active_db()
-            db.table_widget.add_table(relation, relation_name)
+            table = db.create_table(relation, relation_name)
+            db.table_widget.add_table(relation, relation_name, table)
             db.lateral_widget.add_item(relation_name, relation.cardinality())
             db.modified = True
 

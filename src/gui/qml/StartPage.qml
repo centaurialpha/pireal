@@ -33,6 +33,25 @@ Item {
     signal openDatabase
     signal removeCurrent(string path)
 
+    property bool widthCompressed: false
+    property bool heightCompressed: false
+
+    onWidthChanged: {
+        if(width < 925) {
+            widthCompressed = true;
+        } else {
+            widthCompressed = false;
+        }
+    }
+
+    onHeightChanged: {
+        if(height < 580) {
+            heightCompressed = true;
+        } else {
+            heightCompressed = false;
+        }
+    }
+
     function loadItem(name, path) {
         listModel.append({"name": name, "path": path})
     }
@@ -171,7 +190,7 @@ Item {
             renderType: Text.NativeRendering
             color: "#5f6566"
             linkColor: "#4896b8"
-
+            visible: !heightCompressed
             onLinkActivated: {
                 Qt.openUrlExternally(link)
             }
@@ -348,6 +367,7 @@ Item {
         }
         font.pixelSize: 12
         renderType: Text.NativeRendering
+        visible: !widthCompressed
     }
 
 }

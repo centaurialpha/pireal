@@ -22,7 +22,11 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QStackedWidget
 )
-from src.gui import view, model
+from src.gui import (
+    view,
+    model,
+    delegate
+)
 
 
 class TableWidget(QWidget):
@@ -59,11 +63,9 @@ class TableWidget(QWidget):
             return True
         return False
 
-    def add_table(self, rela, name):
+    def add_table(self, rela, name, table):
         """ Add new table from New Relation Dialog """
 
-        # Create table
-        table = self.create_table(rela)
         self.add_relation(name, rela)
         self.stacked.addWidget(table)
 
@@ -119,4 +121,6 @@ class TableWidget(QWidget):
         if not editable:
             _model.editable = False
         _view.setModel(_model)
+        _view.setItemDelegate(delegate.Delegate())
+        _view.setHorizontalHeader(view.Header())
         return _view
