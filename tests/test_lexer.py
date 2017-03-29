@@ -22,6 +22,10 @@ from src.core.interpreter import (
     lexer,
     scanner
 )
+from src.core.interpreter.exceptions import (
+    InvalidSyntaxError,
+    MissingQuoteError
+)
 from src.core.interpreter.tokens import (
     ID,
     GREATER,
@@ -115,6 +119,18 @@ class LexerTestCase(unittest.TestCase):
         lex = self.make_lexer("'20/01/1992'")
         token = lex.next_token()
         self.assertEqual(token.type, DATE)
+
+    def test_invalid_syntax_error(self):
+        # el símbolo ! no se admite en el lenguaje
+        lex = self.make_lexer("q1 := !!")
+        lex.next_token()  # Ok
+        lex.next_token()  # Ok
+        self.assertRaises(InvalidSyntaxError, lex.next_token)
+
+    def test_missing_quote_error(self):
+        lex = self.make_lexer("'hola como estas' 'aguante Python")
+        lex.next_token()  # Ok
+        self.assertRaises(MissingQuoteError, lex.next_token)
 
     def test_tokens(self):
         query = ("project name, age (select id=2 (p njoin (r louter "

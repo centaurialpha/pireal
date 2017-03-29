@@ -29,7 +29,7 @@ class Scanner(object):
         self._text = text
         self.index = 0
         self.lineno = 1
-        self.colno = 0
+        self.colno = 1
 
     @property
     def char(self):
@@ -48,7 +48,7 @@ class Scanner(object):
             # We are in a new line, therefore we increase the line
             # number and restart the column number
             self.lineno += 1
-            self.colno = 0
+            self.colno = 1
         else:
             self.colno += 1
         self.index += 1
@@ -60,7 +60,8 @@ class Scanner(object):
         return self.char
 
     def __repr__(self):
-        return '<Scanner at {line}:{col}>'.format(
+        return '<Scanner at {line}:{col} - Character: {char}>'.format(
             line=self.lineno,
-            col=self.colno
+            col=self.colno,
+            char=self.char
         )

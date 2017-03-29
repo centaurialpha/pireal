@@ -25,7 +25,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QSplitter,
     QStackedWidget,
-    QMessageBox,
+    QLabel,
     QDialog,
     QPushButton,
     QAction,
@@ -42,6 +42,12 @@ from src.core.interpreter import (
     scanner,
     lexer,
     parser
+)
+from src.core.interpreter.exceptions import (
+    InvalidSyntaxError,
+    MissingQuoteError,
+    DuplicateRelationNameError,
+    ConsumeError
 )
 from src.gui import lateral_widget
 from src.gui.main_window import Pireal
@@ -175,23 +181,33 @@ class QueryContainer(QWidget):
             interpreter = parser.Interpreter(par)
             interpreter.clear()
             interpreter.to_python()
-        except Exception as reason:
+        except MissingQuoteError as reason:
+            pireal = Pireal.get_service("pireal")
+            pireal.show_error_message(
+                self.tr("Missing quote on Line: {0}".format(
+                    reason.lineno)))
+            return
+        except InvalidSyntaxError as reason:
+            pireal = Pireal.get_service("pireal")
+            pireal.show_error_message(
+                self.tr("Invalid syntax on Line: {0}, Column {1}. "
+                        "The error start with <b>{2}</b>".format(
+                            reason.lineno, reason.column, reason.character)))
+            return
+        except DuplicateRelationNameError as duplicate_rname:
+            pireal = Pireal.get_service("pireal")
+            pireal.show_error_message(
+                self.tr("<b>{}</b> is a duplicate relation name. Please "
+                        "choose a unique name and re-execute the "
+                        "queries".format(
+                            duplicate_rname)), syntax_error=False)
+            return
+        except ConsumeError as reason:
             pireal = Pireal.get_service("pireal")
             pireal.show_error_message(self.parse_error(reason.__str__()))
             return
         relations.update(table_widget.relations)
         for relation_name, expression in list(interpreter.SCOPE.items()):
-            if relation_name in relations:
-                QMessageBox.critical(self,
-                                     self.tr("Query Error"),
-                                     self.tr("<b>{}</b> is a duplicate "
-                                             "relation name.<br><br> "
-                                             "Please choose a unique name "
-                                             "and re-execute the "
-                                             "queries.".format(
-                                                 relation_name)))
-                del interpreter.SCOPE[relation_name]
-                return
             try:
                 new_relation = eval(expression, {}, relations)
 
@@ -365,9 +381,14 @@ class EditorWidget(QWidget):
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
-        hbox = QVBoxLayout(self)
-        hbox.setContentsMargins(0, 0, 0, 0)
-        hbox.setSpacing(0)
+        vbox = QVBoxLayout(self)
+        vbox.setContentsMargins(0, 0, 0, 0)
+        vbox.setSpacing(0)
+
+        hbox = QHBoxLayout()
+        # Position
+        self._column_str = "Col: {}"
+        self._column_lbl = QLabel(self._column_str.format(0))
         # Toolbar
         self._toolbar = QToolBar(self)
         self._toolbar.setIconSize(QSize(16, 16))
@@ -378,7 +399,8 @@ class EditorWidget(QWidget):
                 self._toolbar.addAction(qaction)
             else:
                 self._toolbar.addSeparator()
-        hbox.addWidget(self._toolbar)
+        hbox.addWidget(self._toolbar, 1)
+        hbox.addWidget(self._column_lbl)
         # Editor
         self._editor = editor.Editor()
         # Editor connections
@@ -392,7 +414,14 @@ class EditorWidget(QWidget):
             self.__on_redo_available)
         self._editor.copyAvailable[bool].connect(
             self.__on_copy_available)
-        hbox.addWidget(self._editor)
+        self._editor.cursorPositionChanged.connect(
+            self._update_column_label)
+        vbox.addLayout(hbox)
+        vbox.addWidget(self._editor)
+
+    def _update_column_label(self):
+        col = str(self._editor.textCursor().columnNumber() + 1)
+        self._column_lbl.setText(self._column_str.format(col))
 
     def get_editor(self):
         return self._editor

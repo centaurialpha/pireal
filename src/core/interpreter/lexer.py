@@ -42,6 +42,10 @@ from src.core.interpreter.tokens import (
     KEYWORDS,
     EOF
 )
+from src.core.interpreter.exceptions import (
+    MissingQuoteError,
+    InvalidSyntaxError
+)
 # Formato DD/MM/AAAA o también AAAA/MM/DD
 IS_DATE = re.compile(
     r'^([\d+]{2}|[\d+]{4})[\/][\d+]{2}[\/]([\d+]{2}|[\d+]{4})$')
@@ -246,12 +250,15 @@ class Lexer(object):
                     try:
                         string += self.sc.char
                     except TypeError:
-                        raise Exception("Missing quote")
+                        raise MissingQuoteError(
+                            "Missing quote on line: {0}",
+                            self.sc.lineno
+                        )
                     self.sc.next()
 
                 self.sc.next()
-                # Tengo la cadena, ahora compruebo si es una fecha o un
-                # horario
+                # Tengo la cadena, ahora compruebo si es una fecha o una
+                # hora (time)
                 if IS_DATE.match(string):
                     return Token(DATE, string)
                 elif IS_TIME.match(string):
@@ -272,10 +279,11 @@ class Lexer(object):
                 self.sc.next()
                 return Token(SEMI, ',')
 
-            raise Exception("Invalid Syntax {0}:{1}".format(
+            raise InvalidSyntaxError(
                 self.sc.lineno,
-                self.sc.colno
-            ))
+                self.sc.colno,
+                self.sc.char
+            )
 
         # EOF
         return Token(EOF, None)

@@ -46,6 +46,12 @@ from src.core.interpreter.tokens import (
     ASSIGNMENT,
     EOF
 )
+from src.core.interpreter.exceptions import (
+    ConsumeError,
+    DuplicateRelationNameError
+)
+
+# TODO: agregar exceptions
 
 
 class AST(object):
@@ -160,13 +166,14 @@ class Parser(object):
         if self.token.type == token_type:
             self.token = self.lexer.next_token()
         else:
-            raise Exception("It is expected to find '{0}', "
-                            "but '{1}' found, Line: {2}, Col: {3}".format(
-                                token_type,
-                                self.token.type,
-                                self.lexer.sc.lineno,
-                                self.lexer.sc.colno
-                            ))
+            raise ConsumeError(
+                "It is expected to find '{0}', "
+                "but '{1}' found, Line: {2}, Col: {3}".format(
+                    token_type,
+                    self.token.type,
+                    self.lexer.sc.lineno,
+                    self.lexer.sc.colno
+                ))
 
     def parse(self):
         """
@@ -489,6 +496,8 @@ class Interpreter(NodeVisitor):
 
     def visit_Assignment(self, node):
         rname = self.visit(node.rname)
+        if rname in self.SCOPE:
+            raise DuplicateRelationNameError(self.parser.lexer.sc.lineno)
         self.SCOPE[rname] = self.visit(node.query)
 
     def visit_BinaryOp(self, node):

@@ -64,7 +64,7 @@ Rectangle {
                 anchors.centerIn: parent
                 font.pixelSize: 16
                 width: parent.width
-                wrapMode: Text.WrapAnywhere
+                wrapMode: Text.Wrap
                 color: "gray"
             }
         }
