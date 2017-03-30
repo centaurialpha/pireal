@@ -23,10 +23,25 @@ from src.core.interpreter import (
     scanner,
     lexer
 )
-from src.core import relation
+# TODO: terminar los tests
 
 
 class ParserTestCase(unittest.TestCase):
 
-    def test_parse(self):
-        pass
+    def setUp(self):
+        sc = scanner.Scanner("q1 := select id=2 (p);")
+        lex = lexer.Lexer(sc)
+        self.parser = parser.Parser(lex)
+
+    def test_compound(self):
+        node = self.parser._compound()
+        self.assertIsInstance(node, parser.Compound)
+        self.assertIsInstance(node.children, list)
+
+    def test_assignment(self):
+        node = self.parser._assignment()
+        self.assertIsInstance(node, parser.Assignment)
+
+
+if __name__ == '__main__':
+    unittest.main()
