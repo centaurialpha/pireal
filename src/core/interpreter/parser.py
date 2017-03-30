@@ -51,7 +51,7 @@ from src.core.interpreter.exceptions import (
     DuplicateRelationNameError
 )
 
-# TODO: agregar exceptions
+# TODO: Mover los nodos AST a un módulo rast
 
 
 class AST(object):
@@ -480,7 +480,16 @@ class NodeVisitor(object):
 
 
 class Interpreter(NodeVisitor):
+    """ Este objeto es el encargado de 'visitar' los nodos con el
+    método Interpreter.to_python(), que convierte a un string que luego
+    es evaluado como código Python
 
+    El scope es un diccionario ordenado que guarda las consultas 'reales'
+    que serán evaluadas
+    """
+
+    # key: relation_name
+    # value: query
     SCOPE = OrderedDict()
 
     def __init__(self, parser):
