@@ -19,25 +19,26 @@
 
 """ Pireal Main Window """
 
+import sys
 import webbrowser
 from collections import Callable
 
 from PyQt5.QtWidgets import (
     QMainWindow,
     QMessageBox,
-    QToolBar
+    QToolBar,
+    QApplication
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import (
     QSettings,
     QSize,
-    QThread
+    QProcess
 )
 from src import keymap
 from src.core import settings
 from src.gui import (
     menu_actions,
-    updater,
     message_error
 )
 
@@ -102,17 +103,6 @@ class Pireal(QMainWindow):
         central_widget.databaseConected.connect(self.change_title)
         self.setCentralWidget(central_widget)
         central_widget.add_start_page()
-
-        # Check for updates
-        self._thread = QThread()
-        self._updater = updater.Updater()
-        self._updater.moveToThread(self._thread)
-        self._thread.started.connect(self._updater.check_updates)
-        self._updater.finished.connect(self.__on_thread_update_finished)
-        # FIXME: quizás se elimine éste proceso en un futuro, problemas en Win
-        # self._thread.start()
-        # notification_widget.show_text(
-        #    self.tr("Checking for updates..."), time_out=0)
 
         # Install service
         Pireal.load_service("pireal", self)
@@ -341,6 +331,17 @@ class Pireal(QMainWindow):
         self._msg_error_widget.show_msg(text, syntax_error)
         self._msg_error_widget.show()
 
+    def restart(self):
+        """ Reinicia Pireal """
+
+        args = QApplication.arguments()
+        if getattr(sys, 'frozen', ''):
+            QProcess.startDetached(QApplication.applicationFilePath())
+        else:
+            QProcess.startDetached(
+                QApplication.applicationFilePath(), args)
+        QApplication.quit()
+
     def closeEvent(self, event):
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
         # Save window geometry
@@ -366,7 +367,7 @@ class Pireal(QMainWindow):
             if db.modified:
                 msg = QMessageBox(self)
                 msg.setIcon(QMessageBox.Question)
-                msg.setWindowTitle(self.tr("Some changes where not saved"))
+                msg.setWindowTitle(self.tr("Some changes were not saved"))
                 msg.setText(
                     self.tr("Do you want to save changes to the database?"))
                 cancel_btn = msg.addButton(self.tr("Cancel"),
