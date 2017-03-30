@@ -59,5 +59,5 @@ The operations are implemented in `relation.py <https://github.com/centaurialpha
 Video
 #####
 
-.. image:: http://i3.ytimg.com/vi/ks9vUGzMUK0/hqdefault.jpg
-   :target: https://youtu.be/ks9vUGzMUK0
+.. image:: http://i3.ytimg.com/vi/np4h-Q1aMBg/hqdefault.jpg
+   :target: https://www.youtube.com/watch?v=np4h-Q1aMBg
