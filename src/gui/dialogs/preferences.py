@@ -23,8 +23,7 @@ from PyQt5.QtWidgets import (
     QDialog,
     QVBoxLayout,
     QMessageBox,
-    QFontDialog,
-    QApplication
+    QFontDialog
 )
 from PyQt5.QtQuickWidgets import QQuickWidget
 from PyQt5.QtCore import (
@@ -32,21 +31,17 @@ from PyQt5.QtCore import (
     pyqtSlot,
     QSettings,
     pyqtSignal,
-    QThread,
-    QProcess
+    QThread
 )
 from src.core import (
     settings,
     file_manager
 )
-from src.core.logger import Logger
 from src.gui import updater
 from src.gui.main_window import Pireal
-logger = Logger(__name__)
 
 
 # TODO: verificar el estado de los checkboxes si son distintos al cambiar
-# TODO: cuando se cambia el idioma y se vuelve al mismo, no reiniciar
 
 
 class Preferences(QDialog):
@@ -83,7 +78,7 @@ class Preferences(QDialog):
         self.__root.setInitialStates(cur_line_state, match_paren_state)
 
         # Conexiones
-        self.__root.close.connect(self._close)
+        self.__root.close.connect(lambda: self.settingsClosed.emit())
         self.__root.resetSettings.connect(self.__reset_settings)
         self.__root.checkForUpdates.connect(self.__check_for_updates)
         self.__root.changeLanguage.connect(self.__change_language)
@@ -92,25 +87,6 @@ class Preferences(QDialog):
         self.__root.stateMatchingParenChanged[bool].connect(
             self.__on_state_matching_parenthesis_changed)
         self.__root.needChangeFont.connect(self.__change_font)
-
-    @pyqtSlot()
-    def _close(self):
-        if self.__need_restart:
-            msg = QMessageBox(self)
-            msg.setWindowTitle(self.tr("Restart required"))
-            msg.setText(self.tr("Do you want to restart Pireal?"))
-            yes_btn = msg.addButton(
-                self.tr("Yes, restart"),
-                QMessageBox.YesRole)
-            msg.addButton(self.tr("Do not restart"), QMessageBox.RejectRole)
-            msg.setIcon(QMessageBox.Question)
-            msg.exec_()
-            if msg.clickedButton() == yes_btn:
-                pireal = Pireal.get_service("pireal")
-                pireal.restart()
-                return
-        # Emito la señal que usará el CentralWidget
-        self.settingsClosed.emit()
 
     @pyqtSlot()
     def __change_font(self):

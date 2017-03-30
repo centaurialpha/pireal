@@ -19,21 +19,18 @@
 
 """ Pireal Main Window """
 
-import sys
 import webbrowser
 from collections import Callable
 
 from PyQt5.QtWidgets import (
     QMainWindow,
     QMessageBox,
-    QToolBar,
-    QApplication
+    QToolBar
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import (
     QSettings,
-    QSize,
-    QProcess
+    QSize
 )
 from src import keymap
 from src.core import settings
@@ -330,17 +327,6 @@ class Pireal(QMainWindow):
     def show_error_message(self, text, syntax_error=True):
         self._msg_error_widget.show_msg(text, syntax_error)
         self._msg_error_widget.show()
-
-    def restart(self):
-        """ Reinicia Pireal """
-
-        args = QApplication.arguments()
-        if getattr(sys, 'frozen', ''):
-            QProcess.startDetached(QApplication.applicationFilePath())
-        else:
-            QProcess.startDetached(
-                QApplication.applicationFilePath(), args)
-        QApplication.quit()
 
     def closeEvent(self, event):
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)

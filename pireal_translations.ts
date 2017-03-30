@@ -64,7 +64,7 @@
     <message>
         <location filename="src/gui/central_widget.py" line="226"/>
         <source>Query saved: {}</source>
-        <translation>Consulta Guardada: {}</translation>
+        <translation>Consulta guardada: {}</translation>
     </message>
     <message>
         <location filename="src/gui/central_widget.py" line="284"/>
@@ -172,9 +172,9 @@
 <context>
     <name>EditorWidget</name>
     <message>
-        <location filename="src/gui/query_container/query_container.py" line="403"/>
+        <location filename="src/gui/query_container/query_container.py" line="432"/>
         <source>Undock</source>
-        <translation>Desacoplar</translation>
+        <translation>Desacoplar Editor</translation>
     </message>
 </context>
 <context>
@@ -278,7 +278,7 @@
     <message>
         <location filename="src/gui/dialogs/new_relation_dialog.py" line="131"/>
         <source>Relation name not specified</source>
-        <translation>No se ha especificado un nombre para la relación</translation>
+        <translation>El nombre de la relación no se ha especificado</translation>
     </message>
     <message>
         <location filename="src/gui/dialogs/new_relation_dialog.py" line="151"/>
@@ -288,69 +288,69 @@
     <message>
         <location filename="src/gui/dialogs/new_relation_dialog.py" line="165"/>
         <source>Field &apos;{0}:{1}&apos;is empty!</source>
-        <translation>El espacio en blanco es aburrido! agrega algo en el campo &apos;{0}:{1}&apos;.</translation>
+        <translation>El espacio en blanco es aburrido. Agrega un dato al campo &apos;{0}:{1}&apos;!</translation>
     </message>
 </context>
 <context>
     <name>Pireal</name>
     <message>
-        <location filename="src/gui/main_window.py" line="71"/>
+        <location filename="src/gui/main_window.py" line="69"/>
         <source>Pireal</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="222"/>
+        <location filename="src/gui/main_window.py" line="209"/>
         <source>New version available!</source>
         <translation>Nueva versión disponible!</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="223"/>
+        <location filename="src/gui/main_window.py" line="210"/>
         <source>Check the web site to download &lt;b&gt;Pireal {}&lt;/b&gt;</source>
         <translation>Visita el sitio web para descargar &lt;b&gt;Pireal {}&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="226"/>
+        <location filename="src/gui/main_window.py" line="213"/>
         <source>Download!</source>
         <translation>Descargar!</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="393"/>
+        <location filename="src/gui/main_window.py" line="380"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="369"/>
-        <source>Some changes where not saved</source>
+        <location filename="src/gui/main_window.py" line="356"/>
+        <source>Some changes were not saved</source>
         <translation>Algunos cambios no se guardaron</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="370"/>
+        <location filename="src/gui/main_window.py" line="357"/>
         <source>Do you want to save changes to the database?</source>
-        <translation>Quiere guardar los cambios a la base de datos?</translation>
+        <translation>Quiere guardar los cambios a la Base de Datos?</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="395"/>
+        <location filename="src/gui/main_window.py" line="382"/>
         <source>No</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="397"/>
+        <location filename="src/gui/main_window.py" line="384"/>
         <source>Yes</source>
         <translation>Si</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="389"/>
+        <location filename="src/gui/main_window.py" line="376"/>
         <source>Unsaved Queries</source>
         <translation>Consultas no guardadas</translation>
     </message>
     <message>
-        <location filename="src/gui/main_window.py" line="391"/>
+        <location filename="src/gui/main_window.py" line="378"/>
         <source>{files}
 
 Do you want to save them?</source>
         <translation>{files}
 
-Quiere conservar los cambios?</translation>
+Quiere guardarlas?</translation>
     </message>
     <message>
         <location filename="src/gui/menu_actions.py" line="37"/>
@@ -526,67 +526,67 @@ Quiere conservar los cambios?</translation>
 <context>
     <name>Preferences</name>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="143"/>
+        <location filename="src/gui/dialogs/preferences.py" line="149"/>
         <source>New version available!</source>
         <translation>Nueva versión disponible!</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="144"/>
+        <location filename="src/gui/dialogs/preferences.py" line="150"/>
         <source>Check the web site to download &lt;b&gt;Pireal {}&lt;/b&gt;</source>
         <translation>Visita el sitio web para descargar &lt;b&gt;Pireal {}&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="147"/>
+        <location filename="src/gui/dialogs/preferences.py" line="153"/>
         <source>Download!</source>
         <translation>Descargar!</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="149"/>
+        <location filename="src/gui/dialogs/preferences.py" line="155"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="159"/>
+        <location filename="src/gui/dialogs/preferences.py" line="165"/>
         <source>Information</source>
         <translation>Información</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="160"/>
+        <location filename="src/gui/dialogs/preferences.py" line="166"/>
         <source>Last version installed</source>
         <translation>Última versión instalada</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="161"/>
+        <location filename="src/gui/dialogs/preferences.py" line="167"/>
         <source>Ok</source>
         <translation>Aceptar</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="165"/>
+        <location filename="src/gui/dialogs/preferences.py" line="171"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="165"/>
+        <location filename="src/gui/dialogs/preferences.py" line="171"/>
         <source>Connection error</source>
-        <translation>Error de conexión</translation>
+        <translation>Error de Conexión</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="177"/>
+        <location filename="src/gui/dialogs/preferences.py" line="183"/>
         <source>Reset Settings</source>
         <translation>Reestablecer Configuraciones</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="178"/>
+        <location filename="src/gui/dialogs/preferences.py" line="184"/>
         <source>Are you sure you want to clear all settings?</source>
         <translation>Está seguro que quiere eliminar todas las configuraciones?</translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="180"/>
+        <location filename="src/gui/dialogs/preferences.py" line="186"/>
         <source>No</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/gui/dialogs/preferences.py" line="181"/>
+        <location filename="src/gui/dialogs/preferences.py" line="187"/>
         <source>Yes</source>
         <translation>Si</translation>
     </message>
@@ -608,7 +608,7 @@ Quiere conservar los cambios?</translation>
     <message>
         <location filename="Preferences.qml" line="119"/>
         <source>(Requires restart Pireal)</source>
-        <translation>(Es necesario reiniciar Pireal)</translation>
+        <translation>(Es necesario reinicar Pireal)</translation>
     </message>
     <message>
         <location filename="Preferences.qml" line="139"/>
@@ -624,20 +624,25 @@ Quiere conservar los cambios?</translation>
 <context>
     <name>QueryContainer</name>
     <message>
-        <location filename="src/gui/query_container/query_container.py" line="185"/>
-        <source>Query Error</source>
-        <translation>Error de Consulta</translation>
+        <location filename="src/gui/query_container/query_container.py" line="186"/>
+        <source>Missing quote on Line: {0}</source>
+        <translation>Falta una comilla en la línea: {0}</translation>
     </message>
     <message>
-        <location filename="src/gui/query_container/query_container.py" line="185"/>
-        <source>&lt;b&gt;{}&lt;/b&gt; is a duplicate relation name.&lt;br&gt;&lt;br&gt; Please choose a unique name and re-execute the queries.</source>
-        <translation>&lt;b&gt;{}&lt;/b&gt; es un nombre de relación duplicado.&lt;br&gt;&lt;br&gt; Elija un nombre único y vuelva a ejecutar las consultas.</translation>
+        <location filename="src/gui/query_container/query_container.py" line="192"/>
+        <source>Invalid syntax on Line: {0}, Column {1}. The error start with &lt;b&gt;{2}&lt;/b&gt;</source>
+        <translation>Sintáxis inválida en la línea: {0}, columna: {1}: El error comienza en &lt;b&gt;{2}&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="src/gui/query_container/query_container.py" line="199"/>
+        <source>&lt;b&gt;{}&lt;/b&gt; is a duplicate relation name. Please choose a unique name and re-execute the queries</source>
+        <translation>Ya existe una relación con el nombre &lt;b&gt;{}&lt;/b&gt;. Elija otro nombre y vuelva a ejecutar las consultas</translation>
     </message>
 </context>
 <context>
     <name>QueryWidget</name>
     <message>
-        <location filename="src/gui/query_container/query_container.py" line="309"/>
+        <location filename="src/gui/query_container/query_container.py" line="325"/>
         <source>Ok</source>
         <translation>Aceptar</translation>
     </message>
@@ -647,7 +652,7 @@ Quiere conservar los cambios?</translation>
     <message>
         <location filename="src/gui/query_container/tab_widget.py" line="43"/>
         <source>File modified</source>
-        <translation>Archivo Modificado</translation>
+        <translation>Archivo modificado</translation>
     </message>
     <message>
         <location filename="src/gui/query_container/tab_widget.py" line="44"/>
@@ -713,12 +718,12 @@ Quiere conservar los cambios?</translation>
     <message>
         <location filename="StartPage.qml" line="143"/>
         <source>- Open a recent database from the list.</source>
-        <translation>- Abre una base de datos reciente desde la lista.</translation>
+        <translation>- Abre una Base de Datos reciente desde la lista.</translation>
     </message>
     <message>
         <location filename="StartPage.qml" line="153"/>
         <source>- Change the language from the &lt;a href=&quot;#&quot;&gt;Preferences&lt;/a&gt;.</source>
-        <translation>- Cambia el idioma desde las &lt;a href=&quot;#&quot;&gt;Preferencias&lt;/a&gt;.</translation>
+        <translation>- Cambia el idioma de Pireal desde las &lt;a href=&quot;#&quot;&gt;Preferencias&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="StartPage.qml" line="167"/>
@@ -741,7 +746,7 @@ Quiere conservar los cambios?</translation>
     <message>
         <location filename="StartPage.qml" line="228"/>
         <source>No recent database</source>
-        <translation>No hay base de datos reciente</translation>
+        <translation type="unfinished">No hay Base de Datos reciente</translation>
     </message>
 </context>
 </TS>
