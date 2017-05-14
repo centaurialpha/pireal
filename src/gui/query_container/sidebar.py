@@ -50,7 +50,8 @@ class Sidebar(QFrame):
         current_line = self.editor.document().findBlock(
             self.editor.textCursor().position()).blockNumber() + 1
         painter = QPainter(self)
-        painter.fillRect(self.rect(), QColor("#e8e8e8"))
+        painter.fillRect(1, 1, self.width(),
+                         self.height() - 2, QColor("#e8e8e8"))
         block = self.editor.firstVisibleBlock()
         vpoffset = self.editor.contentOffset()
         line = block.blockNumber()

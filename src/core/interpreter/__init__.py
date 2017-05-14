@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2017 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -17,30 +17,5 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Operators
-"""
-
-# Unary
-SELECT = 'select'
-PROJECT = 'project'
-
-# Binary
-PRODUCT = 'product'
-NJOIN = 'njoin'
-INTERSECT = 'intersect'
-DIFFERENCE = 'difference'
-UNION = 'union'
-
-UOPERATORS = (SELECT, PROJECT)
-BOPERATORS = (PRODUCT, NJOIN, INTERSECT, DIFFERENCE, UNION)
-
-OPERATORS = {
-    'select': SELECT,
-    'project': PROJECT,
-    'njoin': NJOIN,
-    'product': PRODUCT,
-    'intersect': INTERSECT,
-    'difference': DIFFERENCE,
-    'union': UNION
-}
+# This module is responsible for organizing called "tokens" pieces,
+# each of these tokens has a meaning in language

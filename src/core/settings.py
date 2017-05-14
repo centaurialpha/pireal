@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2016 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -18,99 +18,84 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 """
-Pireal settings
+Pireal Settings
 """
 
 import sys
 import os
-
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QSettings
 
 
-# Operating System
-LINUX, WINDOWS = False, False
-if sys.platform.startswith('linux'):
+# Detecting Operating System
+LINUX, WINDOWS, MAC = False, False, False
+if sys.platform == 'darwin':
+    MAC = True
+elif sys.platform == 'linux' or sys.platform == 'linux2':
     LINUX = True
 else:
     WINDOWS = True
 
+# Directories used by Pireal
+# Project path
+if getattr(sys, 'frozen', ''):
+    ROOT_DIR = os.path.realpath(os.path.dirname(sys.argv[0]))
+else:
+    # Not frozen: regular python interpreter
+    ROOT_DIR = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), '..', '..')
+# Absolute path of the user's home directory
+HOME = os.path.expanduser('~')
+# Absolute path of the pireal home directory
+# this is used to save the settings, log file, etc.
+PIREAL_DIR = os.path.join(HOME, '.pireal')
+# Here are saved by default the databases
+PIREAL_DATABASES = os.path.join(HOME, 'PirealDatabases')
+# Settings
+SETTINGS_PATH = os.path.join(PIREAL_DIR, 'pireal_settings.ini')
+# Log file
+LOG_PATH = os.path.join(PIREAL_DIR, 'pireal_log.log')
+# Language files
+LANGUAGE_PATH = os.path.join(ROOT_DIR, 'src', 'lang')
+# Path for QML files
+QML_PATH = os.path.join(ROOT_DIR, 'src', 'gui', 'qml')
+# Style sheet
+STYLE_SHEET = os.path.join(ROOT_DIR, 'src', 'style.qss')
+# Carpeta de ejemplos
+EXAMPLES = os.path.join(ROOT_DIR, 'samples')
+
 
 # Supported files
-SUPPORTED_FILES = ("Pireal Database File (*.pdb *.txt);;"
+SUPPORTED_FILES = ("Pireal Database File (*.pdb);;"
                    "Pireal Query File (*.pqf);;"
                    "Pireal Relation File (*.prf)")
 
-# Paths used by Pireal
-if getattr(sys, 'frozen', ''):
-    PATH = os.path.realpath(os.path.dirname(sys.argv[0]))
-else:
-    PATH = os.path.join(os.path.realpath(
-        os.path.dirname(__file__)), "..", "..")
-HOME = os.path.expanduser("~")
-PIREAL_DIR = os.path.join(HOME, ".pireal")
-PIREAL_PROJECTS = os.path.join(HOME, "PirealDatabases")
-LOG_FILE_PATH = os.path.join(PIREAL_DIR, "pireal_log.log")
-SETTINGS_PATH = os.path.join(PIREAL_DIR, "pireal_settings.ini")
-LANG_PATH = os.path.join(PATH, "src", "lang")
-QML_FILES = os.path.join(PATH, "src", "gui", "qml")
 
-# Settings
-LANGUAGE = ""
-LAST_OPEN_FOLDER = ""
-RECENT_DBS = []
-HIGHLIGHT_CURRENT_LINE = False
-MATCHING_PARENTHESIS = True
-if LINUX:
-    FONT = QFont("Monospace", 12)
-else:
-    FONT = QFont("Courier", 10)
+class PSetting(object):
+    LANGUAGE = ""
+    HIGHLIGHT_CURRENT_LINE = False
+    MATCHING_PARENTHESIS = True
+    RECENT_DBS = []
+    LAST_OPEN_FOLDER = None
+    # FIXME: for Mac Os
+    if LINUX:
+        FONT = QFont("Monospace", 12)
+    else:
+        FONT = QFont("Courier", 10)
 
 
 def load_settings():
     """ Load settings from INI file """
 
-    settings = QSettings(SETTINGS_PATH, QSettings.IniFormat)
-
-    global LANGUAGE
-    global LAST_OPEN_FOLDER
-    global RECENT_DBS
-    global HIGHLIGHT_CURRENT_LINE
-    global MATCHING_PARENTHESIS
-    global FONT
-
-    LANGUAGE = settings.value('language', "", type='QString')
-    LAST_OPEN_FOLDER = settings.value("last_open_folder", "",
-                                      type='QString')
-    RECENT_DBS = settings.value("recentDB", [])
-    HIGHLIGHT_CURRENT_LINE = settings.value("highlight_current_line",
-                                            False, type=bool)
-    MATCHING_PARENTHESIS = settings.value("matching_parenthesis",
-                                          True, type=bool)
-    font = settings.value("font", None)
+    qs = QSettings(SETTINGS_PATH, QSettings.IniFormat)
+    PSetting.LANGUAGE = qs.value('language', "", type='QString')
+    PSetting.RECENT_DBS = qs.value('recent_databases', [], type='QStringList')
+    PSetting.LAST_OPEN_FOLDER = qs.value('last_open_folder',
+                                         None, type='QString')
+    PSetting.HIGHLIGHT_CURRENT_LINE = qs.value('highlight_current_line',
+                                               False, type=bool)
+    PSetting.MATCHING_PARENTHESIS = qs.value('matching_parenthesis',
+                                             True, type=bool)
+    font = qs.value('font', None)
     if font is not None:
-        FONT = font
-
-
-def create_dir():
-    """ This functions create a structure folders used by Pireal  """
-
-    for path in (PIREAL_DIR, PIREAL_PROJECTS):
-        if not os.path.isdir(path):
-            os.mkdir(path)
-
-
-def get_setting(key, default):
-    """ Get the value for setting key. If the setting doesn't exists,
-    returns default
-    """
-
-    psettings = QSettings(SETTINGS_PATH, QSettings.IniFormat)
-    return psettings.value(key, default)
-
-
-def set_setting(key, value):
-    """ Sets the value of setting key to value """
-
-    psettings = QSettings(SETTINGS_PATH, QSettings.IniFormat)
-    psettings.setValue(key, value)
+        PSetting.FONT = font

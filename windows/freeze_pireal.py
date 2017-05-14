@@ -18,16 +18,17 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from cx_Freeze import setup, Executable
-import os
+# import os
 
-PYQT5_DIR = "C:/Python34/Lib/site-packages/PyQt5"
-include_files = [
-    "src/gui/qml",
-    (os.path.join(PYQT5_DIR, "qml", "QtQuick.2"), "QtQuick.2"),
-    (os.path.join(PYQT5_DIR, "qml", "QtQuick"), "QtQuick"),
-    (os.path.join(PYQT5_DIR, "qml", "QtGraphicalEffects"),
-        "QtGraphicalEffects"),
-]
+# PYQT5_DIR = "C:/Python34/Lib/site-packages/PyQt5"
+# include_files = [
+#    "src/gui/qml",
+#    (os.path.join(PYQT5_DIR, "qml", "QtQuick.2"), "QtQuick.2"),
+#    (os.path.join(PYQT5_DIR, "qml", "QtQuick"), "QtQuick"),
+#    (os.path.join(PYQT5_DIR, "qml", "QtGraphicalEffects"),
+#        "QtGraphicalEffects"),
+# ]
+include_files = []
 
 opt = {
     'build_exe': {
@@ -48,14 +49,13 @@ opt = {
 exe = Executable(
     script="pireal",
     base='Win32GUI',
-    targetName='Pireal.exe',
-    compress=True,
+    targetName='pireal.exe',
     icon="windows/icon.ico"
 )
 
 setup(
     name="Pireal",
-    version="1.0",
+    version="2.0.2",
     author="Gabriel Acosta",
     options=opt,
     packages=[

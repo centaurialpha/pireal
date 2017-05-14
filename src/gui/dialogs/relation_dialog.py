@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import (
     QLineEdit
 )
 
-from src.gui import custom_table
+from src.gui import view
 
 
 class RelationDialog(QDialog):
@@ -58,13 +58,20 @@ class RelationDialog(QDialog):
         delete_column_btn = QPushButton(self.tr("Delete Column"))
         box_btns.addWidget(delete_column_btn)
         box.addLayout(box_btns)
-        # Table
-        self.table = QTableView()
-        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        # La tabla es la vista
+        self.view = view.View()
+        box.addWidget(self.view)
+        # Custom header que puede ser editado
+        header = view.Header()
+        self.view.setHorizontalHeader(header)
+        # self.table = QTableView()
+        # self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        # self.table.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        # self.table.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
         # Editable header
-        header = custom_table.Header()
-        self.table.setHorizontalHeader(header)
-        box.addWidget(self.table)
+        # header = custom_table.Header()
+        # self.table.setHorizontalHeader(header)
+        # box.addWidget(self.table)
         # Save and cancel button
         hbox = QHBoxLayout()
         hbox.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
@@ -89,7 +96,7 @@ class RelationDialog(QDialog):
         raise NotImplementedError
 
     def __add_tuple(self):
-        model = self.table.model()
+        model = self.view.model()
         model.insertRow(model.rowCount())
 
     def __delete_tuple(self):

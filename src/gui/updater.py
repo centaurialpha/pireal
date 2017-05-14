@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+from distutils.version import LooseVersion
 from urllib.request import urlopen
 from urllib.error import URLError
 
@@ -25,11 +26,8 @@ from PyQt5.QtCore import (
     pyqtSignal
 )
 
-from src.core.logger import PirealLogger
 from src import gui
 
-logger = PirealLogger(__name__)
-DEBUG = logger.debug
 
 URL = "http://centaurialpha.github.io/pireal/version"
 
@@ -45,11 +43,9 @@ class Updater(QObject):
     def check_updates(self):
         try:
             web_version = urlopen(URL).read().decode('utf8').strip()
-            web_version = tuple(web_version.split('.'))
-            if gui.__version__ < web_version:
-                self.version = '.'.join(web_version)
+            if LooseVersion(gui.__version__) < LooseVersion(web_version):
+                self.version = web_version
         except URLError as reason:
             self.error = True
-            DEBUG("Connection error: {}".format(reason))
 
         self.finished.emit()

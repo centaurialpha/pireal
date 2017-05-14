@@ -1,1 +1,0 @@
-project nombre, apellido, aptitud (select aptitud == 'Python' (personas njoin aptitudes))

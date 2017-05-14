@@ -82,6 +82,12 @@ MENU['edit'] = {
     }, {
         'name': translate("Pireal", "Paste"),
         'slot': "central:paste_action"
+    }, {
+        'name': translate("Pireal", "Comment"),
+        'slot': "central:comment"
+    }, {
+        'name': translate("Pireal", "Uncomment"),
+        'slot': "central:uncomment"
     }, "-", {
         'name': translate("Pireal", "Zoom In"),
         'slot': "central:zoom_in"
@@ -105,13 +111,19 @@ MENU['relation'] = {
     }, {
         'name': translate("Pireal", "Load Relation"),
         'slot': "central:load_relation"
-    }, {
-        'name': translate("Pireal", "Edit Relation"),
-        'slot': "central:edit_relation"
     }, "-", {
-        'name': translate("Pireal", "Execute Selection"),
-        'slot': "central:execute_selection"
+        'name': translate("Pireal", "Add Tuple"),
+        'slot': "central:add_tuple"
     }, {
+        'name': translate("Pireal", "Delete Tuple"),
+        'slot': "central:delete_tuple"
+    }, {
+        'name': translate("Pireal", "Add Column"),
+        'slot': "central:add_column"
+    }, {
+        'name': translate("Pireal", "Delete Column"),
+        'slot': "central:delete_column"
+    }, "-", {
         'name': translate("Pireal", "Execute Queries"),
         'slot': "central:execute_queries"}]}
 

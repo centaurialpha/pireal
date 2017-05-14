@@ -22,12 +22,10 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QStackedWidget
 )
-from PyQt5.QtGui import QStandardItem
-from PyQt5.QtCore import Qt
-
 from src.gui import (
-    custom_table,
-    fader_widget
+    view,
+    model,
+    delegate
 )
 
 
@@ -42,7 +40,7 @@ class TableWidget(QWidget):
         self.relations = {}
 
         # Stack
-        self.stacked = StackedWidget()
+        self.stacked = QStackedWidget()
         vbox.addWidget(self.stacked)
 
     def count(self):
@@ -65,49 +63,69 @@ class TableWidget(QWidget):
             return True
         return False
 
-    def update_table(self, data):
-        current_table = self.current_table()
-        model = current_table.model()
-        # Clear content
-        model.clear()
-        # Add new header and content
-        model.setHorizontalHeaderLabels(data.header)
-
-        for row_count, row in enumerate(data.content):
-            for col_count, data in enumerate(row):
-                item = QStandardItem(data)
-                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
-                # item.setSelectable(False)
-                model.setItem(row_count, col_count, item)
-
-    def add_table(self, rela, name):
+    def add_table(self, rela, name, table):
         """ Add new table from New Relation Dialog """
 
-        # Create table
-        table = self.create_table(rela)
         self.add_relation(name, rela)
         self.stacked.addWidget(table)
 
-    def create_table(self, rela):
-        table = custom_table.Table()
-        model = table.model()
-        model.setHorizontalHeaderLabels(rela.header)
+    def add_tuple(self):
+        current_view = self.current_table()
+        if current_view is not None:
+            model = current_view.model()
+            model.insertRow(model.rowCount())
 
-        for row_count, row in enumerate(rela.content):
-            for col_count, data in enumerate(row):
-                item = QStandardItem(data)
-                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
-                model.setItem(row_count, col_count, item)
+    def add_column(self):
+        current_view = self.current_table()
+        if current_view is not None:
+            model = current_view.model()
+            model.insertColumn(model.columnCount())
 
-        return table
+    def delete_tuple(self):
+        current_view = self.current_table()
+        if current_view is not None:
+            model = current_view.model()
+            selection = current_view.selectionModel()
+            if selection.hasSelection():
+                selection = selection.selection()
+                rows = set([index.row() for index in selection.indexes()])
+                rows = sorted(list(rows))
+                previous = -1
+                i = len(rows) - 1
+                while i >= 0:
+                    current = rows[i]
+                    if current != previous:
+                        model.removeRow(current)
+                    i -= 1
 
+    def delete_column(self):
+        """ Elimina la/las columnas seleccionadas """
 
-class StackedWidget(QStackedWidget):
+        current_view = self.current_table()
+        if current_view is not None:
+            model = current_view.model()
+            selection = current_view.selectionModel()
+            if selection.hasSelection():
+                selection = selection.selection()
+                columns = set(
+                    [index.column() for index in selection.indexes()])
+                columns = sorted(list(columns))
+                previous = -1
+                i = len(columns) - 1
+                while i >= 0:
+                    current = columns[i]
+                    if current != previous:
+                        model.removeColumn(current)
+                    i -= 1
 
-    def setCurrentIndex(self, index):
-        self.fader_widget = fader_widget.FaderWidget(self.currentWidget(),
-                                                     self.widget(index))
-        QStackedWidget.setCurrentIndex(self, index)
+    def create_table(self, rela, editable=True):
+        """ Se crea la vista y el modelo """
 
-    def show_display(self, index):
-        self.setCurrentIndex(index)
+        _view = view.View()
+        _model = model.Model(rela)
+        if not editable:
+            _model.editable = False
+        _view.setModel(_model)
+        _view.setItemDelegate(delegate.Delegate())
+        _view.setHorizontalHeader(view.Header())
+        return _view

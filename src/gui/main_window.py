@@ -30,11 +30,14 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import (
     QSettings,
-    QSize,
-    QThread
+    QSize
 )
+from src import keymap
 from src.core import settings
-from src.gui import updater
+from src.gui import (
+    menu_actions,
+    message_error
+)
 
 
 class Pireal(QMainWindow):
@@ -56,25 +59,15 @@ class Pireal(QMainWindow):
         '',  # Is a separator!
         'new_query',
         'open_query',
-        'save_query',
-        '',
-        'undo_action',
-        'redo_action',
-        'cut_action',
-        'copy_action',
-        'paste_action',
         '',
         'create_new_relation',
         'remove_relation',
-        'edit_relation',
-        '',
-        'execute_queries'
     ]
 
     def __init__(self):
         QMainWindow.__init__(self)
         self.setWindowTitle(self.tr("Pireal"))
-        self.setMinimumSize(700, 500)
+        self.setMinimumSize(880, 600)
 
         # Load window geometry
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
@@ -98,23 +91,15 @@ class Pireal(QMainWindow):
         # Load notification widget after toolbar actions
         notification_widget = Pireal.get_service("notification")
         self.toolbar.addWidget(notification_widget)
-
+        # Message error
+        self._msg_error_widget = message_error.MessageError(self)
         # Central widget
         central_widget = Pireal.get_service("central")
         central_widget.databaseSaved.connect(notification_widget.show_text)
         central_widget.querySaved.connect(notification_widget.show_text)
+        central_widget.databaseConected.connect(self.change_title)
         self.setCentralWidget(central_widget)
         central_widget.add_start_page()
-
-        # Check for updates
-        self._thread = QThread()
-        self._updater = updater.Updater()
-        self._updater.moveToThread(self._thread)
-        self._thread.started.connect(self._updater.check_updates)
-        self._updater.finished.connect(self.__on_thread_update_finished)
-        self._thread.start()
-        notification_widget.show_text(
-            self.tr("Checking for updates..."), time_out=0)
 
         # Install service
         Pireal.load_service("pireal", self)
@@ -149,9 +134,6 @@ class Pireal(QMainWindow):
         also connects to a slot each QAction.
         """
 
-        from src.gui import menu_actions
-        from src import keymap
-
         # Keymap
         kmap = keymap.KEYMAP
         # Toolbar items
@@ -171,10 +153,9 @@ class Pireal(QMainWindow):
                     menu.addSeparator()
                 else:
                     action = menu_item['name']
-                    obj, connection = menu_item['slot'].split(':')
-                    if obj.startswith('central'):
-                        obj = central
-                    else:
+                    obj_name, connection = menu_item['slot'].split(':')
+                    obj = central
+                    if obj_name.startswith('pireal'):
                         obj = self
                     qaction = menu.addAction(action)
                     # Icon name is connection
@@ -223,27 +204,29 @@ class Pireal(QMainWindow):
         notification_widget.clear()
 
         msg = QMessageBox(self)
-        if not self._updater.error:
-            if self._updater.version:
-                version = self._updater.version
-                msg.setWindowTitle(self.tr("New version available!"))
-                msg.setText(self.tr("Check the web site to "
-                                    "download <b>Pireal {}</b>".format(
-                                        version)))
-                download_btn = msg.addButton(self.tr("Download!"),
-                                             QMessageBox.YesRole)
-                msg.addButton(self.tr("Cancel"),
-                              QMessageBox.RejectRole)
-                msg.exec_()
-                r = msg.clickedButton()
-                if r == download_btn:
-                    webbrowser.open_new(
-                        "http://centaurialpha.github.io/pireal")
+        if not self._updater.error and self._updater.version:
+            version = self._updater.version
+            msg.setWindowTitle(self.tr("New version available!"))
+            msg.setText(self.tr("Check the web site to "
+                                "download <b>Pireal {}</b>".format(
+                                    version)))
+            download_btn = msg.addButton(self.tr("Download!"),
+                                         QMessageBox.YesRole)
+            msg.addButton(self.tr("Cancel"),
+                          QMessageBox.RejectRole)
+            msg.exec_()
+            r = msg.clickedButton()
+            if r == download_btn:
+                webbrowser.open_new("http://centaurialpha.github.io/pireal")
         self._thread.deleteLater()
         self._updater.deleteLater()
 
-    def change_title(self, title):
-        self.setWindowTitle("Pireal " + '[' + title + ']')
+    def change_title(self, title=''):
+        if title:
+            _title = title + " - Pireal "
+        else:
+            _title = "Pireal"
+        self.setWindowTitle(_title)
 
     def set_enabled_db_actions(self, value):
         """ Public method. Enables or disables db QAction """
@@ -267,7 +250,10 @@ class Pireal(QMainWindow):
         actions = [
             'create_new_relation',
             'remove_relation',
-            'edit_relation'
+            'add_tuple',
+            'delete_tuple',
+            'add_column',
+            'delete_column'
         ]
 
         for action in actions:
@@ -279,7 +265,6 @@ class Pireal(QMainWindow):
 
         actions = [
             'execute_queries',
-            'execute_selection',
             'save_query'
         ]
 
@@ -297,7 +282,9 @@ class Pireal(QMainWindow):
             'cut_action',
             'paste_action',
             'zoom_in',
-            'zoom_out'
+            'zoom_out',
+            'comment',
+            'uncomment'
         ]
 
         for action in actions:
@@ -337,6 +324,10 @@ class Pireal(QMainWindow):
         else:
             self.toolbar.show()
 
+    def show_error_message(self, text, syntax_error=True):
+        self._msg_error_widget.show_msg(text, syntax_error)
+        self._msg_error_widget.show()
+
     def closeEvent(self, event):
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
         # Save window geometry
@@ -348,6 +339,12 @@ class Pireal(QMainWindow):
             qsettings.setValue('window_size', self.size())
 
         central_widget = Pireal.get_service("central")
+        # Save recent databases
+        qsettings.setValue('recent_databases',
+                           central_widget.recent_databases)
+        # Última carpeta accedida
+        qsettings.setValue('last_open_folder',
+                           central_widget.last_open_folder)
         db = central_widget.get_active_db()
         if db is not None:
             # Save splitters size
@@ -356,7 +353,7 @@ class Pireal(QMainWindow):
             if db.modified:
                 msg = QMessageBox(self)
                 msg.setIcon(QMessageBox.Question)
-                msg.setWindowTitle(self.tr("Some changes where not saved"))
+                msg.setWindowTitle(self.tr("Some changes were not saved"))
                 msg.setText(
                     self.tr("Do you want to save changes to the database?"))
                 cancel_btn = msg.addButton(self.tr("Cancel"),
@@ -378,7 +375,7 @@ class Pireal(QMainWindow):
                 msg.setIcon(QMessageBox.Question)
                 msg.setWindowTitle(self.tr("Unsaved Queries"))
                 text = '\n'.join([editor.name for editor in unsaved_editors])
-                msg.setText(self.tr("{files}<br><br>Do you want to "
+                msg.setText(self.tr("{files}\n\nDo you want to "
                                     "save them?".format(files=text)))
                 cancel_btn = msg.addButton(self.tr("Cancel"),
                                            QMessageBox.RejectRole)

@@ -23,16 +23,60 @@ from src.core.rtypes import RelationStr
 
 IS_VALID_FIELD_NAME = re.compile("^[_á-úa-zA-Z][_á-úa-zA-Z0-9]*$")
 
+datetime_dict = {
+    'datetime': __import__('datetime')
+}
+
 
 class Relation(object):
     """
-    This class represents a relation/table as a set of tuples.
-    Fields is a list, where indexes are connected with the
-    indexes of the tuples.
+    Esta clase representa un objeto Relation.
+    Un objeto Relation tiene dos atributos (content y header), el content o
+    contenido es una lista de listas, estas listas representan las tuplas o
+    filas de la relación (uso listas para poder modificar la relación), la
+    cantidad de filas o listas dentro de la lista content es la cardinalidad
+    de la relación (ver el método Relation.cardinality()).
+
+    El header es una lista con los nombres de campos, el tamaño del header
+    es el grado de la relación (ver el método Relation.degree()).
+
+    Un objeto de ésta clase tiene las operaciones básicas y derivadas
+    del Álgebra Relacional como: Selección, Proyección, Producto, Unión,
+    Intersección, Diferencia, Join Natural y Outher Joins (Left, Right y Full).
+
+    Ejemplo del uso de la clase:
+
+    - Creo el objeto y le agrego los campos o header
+    personas = Relation()
+    personas.header = ["id_persona", "nombre", "ciudad"]
+
+    - Creo una lista con los datos para cada campo
+    tuplas = [
+        ["1", "Gabriel", "Belén"],
+        ["32", "Mercedes", "SFV de Catamarca"],
+        ["23", "Rodrigo", "Belén"]
+    ]
+
+    - Agrego las tuplas a la relación
+    for t in tuplas:
+        personas.insert(t)
+
+    - Puedo ver la representación de la relación haciendo:
+    print(personas)
+
+    |  id_persona  |    nombre    |    ciudad    |
+    ----------------------------------------------
+    |      1       |   Gabriel    |    Belén     |
+    |      32      |   Mercedes   |  SFV de Catamarca  |
+    |      23      |   Rodrigo    |    Belén     |
+
+
+    - Ejemplo de Seleción:
+    personas.select("nombre == 'Gabriel'")
     """
 
     def __init__(self):
-        self.content = set()
+        self.content = Content()
         self.__header = list()
 
     def insert(self, record):
@@ -41,7 +85,29 @@ class Relation(object):
         :param record: A record (tuple)
         """
 
-        self.content.add(tuple(record))
+        self.content.add(record)
+
+    def append_row(self):
+        """ Agrega una fila/tupla al final """
+
+        null_row = ['null' for i in range(self.degree())]
+        self.insert(null_row)
+
+    def append_column(self):
+        """ Agrega una columna al final de la tabla con valores 'null' """
+
+        self.__header.append('null')
+        for t in self.content:
+            t.append('null')
+
+    def remove_column(self, column):
+        """ Elimina la columna @column """
+
+        # Primero elimino el campo
+        del self.__header[column]
+        # Ahora elimino las tuplas en ese campo
+        for t in self.content:
+            del t[column]
 
     def __set_header(self, header):
         """ Set header to the relation """
@@ -63,12 +129,20 @@ class Relation(object):
     def clear(self):
         """ Clear all content of the relation except the header """
 
-        self.content = set()
+        pass
 
-    def count(self):
-        """ Return the number of tuples in the relation """
+    def update(self, row, column, value):
+        self.content[row][column] = value
 
-        return str(len(self.content))
+    def cardinality(self):
+        """ Devuelve la cantidad de filas o tuplas de la relación """
+
+        return len(self.content)
+
+    def degree(self):
+        """ Devuelve el grado de la relación """
+
+        return len(self.header)
 
     def select(self, expression):
         """
@@ -89,7 +163,7 @@ class Relation(object):
                 d[attr] = RelationStr(register[e]).cast()
             # The expression is evaluated
             try:
-                if eval(expression, {}, d):
+                if eval(expression, datetime_dict, d):
                     new_relation.insert(register)
             except SyntaxError:
                 raise Exception("Couldn't be evaluate the expression: "
@@ -121,7 +195,7 @@ class Relation(object):
         new_relation.header = header
 
         for rec in self.content:
-            new_relation.content.add(tuple(rec[index] for index in indexes))
+            new_relation.insert([rec[index] for index in indexes])
 
         return new_relation
 
@@ -180,6 +254,44 @@ class Relation(object):
 
         return new_relation.project(*ss)
 
+    def louter(self, other):
+        header = self.__header + other.header
+
+        new_relation = Relation()
+        new_relation.header = header
+
+        sharedf = set(self.__header).intersection(set(other.header))
+        ss = self.__header + [i for i in other.header if i not in sharedf]
+
+        indexes_rela = [self.__header.index(i) for i in sharedf]
+        indexes_other = [other.header.index(i) for i in sharedf]
+
+        for i in self.content:
+            added = False
+            for j in other.content:
+                for k in indexes_rela:
+                    for l in indexes_other:
+                        if i[k] == j[l]:
+                            # Esto es un producto cartesiano con la
+                            # condición equi-join
+                            new_relation.insert(i + j)
+                            added = True
+            if not added:
+                nulls = ['null' for i in range(len(other.header))]
+                new_relation.insert(i + nulls)
+
+        return new_relation.project(*ss)
+
+    def router(self, other):
+        r = other.louter(self)
+        sharedf = [i for i in other.header if i not in self.header]
+        return r.project(*self.header + sharedf)
+
+    def fouter(self, other):
+        right = self.router(other)
+        left = self.louter(other)
+        return right.union(left)
+
     def intersect(self, other_relation):
         """ The intersection is defined as: R ∩ S. corresponds to the set of
         all tuples in R and S, R and S compatible unions.
@@ -231,8 +343,8 @@ class Relation(object):
         :returns: A new relation
         """
 
-        if self.header != other_relation.header:
-            raise Exception("Not union compatible")
+        # if self.header != other_relation.header:
+        #    raise Exception("Not union compatible")
 
         new_relation = Relation()
         new_relation.header = self.header
@@ -268,18 +380,73 @@ class Relation(object):
         return header + content
 
 
+class Content(object):
+    """ Esta clase representa un objeto list pero que se comporta como un
+    set (conjunto).
+    - Por qué no usas set Gabo?
+    Por que necesito un objeto que pueda acceder mediante índices (un set
+    no permite eso), además el órden me importa (el órden es un concepto sin
+    sentido para los conjuntos y las matemáticas) pero esto es un problema
+    del mundo real ;)
+    """
+
+    def __init__(self):
+        self.content = []
+        self.__index = 0
+
+    def add(self, item):
+        # if item not in self.content:
+        self.content.append(item)
+
+    def difference(self, other):
+        return list(filter(lambda x: x not in other, self))
+
+    def intersection(self, other):
+        return list(filter(lambda x: x in self, other))
+
+    def union(self, other):
+        return list(self) + list(filter(lambda x: x not in self, other))
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            item = self.content[self.__index]
+            self.__index += 1
+            return item
+        except IndexError:
+            self.__index = 0
+            raise StopIteration
+
+    def __str__(self):
+        return str([x for x in self])
+
+    def __len__(self):
+        return len(self.content)
+
+    def __getitem__(self, index):
+        return self.content[index]
+
+    def __setitem__(self, index, value):
+        self.content[index] = value
+
+    def __delitem__(self, index):
+        del self.content[index]
+
+
 if __name__ == "__main__":
     r1 = Relation()
     h1 = ['name', 'id', 'city']
     r1.header = h1
-    data1 = {('Gabriel', '1', 'Bel'), ('Rodrigo', '32', 'Bel')}
+    data1 = [['Gabriel', '1', 'Bel'], ['Rodrigo', '32', 'Bel']]
     for reg in data1:
         r1.insert(reg)
 
     r2 = Relation()
     h2 = ['id', 'skill']
     r2.header = h2
-    data2 = {('1', 'Python'), ('32', 'C++')}
+    data2 = [['1', 'Python'], ['32', 'C++']]
     for reg in data2:
         r2.insert(reg)
     print(r1.select("name == 'Gabriel'"))

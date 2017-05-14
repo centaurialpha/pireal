@@ -32,21 +32,22 @@ from src.gui.query_container import (
     highlighter,
     sidebar
 )
-from src.core import settings
+from src.core.settings import PSetting
 
 
 class Editor(QPlainTextEdit):
 
     def __init__(self, pfile=None):
         super(Editor, self).__init__()
+        # self.setStyleSheet("background-color: #ffffff; color: black;")
         self.pfile = pfile
         self.modified = False
         # Highlight current line
-        self._highlight_line = settings.HIGHLIGHT_CURRENT_LINE
+        self._highlight_line = PSetting.HIGHLIGHT_CURRENT_LINE
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
-        self.set_font(settings.FONT)
+        self.set_font(PSetting.FONT)
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
 
@@ -71,7 +72,7 @@ class Editor(QPlainTextEdit):
 
     @property
     def name(self):
-        return self.pfile.name
+        return self.pfile.display_name
 
     @property
     def is_new(self):
@@ -88,7 +89,7 @@ class Editor(QPlainTextEdit):
         extra_selections.append(_selection)
 
         # Highlight current line
-        if settings.HIGHLIGHT_CURRENT_LINE:
+        if PSetting.HIGHLIGHT_CURRENT_LINE:
             color = QColor(Qt.lightGray).lighter(125)
             _selection.format.setBackground(color)
             _selection.format.setProperty(
@@ -99,7 +100,7 @@ class Editor(QPlainTextEdit):
 
         # Paren matching
         extras = None
-        if settings.MATCHING_PARENTHESIS:
+        if PSetting.MATCHING_PARENTHESIS:
             extras = self.__check_brackets()
         if extras is not None:
             extra_selections.extend(extras)
@@ -228,3 +229,39 @@ class Editor(QPlainTextEdit):
         self.modified = False
         self.document().setModified(self.modified)
         self.setFocus()
+
+    def comment(self):
+        """ Comment one or more lines """
+
+        tcursor = self.textCursor()
+        block_start = self.document().findBlock(tcursor.selectionStart())
+        block_end = self.document().findBlock(tcursor.selectionEnd()).next()
+
+        tcursor.beginEditBlock()
+
+        while block_start != block_end:
+            if block_start.text():
+                tcursor.setPosition(block_start.position())
+                if block_start.text()[0] != '%':
+                    tcursor.insertText("%")
+            block_start = block_start.next()
+
+        tcursor.endEditBlock()
+
+    def uncomment(self):
+        """ Uncomment one or more lines"""
+
+        tcursor = self.textCursor()
+        block_start = self.document().findBlock(tcursor.selectionStart())
+        block_end = self.document().findBlock(tcursor.selectionEnd()).next()
+
+        tcursor.beginEditBlock()
+
+        while block_start != block_end:
+            if block_start.text():
+                tcursor.setPosition(block_start.position())
+                if block_start.text()[0] == '%':
+                    tcursor.deleteChar()
+            block_start = block_start.next()
+
+        tcursor.endEditBlock()

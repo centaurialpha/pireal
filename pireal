@@ -19,28 +19,35 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+import ctypes
+import argparse
 
 if sys.version_info.major != 3:
     print("Pireal need Python 3 :(")
     sys.exit(-1)
 
 import os
+from PyQt5.QtWidgets import (
+    QApplication
+)
+from PyQt5.QtGui import (
+    QIcon,
+    QColor,
+    QPalette,
+)
+from PyQt5.QtCore import (
+    QLocale,
+    QTranslator,
+    QLibraryInfo,
+    QT_VERSION_STR,
+    Qt,
+    QTextCodec
+)
 
-try:
+from src.core.logger import Logger
 
-    from PyQt5.QtWidgets import (
-        QApplication,
-        QStyleFactory
-    )
-    from PyQt5.QtGui import QIcon
-    from PyQt5.QtCore import (
-        QLocale,
-        QTranslator,
-        QLibraryInfo,
-        QT_VERSION_STR
-    )
-except ImportError:
-    print("Pireal need PyQt 5 :(")
+# Logger
+logger = Logger(__name__)
 
 INSTALL_DIR = "@ INSTALLED_BASE_DIR @"
 
@@ -54,7 +61,21 @@ if project not in sys.path:
     sys.path.insert(0, project)
 
 from src.core import settings
-from src.core.logger import PirealLogger
+
+PSetting = settings.PSetting
+
+
+def create_dirs():
+    """ This functions create a structure folders used by Pireal  """
+
+    pireal_dir = settings.PIREAL_DIR
+    is_win = settings.WINDOWS
+    for path in (pireal_dir, settings.PIREAL_DATABASES):
+        if not os.path.isdir(path):
+            os.mkdir(path)
+            if path == pireal_dir and is_win:
+                # Set hide attribute if OS is WIndows
+                ctypes.windll.kernel32.SetFileAttributesW(path, 0x02)
 
 
 def __get_versions():
@@ -81,33 +102,45 @@ def __get_versions():
 
 if __name__ == "__main__":
 
-    # Create dir
-    settings.create_dir()
+    # Parse arguments
+    pargs = argparse.ArgumentParser(
+        prog='Pireal',
+        usage='./pireal [-h] [--log loglevel]',
+        description='Pireal is a tool for working with Relational Algebra',
+        epilog='Pireal website: http://centaurialpha.github.io/pireal')
+    pargs.add_argument('--log', metavar='loglevel',
+                       help="Level to use for logging: 'debug', 'info', "
+                            "'warning', 'error', 'critical'")
+    args = pargs.parse_args()
+    if args.log is not None:
+        Logger.set_level(args.log)
 
-    # Logger
-    logger = PirealLogger(__name__)
-    INFO = logger.info
+    # Create dirs used by Pireal
+    create_dirs()
 
     info = __get_versions()
-    INFO("Executing Pireal from source")
-    INFO("Python {0} - Qt {1} on {2} {3}".format(
-        info['python'], info['qt'], info['os'], info['name']))
-    INFO("Loading settings...")
     settings.load_settings()
+
+    QTextCodec.setCodecForLocale(QTextCodec.codecForName("utf8"))
 
     # Import resources
     from src import resources  # lint:ok
 
     qapp = QApplication(sys.argv)
+    qapp.setAttribute(Qt.AA_EnableHighDpiScaling)
+    palette = QPalette()
+    palette.setColor(QPalette.ToolTipBase, QColor(225, 225, 225))
+    palette.setColor(QPalette.Highlight, QColor("#5294e2"))
+    qapp.setPalette(palette)
 
     # Icon
     qapp.setWindowIcon(QIcon(":img/icon"))
 
     # Language
-    lang = settings.get_setting("language", None)
-    if lang is not None:
+    if PSetting.LANGUAGE is not None:
         translator = QTranslator()
-        translator.load(os.path.join(settings.LANG_PATH, lang + '.qm'))
+        translator.load(os.path.join(settings.LANGUAGE_PATH,
+                                     PSetting.LANGUAGE + '.qm'))
         qapp.installTranslator(translator)
 
     # Load services
@@ -115,9 +148,11 @@ if __name__ == "__main__":
     from src.gui import notification  # lint:ok
     from src.gui.main_window import Pireal
 
-    INFO("Loading GUI...")
+    # Set stylesheet
+    with open(settings.STYLE_SHEET) as f:
+        qapp.setStyleSheet(f.read())
+
     gui = Pireal()
     gui.show()
 
-    INFO("Pireal ready!")
     sys.exit(qapp.exec_())

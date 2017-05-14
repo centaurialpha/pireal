@@ -32,9 +32,9 @@ from PyQt5.QtCore import pyqtSignal
 from src.core import (
     settings,
     file_manager,
-    pfile
+    pfile,
 )
-from src.core.logger import PirealLogger
+from src.core.logger import Logger
 from src.gui.main_window import Pireal
 from src.gui import (
     start_page,
@@ -42,21 +42,19 @@ from src.gui import (
 )
 from src.gui.dialogs import (
     preferences,
-    database_wizard,
-    edit_relation_dialog,
-    new_relation_dialog
+    new_relation_dialog,
+    new_database_dialog
 )
-
+PSetting = settings.PSetting
 # Logger
-logger = PirealLogger(__name__)
-CRITICAL = logger.critical
-DEBUG = logger.debug
+logger = Logger(__name__)
 
 
 class CentralWidget(QWidget):
     # This signals is used by notificator
     databaseSaved = pyqtSignal('QString')
     querySaved = pyqtSignal('QString')
+    databaseConected = pyqtSignal('QString')
 
     def __init__(self):
         QWidget.__init__(self)
@@ -68,8 +66,13 @@ class CentralWidget(QWidget):
         box.addWidget(self.stacked)
 
         self.created = False
+        # Acá cacheo la última carpeta accedida
         self.__last_open_folder = None
+        if PSetting.LAST_OPEN_FOLDER:
+            self.__last_open_folder = PSetting.LAST_OPEN_FOLDER
         self.__recent_dbs = []
+        if PSetting.RECENT_DBS:
+            self.__recent_dbs = PSetting.RECENT_DBS
 
         Pireal.load_service("central", self)
 
@@ -79,14 +82,14 @@ class CentralWidget(QWidget):
 
     @recent_databases.setter
     def recent_databases(self, database_file):
-        recent_dbs = settings.get_setting("recentDB", [])
-        if recent_dbs is None:
-            recent_dbs = []
-        if database_file in recent_dbs:
-            recent_dbs.remove(database_file)
-        recent_dbs.insert(0, database_file)
-        self.__recent_dbs = recent_dbs
-        settings.set_setting("recentDB", self.__recent_dbs)
+        if database_file in PSetting.RECENT_DBS:
+            PSetting.RECENT_DBS.remove(database_file)
+        PSetting.RECENT_DBS.insert(0, database_file)
+        self.__recent_dbs = PSetting.RECENT_DBS
+
+    @property
+    def last_open_folder(self):
+        return self.__last_open_folder
 
     def create_database(self):
         """ Show a wizard widget to create a new database,
@@ -94,64 +97,47 @@ class CentralWidget(QWidget):
         """
 
         if self.created:
-            QMessageBox.information(self,
-                                    self.tr("Information"),
-                                    self.tr("You may only have one database"
-                                            " open at time."))
-            DEBUG("Ya existe una base de datos abierta")
-            return
-        wizard = database_wizard.DatabaseWizard(self)
-        wizard.wizardFinished.connect(
-            self.__on_wizard_finished)
-        # Hide menubar and toolbar
-        pireal = Pireal.get_service("pireal")
-        pireal.show_hide_menubar()
-        pireal.show_hide_toolbar()
-        # Add wizard widget to stacked
-        self.add_widget(wizard)
+            return self.__say_about_one_db_at_time()
+        dialog = new_database_dialog.NewDatabaseDialog(self)
+        dialog.created.connect(self.__on_wizard_finished)
+        dialog.show()
 
-    def __on_wizard_finished(self, data, wizard_widget):
+    def __on_wizard_finished(self, *data):
         """ This slot execute when wizard to create a database is finished """
 
         pireal = Pireal.get_service("pireal")
-        if not data:
-            # If it's canceled, remove wizard widget and return to Start Page
-            self.remove_last_widget()
-        else:
+        if data:
+            db_name, location, fname = data
             # Create a new data base container
             db_container = database_container.DatabaseContainer()
             # Associate the file name with the PFile object
-            pfile_object = pfile.PFile(data['filename'])
+            pfile_object = pfile.File(fname)
             # Associate PFile object with data base container
             # and add widget to stacked
             db_container.pfile = pfile_object
             self.add_widget(db_container)
-            # Remove wizard
-            self.stacked.removeWidget(wizard_widget)
             # Set window title
-            pireal.change_title(file_manager.get_basename(data['filename']))
+            pireal.change_title(file_manager.get_basename(fname))
             # Enable db actions
             pireal.set_enabled_db_actions(True)
             pireal.set_enabled_relation_actions(True)
             self.created = True
-            DEBUG("Base de datos creada correctamente: '{}'".format(
-                data['filename']))
+            logger.debug("La base de datos ha sido creada con éxito")
 
-        # If data or not, show menubar and toolbar again
-        pireal.show_hide_menubar()
-        pireal.show_hide_toolbar()
+    def __say_about_one_db_at_time(self):
+        logger.info("Una base de datos a la vez")
+        QMessageBox.information(self,
+                                self.tr("Information"),
+                                self.tr("You may only have one database"
+                                        " open at time."))
 
-    def open_database(self, filename=''):
+    def open_database(self, filename='', remember=True):
         """ This function opens a database and set this on the UI """
 
-        # If not filename provide, then open dialog to select
         if self.created:
-            QMessageBox.information(self,
-                                    self.tr("Information"),
-                                    self.tr("You may only have one database"
-                                            " open at time."))
-            DEBUG("Ya existe una base de datos abierta")
-            return
+            return self.__say_about_one_db_at_time()
+
+        # If not filename provide, then open dialog to select
         if not filename:
             if self.__last_open_folder is None:
                 directory = os.path.expanduser("~")
@@ -166,23 +152,20 @@ class CentralWidget(QWidget):
             if not filename:
                 return
 
-            # Remember the folder
-            self.__last_open_folder = file_manager.get_path(filename)
-
-        DEBUG("Abriendo la base de datos: '{}'".format(filename))
-
         # If filename provide
         try:
+            logger.debug("Intentando abrir el archivo {}".format(filename))
             # Read pdb file
-            pfile_object = pfile.PFile(filename)
+            pfile_object = pfile.File(filename)
             db_data = pfile_object.read()
             # Create a dict to manipulate data more easy
             db_data = self.__sanitize_data(db_data)
         except Exception as reason:
             QMessageBox.information(self,
                                     self.tr("The file couldn't be open"),
-                                    str(reason))
-            CRITICAL("Error al intentar abrir el archivo: {}".format(reason))
+                                    reason.__str__())
+            logger.debug("Error al abrir el archivo {0}: '{1}'".format(
+                filename, reason.__str__()))
             return
 
         # Create a database container widget
@@ -194,7 +177,8 @@ class CentralWidget(QWidget):
             QMessageBox.information(self,
                                     self.tr("Error"),
                                     str(reason))
-            CRITICAL("Error al crear la base de datos: {}".format(reason))
+            logger.debug("Error al crear la base de datos: {}".format(
+                reason.__str__()))
             return
 
         # Set the PFile object to the new database
@@ -205,21 +189,33 @@ class CentralWidget(QWidget):
         db_name = file_manager.get_basename(filename)
         # Update title with the new database name, and enable some actions
         pireal = Pireal.get_service("pireal")
-        pireal.change_title(db_name)
+        self.databaseConected.emit(self.tr("Conected to: {}".format(db_name)))
         pireal.set_enabled_db_actions(True)
         pireal.set_enabled_relation_actions(True)
-        # Add to recent databases
-        self.recent_databases = filename
+        if remember:
+            # Add to recent databases
+            self.recent_databases = filename
+            # Remember the folder
+            self.__last_open_folder = file_manager.get_path(filename)
         self.created = True
 
-    def open_query(self):
-        filter_ = settings.SUPPORTED_FILES.split(';;')[1]
-        filename, _ = QFileDialog.getOpenFileName(self,
-                                                  self.tr("Open Query"),
-                                                  os.path.expanduser("~"),
-                                                  filter_)
+    def open_query(self, filename='', remember=True):
         if not filename:
-            return
+            if self.__last_open_folder is None:
+                directory = os.path.expanduser("~")
+            else:
+                directory = self.__last_open_folder
+            filter_ = settings.SUPPORTED_FILES.split(';;')[1]
+            filename, _ = QFileDialog.getOpenFileName(self,
+                                                      self.tr("Open Query"),
+                                                      directory,
+                                                      filter_)
+            if not filename:
+                return
+        # Si @filename no es False
+        # Cacheo la carpeta accedida
+        if remember:
+            self.__last_open_folder = file_manager.get_path(filename)
         # FIXME: mejorar éste y new_query
         self.new_query(filename)
 
@@ -234,9 +230,8 @@ class CentralWidget(QWidget):
 
     def __sanitize_data(self, data):
         """
-        This function converts the data into a dictionary
-        for better handling then.
-        The argument 'data' is the content of the database.
+        Este método convierte el contenido de la base de datos a un
+        diccionario para un mejor manejo despues
         """
 
         # FIXME: controlar cuando al final de la línea hay una coma
@@ -247,7 +242,7 @@ class CentralWidget(QWidget):
             if not line:
                 continue
             if line.startswith('@'):
-                # This line is a header
+                # Esta línea es el header de una relación
                 tpoint = line.find(':')
                 if tpoint == -1:
                     raise Exception("Invalid syntax at line {}".format(
@@ -255,18 +250,17 @@ class CentralWidget(QWidget):
 
                 table_name, line = line.split(':')
                 table_name = table_name[1:].strip()
-
                 table_dict = {}
                 table_dict['name'] = table_name
-                table_dict['header'] = line.split(',')
+                table_dict['header'] = list(map(str.strip, line.split(',')))
+
                 table_dict['tuples'] = []
+
             else:
                 for l in csv.reader([line]):
                     # Remove spaces
-                    l = list(map(str.strip, l))
-                    # FIXME: this is necesary?
-                    if table_dict['name'] == table_name:
-                        table_dict['tuples'].append(l)
+                    tupla = list(map(str.strip, l))
+                    table_dict['tuples'].append(tupla)
             if not table_dict['tuples']:
                 data_dict['tables'].append(table_dict)
 
@@ -339,8 +333,8 @@ class CentralWidget(QWidget):
         pireal.set_enabled_relation_actions(False)
         pireal.set_enabled_query_actions(False)
         pireal.set_enabled_editor_actions(False)
+        pireal.change_title()  # Título en la ventana principal 'Pireal'
         self.created = False
-        DEBUG("Se cerró la base de datos: '{}'".format(db.dbname()))
         del db
 
     def new_query(self, filename=''):
@@ -356,6 +350,10 @@ class CentralWidget(QWidget):
         zoom_out_action.setEnabled(True)
         paste_action = Pireal.get_action("paste_action")
         paste_action.setEnabled(True)
+        comment_action = Pireal.get_action("comment")
+        comment_action.setEnabled(True)
+        uncomment_action = Pireal.get_action("uncomment")
+        uncomment_action.setEnabled(True)
 
     def execute_queries(self):
         db_container = self.get_active_db()
@@ -375,7 +373,7 @@ class CentralWidget(QWidget):
         relations = db.table_widget.relations
         # Generate content
         content = file_manager.generate_database(relations)
-        db.pfile.write(content=content, new_fname='')
+        db.pfile.save(data=content)
         filename = db.pfile.filename
         # Emit signal
         self.databaseSaved.emit(
@@ -387,7 +385,7 @@ class CentralWidget(QWidget):
         filter = settings.SUPPORTED_FILES.split(';;')[0]
         filename, _ = QFileDialog.getSaveFileName(self,
                                                   self.tr("Save Database As"),
-                                                  settings.PIREAL_PROJECTS,
+                                                  settings.PIREAL_DATABASES,
                                                   filter)
         if not filename:
             return
@@ -396,7 +394,10 @@ class CentralWidget(QWidget):
         relations = db.table_widget.relations
         # Content
         content = file_manager.generate_database(relations)
-        db.pfile.write(content, filename)
+        # Si no se provee la extensión, le agrego
+        if not os.path.splitext(filename)[1]:
+            filename += '.pdb'
+        db.pfile.save(content, filename)
         self.databaseSaved.emit(
             self.tr("Database saved: {}".format(db.pfile.filename)))
 
@@ -408,34 +409,16 @@ class CentralWidget(QWidget):
             db.modified = True
 
     def create_new_relation(self):
-        data = new_relation_dialog.create_relation()
-        if data is not None:
+        def create_relation(relation, relation_name):
             db = self.get_active_db()
-            rela, rela_name = data
-            # Add table
-            db.table_widget.add_table(rela, rela_name)
-            # Add item to lateral widget
-            db.lateral_widget.add_item(rela_name, rela.count())
-            # Set modified db
+            table = db.create_table(relation, relation_name)
+            db.table_widget.add_table(relation, relation_name, table)
+            db.lateral_widget.add_item(relation_name, relation.cardinality())
             db.modified = True
 
-    def edit_relation(self):
-        db = self.get_active_db()
-        lateral = db.lateral_widget
-        selected_items = lateral.selectedItems()
-        if selected_items:
-            selected_relation = selected_items[0].text(0)
-            relation_text = selected_relation.split()[0].strip()
-            rela = db.table_widget.relations[relation_text]
-            data = edit_relation_dialog.edit_relation(rela)
-            if data is not None:
-                # Update table
-                db.table_widget.update_table(data)
-                # Update relation
-                db.table_widget.relations[relation_text] = data
-                # Set modified db
-                db.modified = True
-                lateral.update_item(data.count())
+        dialog = new_relation_dialog.NewRelationDialog(self)
+        dialog.created.connect(create_relation)
+        dialog.show()
 
     def load_relation(self, filename=''):
         """ Load Relation file """
@@ -537,6 +520,30 @@ class CentralWidget(QWidget):
     def zoom_out(self):
         query_container = self.get_active_db().query_container
         query_container.zoom_out()
+
+    def comment(self):
+        query_container = self.get_active_db().query_container
+        query_container.comment()
+
+    def uncomment(self):
+        query_container = self.get_active_db().query_container
+        query_container.uncomment()
+
+    def add_tuple(self):
+        tw = self.get_active_db().table_widget
+        tw.add_tuple()
+
+    def add_column(self):
+        tw = self.get_active_db().table_widget
+        tw.add_column()
+
+    def delete_tuple(self):
+        tw = self.get_active_db().table_widget
+        tw.delete_tuple()
+
+    def delete_column(self):
+        tw = self.get_active_db().table_widget
+        tw.delete_column()
 
 
 central = CentralWidget()

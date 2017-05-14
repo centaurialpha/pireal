@@ -41,8 +41,9 @@ class LateralWidget(QTreeWidget):
     def add_item(self, text, ntuples):
         item = Item()
         item.name = text
-        item.ntuples = ntuples
+        item.ntuples = str(ntuples)
         item.setText(0, item.display_name)
+        item.setToolTip(0, item.display_name)
         self.addTopLevelItem(item)
 
     def item_text(self, index):
@@ -58,7 +59,7 @@ class LateralWidget(QTreeWidget):
 
     def update_item(self, tuple_count):
         item = self.current_item()
-        item.ntuples = tuple_count
+        item.ntuples = str(tuple_count)
         item.setText(0, item.display_name)
 
     def current_item(self):

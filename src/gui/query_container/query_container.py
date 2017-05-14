@@ -25,25 +25,31 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QSplitter,
     QStackedWidget,
-    QMessageBox,
+    QLabel,
     QDialog,
     QPushButton,
-    QAction
+    QAction,
+    QToolBar
 )
-from PyQt5.QtGui import QStandardItem
 from PyQt5.QtCore import (
     Qt,
     pyqtSignal,
-    QSettings
+    QSettings,
+    QSize
 )
 
-from src.core.logger import PirealLogger
-from src.core import parser
-from src.gui import (
-    custom_table,
-    lateral_widget,
-    fader_widget
+from src.core.interpreter import (
+    scanner,
+    lexer,
+    parser
 )
+from src.core.interpreter.exceptions import (
+    InvalidSyntaxError,
+    MissingQuoteError,
+    DuplicateRelationNameError,
+    ConsumeError
+)
+from src.gui import lateral_widget
 from src.gui.main_window import Pireal
 from src.gui.query_container import (
     editor,
@@ -51,17 +57,13 @@ from src.gui.query_container import (
 )
 from src.core import settings
 
-# Logger
-logger = PirealLogger(__name__)
-DEBUG = logger.debug
-ERROR = logger.error
-
 
 class QueryContainer(QWidget):
     saveEditor = pyqtSignal('PyQt_PyObject')
 
-    def __init__(self):
-        super(QueryContainer, self).__init__()
+    def __init__(self, parent=None):
+        super(QueryContainer, self).__init__(parent)
+        self._parent = parent
         box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 0, 0)
 
@@ -153,11 +155,16 @@ class QueryContainer(QWidget):
         self.saveEditor.emit(editor)
 
     def execute_queries(self, query=''):
-        if not query:
-            # Get the text from editor
-            weditor = self.currentWidget().get_editor()
-            text = weditor.toPlainText()
-            query = text
+        """ This function executes queries """
+
+        # If text is selected, then this text is the query,
+        # otherwise the query is all text that has the editor
+        editor_widget = self.currentWidget().get_editor()
+        if editor_widget.textCursor().hasSelection():
+            query = editor_widget.textCursor().selectedText()
+        else:
+            query = editor_widget.toPlainText()
+
         relations = self.currentWidget().relations
         central = Pireal.get_service("central")
         table_widget = central.get_active_db().table_widget
@@ -166,40 +173,58 @@ class QueryContainer(QWidget):
         relations.clear()
         self.currentWidget().clear_results()
 
-        # Ignore comments
-        for line in query.splitlines():
-            if line.startswith('--') or not line:
-                continue
-
-            parts = line.split('=', 1)
-            if len(parts) == 2 and self.__validName.match(parts[0].strip()):
-                relation_name = parts[0].strip()
-                line = parts[1].strip()
-            else:
-                relation_name = "query_{}".format(self.__nquery)
-                self.__nquery += 1
-
+        # Parse query
+        sc = scanner.Scanner(query)
+        lex = lexer.Lexer(sc)
+        try:
+            par = parser.Parser(lex)
+            interpreter = parser.Interpreter(par)
+            interpreter.clear()
+            interpreter.to_python()
+        except MissingQuoteError as reason:
+            pireal = Pireal.get_service("pireal")
+            pireal.show_error_message(
+                self.tr("Missing quote on Line: {0}".format(
+                    reason.lineno)))
+            return
+        except InvalidSyntaxError as reason:
+            pireal = Pireal.get_service("pireal")
+            pireal.show_error_message(
+                self.tr("Invalid syntax on Line: {0}, Column {1}. "
+                        "The error start with <b>{2}</b>".format(
+                            reason.lineno, reason.column, reason.character)))
+            return
+        except DuplicateRelationNameError as duplicate_rname:
+            pireal = Pireal.get_service("pireal")
+            pireal.show_error_message(
+                self.tr("<b>{}</b> is a duplicate relation name. Please "
+                        "choose a unique name and re-execute the "
+                        "queries".format(
+                            duplicate_rname)), syntax_error=False)
+            return
+        except ConsumeError as reason:
+            pireal = Pireal.get_service("pireal")
+            pireal.show_error_message(self.parse_error(reason.__str__()))
+            return
+        relations.update(table_widget.relations)
+        for relation_name, expression in list(interpreter.SCOPE.items()):
             try:
-                expression = parser.convert_to_python(line)
-                relations.update(table_widget.relations)
-                rela = eval(expression, {}, relations)
+                new_relation = eval(expression, {}, relations)
+
             except Exception as reason:
-                QMessageBox.critical(self,
-                                     self.tr("Query Error"),
-                                     reason.__str__())
+                pireal = Pireal.get_service("pireal")
+                pireal.show_error_message(self.parse_error(reason.__str__()),
+                                          syntax_error=False)
                 return
 
-            if relation_name in relations:
-                QMessageBox.critical(self,
-                                     self.tr("Query Error"),
-                                     self.tr("<b>{}</b> is a duplicate "
-                                             "relation name.<br><br> "
-                                             "Please choose a unique name and "
-                                             "re-execute the queries.".format(
-                                                 relation_name)))
-                return
-            relations[relation_name] = rela
-            self.__add_table(rela, relation_name)
+            relations[relation_name] = new_relation
+            self.__add_table(new_relation, relation_name)
+
+    @staticmethod
+    def parse_error(text):
+        """ Replaces quotes by <b></b> tag """
+
+        return re.sub(r"\'(.*?)\'", r"<b>\1</b>", text)
 
     def __add_table(self, rela, rname):
         self.currentWidget().add_table(rela, rname)
@@ -239,6 +264,16 @@ class QueryContainer(QWidget):
         if weditor.hasFocus():
             weditor.zoom_out()
 
+    def comment(self):
+        weditor = self.currentWidget().get_editor()
+        if weditor.hasFocus():
+            weditor.comment()
+
+    def uncomment(self):
+        weditor = self.currentWidget().get_editor()
+        if weditor.hasFocus():
+            weditor.uncomment()
+
 
 class QueryWidget(QWidget):
     editorModified = pyqtSignal(bool)
@@ -255,37 +290,144 @@ class QueryWidget(QWidget):
         self._result_list.header().hide()
         self._hsplitter.addWidget(self._result_list)
 
-        self._stack_tables = StackedWidget()
+        self._stack_tables = QStackedWidget()
         self._hsplitter.addWidget(self._stack_tables)
 
         self.relations = {}
-
-        self._query_editor = editor.Editor()
-        # Editor connections
-        self._query_editor.customContextMenuRequested.connect(
-            self.__show_context_menu)
-        self._query_editor.modificationChanged[bool].connect(
-            self.__editor_modified)
-        self._query_editor.undoAvailable[bool].connect(
-            self.__on_undo_available)
-        self._query_editor.redoAvailable[bool].connect(
-            self.__on_redo_available)
-        self._query_editor.copyAvailable[bool].connect(
-            self.__on_copy_available)
-        self._vsplitter.addWidget(self._query_editor)
+        # Editor widget
+        self._editor_widget = EditorWidget(self)
+        self._editor_widget.editorModified[bool].connect(
+            lambda modified: self.editorModified.emit(modified))
+        self._vsplitter.addWidget(self._editor_widget)
 
         self._vsplitter.addWidget(self._hsplitter)
         box.addWidget(self._vsplitter)
 
         # Connections
         self._result_list.itemClicked.connect(
-            lambda index: self._stack_tables.show_display(
+            lambda index: self._stack_tables.setCurrentIndex(
                 self._result_list.row()))
         self._result_list.itemDoubleClicked.connect(
             self.show_relation)
 
+    def show_relation(self, item):
+        central_widget = Pireal.get_service("central")
+        table_widget = central_widget.get_active_db().table_widget
+        rela = self.relations[item.name]
+        dialog = QDialog(self)
+        dialog.resize(700, 500)
+        dialog.setWindowTitle(item.name)
+        box = QVBoxLayout(dialog)
+        box.setContentsMargins(5, 5, 5, 5)
+        table = table_widget.create_table(rela, editable=False)
+        box.addWidget(table)
+        hbox = QHBoxLayout()
+        btn = QPushButton(self.tr("Ok"))
+        btn.clicked.connect(dialog.close)
+        hbox.addStretch()
+        hbox.addWidget(btn)
+        box.addLayout(hbox)
+        dialog.show()
+
+    def save_sizes(self):
+        """ Save sizes of Splitters """
+
+        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        qsettings.setValue('hsplitter_query_sizes',
+                           self._hsplitter.saveState())
+        qsettings.setValue('vsplitter_query_sizes',
+                           self._vsplitter.saveState())
+
+    def get_editor(self):
+        return self._editor_widget.get_editor()
+
+    def showEvent(self, event):
+        super(QueryWidget, self).showEvent(event)
+        self._hsplitter.setSizes([1, self.width() / 3])
+
+    def clear_results(self):
+        self._result_list.clear_items()
+        i = self._stack_tables.count()
+        while i >= 0:
+            widget = self._stack_tables.widget(i)
+            self._stack_tables.removeWidget(widget)
+            if widget is not None:
+                widget.deleteLater()
+            i -= 1
+
+    def add_table(self, rela, rname):
+        central_widget = Pireal.get_service("central")
+        db = central_widget.get_active_db()
+        _view = db.create_table(rela, rname, editable=False)
+        index = self._stack_tables.addWidget(_view)
+        self._stack_tables.setCurrentIndex(index)
+        self._result_list.add_item(rname, rela.cardinality())
+
+
+class EditorWidget(QWidget):
+
+    TOOLBAR_ITEMS = [
+        'save_query',
+        '',
+        'undo_action',
+        'redo_action',
+        'cut_action',
+        'paste_action',
+        '',
+        'execute_queries'
+    ]
+
+    editorModified = pyqtSignal(bool)
+
+    def __init__(self, parent=None):
+        QWidget.__init__(self, parent)
+        vbox = QVBoxLayout(self)
+        vbox.setContentsMargins(0, 0, 0, 0)
+        vbox.setSpacing(0)
+
+        hbox = QHBoxLayout()
+        # Position
+        self._column_str = "Col: {}"
+        self._column_lbl = QLabel(self._column_str.format(0))
+        # Toolbar
+        self._toolbar = QToolBar(self)
+        self._toolbar.setIconSize(QSize(16, 16))
+        pireal = Pireal.get_service("pireal")
+        for action in self.TOOLBAR_ITEMS:
+            qaction = pireal.get_action(action)
+            if qaction is not None:
+                self._toolbar.addAction(qaction)
+            else:
+                self._toolbar.addSeparator()
+        hbox.addWidget(self._toolbar, 1)
+        hbox.addWidget(self._column_lbl)
+        # Editor
+        self._editor = editor.Editor()
+        # Editor connections
+        self._editor.customContextMenuRequested.connect(
+            self.__show_context_menu)
+        self._editor.modificationChanged[bool].connect(
+            lambda modified: self.editorModified.emit(modified))
+        self._editor.undoAvailable[bool].connect(
+            self.__on_undo_available)
+        self._editor.redoAvailable[bool].connect(
+            self.__on_redo_available)
+        self._editor.copyAvailable[bool].connect(
+            self.__on_copy_available)
+        self._editor.cursorPositionChanged.connect(
+            self._update_column_label)
+        vbox.addLayout(hbox)
+        vbox.addWidget(self._editor)
+
+    def _update_column_label(self):
+        col = str(self._editor.textCursor().columnNumber() + 1)
+        self._column_lbl.setText(self._column_str.format(col))
+
+    def get_editor(self):
+        return self._editor
+
     def __show_context_menu(self, point):
-        popup_menu = self._query_editor.createStandardContextMenu()
+        popup_menu = self._editor.createStandardContextMenu()
 
         undock_editor = QAction(self.tr("Undock"), self)
         popup_menu.insertAction(popup_menu.actions()[0],
@@ -297,11 +439,11 @@ class QueryWidget(QWidget):
 
     def __undock_editor(self):
         new_editor = editor.Editor()
-        actual_doc = self._query_editor.document()
+        actual_doc = self._editor.document()
         new_editor.setDocument(actual_doc)
         new_editor.resize(900, 400)
         # Set text cursor
-        tc = self._query_editor.textCursor()
+        tc = self._editor.textCursor()
         new_editor.setTextCursor(tc)
         # Set title
         db = Pireal.get_service("central").get_active_db()
@@ -330,80 +472,3 @@ class QueryWidget(QWidget):
         cut_action.setEnabled(value)
         copy_action = Pireal.get_action("copy_action")
         copy_action.setEnabled(value)
-
-    def show_relation(self, item):
-        central_widget = Pireal.get_service("central")
-        table_widget = central_widget.get_active_db().table_widget
-        rela = self.relations[item.name]
-        dialog = QDialog(self)
-        dialog.resize(700, 500)
-        dialog.setWindowTitle(item.name)
-        box = QVBoxLayout(dialog)
-        box.setContentsMargins(5, 5, 5, 5)
-        table = table_widget.create_table(rela)
-        box.addWidget(table)
-        hbox = QHBoxLayout()
-        btn = QPushButton(self.tr("Ok"))
-        btn.clicked.connect(dialog.close)
-        hbox.addStretch()
-        hbox.addWidget(btn)
-        box.addLayout(hbox)
-        dialog.show()
-
-    def save_sizes(self):
-        """ Save sizes of Splitters """
-
-        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        qsettings.setValue('hsplitter_query_sizes',
-                           self._hsplitter.saveState())
-        qsettings.setValue('vsplitter_query_sizes',
-                           self._vsplitter.saveState())
-
-    def get_editor(self):
-        return self._query_editor
-
-    def __editor_modified(self, modified):
-        self.editorModified.emit(modified)
-
-    def showEvent(self, event):
-        super(QueryWidget, self).showEvent(event)
-        self._hsplitter.setSizes([1, self.width() / 3])
-
-    def clear_results(self):
-        self._result_list.clear_items()
-        i = self._stack_tables.count()
-        while i >= 0:
-            widget = self._stack_tables.widget(i)
-            self._stack_tables.removeWidget(widget)
-            if widget is not None:
-                widget.deleteLater()
-            i -= 1
-
-    def add_table(self, rela, rname):
-        wtable = custom_table.Table()
-
-        # wtable.setColumnCount(len(rela.fields))
-        wtable.model().setHorizontalHeaderLabels(rela.header)
-
-        for data in rela.content:
-            nrow = wtable.model().rowCount()
-            # wtable.insertRow(nrow)
-            for col, text in enumerate(data):
-                item = QStandardItem(text)
-                wtable.model().setItem(nrow, col, item)
-
-        index = self._stack_tables.addWidget(wtable)
-        self._stack_tables.setCurrentIndex(index)
-
-        self._result_list.add_item(rname, rela.count())
-
-
-class StackedWidget(QStackedWidget):
-
-    def setCurrentIndex(self, index):
-        self.fader_widget = fader_widget.FaderWidget(self.currentWidget(),
-                                                     self.widget(index))
-        QStackedWidget.setCurrentIndex(self, index)
-
-    def show_display(self, index):
-        self.setCurrentIndex(index)

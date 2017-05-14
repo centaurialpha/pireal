@@ -18,54 +18,45 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from datetime import datetime
+import datetime
+
+# Positive or negative integers
+IS_INT = re.compile(r'^[\-]?\d+$')
+# Positive or negative floats
+IS_FLOAT = re.compile(r'^[\-]?\d+(\.\d*)$')
+# YYYY/MM/DD o DD/MM/AAAA
+IS_DATE = re.compile(
+    r'^([\d+]{2}|[\d+]{4})[\/][\d+]{2}[\/]([\d+]{2}|[\d+]{4})$')
+# HH:MM
+IS_HOUR = re.compile(r'^[\d+]{2}:[\d+]{2}$')
 
 
 class RelationStr(str):
 
-    # Positive or negative integers
-    IS_INT = re.compile(r'^[\-]?\d+$')
-    # Positive or negative floats
-    IS_FLOAT = re.compile(r'^[\-]?\d+(\.\d*)$')
-    # YYYY/MM/DD
-    IS_DATE = re.compile(
-        r'^([\d+]{2}|[\d+]{4})[\/][\d+]{2}[\/]([\d+]{2}|[\d+]{4})$')
-    # HH:MM
-    IS_HOUR = re.compile(r'^[\d+]{2}:[\d+]{2}$')
+    """ Clase que representa un tipo de dato en el álgebra relacional
+    El string pasado a la clase puede ser casteado a algún tipo de dato
+    soportado: str, int, float, date o time.
+    """
 
     def __init__(self, value):
         super(RelationStr, self).__init__()
         self.value = value
 
     def cast(self):
-        if RelationStr.IS_INT.match(self.value):
+        """ Este método castea el string a otro tipo de dato o no """
+
+        if IS_INT.match(self.value):
             return int(self.value)
-        elif RelationStr.IS_FLOAT.match(self.value):
+        elif IS_FLOAT.match(self.value):
             return float(self.value)
-        elif RelationStr.IS_DATE.match(self.value):
-            return RelationDate(self.value)
-        elif RelationStr.IS_HOUR.match(self.value):
-            return RelationHour(self.value)
+        elif IS_DATE.match(self.value):
+            try:
+                date = datetime.datetime.strptime(
+                    self.value, "%Y/%m/%d")
+            except:
+                date = datetime.datetime.strptime(
+                    self.value, "%d/%m/%Y")
+            return date.date()
+        elif IS_HOUR.match(self.value):
+            return datetime.time(*list(map(int, self.value.split(':'))))
         return self.value
-
-
-class RelationHour(object):
-    """ This class represents a hour """
-
-    def __init__(self, str_hour):
-        hour = datetime.strptime(str_hour, "%H:%M").time()
-        self.hour = hour.hour
-        self.min = hour.minute
-
-
-class RelationDate(object):
-    """ This class represents a date """
-
-    def __init__(self, value):
-        try:
-            date = datetime.strptime(value, "%d/%m/%Y")
-        except ValueError:
-            date = datetime.strptime(value, "%Y/%m/%d")
-        self.year = date.year
-        self.day = date.day
-        self.month = date.month

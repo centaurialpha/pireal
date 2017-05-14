@@ -26,17 +26,20 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import (
     Qt,
-    QSettings
+    QSettings,
+    pyqtSlot
 )
 from PyQt5.QtGui import (
-    QStandardItem,
-    QStandardItemModel
+    QPalette,
+    QColor
 )
 
 from src.gui import (
     table_widget,
     lateral_widget,
-    custom_table
+    view,
+    model,
+    delegate
 )
 
 from src.gui.query_container import query_container
@@ -46,11 +49,9 @@ from src.core import (
     file_manager,
     settings
 )
-from src.core.logger import PirealLogger
+from src.core.logger import Logger
 
-# Logger
-logger = PirealLogger(__name__)
-DEBUG = logger.debug
+logger = Logger(__name__)
 
 
 class DatabaseContainer(QSplitter):
@@ -67,7 +68,7 @@ class DatabaseContainer(QSplitter):
 
         self.addWidget(self._hsplitter)
 
-        self.query_container = query_container.QueryContainer()
+        self.query_container = query_container.QueryContainer(self)
         self.addWidget(self.query_container)
 
         self.modified = False
@@ -77,7 +78,12 @@ class DatabaseContainer(QSplitter):
         # Connections
         # FIXME
         self.lateral_widget.itemClicked.connect(
-            lambda: self.table_widget.stacked.show_display(
+            lambda: self.table_widget.stacked.setCurrentIndex(
+                self.lateral_widget.row()))
+        # For change table widget item when up/down
+        # see issue #39
+        self.lateral_widget.itemSelectionChanged.connect(
+            lambda: self.table_widget.stacked.setCurrentIndex(
                 self.lateral_widget.row()))
         self.query_container.saveEditor['PyQt_PyObject'].connect(
             self.save_query)
@@ -86,7 +92,7 @@ class DatabaseContainer(QSplitter):
     def dbname(self):
         """ Return display name """
 
-        return self.pfile.name
+        return self.pfile.display_name
 
     def is_new(self):
         return self.pfile.is_new
@@ -98,38 +104,53 @@ class DatabaseContainer(QSplitter):
             header = table.get('header')
             tuples = table.get('tuples')
 
-            # Create relation
+            # Creo el objeto Relation
             rela = relation.Relation()
             rela.header = header
+            # Relleno el objeto con las tuplas
+            for _tuple in tuples:
+                rela.insert(_tuple)
 
-            # Table view widget
-            table_view = custom_table.Table()
-            # Model
-            model = QStandardItemModel()
-            model.setHorizontalHeaderLabels(header)
-
-            # Populate table view
-            row_count = 0
-            for row in tuples:
-                for col_count, i in enumerate(row):
-                    item = QStandardItem(i)
-                    # Set read only
-                    item.setFlags(item.flags() & ~Qt.ItemIsEditable)
-                    model.setItem(row_count, col_count, item)
-                rela.insert(row)
-                row_count += 1
-
-            # Set table model
-            table_view.setModel(model)
+            # Se usa el patrón Modelo/Vista/Delegado
+            # Para entender más, leer el código de cáda módulo
+            # src.gui.model
+            # src.gui.view
+            # src.gui.delegate
+            _view = self.create_table(rela, table_name)
             # Add relation to relations dict
             self.table_widget.add_relation(table_name, rela)
             # Add table to stacked
-            self.table_widget.stacked.addWidget(table_view)
+            self.table_widget.stacked.addWidget(_view)
             # Add table name to list widget
-            self.lateral_widget.add_item(table_name, rela.count())
+            self.lateral_widget.add_item(table_name, str(rela.cardinality()))
         # Select first item
         first_item = self.lateral_widget.topLevelItem(0)
         first_item.setSelected(True)
+
+    def create_table(self, relation_obj, relation_name, editable=True):
+        """ Se crea la vista, el model y el delegado para @relation_obj """
+
+        _view = view.View()
+        header = view.Header()
+        _model = model.Model(relation_obj)
+        _model.modelModified[bool].connect(self.__on_model_modified)
+        _model.cardinalityChanged[int].connect(
+                self.__on_cardinality_changed)
+        if not editable:
+            _model.editable = False
+            header.editable = False
+        _view.setModel(_model)
+        _view.setItemDelegate(delegate.Delegate())
+        _view.setHorizontalHeader(header)
+        return _view
+
+    @pyqtSlot(bool)
+    def __on_model_modified(self, modified):
+        self.modified = modified
+
+    @pyqtSlot(int)
+    def __on_cardinality_changed(self, value):
+        self.lateral_widget.update_item(value)
 
     def load_relation(self, filenames):
         for filename in filenames:
@@ -150,7 +171,7 @@ class DatabaseContainer(QSplitter):
                     return False
 
             self.table_widget.add_table(rel, relation_name)
-            self.lateral_widget.add_item(relation_name, rel.count())
+            self.lateral_widget.add_item(relation_name, rel.cardinality())
             return True
 
     def delete_relation(self):
@@ -173,6 +194,10 @@ class DatabaseContainer(QSplitter):
         msgbox.setText(msg)
         msgbox.addButton(self.tr("No"), QMessageBox.NoRole)
         yes_btn = msgbox.addButton(self.tr("Yes"), QMessageBox.YesRole)
+        palette = QPalette()
+        palette.setColor(QPalette.Button, QColor("#cc575d"))
+        palette.setColor(QPalette.ButtonText, QColor("white"))
+        yes_btn.setPalette(palette)
         msgbox.exec_()
         r = msgbox.clickedButton()
         if r == yes_btn:
@@ -213,7 +238,7 @@ class DatabaseContainer(QSplitter):
         else:
             query_widget = query_container.QueryWidget()
             # Create object file
-            ffile = pfile.PFile(filename)
+            ffile = pfile.File(filename)
             editor = query_widget.get_editor()
             editor.pfile = ffile
             if not filename:
@@ -221,7 +246,7 @@ class DatabaseContainer(QSplitter):
             else:
                 content = ffile.read()
                 editor.setPlainText(content)
-            self.query_container.add_tab(query_widget, ffile.name)
+            self.query_container.add_tab(query_widget, ffile.display_name)
             self.__nquery += 1
 
     def save_query(self, editor):
@@ -232,7 +257,7 @@ class DatabaseContainer(QSplitter):
         # Get content of editor
         content = editor.toPlainText()
         try:
-            editor.pfile.write(content=content)
+            editor.pfile.save(data=content)
         except Exception as reason:
             QMessageBox.critical(self, "Error",
                                  self.tr("The file couldn't be saved!"
@@ -251,7 +276,7 @@ class DatabaseContainer(QSplitter):
         # Get the content
         content = editor.toPlainText()
         # Write the file
-        editor.pfile.write(content=content, new_fname=filename)
+        editor.pfile.save(data=content, path=filename)
         editor.saved()
 
     def execute_queries(self):
@@ -276,7 +301,7 @@ class DatabaseContainer(QSplitter):
         if vsizes is not None:
             self.restoreState(vsizes)
         else:
-            self.setSizes([(self.height() / 3) * 2, self.height() / 3])
+            self.setSizes([self.height() / 3, self.height() / 3])
 
     def save_sizes(self):
         """ Save sizes of Splitters """

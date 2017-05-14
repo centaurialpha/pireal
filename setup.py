@@ -92,7 +92,7 @@ DESCRIPTION = ""
 
 setup(
     name="pireal",
-    version="1.0",
+    version="2.0.2",
     description="",
     author="Gabriel Acosta",
     author_email="acostadariogabriel@gmail.com",

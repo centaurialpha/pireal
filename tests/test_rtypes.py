@@ -27,21 +27,19 @@ class RTypesTestCase(unittest.TestCase):
         self.assertIsInstance(nfloat, float)
 
     def test_date(self):
-        date = rtypes.RelationStr('1991/01/20').cast()
-        year = 1991
-        month = 1
-        day = 20
-        self.assertEqual(year, date.year)
-        self.assertEqual(month, date.month)
-        self.assertEqual(day, date.day)
-        self.assertIsInstance(date, rtypes.RelationDate)
+        date = rtypes.RelationStr('20/01/1991').cast()
+        date2 = datetime.date(1991, 1, 20)
+        self.assertTrue(date == date2)
+        date = rtypes.RelationStr('06/09/1993').cast()
+        self.assertFalse(date < date2)
 
     def test_hour(self):
-        hour = rtypes.RelationStr('15:59').cast()
-        h, m = 15, 59
-        self.assertEqual(h, hour.hour)
-        self.assertEqual(m, hour.min)
-        self.assertIsInstance(hour, rtypes.RelationHour)
+        time = rtypes.RelationStr('12:00').cast()
+        time2 = datetime.time(12, 00)
+        self.assertTrue(time == time2)
+        time = rtypes.RelationStr('12:59').cast()
+        self.assertTrue(time > time2)
+
 
 if __name__ == "__main__":
     unittest.main()

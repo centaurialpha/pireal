@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2017 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -17,80 +17,41 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Logging
-"""
-
 import logging
-import logging.handlers
-import time
 
-from src.core import settings
-
-LOG_FORMAT = "[%(asctime)s]:%(levelname)-7s:%(name)s:%(funcName)s:%(message)s"
-TIME_FORMAT = "%H:%M:%S"
-HEADER = "Nueva sesión de Pireal: {date}".format(
-    date=time.strftime("%Y-%m-%d"))
+FORMAT = "%(levelname)-2s:%(name)s:%(lineno)-2d --> %(message)s"
 
 
-class PLogger(object):
-    """
-    Logger
+class _Logger(object):
+    LEVELS = {
+        'critical': 50,
+        'error': 40,
+        'warning': 30,
+        'info': 20,
+        'debug': 10,
+        'no': 0
+    }
 
-    Usage:
-        from logger import PLogger
-
-        logger = PLogger('example')
-
-        logger.debug("Message debug")
-        logger.info("Message info")
-        logger.critical("Message error")
-    """
-
-    def __init__(self, header=None, separator='='):
-        self._handler = None
-        self._header = None
-        self._loggers = {}
-        if header is not None:
-            # Default separator is `=` at 80 cols
-            # You can change the separator when create PLogger object
-            separator *= 80
-            # Create header
-            self._header = separator + '\n' + header + '\n' + separator
-
-        logging.basicConfig()
+    def __init__(self):
+        self.__level = 0  # Default not logging
+        logging.basicConfig(format=FORMAT)
+        self.__loggers = {}
 
     def __call__(self, name):
-        if self._handler is None:
-            if self._header is not None:
-                handler = CustomFileHandler(settings.LOG_FILE_PATH,
-                                            self._header)
-            else:
-                handler = logging.FileHandler(settings.LOG_FILE_PATH)
-            formatter = logging.Formatter(fmt=LOG_FORMAT, datefmt=TIME_FORMAT)
-            handler.setFormatter(formatter)
-            self._handler = handler
-        if name not in self._loggers:
+        if name not in self.__loggers:
             logger = logging.getLogger(name)
-            self._loggers[name] = logger
-            logger.setLevel(logging.DEBUG)
-            logger.addHandler(self._handler)
+            self.__loggers[name] = logger
+            logger.setLevel(self.__level)
+        return self.__loggers[name]
 
-        return self._loggers[name]
+    def set_level(self, level):
+        """ Set level for all loggers """
 
-
-class CustomFileHandler(logging.handlers.RotatingFileHandler):
-    """ Custom Rotating File Handler with header """
-
-    def __init__(self, filename, header, mode='a', maxBytes=50000,
-                 backupCount=1, encoding=None, delay=0):
-        super(CustomFileHandler, self).__init__(filename, mode, maxBytes,
-                                                backupCount, encoding, delay)
-
-        # The header is added at each new session
-        if not delay and self.stream is not None:
-            self.stream.write('{header}\n'.format(header=header))
+        if level in self.LEVELS.keys():
+            self.__level = self.LEVELS[level]
+            for log in self.__loggers.keys():
+                logger = self.__loggers[log]
+                logger.setLevel(self.__level)
 
 
-# Create logger with header
-PirealLogger = PLogger(HEADER)
+Logger = _Logger()

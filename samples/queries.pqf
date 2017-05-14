@@ -1,34 +1,18 @@
--- Queries examples. Relational Algebra. Gabriel 'gabo' Acosta. 12/04/2016
+% Ejemplo sacado de Wikipedia: https://es.wikipedia.org/wiki/%C3%81lgebra_relacional
+% 
+% Mostrar los nombres de los alumnos y su apoderado
+q1 := alumno njoin apoderado;
+q2 := project nombre, nombre_apoderado (q1);
 
---                        EMPLOYEE TRAINING Enterprise
+% Mostrar el nombre de los alumnos inscriptos y el nombre de los cursos que tomaron
+qq1 := alumno njoin (inscripto njoin curso);
+qq2 := project nombre, nombre_curso (qq1);
 
---  employee(eID, eLast, eFirst, eTitle, eSalary)	    key: eID
---  technologyArea(aID, aTitle, aURL, aLeadID)	    key: aID
---  trainingCourse(cID, cTitle, cHours, areaID)	    key: cID
---  takes(eID, cID, tYear, tMonth, tDay)	    key: eID, cID
+% Mostrar los nombres y precios de los cursos con valor menor a 3000
+query_1 := project nombre_curso, valor (select valor < 3000 (curso));
 
+% Mostrar los nombres de los cursos que comienzan despues del mes de Marzo
+query_11 := project nombre_curso, fecha_inicio (select fecha_inicio > '01/03/2017' (curso));
 
--- Relational Algebra: Fundamental EMPLOYEE TRAINING Queries
-
-qSelection = select  eSalary > 100000 (employee)
-
-qProjection = project eLast, eFirst, eTitle (employee)
-
-qUnion = project eID (select  eTitle == 'Manager' (employee)) union project eID (select  eTitle == 'Coach' (employee))
-
--- Alternative for qUnion: using or in selection condition
-qUnionA = project eID (select  eTitle == 'Manager'  or  eTitle == 'Coach' (employee))
-
-qDifference = project eID (select eTitle == 'Manager' (employee)) difference project eID (takes)
-
-qProduct = project eID (employee) product project cID (trainingCourse)
-
--- Relational Algebra: Additional EMPLOYEE TRAINING Queries
-
-qIntersection = project eID (select eTitle == 'Manager' (employee)) intersect project eID (takes)
-
--- The generic join is not supported by Pireal,
--- forcing its equivalent definition in terms of the fundamental relational algebra operators.
-qJoin = select eID == aLeadID (employee product technologyArea)
-
-qNaturalJoin = project cTitle, tYear, tMonth, tDay (trainingCourse njoin takes)
+% Ejemplo de Left Outer Join
+consulta_1 := alumno louter inscripto;
