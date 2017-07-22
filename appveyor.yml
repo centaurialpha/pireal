@@ -15,7 +15,7 @@ init:
   - "ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%"
 
 install:
-  - pip install PyQt5
+  - pip install pep8
 
 test_script:
-  - python -m unittest
+  - python -m unittest -v
