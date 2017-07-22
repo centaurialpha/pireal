@@ -13,6 +13,7 @@ environment:
 
 init:
   - "ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%"
+  - cd pireal
 
 install:
   - pip install pep8
