@@ -11,8 +11,6 @@ environment:
       PYTHON_ARCH: "32"
       
 install:
-  - pip install pep8
 
 test_script:
-  - pep8 --exclude='src/resources.py' src -v
   - python -m unittest -v
