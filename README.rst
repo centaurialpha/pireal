@@ -1,10 +1,12 @@
-.. |test| image:: https://travis-ci.org/centaurialpha/pireal.svg?branch=master
+.. |travis| image:: https://travis-ci.org/centaurialpha/pireal.svg?branch=master
     :target: https://travis-ci.org/centaurialpha/pireal
+.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/d9wa6whp1fpq4uii?svg=true
+    :target: https://ci.appveyor.com/project/centaurialpha/pireal
     
 :Author: `Gabriel Acosta <http://centaurialpha.github.io>`_
 
 *****
-πreal |test|
+πreal |travis| |appveyor|
 *****
 
 **Pireal** is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.
