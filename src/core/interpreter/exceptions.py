@@ -44,8 +44,12 @@ class InvalidSyntaxError(InterpreterError):
 
 
 class ConsumeError(InterpreterError):
-    """ Excepción para errores generados por el Parser cuando no se expera
-    un determinado símbolo en el lenguaje """
+    """ Excepción para errores generados por el Parser cuando no se espera
+    un determinado símbolo del lenguaje """
+
+    def __init__(self, msg, lineno):
+        super().__init__(msg)
+        self.lineno = lineno
 
 
 class DuplicateRelationNameError(InterpreterError):

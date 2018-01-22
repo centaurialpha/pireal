@@ -1,6 +1,4 @@
 import QtQuick 2.6
-import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.1
 import "widgets"
 import "logic.js" as Logic
 
@@ -51,7 +49,7 @@ Rectangle {
     }
 
     // Formulario
-    ColumnLayout {
+    Column {
         spacing: 10
 
         anchors {
@@ -65,7 +63,7 @@ Rectangle {
         TextField {
             id: databaseName
             focus: true
-            Layout.fillWidth: true
+            //Layout.fillWidth: true
             placeholderText: qsTr("Database Name");
             onTextChanged: {
                 hasError = false;
@@ -74,15 +72,16 @@ Rectangle {
             }
         }
 
-        RowLayout {
+        Row {
             spacing: 0
+
             TextField {
                 id: dbLocation
-                Layout.fillWidth: true
+                //Layout.fillWidth: true
                 readOnly: true
             }
             Button {
-                text: "..."
+                texto: "..."
                 implicitWidth: 30
                 onClicked: { locationChanged(); }
             }
@@ -91,7 +90,7 @@ Rectangle {
         TextField {
             id: dbFilename
             readOnly: true
-            Layout.fillWidth: true
+            //Layout.fillWidth: true
         }
 
     }
@@ -106,13 +105,13 @@ Rectangle {
         }
 
         Button {
-            text: qsTr("Create")
+            texto: qsTr("Create")
             height: 30
             onClicked: { Logic.onButtonSaveClicked(); }
         }
 
         Button {
-            text: qsTr("Cancel")
+            texto: qsTr("Cancel")
             height: 30
             onClicked: {
                 close();

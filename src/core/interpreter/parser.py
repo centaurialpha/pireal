@@ -173,7 +173,7 @@ class Parser(object):
                     self.token.type,
                     self.lexer.sc.lineno,
                     self.lexer.sc.colno
-                ))
+                ), self.lexer.sc.lineno)
 
     def parse(self):
         """

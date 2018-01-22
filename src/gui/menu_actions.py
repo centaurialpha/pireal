@@ -95,6 +95,9 @@ MENU['edit'] = {
         'name': translate("Pireal", "Zoom Out"),
         'slot': "central:zoom_out"
     }, "-", {
+        'name': translate("Pireal", "Search"),
+        'slot': "central:search"
+    }, "-", {
         'name': translate("Pireal", "Preferences"),
         'slot': "central:show_settings"}]}
 

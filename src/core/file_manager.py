@@ -45,7 +45,7 @@ def get_path(filename):
     return os.path.dirname(filename)
 
 
-def generate_database(relations):
+def generate_database( relations):
     """ This function generates the content of the database
 
     :param relations: Dictionary with relations (Relation Object)

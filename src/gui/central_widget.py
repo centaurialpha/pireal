@@ -25,9 +25,11 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QStackedWidget,
     QFileDialog,
-    QMessageBox
+    QMessageBox,
+    QShortcut,
 )
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtCore import pyqtSignal, Qt
 
 from src.core import (
     settings,
@@ -76,6 +78,13 @@ class CentralWidget(QWidget):
 
         Pireal.load_service("central", self)
 
+        esc_short = QShortcut(QKeySequence(Qt.Key_Escape), self)
+        esc_short.activated.connect(self._hide_search)
+
+    def _hide_search(self):
+        query_container = self.get_active_db().query_container
+        query_container.set_editor_focus()
+
     @property
     def recent_databases(self):
         return self.__recent_dbs
@@ -92,9 +101,8 @@ class CentralWidget(QWidget):
         return self.__last_open_folder
 
     def create_database(self):
-        """ Show a wizard widget to create a new database,
-        only have one database open at time.
-        """
+        """Show a wizard widget to create a new database,
+        only have one database open at time."""
 
         if self.created:
             return self.__say_about_one_db_at_time()
@@ -103,7 +111,7 @@ class CentralWidget(QWidget):
         dialog.show()
 
     def __on_wizard_finished(self, *data):
-        """ This slot execute when wizard to create a database is finished """
+        """This slot execute when wizard to create a database is finished"""
 
         pireal = Pireal.get_service("pireal")
         if data:
@@ -354,6 +362,8 @@ class CentralWidget(QWidget):
         comment_action.setEnabled(True)
         uncomment_action = Pireal.get_action("uncomment")
         uncomment_action.setEnabled(True)
+        search_action = Pireal.get_action("search")
+        search_action.setEnabled(True)
 
     def execute_queries(self):
         db_container = self.get_active_db()
@@ -544,6 +554,10 @@ class CentralWidget(QWidget):
     def delete_column(self):
         tw = self.get_active_db().table_widget
         tw.delete_column()
+
+    def search(self):
+        query_container = self.get_active_db().query_container
+        query_container.search()
 
 
 central = CentralWidget()

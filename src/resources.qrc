@@ -24,5 +24,7 @@
         <file alias="logo">images/pireal_logo-black.png</file>
         <file alias="icon">images/pireal_icon.png</file>
         <file alias="edit_relation">images/table_edit.png</file>
+        <file alias="change-left">images/editor_left.png</file>
+        <file alias="change-top">images/editor_top.png</file>
     </qresource>
 </RCC>

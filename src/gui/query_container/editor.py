@@ -19,12 +19,14 @@
 
 from PyQt5.QtWidgets import (
     QPlainTextEdit,
-    QTextEdit
+    QTextEdit,
 )
 from PyQt5.QtGui import (
     QTextCharFormat,
     QTextCursor,
-    QColor
+    QColor,
+    QTextOption,
+    QTextDocument
 )
 from PyQt5.QtCore import Qt
 
@@ -39,7 +41,8 @@ class Editor(QPlainTextEdit):
 
     def __init__(self, pfile=None):
         super(Editor, self).__init__()
-        # self.setStyleSheet("background-color: #ffffff; color: black;")
+        self.setMouseTracking(True)
+        self.setWordWrapMode(QTextOption.NoWrap)
         self.pfile = pfile
         self.modified = False
         # Highlight current line
@@ -50,7 +53,9 @@ class Editor(QPlainTextEdit):
         self.set_font(PSetting.FONT)
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
-
+        self.__message = None
+        # Extra selections
+        self._selections = {}
         self.__cursor_position_changed()
 
         # Menu
@@ -63,7 +68,7 @@ class Editor(QPlainTextEdit):
 
     @property
     def filename(self):
-        """ This function returns the filename of RFile object
+        """This function returns the filename of RFile object
 
         :returns: filename of PFile
         """
@@ -84,27 +89,33 @@ class Editor(QPlainTextEdit):
         self._sidebar.setFixedHeight(self.height())
 
     def __cursor_position_changed(self):
-        extra_selections = []
+        # extra_selections = []
         _selection = QTextEdit.ExtraSelection()
-        extra_selections.append(_selection)
+        # extra_selections.append(_selection)
 
         # Highlight current line
-        if PSetting.HIGHLIGHT_CURRENT_LINE:
+        # if PSetting.HIGHLIGHT_CURRENT_LINE:
+        if True:
             color = QColor(Qt.lightGray).lighter(125)
             _selection.format.setBackground(color)
             _selection.format.setProperty(
                 QTextCharFormat.FullWidthSelection, True)
             _selection.cursor = self.textCursor()
             _selection.cursor.clearSelection()
-            extra_selections.append(_selection)
+            # extra_selections.append(_selection)
+        self.add_selection('current_line', _selection)
 
         # Paren matching
         extras = None
         if PSetting.MATCHING_PARENTHESIS:
             extras = self.__check_brackets()
-        if extras is not None:
-            extra_selections.extend(extras)
-        self.setExtraSelections(extra_selections)
+            if extras is not None:
+                pass
+                # left, right = extras
+                # self.add_selection('left_b', left)
+                # self.add_selection('right_b', right)
+
+        # self.setExtraSelections(extra_selections)
 
     def set_font(self, font):
         self.document().setDefaultFont(font)
@@ -231,7 +242,7 @@ class Editor(QPlainTextEdit):
         self.setFocus()
 
     def comment(self):
-        """ Comment one or more lines """
+        """Comment one or more lines"""
 
         tcursor = self.textCursor()
         block_start = self.document().findBlock(tcursor.selectionStart())
@@ -243,13 +254,13 @@ class Editor(QPlainTextEdit):
             if block_start.text():
                 tcursor.setPosition(block_start.position())
                 if block_start.text()[0] != '%':
-                    tcursor.insertText("%")
+                    tcursor.insertText("% ")
             block_start = block_start.next()
 
         tcursor.endEditBlock()
 
     def uncomment(self):
-        """ Uncomment one or more lines"""
+        """Uncomment one or more lines"""
 
         tcursor = self.textCursor()
         block_start = self.document().findBlock(tcursor.selectionStart())
@@ -265,3 +276,59 @@ class Editor(QPlainTextEdit):
             block_start = block_start.next()
 
         tcursor.endEditBlock()
+
+    def find_text(self, search, cs=False, wo=False,
+                  backward=False, find_next=True):
+        flags = QTextDocument.FindFlags()
+        if cs:
+            flags = QTextDocument.FindCaseSensitively
+        if wo:
+            flags |= QTextDocument.FindWholeWords
+        if backward:
+            flags |= QTextDocument.FindBackward
+        if find_next or backward:
+            self.moveCursor(QTextCursor.NoMove)
+        else:
+            self.moveCursor(QTextCursor.StartOfWord)
+        found = self.find(search, flags)
+        if not found:
+            cursor = self.textCursor()
+            if backward:
+                self.moveCursor(QTextCursor.End)
+            else:
+                self.moveCursor(QTextCursor.Start)
+            found = self.find(search, flags)
+            if not found:
+                self.setTextCursor(cursor)
+
+    def highlight_error(self, linenumber):
+        if linenumber == -1:
+            # Borro la selección
+            self.clear_selections('error')
+            print('eeee')
+            return
+        selection = QTextEdit.ExtraSelection()
+        selection.cursor = self.textCursor()
+        selection.cursor.movePosition(QTextCursor.Start,
+                                      QTextCursor.MoveAnchor)
+        selection.cursor.movePosition(QTextCursor.Down, QTextCursor.MoveAnchor,
+                                      linenumber - 1)
+        selection.format.setProperty(QTextCharFormat.FullWidthSelection, True)
+        selection.format.setBackground(QColor("#DD4040"))
+        selection.format.setForeground(Qt.white)
+        self.add_selection('error', selection)
+
+    def add_selection(self, selection_name, selections):
+        self._selections[selection_name] = selections
+        self.update_selections()
+
+    def update_selections(self):
+        selections = []
+        for selection_name, selection in self._selections.items():
+            selections.append(selection)
+        self.setExtraSelections(selections)
+
+    def clear_selections(self, selection_name):
+        if selection_name in self._selections:
+            self._selections[selection_name] = []
+            self.update_selections()

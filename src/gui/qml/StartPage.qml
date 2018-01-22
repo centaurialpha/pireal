@@ -16,10 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Pireal; If not, see <http://www.gnu.org/licenses/>.
  */
-
-import QtQuick 2.6
-import QtQuick.Layouts 1.1
-import QtQuick.Controls 2.1
+import QtQuick 2.7
 import "widgets"
 
 
@@ -75,12 +72,12 @@ Item {
 
 
 
-    ColumnLayout {
+    Column {
         id: leftArea
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.leftMargin: 10
-        width: 400
+        width: 410
         spacing: 30
 
         Image {
@@ -92,11 +89,16 @@ Item {
         Text {
             id: whatIsPireal
             text: qsTr("<b>Pireal</b> is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.")
-            Layout.maximumWidth: parent.width
-            wrapMode: Text.WordWrap
+            anchors {
+                left: parent.left
+                right: parent.right
+                rightMargin: 1
+            }
+            wrapMode: Text.Wrap
             renderType: Text.NativeRendering
             font.pointSize: 12
             color: "#5f6566"
+
         }
 
         Text {
@@ -108,33 +110,29 @@ Item {
             color: "#5f6566"
         }
 
-        ColumnLayout {
+        Row {
             id: buttons
-            spacing: 10
-            anchors.top: getStarted.bottom
+            spacing: 5
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.topMargin: 30
-
             Button {
-                text: qsTr("Create a new Database")
+                texto: qsTr("Create a new Database")
                 onClicked: {
                     newDatabase();
-                }
+               }
             }
 
             Button {
-                text: qsTr("Open a Database")
-                implicitWidth: parent.width;
+                texto: qsTr("Open a Database")
+                //implicitWidth: parent.width;
                 onClicked: {
                     openDatabase();
                 }
             }
-
         }
 
         Column {
             spacing: 10
-            anchors.top: buttons.bottom
+            //anchors.top: buttons.bottom
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.margins: 30
@@ -185,9 +183,10 @@ Item {
                        href=\"http://qt.io\">Qt/QML</a>, so if you want to collaborate,
                        suggest something or just study it, the source code is available
                        <a href=\"http://github.com/centaurialpha/pireal\">here</a>.")
-            Layout.maximumWidth: parent.width
+            anchors.left: parent.left
+            anchors.right: parent.right
+
             wrapMode: Text.WordWrap
-            renderType: Text.NativeRendering
             color: "#5f6566"
             linkColor: "#4896b8"
             visible: !heightCompressed

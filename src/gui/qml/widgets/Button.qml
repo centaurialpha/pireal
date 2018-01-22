@@ -1,16 +1,30 @@
-import QtQuick 2.3
-import QtQuick.Controls 2.0
-import QtQuick.Controls.Styles 1.0
+import QtQuick 2.7
 
-Button {
+Rectangle {
     id: button
 
-    contentItem: Text {
-        text: button.text
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignHCenter
-        renderType: Text.NativeRendering
-        color: "#484c4d"
+    signal clicked
+    property alias texto: buttonText.text
+    property int offset: 30
+
+    border.color: "#ccc"
+
+    width: buttonText.width + offset
+    height: buttonText.height + offset
+
+    Text {
+        id: buttonText
+        text: button.texto
+        anchors.centerIn: parent
+        color: "#5f6566"
     }
 
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+
+        onClicked: { button.clicked() }
+        onEntered: { button.color = "#f5f5f5" }
+        onExited: { button.color = "transparent" }
+    }
 }

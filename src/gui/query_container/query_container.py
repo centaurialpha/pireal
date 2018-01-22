@@ -28,9 +28,11 @@ from PyQt5.QtWidgets import (
     QLabel,
     QDialog,
     QPushButton,
+    QLineEdit,
     QAction,
     QToolBar
 )
+from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import (
     Qt,
     pyqtSignal,
@@ -182,17 +184,18 @@ class QueryContainer(QWidget):
             interpreter.clear()
             interpreter.to_python()
         except MissingQuoteError as reason:
-            pireal = Pireal.get_service("pireal")
-            pireal.show_error_message(
+            pireal = Pireal.get_service("notification")
+            pireal.show_text(
                 self.tr("Missing quote on Line: {0}".format(
-                    reason.lineno)))
+                    reason.lineno)), 0)
             return
         except InvalidSyntaxError as reason:
-            pireal = Pireal.get_service("pireal")
-            pireal.show_error_message(
-                self.tr("Invalid syntax on Line: {0}, Column {1}. "
-                        "The error start with <b>{2}</b>".format(
-                            reason.lineno, reason.column, reason.character)))
+            print(self.currentWidget())
+            # pireal = Pireal.get_service("pireal")
+            # pireal.show_error_message(
+            #    self.tr("Invalid syntax on Line: {0}, Column {1}. "
+            #            "The error start with <b>{2}</b>".format(
+            #                reason.lineno, reason.column, reason.character)))
             return
         except DuplicateRelationNameError as duplicate_rname:
             pireal = Pireal.get_service("pireal")
@@ -203,9 +206,11 @@ class QueryContainer(QWidget):
                             duplicate_rname)), syntax_error=False)
             return
         except ConsumeError as reason:
-            pireal = Pireal.get_service("pireal")
-            pireal.show_error_message(self.parse_error(reason.__str__()))
-            return
+            self._highlight_error_in_editor(reason.lineno)
+            # notificator = Pireal.get_service("notification")
+            # notificator.show_text(reason.__str__(), 0)
+            # pireal.show_error_message(self.parse_error(reason.__str__()))
+            # return
         relations.update(table_widget.relations)
         for relation_name, expression in list(interpreter.SCOPE.items()):
             try:
@@ -219,6 +224,12 @@ class QueryContainer(QWidget):
 
             relations[relation_name] = new_relation
             self.__add_table(new_relation, relation_name)
+        self._highlight_error_in_editor(-1)
+
+    def _highlight_error_in_editor(self, line_error):
+        weditor = self.currentWidget().get_editor()
+        if weditor.hasFocus():
+            weditor.highlight_error(line_error)
 
     @staticmethod
     def parse_error(text):
@@ -274,34 +285,47 @@ class QueryContainer(QWidget):
         if weditor.hasFocus():
             weditor.uncomment()
 
+    def search(self):
+        cw = self.currentWidget()
+        cw.show_search_widget()
+
+    def set_editor_focus(self):
+        cw = self.currentWidget()
+        cw.hide_search_widget()
+
 
 class QueryWidget(QWidget):
     editorModified = pyqtSignal(bool)
+    # Editor positions
+    TOP_POSITION = 0
+    LEFT_POSITION = 1
 
     def __init__(self):
         super(QueryWidget, self).__init__()
         box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 0, 0)
 
-        self._vsplitter = QSplitter(Qt.Vertical)
-        self._hsplitter = QSplitter(Qt.Horizontal)
+        self.__current_orientation = self.LEFT_POSITION
+
+        self._editor_splitter = QSplitter(Qt.Horizontal)
+        self.result_splitter = QSplitter(Qt.Vertical)
 
         self._result_list = lateral_widget.LateralWidget()
         self._result_list.header().hide()
-        self._hsplitter.addWidget(self._result_list)
+        self.result_splitter.addWidget(self._result_list)
 
         self._stack_tables = QStackedWidget()
-        self._hsplitter.addWidget(self._stack_tables)
+        self.result_splitter.addWidget(self._stack_tables)
 
         self.relations = {}
         # Editor widget
         self._editor_widget = EditorWidget(self)
         self._editor_widget.editorModified[bool].connect(
             lambda modified: self.editorModified.emit(modified))
-        self._vsplitter.addWidget(self._editor_widget)
+        self._editor_splitter.addWidget(self._editor_widget)
 
-        self._vsplitter.addWidget(self._hsplitter)
-        box.addWidget(self._vsplitter)
+        self._editor_splitter.addWidget(self.result_splitter)
+        box.addWidget(self._editor_splitter)
 
         # Connections
         self._result_list.itemClicked.connect(
@@ -309,6 +333,20 @@ class QueryWidget(QWidget):
                 self._result_list.row()))
         self._result_list.itemDoubleClicked.connect(
             self.show_relation)
+
+    def change_orientation(self):
+        if self.__current_orientation == self.LEFT_POSITION:
+            self.result_splitter.setOrientation(Qt.Horizontal)
+            self._editor_splitter.setOrientation(Qt.Vertical)
+            self.__current_orientation = self.TOP_POSITION
+            self._editor_widget._rotate_editor.setIcon(
+                QIcon(":img/change-left"))
+        else:
+            self.result_splitter.setOrientation(Qt.Vertical)
+            self._editor_splitter.setOrientation(Qt.Horizontal)
+            self.__current_orientation = self.LEFT_POSITION
+            self._editor_widget._rotate_editor.setIcon(
+                QIcon(":img/change-top"))
 
     def show_relation(self, item):
         central_widget = Pireal.get_service("central")
@@ -333,17 +371,17 @@ class QueryWidget(QWidget):
         """ Save sizes of Splitters """
 
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        qsettings.setValue('hsplitter_query_sizes',
-                           self._hsplitter.saveState())
-        qsettings.setValue('vsplitter_query_sizes',
-                           self._vsplitter.saveState())
+        qsettings.setValue('result_splitter_query_sizes',
+                           self.result_splitter.saveState())
+        qsettings.setValue('editor_splitter_query_sizes',
+                           self._editor_splitter.saveState())
 
     def get_editor(self):
         return self._editor_widget.get_editor()
 
     def showEvent(self, event):
         super(QueryWidget, self).showEvent(event)
-        self._hsplitter.setSizes([1, self.width() / 3])
+        self.result_splitter.setSizes([1, self.width() / 3])
 
     def clear_results(self):
         self._result_list.clear_items()
@@ -362,6 +400,12 @@ class QueryWidget(QWidget):
         index = self._stack_tables.addWidget(_view)
         self._stack_tables.setCurrentIndex(index)
         self._result_list.add_item(rname, rela.cardinality())
+
+    def show_search_widget(self):
+        self._editor_widget.show_search_widget()
+
+    def hide_search_widget(self):
+        self._editor_widget.hide_search_widget()
 
 
 class EditorWidget(QWidget):
@@ -399,10 +443,22 @@ class EditorWidget(QWidget):
                 self._toolbar.addAction(qaction)
             else:
                 self._toolbar.addSeparator()
+        self._toolbar.addSeparator()
+        self._rotate_editor = self._toolbar.addAction(
+            QIcon(":img/change-top"), '')
+        self._rotate_editor.setToolTip(self.tr("Change orientation"))
+        self._rotate_editor.triggered.connect(parent.change_orientation)
         hbox.addWidget(self._toolbar, 1)
         hbox.addWidget(self._column_lbl)
+        vbox.addLayout(hbox)
         # Editor
         self._editor = editor.Editor()
+        vbox.addWidget(self._editor)
+        # Search widget
+        self._search_widget = SearchWidget(self)
+        self._search_widget.hide()
+        vbox.addWidget(self._search_widget)
+
         # Editor connections
         self._editor.customContextMenuRequested.connect(
             self.__show_context_menu)
@@ -416,8 +472,15 @@ class EditorWidget(QWidget):
             self.__on_copy_available)
         self._editor.cursorPositionChanged.connect(
             self._update_column_label)
-        vbox.addLayout(hbox)
-        vbox.addWidget(self._editor)
+
+    def show_search_widget(self):
+        self._search_widget.show()
+        self._search_widget._line_search.setFocus()
+        self._search_widget._execute_search(self._search_widget.search_text)
+
+    def hide_search_widget(self):
+        self._search_widget.hide()
+        self._search_widget._line_search.clear()
 
     def _update_column_label(self):
         col = str(self._editor.textCursor().columnNumber() + 1)
@@ -472,3 +535,41 @@ class EditorWidget(QWidget):
         cut_action.setEnabled(value)
         copy_action = Pireal.get_action("copy_action")
         copy_action.setEnabled(value)
+
+
+class SearchWidget(QWidget):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        box = QHBoxLayout(self)
+        box.setContentsMargins(0, 3, 0, 3)
+        box.setSpacing(0)
+        self._line_search = QLineEdit()
+        box.addWidget(self._line_search)
+        btn_find_previous = QPushButton("Find Previous")
+        box.addWidget(btn_find_previous)
+        btn_find_next = QPushButton("Find Next")
+        box.addWidget(btn_find_next)
+
+        self._parent = parent
+
+        self._line_search.textChanged.connect(self._execute_search)
+        btn_find_next.clicked.connect(self._find_next)
+        btn_find_previous.clicked.connect(self._find_previous)
+
+    def _find_next(self):
+        self._execute_search(find_next=True)
+
+    def _find_previous(self):
+        self._execute_search(backward=True)
+
+    def _execute_search(self, find_next=False, backward=False):
+        text = self.search_text
+        if not text:
+            return
+        weditor = self._parent._editor
+        weditor.find_text(text, find_next=find_next, backward=backward)
+
+    @property
+    def search_text(self):
+        return self._line_search.text()

@@ -19,60 +19,84 @@
 
 import os
 from PyQt5.QtWidgets import (
-    QDialog,
+    QWizard,
+    QWizardPage,
     QVBoxLayout,
-    QShortcut,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QStyle,
     QFileDialog
 )
-from PyQt5.QtGui import QKeySequence
-from PyQt5.QtQuickWidgets import QQuickWidget
 from PyQt5.QtCore import (
-    Qt,
-    QUrl,
     pyqtSlot,
     pyqtSignal
 )
 from src.core import settings
 
 
-class NewDatabaseDialog(QDialog):
+class NewDatabaseDialog(QWizard):
 
     # La señal se emite cuando se crea la DB, es decir
     # cuando se clickea en el botón 'Crear' del diálogo
     created = pyqtSignal('QString', 'QString', 'QString')
 
     def __init__(self, parent=None):
-        QDialog.__init__(self, parent, Qt.Dialog | Qt.FramelessWindowHint)
-        self.setModal(True)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        super().__init__(parent)
+        self.setWindowTitle(self.tr("New Database Wizard"))
+        self.addPage(FirstPage())
+
+    def done(self, result):
+        if result == 1:
+            dbname = self.field("dbname")
+            location = self.field("dblocation")
+            filename = self.field("dbfilename")
+            self.created.emit(dbname, location, filename)
+        super().done(result)
+
+
+class FirstPage(QWizardPage):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setTitle("Nueva Base de Datos de Pireal")
+        self.setSubTitle("A continuación elija el nombre y el destino de la DB")
+
+        # Widgets
         box = QVBoxLayout(self)
-        box.setContentsMargins(0, 0, 0, 0)
-        view = QQuickWidget()
-        view.setResizeMode(QQuickWidget.SizeRootObjectToView)
-        qml = os.path.join(settings.QML_PATH, "NewDatabaseDialog.qml")
-        view.setSource(QUrl.fromLocalFile(qml))
-        box.addWidget(view)
+        hbox = QHBoxLayout()
+        hbox.addWidget(QLabel(self.tr("Database Name:")))
+        self._database_name_line = QLineEdit()
+        hbox.addWidget(self._database_name_line)
+        box.addLayout(hbox)
+        hbox = QHBoxLayout()
+        hbox.addWidget(QLabel(self.tr("Location:")))
+        self._database_location_line = QLineEdit()
+        # Left action to change db location
+        change_location_action = self._database_location_line.addAction(
+            self.style().standardIcon(QStyle.SP_DirIcon), 1)
+        self._database_location_line.setReadOnly(True)
+        hbox.addWidget(self._database_location_line)
+        box.addLayout(hbox)
+        hbox = QHBoxLayout()
+        hbox.addWidget(QLabel(self.tr("Filename:")))
+        self._database_filename_line = QLineEdit()
+        self._database_filename_line.setReadOnly(True)
+        hbox.addWidget(self._database_filename_line)
+        box.addLayout(hbox)
 
-        # Hide dialog with Escape
-        short_escape = QShortcut(QKeySequence(Qt.Key_Escape), self)
-        short_escape.activated.connect(self.hide)
-
-        # Acceso a la interfáz QML
-        self.__root = view.rootObject()
+        # Register fields
+        self.registerField("dbname*", self._database_name_line)
+        self.registerField("dblocation", self._database_location_line)
+        self.registerField("dbfilename", self._database_filename_line)
 
         self.__location_folder = settings.PIREAL_DATABASES
-        self.__root.setFolder(self.__location_folder)
-        self.__root.setFilename(self.__location_folder)
+        self._database_filename_line.setText(self.__location_folder)
+        self._database_location_line.setText(self.__location_folder)
 
         # Conexiones
-        self.__root.close.connect(self.close)
-        self.__root.databaseNameChanged['QString'].connect(
-            self.__update_filename)
-        self.__root.locationChanged.connect(
-            self.__select_location)
-        self.__root.create.connect(
-            lambda db_name, location, filename: self.created.emit(
-                db_name, location, filename))
+        self._database_name_line.textChanged.connect(self._update_filename)
+        change_location_action.triggered.connect(self.__select_location)
 
     @pyqtSlot()
     def __select_location(self):
@@ -80,13 +104,14 @@ class NewDatabaseDialog(QDialog):
                                                     self.tr("Select Folder"))
         if not location:
             return
-        self.__root.setFolder(location)
-        self.__location_folder = os.path.join(self.__location_folder,
-                                              location)
-        self.__root.setFilename(
-            os.path.join(location, self.__root.dbName()))
+
+        self._database_location_line.setText(location)
+        self.__location_folder = os.path.join(self.__location_folder, location)
+
+        self._database_filename_line.setText(os.path.join(
+            location, self._database_name_line.text()))
 
     @pyqtSlot('QString')
-    def __update_filename(self, fname):
-        new_fname = os.path.join(self.__location_folder, fname)
-        self.__root.setFilename(new_fname + '.pdb')
+    def _update_filename(self, filename):
+        new_filename = os.path.join(self.__location_folder, filename)
+        self._database_filename_line.setText(new_filename + '.pdb')

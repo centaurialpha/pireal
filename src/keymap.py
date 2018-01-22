@@ -45,6 +45,7 @@ KEYMAP = {
     'comment': QKeySequence(Qt.CTRL + Qt.Key_D),
     'uncomment': QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_D),
     'show_settings': QKeySequence(Qt.CTRL + Qt.Key_P),
+    'search': QKeySequence(Qt.CTRL + Qt.Key_F),
     'create_new_relation': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_N),
     'remove_relation': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_W),
     'load_relation': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_O),

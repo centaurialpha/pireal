@@ -1,4 +1,4 @@
-import QtQuick 2.3
+import QtQuick 2.5
 
 Text {
     color: "#b2b2b2"

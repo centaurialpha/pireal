@@ -20,7 +20,8 @@
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QLabel
+    QLabel,
+    QSizePolicy
 )
 from PyQt5.QtCore import QTimer
 
@@ -51,4 +52,5 @@ class Notification(QWidget):
             self.timer.start(time_out)
         self.notificator.setText(text)
 
-notif = Notification()
+
+Notification()

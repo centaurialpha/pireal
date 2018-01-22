@@ -36,7 +36,7 @@ from src import keymap
 from src.core import settings
 from src.gui import (
     menu_actions,
-    message_error
+    # message_error
 )
 
 
@@ -92,7 +92,7 @@ class Pireal(QMainWindow):
         notification_widget = Pireal.get_service("notification")
         self.toolbar.addWidget(notification_widget)
         # Message error
-        self._msg_error_widget = message_error.MessageError(self)
+        # self._msg_error_widget = message_error.MessageError(self)
         # Central widget
         central_widget = Pireal.get_service("central")
         central_widget.databaseSaved.connect(notification_widget.show_text)
@@ -284,7 +284,8 @@ class Pireal(QMainWindow):
             'zoom_in',
             'zoom_out',
             'comment',
-            'uncomment'
+            'uncomment',
+            'search'
         ]
 
         for action in actions:
