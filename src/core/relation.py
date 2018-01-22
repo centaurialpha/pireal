@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 #
+# Copyright (C) 2008-2018  Salvo "LtWorf" Tomaselli
 # Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
@@ -16,6 +17,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
+
+# This module is based on Relational: <https://github.com/ltworf/relational>
 
 import re
 
