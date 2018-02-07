@@ -63,3 +63,10 @@ Video
 
 .. image:: http://i3.ytimg.com/vi/np4h-Q1aMBg/hqdefault.jpg
    :target: https://www.youtube.com/watch?v=np4h-Q1aMBg
+
+Donate
+##########
+I hope Pireal was useful. You can donate any amount that you think Pireal deserves.
+
+.. image:: https://www.paypalobjects.com/es_XC/AR/i/btn/btn_donateCC_LG.gif
+   :target: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=29STPF8BWWUTY
