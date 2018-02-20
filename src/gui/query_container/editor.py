@@ -43,6 +43,7 @@ class Editor(QPlainTextEdit):
         super(Editor, self).__init__()
         self.setMouseTracking(True)
         self.setWordWrapMode(QTextOption.NoWrap)
+        self.setCursorWidth(8)
         self.pfile = pfile
         self.modified = False
         # Highlight current line

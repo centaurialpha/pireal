@@ -1,0 +1,26 @@
+{
+  "name": "pireal",
+  "description": "no description available",
+  "url": "",
+  "license": "",
+  "mainFile": "pireal",
+  "project-type": "",
+  "supported-extensions": [
+    "py",
+    "pyw",
+    "html",
+    "qml",
+    "js",
+    "nja"
+  ],
+  "indentation": 4,
+  "use-tabs": false,
+  "pythonExec": "/usr/bin/python3",
+  "PYTHONPATH": "",
+  "additional_builtins": [],
+  "preExecScript": "",
+  "postExecScript": "",
+  "venv": "",
+  "programParams": "",
+  "relatedProjects": []
+}
