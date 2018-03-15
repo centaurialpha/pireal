@@ -23,8 +23,11 @@ Pireal Settings
 
 import sys
 import os
+import json
+
+from PyQt5.QtCore import QObject
+
 from PyQt5.QtGui import QFont
-from PyQt5.QtCore import QSettings
 
 
 # Detecting Operating System
@@ -52,7 +55,9 @@ PIREAL_DIR = os.path.join(HOME, '.pireal')
 # Here are saved by default the databases
 PIREAL_DATABASES = os.path.join(HOME, 'PirealDatabases')
 # Settings
-SETTINGS_PATH = os.path.join(PIREAL_DIR, 'pireal_settings.ini')
+SETTINGS_PATH = os.path.join(PIREAL_DIR, 'settings.ini')
+# User settings
+USER_SETTINGS_PATH = os.path.join(PIREAL_DIR, "config.json")
 # Log file
 LOG_PATH = os.path.join(PIREAL_DIR, 'pireal_log.log')
 # Language files
@@ -71,31 +76,50 @@ SUPPORTED_FILES = ("Pireal Database File (*.pdb);;"
                    "Pireal Relation File (*.prf)")
 
 
-class PSetting(object):
-    LANGUAGE = ""
-    HIGHLIGHT_CURRENT_LINE = False
-    MATCHING_PARENTHESIS = True
-    RECENT_DBS = []
-    LAST_OPEN_FOLDER = None
-    # FIXME: for Mac Os
-    if LINUX:
-        FONT = QFont("Monospace", 12)
-    else:
-        FONT = QFont("Courier", 10)
+DEFAULT_SETTINGS = {
+    "language": "eng",
+    "highlightCurrentLine": True,
+    "matchParenthesis": True,
+    "recentFiles": [],
+    "lastOpenFolder": None,
+    "font": None
+}
 
 
-def load_settings():
-    """ Load settings from INI file """
+class Config(QObject):
 
-    qs = QSettings(SETTINGS_PATH, QSettings.IniFormat)
-    PSetting.LANGUAGE = qs.value('language', "", type='QString')
-    PSetting.RECENT_DBS = qs.value('recent_databases', [], type='QStringList')
-    PSetting.LAST_OPEN_FOLDER = qs.value('last_open_folder',
-                                         None, type='QString')
-    PSetting.HIGHLIGHT_CURRENT_LINE = qs.value('highlight_current_line',
-                                               False, type=bool)
-    PSetting.MATCHING_PARENTHESIS = qs.value('matching_parenthesis',
-                                             True, type=bool)
-    font = qs.value('font', None)
-    if font is not None:
-        PSetting.FONT = font
+    def __init__(self, path=USER_SETTINGS_PATH):
+        QObject.__init__(self)
+        self._path = path
+        self._settings = {}
+
+    def load_settings(self):
+        if not os.path.exists(self._path):
+            self._settings = DEFAULT_SETTINGS
+            with open(self._path, mode="w") as fp:
+                json.dump(DEFAULT_SETTINGS, fp)
+        else:
+            with open(self._path) as fp:
+                self._settings = json.load(fp)
+
+    def save_settings(self):
+        with open(self._path, mode="w") as fp:
+            json.dump(self._settings, fp)
+
+    def get(self, option, default=None):
+        if option not in self._settings:
+            raise Exception("%s no es una opción de configuración" % option)
+        value = self._settings.get(option, default)
+        return value
+
+    def set_value(self, option, value):
+        self._settings[option] = value
+
+    def _get_font(self):
+        font = QFont("courier", 10)
+        if LINUX:
+            font = QFont("monospace", 12)
+        return font
+
+
+CONFIG = Config()

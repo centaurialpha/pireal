@@ -67,6 +67,7 @@ class CustomInstall(install):
         if self.root is None:
             build_dir = data_dir
         else:
+
             build_dir = os.path.join(self.root, data_dir[1:])
             apps_dir = os.path.join(self.root, apps_dir[1:])
 

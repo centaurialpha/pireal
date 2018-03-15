@@ -34,7 +34,8 @@ from src.gui.query_container import (
     highlighter,
     sidebar
 )
-from src.core.settings import PSetting
+from src.core.settings import CONFIG
+# from src.gui.query_container import snippets
 
 
 class Editor(QPlainTextEdit):
@@ -47,18 +48,22 @@ class Editor(QPlainTextEdit):
         self.pfile = pfile
         self.modified = False
         # Highlight current line
-        self._highlight_line = PSetting.HIGHLIGHT_CURRENT_LINE
+        self._highlight_line = CONFIG.get("highlightCurrentLine")
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
-        self.set_font(PSetting.FONT)
+        font = CONFIG.get("font")
+        if font is None:
+            font = CONFIG._get_font()
+        self.set_font(font)
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
         self.__message = None
+        self.word_separators = [")", "("]
         # Extra selections
         self._selections = {}
         self.__cursor_position_changed()
-
+        # self.snippets = snippets.SnippetManager(self)
         # Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
 
@@ -89,34 +94,67 @@ class Editor(QPlainTextEdit):
         # Fixed sidebar height
         self._sidebar.setFixedHeight(self.height())
 
-    def __cursor_position_changed(self):
-        # extra_selections = []
-        _selection = QTextEdit.ExtraSelection()
-        # extra_selections.append(_selection)
+    def keyPressEvent(self, event):
+        # key = event.key()
+        # if key == Qt.Key_Tab:
+        #     if self.snippets._current_snippet is not None:
+        #         self.snippets.select_next()
+        #     else:
+        #         self.snippets.insert_snippet()
+        # else:
+        super().keyPressEvent(event)
 
-        # Highlight current line
-        # if PSetting.HIGHLIGHT_CURRENT_LINE:
-        if True:
+    def word_under_cursor(self, cursor=None):
+        """Returns QTextCursor that contains a word under passed cursor
+        or actual cursor"""
+        if cursor is None:
+            cursor = self.textCursor()
+        start_pos = end_pos = cursor.position()
+        while not cursor.atStart():
+            cursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor)
+            char = cursor.selectedText()[0]
+            selected_text = cursor.selectedText()
+            if (selected_text in self.word_separators and (
+                    selected_text != "n" and selected_text != "t") or
+                    char.isspace()):
+                break
+            start_pos = cursor.position()
+            cursor.setPosition(start_pos)
+        cursor.setPosition(end_pos)
+        while not cursor.atEnd():
+            cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor)
+            char = cursor.selectedText()[0]
+            selected_text = cursor.selectedText()
+            if (selected_text in self.word_separators and (
+                    selected_text != "n" and selected_text != "t") or
+                    char.isspace()):
+                break
+            end_pos = cursor.position()
+            cursor.setPosition(end_pos)
+        cursor.setPosition(start_pos)
+        cursor.setPosition(end_pos, QTextCursor.KeepAnchor)
+        return cursor
+
+    def __cursor_position_changed(self):
+        self.clear_selections("current_line")
+
+        if self._highlight_line:
+            _selection = QTextEdit.ExtraSelection()
             color = QColor(Qt.lightGray).lighter(125)
             _selection.format.setBackground(color)
             _selection.format.setProperty(
                 QTextCharFormat.FullWidthSelection, True)
             _selection.cursor = self.textCursor()
             _selection.cursor.clearSelection()
-            # extra_selections.append(_selection)
-        self.add_selection('current_line', _selection)
+            self.add_selection("current_line", [_selection])
 
         # Paren matching
-        extras = None
-        if PSetting.MATCHING_PARENTHESIS:
+        if CONFIG.get("matchParenthesis"):
+            self.clear_selections("parenthesis")
             extras = self.__check_brackets()
             if extras is not None:
-                pass
-                # left, right = extras
-                # self.add_selection('left_b', left)
-                # self.add_selection('right_b', right)
-
-        # self.setExtraSelections(extra_selections)
+                left, right = extras
+                self.add_selection("parenthesis", [left, right])
 
     def set_font(self, font):
         self.document().setDefaultFont(font)
@@ -182,7 +220,7 @@ class Editor(QPlainTextEdit):
             _format.setBackground(Qt.red)
             left.format = _format
             left.cursor = cursor
-            return (left,)
+            return (left, right)
 
     def __match_left(self, block, char, start, found):
         while block.isValid():
@@ -317,7 +355,7 @@ class Editor(QPlainTextEdit):
         selection.format.setProperty(QTextCharFormat.FullWidthSelection, True)
         selection.format.setBackground(QColor("#DD4040"))
         selection.format.setForeground(Qt.white)
-        self.add_selection('error', selection)
+        self.add_selection('error', [selection])
 
     def add_selection(self, selection_name, selections):
         self._selections[selection_name] = selections
@@ -326,7 +364,7 @@ class Editor(QPlainTextEdit):
     def update_selections(self):
         selections = []
         for selection_name, selection in self._selections.items():
-            selections.append(selection)
+            selections.extend(selection)
         self.setExtraSelections(selections)
 
     def clear_selections(self, selection_name):

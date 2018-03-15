@@ -47,7 +47,7 @@ from src.gui.dialogs import (
     new_relation_dialog,
     new_database_dialog
 )
-PSetting = settings.PSetting
+from src.core.settings import CONFIG
 # Logger
 logger = Logger(__name__)
 
@@ -70,11 +70,11 @@ class CentralWidget(QWidget):
         self.created = False
         # Acá cacheo la última carpeta accedida
         self.__last_open_folder = None
-        if PSetting.LAST_OPEN_FOLDER:
-            self.__last_open_folder = PSetting.LAST_OPEN_FOLDER
+        if CONFIG.get("lastOpenFolder") is not None:
+            self.__last_open_folder = CONFIG.get("lastOpenFolder")
         self.__recent_dbs = []
-        if PSetting.RECENT_DBS:
-            self.__recent_dbs = PSetting.RECENT_DBS
+        if CONFIG.get("recentFiles"):
+            self.__recent_dbs = CONFIG.get("recentFiles")
 
         Pireal.load_service("central", self)
 
@@ -91,10 +91,12 @@ class CentralWidget(QWidget):
 
     @recent_databases.setter
     def recent_databases(self, database_file):
-        if database_file in PSetting.RECENT_DBS:
-            PSetting.RECENT_DBS.remove(database_file)
-        PSetting.RECENT_DBS.insert(0, database_file)
-        self.__recent_dbs = PSetting.RECENT_DBS
+        recent_files = CONFIG.get("recentFiles")
+        if database_file in recent_files:
+            recent_files.remove(database_file)
+        recent_files.insert(0, database_file)
+        self.__recent_dbs = recent_files
+        pass
 
     @property
     def last_open_folder(self):

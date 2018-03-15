@@ -39,6 +39,8 @@ from src.gui import (
     # message_error
 )
 
+from src.core.settings import CONFIG
+
 
 class Pireal(QMainWindow):
 
@@ -329,9 +331,20 @@ class Pireal(QMainWindow):
         self._msg_error_widget.show_msg(text, syntax_error)
         self._msg_error_widget.show()
 
+    def save_user_settings(self):
+        central_widget = Pireal.get_service("central")
+        CONFIG.set_value("lastOpenFolder", central_widget.last_open_folder)
+        CONFIG.set_value("recentFiles", central_widget.recent_databases)
+
+        # Write settings
+        CONFIG.save_settings()
+
     def closeEvent(self, event):
+        self.save_user_settings()
+
+        # Qt settings
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        # Save window geometry
+        # # Save window geometry
         if self.isMaximized():
             qsettings.setValue('window_max', True)
         else:
@@ -340,12 +353,6 @@ class Pireal(QMainWindow):
             qsettings.setValue('window_size', self.size())
 
         central_widget = Pireal.get_service("central")
-        # Save recent databases
-        qsettings.setValue('recent_databases',
-                           central_widget.recent_databases)
-        # Última carpeta accedida
-        qsettings.setValue('last_open_folder',
-                           central_widget.last_open_folder)
         db = central_widget.get_active_db()
         if db is not None:
             # Save splitters size

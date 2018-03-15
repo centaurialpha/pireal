@@ -34,8 +34,8 @@ from src.core import (
     settings,
     file_manager
 )
-PSetting = settings.PSetting
-
+# PSetting = settings.PSetting
+from src.core.settings import CONFIG
 
 class StartPage(QWidget):
 
@@ -85,8 +85,9 @@ class StartPage(QWidget):
 
     def load_items(self):
         self.__root.clear()
-        if PSetting.RECENT_DBS:
-            for file_ in PSetting.RECENT_DBS:
+        print(CONFIG.get("recentFiles"))
+        if CONFIG.get("recentFiles"):
+            for file_ in CONFIG.get("recentFiles"):
                 name = os.path.splitext(os.path.basename(file_))[0]
                 self.__root.loadItem(name, file_)
 

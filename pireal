@@ -61,8 +61,9 @@ if project not in sys.path:
     sys.path.insert(0, project)
 
 from src.core import settings
+from src.core.settings import CONFIG
 
-PSetting = settings.PSetting
+# PSetting = settings.PSetting
 
 
 def create_dirs():
@@ -119,12 +120,12 @@ if __name__ == "__main__":
     create_dirs()
 
     info = __get_versions()
-    settings.load_settings()
+    CONFIG.load_settings()
 
     QTextCodec.setCodecForLocale(QTextCodec.codecForName("utf8"))
 
     # Import resources
-    from src import resources  # lint:ok
+    from src import resources  # noqa
 
     qapp = QApplication(sys.argv)
     qapp.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -137,15 +138,15 @@ if __name__ == "__main__":
     qapp.setWindowIcon(QIcon(":img/icon"))
 
     # Language
-    if PSetting.LANGUAGE is not None:
+    lang = CONFIG.get("language")
+    if lang != "eng":
         translator = QTranslator()
-        translator.load(os.path.join(settings.LANGUAGE_PATH,
-                                     PSetting.LANGUAGE + '.qm'))
+        translator.load(os.path.join(settings.LANGUAGE_PATH, lang + ".qm"))
         qapp.installTranslator(translator)
 
     # Load services
-    from src.gui import central_widget  # lint:ok
-    from src.gui import notification  # lint:ok
+    from src.gui import central_widget  # noqa
+    from src.gui import notification  # noqa
     from src.gui.main_window import Pireal
 
     # Set stylesheet
