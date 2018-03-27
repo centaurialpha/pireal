@@ -138,6 +138,9 @@ MENU['help'] = {
         'name': translate("Pireal", "Report Issue..."),
         'slot': "pireal:report_issue"
     }, "-", {
+        'name': translate("Pireal", "RDB to PDB"),
+        'slot': "central:rdb_to_pdb"
+    }, "-", {
         'name': translate("Pireal", "About Pireal"),
         'slot': "pireal:about_pireal"
     }, {

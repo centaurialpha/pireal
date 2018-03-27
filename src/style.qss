@@ -1,18 +1,108 @@
-QHeaderView::section {
-    background-color: #656565;
-    color: white;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    padding-left: 5px;
-    padding-right: 5px;
-    border: 1px solid gray;
-}
-
-QTableView {
-    selection-background-color: #5294e2;
-}
-
 QTreeWidget {
+    border: none;
     selection-background-color: #5294e2;
     font-size: 16px;
+}
+
+QScrollBar {
+    background: #d9dbde;
+    width: 13px;
+}
+
+QScrollBar::handle {
+    background-color: #b3b8bc;
+    border-radius: 3px;
+    min-height: 30px;
+    margin: 0px 3px 0px 3px;
+}
+
+QScrollBar::handle:hover {
+    background: #999;
+}
+
+QScrollBar::handle:pressed {
+    background: #888;
+}
+
+QScrollBar::add-line,
+QScrollBar::sub-line,
+QScrollBar::add-page,
+QScrollBar::sub-page {
+    background: none;
+    border: none;
+}
+
+QSplitter::handle {
+    background-color: #b3b8bc;
+    border: 0px solid transparent;
+    height: 1px;
+}
+
+QSplitter:handle:hover {
+    background: gray;
+}
+
+
+QTableView {
+    color: #3f4347;
+    gridline-color: #c4c7ca;
+    background-color: white;
+    alternate-background-color: #e9ebec;
+    selection-color: white;
+    selection-background-color: #c4c7ca;
+    border-radius: 0px;
+    padding: 3px 3px;
+}
+
+QHeaderView {
+    color: #3f4347;
+    font: bold 12pt;
+    background-color: white;
+    border: 0px solid rgb(144, 144, 144);
+    border: 0px solid rgb(191,191,191);
+    border-left-color: rgba(255, 255, 255, 0);
+    border-top-color: rgba(255, 255, 255, 0);
+    border-radius: 0px;
+    min-height: 30px;
+}
+
+QHeaderView::section {
+    color: #3f4347;
+    background-color: #e9ebec;
+    border: 5px solid red;
+    border-radius: 0px;
+    border-color: #e9ebec;
+}
+
+QHeaderView#lateral::section {
+    margin: 3px;
+}
+
+QTreeView {
+    show-decoration-selected: 1;
+}
+
+QTreeView::item {
+    border: 0px solid red;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    min-height: 30px;
+    selection-background: red;
+}
+
+QTreeView::item:hover {
+    border: 0px solid #bfcde4;
+}
+
+QTreeView::item:selected {
+    border: none;
+}
+
+QTreeView::item:selected:active{
+    background: #c4c7ca;
+}
+
+QTreeView::item:selected:!active {
+    background: #e9ebec;
+    color: #444;
 }

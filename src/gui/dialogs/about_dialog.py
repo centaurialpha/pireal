@@ -41,7 +41,7 @@ class AboutDialog(QDialog):
         vbox = QVBoxLayout(self)
         # Banner
         banner = QLabel()
-        banner.setPixmap(QPixmap(":img/logo").scaled(375, 150))
+        banner.setPixmap(QPixmap(":img/icon"))
         banner.setAlignment(Qt.AlignHCenter)
         vbox.addWidget(banner)
 

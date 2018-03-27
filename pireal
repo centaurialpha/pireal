@@ -134,6 +134,9 @@ if __name__ == "__main__":
     palette.setColor(QPalette.Highlight, QColor("#5294e2"))
     qapp.setPalette(palette)
 
+    if not settings.WINDOWS:
+        qapp.setCursorFlashTime(0)
+
     # Icon
     qapp.setWindowIcon(QIcon(":img/icon"))
 

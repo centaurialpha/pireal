@@ -23,21 +23,20 @@ QML interface
 
 import os
 
-from PyQt5.QtWidgets import (
-    QWidget,
-    QVBoxLayout
-)
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QVBoxLayout
+
 from PyQt5.QtQuick import QQuickView
 from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QTimer
 from src.gui.main_window import Pireal
-from src.core import (
-    settings,
-    file_manager
-)
-# PSetting = settings.PSetting
+from src.core import settings
+
 from src.core.settings import CONFIG
 
+
 class StartPage(QWidget):
+    """Lógical para la UI QML de la página principal"""
 
     def __init__(self):
         super(StartPage, self).__init__()
@@ -66,6 +65,8 @@ class StartPage(QWidget):
         central_widget.open_database(filename=db_filename, remember=False)
         query_filename = os.path.join(settings.EXAMPLES, 'queries.pqf')
         central_widget.open_query(filename=query_filename, remember=False)
+        # Ejecuto las consultas de ejemplo luego de 1.3 segundos
+        QTimer.singleShot(1300, central_widget.execute_queries)
 
     def __open_preferences(self):
         central_widget = Pireal.get_service("central")
@@ -85,7 +86,6 @@ class StartPage(QWidget):
 
     def load_items(self):
         self.__root.clear()
-        print(CONFIG.get("recentFiles"))
         if CONFIG.get("recentFiles"):
             for file_ in CONFIG.get("recentFiles"):
                 name = os.path.splitext(os.path.basename(file_))[0]

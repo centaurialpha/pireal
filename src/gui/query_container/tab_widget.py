@@ -32,6 +32,7 @@ class TabWidget(QTabWidget):
         self.setTabPosition(QTabWidget.South)
         self.setTabsClosable(True)
         self.setMovable(True)
+        self.setDocumentMode(True)
 
         self.tabCloseRequested[int].connect(self.remove_tab)
 

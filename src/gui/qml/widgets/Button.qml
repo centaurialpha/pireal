@@ -1,30 +1,34 @@
-import QtQuick 2.7
+import QtQuick 2.5
 
 Rectangle {
     id: button
 
     signal clicked
     property alias texto: buttonText.text
-    property int offset: 30
 
-    border.color: "#ccc"
+    width: buttonText.width + 69
+    height: buttonText.height + 10
+//    radius: 3
 
-    width: buttonText.width + offset
-    height: buttonText.height + offset
+    color: "#f1f1f1"
+//    border.color: "#c4c7ca"
+
+    scale: ma.pressed ? 0.95 : 1
 
     Text {
         id: buttonText
         text: button.texto
+        font.pixelSize: 16
         anchors.centerIn: parent
-        color: "#5f6566"
+        color: "#303336"
     }
 
     MouseArea {
+        id: ma
+
         anchors.fill: parent
         hoverEnabled: true
 
         onClicked: { button.clicked() }
-        onEntered: { button.color = "#f5f5f5" }
-        onExited: { button.color = "transparent" }
     }
 }

@@ -1,58 +1,20 @@
 language: python
 
 python:
-    - 3.3
-    - 3.4
-    - 3.5
+  - 3.4
+  - 3.5
+  - 3.6
 
 before_install:
-    - export DISPLAY=:99.0
-    - sh -e /etc/init.d/xvfb start
-    # Install pep8
-    - sudo apt-get update
-    - sudo apt-get -y install python-pip
-    - sudo pip install --upgrade pip
-    - pip install --upgrade pip
-    - pip install pep8
-    # Cached Downloads
-    # - sudo mkdir -p /downloads
-    # - sudo chmod a+rw /downloads
-    #- if [ ! -f /downloads/sip.tar.gz ];   then curl -L -o /downloads/sip.tar.gz http://sourceforge.net/projects/pyqt/files/sip/sip-4.18/sip-4.18.tar.gz; fi
-    #- if [ ! -f /downloads/pyqt5.tar.gz ]; then curl -L -o /downloads/pyqt5.tar.gz http://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-5.5.1/PyQt-gpl-5.5.1.tar.gz; fi
-    # Builds
-    #- sudo mkdir -p /builds
-    #- sudo chmod a+rw /builds
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
 
-#install:
-    # Qt5
-    #- sudo add-apt-repository -y ppa:beineri/opt-qt542
-    #- sudo apt-get update
-    #- sudo apt-get install -y qt54base
-    # Builds
-    #- pushd /builds
-    # SIP
-    #- tar xzf /downloads/sip.tar.gz --keep-newer-files
-    #- pushd sip-4.18
-    #- python configure.py
-    #- make
-    #- sudo make install
-    #- popd
-    # PyQt5
-    #- source /opt/qt54/bin/qt54-env.sh  # switch to Qt5
-    #- tar xzf /downloads/pyqt5.tar.gz --keep-newer-files
-    #- pushd PyQt-gpl-5.5.1
-    #- python configure.py -c --confirm-license --no-designer-plugin -e QtCore -e QtGui -e QtWidgets
-    #- make
-    #- sudo make install
-    #- popd
-    # Builds Complete
-    #- popd
+install:
+  - pip install pip --upgrade
+  - pip install pytest
+  - pip install pytest-qt
+  - pip install PyQt5==5.9
 
-script:
-    - python -m unittest -v
-    - pep8 --exclude='src/resources.py' src -v
+before_script: rm --recursive --force --verbose *.py[cod]
 
-# cache:
-#    directories:
-#        - /downloads
-#    apt: true
+script: python run-tests.py

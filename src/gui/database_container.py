@@ -296,7 +296,7 @@ class DatabaseContainer(QSplitter):
         if hsizes is not None:
             self._hsplitter.restoreState(hsizes)
         else:
-            self._hsplitter.setSizes([1, self._hsplitter.width() / 3])
+            self._hsplitter.setSizes([1, self.table_widget.width() / 5])
         vsizes = qsettings.value('vsplitter_sizes', None)
         if vsizes is not None:
             self.restoreState(vsizes)

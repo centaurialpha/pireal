@@ -24,11 +24,12 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import (
     QTextCharFormat,
     QTextCursor,
+    QFont,
     QColor,
     QTextOption,
     QTextDocument
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 
 from src.gui.query_container import (
     highlighter,
@@ -43,7 +44,7 @@ class Editor(QPlainTextEdit):
     def __init__(self, pfile=None):
         super(Editor, self).__init__()
         self.setMouseTracking(True)
-        self.setWordWrapMode(QTextOption.NoWrap)
+        self.setLineWrapMode(QPlainTextEdit.NoWrap)
         self.setCursorWidth(8)
         self.pfile = pfile
         self.modified = False
@@ -52,10 +53,12 @@ class Editor(QPlainTextEdit):
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
-        font = CONFIG.get("font")
-        if font is None:
-            font = CONFIG._get_font()
-        self.set_font(font)
+        font_family = CONFIG.get("fontFamily")
+        size = CONFIG.get("fontSize")
+        if font_family is None:
+            font_family, size = CONFIG._get_font()
+
+        self.set_font(font_family, size)
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
         self.__message = None
@@ -156,7 +159,8 @@ class Editor(QPlainTextEdit):
                 left, right = extras
                 self.add_selection("parenthesis", [left, right])
 
-    def set_font(self, font):
+    def set_font(self, font_family, size):
+        font = QFont(font_family, size)
         self.document().setDefaultFont(font)
 
     def __check_brackets(self):
@@ -275,6 +279,32 @@ class Editor(QPlainTextEdit):
         font.setPointSize(point_size)
         self.document().setDefaultFont(font)
 
+    def show_run_cursor(self):
+        """Highlight momentarily a piece of code. Tomado de Ninja-IDE"""
+
+        cursor = self.textCursor()
+        if cursor.hasSelection():
+            # Get selection range
+            start_pos, end_pos = cursor.selectionStart(), cursor.selectionEnd()
+            cursor.clearSelection()
+            self.setTextCursor(cursor)
+        else:
+            # If no selected text, highlight current line
+            cursor.movePosition(QTextCursor.Start)
+            start_pos = cursor.position()
+            cursor.movePosition(QTextCursor.End)
+            end_pos = cursor.position()
+        # Create extra selection
+        selection = QTextEdit.ExtraSelection()
+        selection.format.setBackground(Qt.lightGray)
+        selection.cursor = QTextCursor(cursor)
+        selection.cursor.setPosition(start_pos)
+        selection.cursor.setPosition(end_pos, QTextCursor.KeepAnchor)
+        self.add_selection("run_cursor", [selection])
+        # Remove extra selection after 0.3 seconds
+        QTimer.singleShot(
+            300, lambda: self.clear_selections("run_cursor"))
+
     def saved(self):
         self.modified = False
         self.document().setModified(self.modified)
@@ -344,7 +374,6 @@ class Editor(QPlainTextEdit):
         if linenumber == -1:
             # Borro la selección
             self.clear_selections('error')
-            print('eeee')
             return
         selection = QTextEdit.ExtraSelection()
         selection.cursor = self.textCursor()

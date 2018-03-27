@@ -243,7 +243,8 @@ class Lexer(object):
             if self.sc.char == "'":
                 self.sc.next()
                 string = ""
-
+                saved_lineno = self.sc.lineno
+                save_col = self.sc.colno
                 while True:
                     if self.sc.char == "'":
                         break
@@ -251,8 +252,9 @@ class Lexer(object):
                         string += self.sc.char
                     except TypeError:
                         raise MissingQuoteError(
-                            "Missing quote on line: {0}",
-                            self.sc.lineno
+                            "Missing quote on line: '{0}'",
+                            saved_lineno + 1,
+                            save_col
                         )
                     self.sc.next()
 

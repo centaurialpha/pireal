@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+
 from PyQt5.QtWidgets import (
     QTreeWidget,
     QTreeWidgetItem,
@@ -29,7 +30,9 @@ class LateralWidget(QTreeWidget):
 
     def __init__(self, parent=None):
         super(LateralWidget, self).__init__(parent)
-        self.setAlternatingRowColors(True)
+        self.header().setObjectName("lateral")
+        self.setRootIsDecorated(False)
+        # self.setAlternatingRowColors(True)
         self.setHeaderLabel(self.tr("Relations"))
         self.header().setDefaultAlignment(Qt.AlignHCenter)
         # Multiple selection

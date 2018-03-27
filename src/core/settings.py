@@ -77,12 +77,13 @@ SUPPORTED_FILES = ("Pireal Database File (*.pdb);;"
 
 
 DEFAULT_SETTINGS = {
-    "language": "eng",
+    "language": "English",
     "highlightCurrentLine": True,
     "matchParenthesis": True,
     "recentFiles": [],
     "lastOpenFolder": None,
-    "font": None
+    "fontFamily": None,
+    "fontSize": 12
 }
 
 
@@ -119,7 +120,7 @@ class Config(QObject):
         font = QFont("courier", 10)
         if LINUX:
             font = QFont("monospace", 12)
-        return font
+        return font.family(), font.pointSize()
 
 
 CONFIG = Config()

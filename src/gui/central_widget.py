@@ -22,8 +22,12 @@ import csv
 
 from PyQt5.QtWidgets import (
     QWidget,
+    QDialog,
     QVBoxLayout,
+    QHBoxLayout,
     QStackedWidget,
+    QLineEdit,
+    QLabel,
     QFileDialog,
     QMessageBox,
     QShortcut,
@@ -83,7 +87,8 @@ class CentralWidget(QWidget):
 
     def _hide_search(self):
         query_container = self.get_active_db().query_container
-        query_container.set_editor_focus()
+        if query_container is not None:
+            query_container.set_editor_focus()
 
     @property
     def recent_databases(self):
@@ -96,11 +101,15 @@ class CentralWidget(QWidget):
             recent_files.remove(database_file)
         recent_files.insert(0, database_file)
         self.__recent_dbs = recent_files
-        pass
 
     @property
     def last_open_folder(self):
         return self.__last_open_folder
+
+    def rdb_to_pdb(self):
+        from src.gui import rdb_pdb_tool
+        dialog = rdb_pdb_tool.RDBPDBTool(self)
+        dialog.exec_()
 
     def create_database(self):
         """Show a wizard widget to create a new database,

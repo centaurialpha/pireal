@@ -24,6 +24,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QSplitter,
+    QMessageBox,
     QStackedWidget,
     QLabel,
     QDialog,
@@ -67,8 +68,9 @@ class QueryContainer(QWidget):
         super(QueryContainer, self).__init__(parent)
         self._parent = parent
         box = QVBoxLayout(self)
+        self.setObjectName("query_container")
         box.setContentsMargins(0, 0, 0, 0)
-
+        box.setSpacing(0)
         # Regex for validate variable name
         self.__validName = re.compile(r'^[a-z_]\w*$')
 
@@ -76,6 +78,7 @@ class QueryContainer(QWidget):
 
         # Tab
         self._tabs = tab_widget.TabWidget()
+
         box.addWidget(self._tabs)
 
         self.relations = {}
@@ -163,10 +166,10 @@ class QueryContainer(QWidget):
         # otherwise the query is all text that has the editor
         editor_widget = self.currentWidget().get_editor()
         if editor_widget.textCursor().hasSelection():
-            query = editor_widget.textCursor().selectedText()
+            query = "\n".join(
+                editor_widget.textCursor().selectedText().splitlines())
         else:
             query = editor_widget.toPlainText()
-
         relations = self.currentWidget().relations
         central = Pireal.get_service("central")
         table_widget = central.get_active_db().table_widget
@@ -175,6 +178,7 @@ class QueryContainer(QWidget):
         relations.clear()
         self.currentWidget().clear_results()
 
+        editor_widget.show_run_cursor()
         # Parse query
         sc = scanner.Scanner(query)
         lex = lexer.Lexer(sc)
@@ -184,52 +188,70 @@ class QueryContainer(QWidget):
             interpreter.clear()
             interpreter.to_python()
         except MissingQuoteError as reason:
-            pireal = Pireal.get_service("notification")
-            pireal.show_text(
-                self.tr("Missing quote on Line: {0}".format(
-                    reason.lineno)), 0)
+            self._highlight_error_in_editor(reason.lineno, reason.column)
+            QMessageBox.critical(
+                self,
+                self.tr("Syntax Error"),
+                self.parse_error(str(reason))
+            )
             return
         except InvalidSyntaxError as reason:
-            print(self.currentWidget())
-            # pireal = Pireal.get_service("pireal")
-            # pireal.show_error_message(
-            #    self.tr("Invalid syntax on Line: {0}, Column {1}. "
-            #            "The error start with <b>{2}</b>".format(
-            #                reason.lineno, reason.column, reason.character)))
+            QMessageBox.critical(
+                self,
+                self.tr("Syntax Error"),
+                self.parse_error(str(reason) + "\n" + self.tr(
+                    "The error start with " + reason.character))
+            )
+            self._highlight_error_in_editor(reason.lineno, reason.column)
             return
-        except DuplicateRelationNameError as duplicate_rname:
-            pireal = Pireal.get_service("pireal")
-            pireal.show_error_message(
-                self.tr("<b>{}</b> is a duplicate relation name. Please "
-                        "choose a unique name and re-execute the "
-                        "queries".format(
-                            duplicate_rname)), syntax_error=False)
+        except DuplicateRelationNameError as reason:
+            QMessageBox.critical(
+                self,
+                self.tr("Duplicate Name"),
+                self.tr("<b>{}</b> is a duplicate relation name. "
+                        "Please choose a unique name and re-execute "
+                        "the queries.".format(reason.rname))
+            )
             return
         except ConsumeError as reason:
             self._highlight_error_in_editor(reason.lineno)
-            # notificator = Pireal.get_service("notification")
-            # notificator.show_text(reason.__str__(), 0)
-            # pireal.show_error_message(self.parse_error(reason.__str__()))
-            # return
+            QMessageBox.critical(
+                self,
+                self.tr("Syntax Error"),
+                self.parse_error(str(reason))
+            )
+            return
+
         relations.update(table_widget.relations)
         for relation_name, expression in list(interpreter.SCOPE.items()):
             try:
                 new_relation = eval(expression, {}, relations)
 
             except Exception as reason:
-                pireal = Pireal.get_service("pireal")
-                pireal.show_error_message(self.parse_error(reason.__str__()),
-                                          syntax_error=False)
+                QMessageBox.critical(
+                    self.tr("Query Error"),
+                    self.parse_error(str(reason))
+                )
                 return
 
             relations[relation_name] = new_relation
             self.__add_table(new_relation, relation_name)
         self._highlight_error_in_editor(-1)
 
-    def _highlight_error_in_editor(self, line_error):
+    def _highlight_error_in_editor(self, line_error, col=-1):
         weditor = self.currentWidget().get_editor()
         if weditor.hasFocus():
             weditor.highlight_error(line_error)
+            if line_error != -1:
+                cursor = weditor.textCursor()
+                saved_col = cursor.positionInBlock()
+                cursor.movePosition(cursor.Start)
+                cursor.movePosition(cursor.Down, n=line_error - 1)
+                if col != -1:
+                    cursor.movePosition(cursor.Right, n=col)
+                else:
+                    cursor.movePosition(cursor.Right, n=saved_col)
+                weditor.setTextCursor(cursor)
 
     @staticmethod
     def parse_error(text):
@@ -291,7 +313,8 @@ class QueryContainer(QWidget):
 
     def set_editor_focus(self):
         cw = self.currentWidget()
-        cw.hide_search_widget()
+        if cw is not None:
+            cw.hide_search_widget()
 
 
 class QueryWidget(QWidget):
@@ -311,7 +334,6 @@ class QueryWidget(QWidget):
         self.result_splitter = QSplitter(Qt.Vertical)
 
         self._result_list = lateral_widget.LateralWidget()
-        self._result_list.header().hide()
         self.result_splitter.addWidget(self._result_list)
 
         self._stack_tables = QStackedWidget()
@@ -326,8 +348,10 @@ class QueryWidget(QWidget):
 
         self._editor_splitter.addWidget(self.result_splitter)
         box.addWidget(self._editor_splitter)
-
-        # Connections
+        # w = self._editor_widget.width() * 3.5
+        # w2 = self.result_splitter.width() / 2
+        # self._editor_splitter.setSizes([w, w2])
+        # # Connections
         self._result_list.itemClicked.connect(
             lambda index: self._stack_tables.setCurrentIndex(
                 self._result_list.row()))
@@ -380,8 +404,8 @@ class QueryWidget(QWidget):
         return self._editor_widget.get_editor()
 
     def showEvent(self, event):
-        super(QueryWidget, self).showEvent(event)
-        self.result_splitter.setSizes([1, self.width() / 3])
+        super().showEvent(event)
+        self.result_splitter.setSizes([1, self._result_list.width() * 0.1])
 
     def clear_results(self):
         self._result_list.clear_items()
@@ -428,7 +452,7 @@ class EditorWidget(QWidget):
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         vbox.setSpacing(0)
-
+        self.setStyleSheet("outline: none")
         hbox = QHBoxLayout()
         # Position
         self._column_str = "Col: {}"
