@@ -20,13 +20,16 @@
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QStackedWidget
+    QStackedWidget,
+    QMenu
 )
+from PyQt5.QtCore import Qt
 from src.gui import (
     view,
     model,
     delegate
 )
+from src.gui.main_window import Pireal
 
 
 class TableWidget(QWidget):
@@ -42,6 +45,29 @@ class TableWidget(QWidget):
         # Stack
         self.stacked = QStackedWidget()
         vbox.addWidget(self.stacked)
+
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self._show_menu)
+
+    def _show_menu(self, position):
+        menu = QMenu(self)
+
+        if self.count() > 0:
+            add_tuple_action = menu.addAction(self.tr("Add Tuple"))
+            add_col_action = menu.addAction(self.tr("Add Column"))
+
+            add_tuple_action.triggered.connect(self.add_tuple)
+            add_col_action.triggered.connect(self.add_column)
+            menu.addSeparator()
+
+        add_relation_action = menu.addAction(self.tr("Create new Relation"))
+        add_relation_action.triggered.connect(self.__new_relation)
+
+        menu.exec_(self.mapToGlobal(position))
+
+    def __new_relation(self):
+        central_service = Pireal.get_service("central")
+        central_service.create_new_relation()
 
     def count(self):
         return self.stacked.count()
