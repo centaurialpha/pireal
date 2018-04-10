@@ -3,7 +3,7 @@
 ---
 
 <p align="center">
-![](https://github.com/centaurialpha/pireal/blob/master/src/gui/qml/pireal_logo.png?raw=true)
+  <img src="https://github.com/centaurialpha/pireal/blob/master/src/gui/qml/pireal_logo.png?raw=true" >
 <p>
 **πireal** is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.
 
