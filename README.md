@@ -2,14 +2,15 @@
 [![Build Status](https://travis-ci.org/centaurialpha/pireal.svg?branch=master)](https://travis-ci.org/centaurialpha/pireal)
 ---
 
+<p align="center">
 ![](https://github.com/centaurialpha/pireal/blob/master/src/gui/qml/pireal_logo.png?raw=true)
-
+<p>
 **πireal** is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.
 
 
 | Pireal running on Linux |
 |:--------:|
-| ![](https://github.com/centaurialpha/pireal/blob/master/pireal1.png?raw=true) 
+| ![](https://github.com/centaurialpha/pireal/blob/master/pireal1.png?raw=true)
 | Click image to enlarge |
 
 #### Platforms
