@@ -18,51 +18,80 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt5.QtWidgets import (
-    QTreeWidget,
-    QTreeWidgetItem,
-    QAbstractItemView,
-)
+from PyQt5.QtWidgets import QTreeWidget
+from PyQt5.QtWidgets import QSplitter
+from PyQt5.QtWidgets import QTreeWidgetItem
+from PyQt5.QtWidgets import QAbstractItemView
+
 from PyQt5.QtCore import Qt
 
+from src.gui.main_window import Pireal
 
-class LateralWidget(QTreeWidget):
+
+class LateralWidget(QSplitter):
+    """
+    Widget que contiene la lista de relaciones y la lista de relaciones
+    del resultado de consultas
+    """
 
     def __init__(self, parent=None):
-        super(LateralWidget, self).__init__(parent)
+        super().__init__(parent)
+        self.setOrientation(Qt.Vertical)
+        # Lista de relaciones de la base de datos
+        self._relations_list = RelationList()
+        self._relations_list.set_title(self.tr("Relations"))
+        self.addWidget(self._relations_list)
+        # Lista de relaciones del resultado de consultas
+        self._results_list = RelationList()
+        self._results_list.set_title(self.tr("Result"))
+        self.addWidget(self._results_list)
+
+        Pireal.load_service("lateral_widget", self)
+
+    @property
+    def relation_list(self):
+        return self._relations_list
+
+    @property
+    def result_list(self):
+        return self._results_list
+
+
+class RelationList(QTreeWidget):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.header().setObjectName("lateral")
         self.setRootIsDecorated(False)
-        # self.setAlternatingRowColors(True)
-        self.setHeaderLabel(self.tr("Relations"))
         self.header().setDefaultAlignment(Qt.AlignHCenter)
-        # Multiple selection
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+
+    def set_title(self, title):
+        self.setHeaderLabel(title)
 
     def row(self):
         return self.indexOfTopLevelItem(self.currentItem())
 
-    def add_item(self, text, ntuples):
-        item = Item()
-        item.name = text
-        item.ntuples = str(ntuples)
+    def add_item(self, text, numero_tuplas):
+        """Agrega un item"""
+        item = Item(text, str(numero_tuplas))
         item.setText(0, item.display_name)
         item.setToolTip(0, item.display_name)
         self.addTopLevelItem(item)
 
     def item_text(self, index):
-        """ Return text of item in the index  """
-
+        """Retorna el texto del item en el indice pasado"""
         text = self.topLevelItem(index).text(0)
         return text.split()[0].strip()
 
     def clear_items(self):
-        """ Remove all items and selections in the view """
+        """Elimina todos los items"""
 
         self.clear()
 
-    def update_item(self, tuple_count):
+    def update_item(self, tuplas_count):
         item = self.current_item()
-        item.ntuples = str(tuple_count)
+        item.ntuples = str(tuplas_count)
         item.setText(0, item.display_name)
 
     def current_item(self):
@@ -77,10 +106,10 @@ class LateralWidget(QTreeWidget):
 
 class Item(QTreeWidgetItem):
 
-    def __init__(self):
+    def __init__(self, text, ntuplas):
         super(Item, self).__init__()
-        self.ntuples = 0
-        self.name = ''
+        self.name = text
+        self.ntuples = ntuplas
 
     @property
     def display_name(self):

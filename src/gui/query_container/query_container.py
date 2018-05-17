@@ -33,7 +33,6 @@ from PyQt5.QtWidgets import (
     QAction,
     QToolBar
 )
-from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import (
     Qt,
     pyqtSignal,
@@ -52,7 +51,6 @@ from src.core.interpreter.exceptions import (
     DuplicateRelationNameError,
     ConsumeError
 )
-from src.gui import lateral_widget
 from src.gui.main_window import Pireal
 from src.gui.query_container import (
     editor,
@@ -328,13 +326,8 @@ class QueryWidget(QWidget):
         box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 0, 0)
 
-        self.__current_orientation = self.LEFT_POSITION
-
         self._editor_splitter = QSplitter(Qt.Horizontal)
         self.result_splitter = QSplitter(Qt.Vertical)
-
-        self._result_list = lateral_widget.LateralWidget()
-        self.result_splitter.addWidget(self._result_list)
 
         self._stack_tables = QStackedWidget()
         self.result_splitter.addWidget(self._stack_tables)
@@ -346,31 +339,7 @@ class QueryWidget(QWidget):
             lambda modified: self.editorModified.emit(modified))
         self._editor_splitter.addWidget(self._editor_widget)
 
-        self._editor_splitter.addWidget(self.result_splitter)
         box.addWidget(self._editor_splitter)
-        # w = self._editor_widget.width() * 3.5
-        # w2 = self.result_splitter.width() / 2
-        # self._editor_splitter.setSizes([w, w2])
-        # # Connections
-        self._result_list.itemClicked.connect(
-            lambda index: self._stack_tables.setCurrentIndex(
-                self._result_list.row()))
-        self._result_list.itemDoubleClicked.connect(
-            self.show_relation)
-
-    def change_orientation(self):
-        if self.__current_orientation == self.LEFT_POSITION:
-            self.result_splitter.setOrientation(Qt.Horizontal)
-            self._editor_splitter.setOrientation(Qt.Vertical)
-            self.__current_orientation = self.TOP_POSITION
-            self._editor_widget._rotate_editor.setIcon(
-                QIcon(":img/change-left"))
-        else:
-            self.result_splitter.setOrientation(Qt.Vertical)
-            self._editor_splitter.setOrientation(Qt.Horizontal)
-            self.__current_orientation = self.LEFT_POSITION
-            self._editor_widget._rotate_editor.setIcon(
-                QIcon(":img/change-top"))
 
     def show_relation(self, item):
         central_widget = Pireal.get_service("central")
@@ -405,25 +374,33 @@ class QueryWidget(QWidget):
 
     def showEvent(self, event):
         super().showEvent(event)
-        self.result_splitter.setSizes([1, self._result_list.width() * 0.1])
+        # self.result_splitter.setSizes([1, self._result_list.width() * 0.1])
 
     def clear_results(self):
-        self._result_list.clear_items()
-        i = self._stack_tables.count()
+        central_widget = Pireal.get_service("central")
+        lateral_widget = Pireal.get_service("lateral_widget")
+        lateral_widget.result_list.clear_items()
+        table_widget = central_widget.get_active_db().table_widget
+        i = table_widget.stacked_result.count()
+        # i = self._stack_tables.count()
         while i >= 0:
-            widget = self._stack_tables.widget(i)
-            self._stack_tables.removeWidget(widget)
+            # widget = self._stack_tables.widget(i)
+            widget = table_widget.stacked_result.widget(i)
+            # self._stack_tables.removeWidget(widget)
+            table_widget.stacked_result.removeWidget(widget)
             if widget is not None:
                 widget.deleteLater()
             i -= 1
 
     def add_table(self, rela, rname):
         central_widget = Pireal.get_service("central")
+        lateral_widget = Pireal.get_service("lateral_widget")
         db = central_widget.get_active_db()
         _view = db.create_table(rela, rname, editable=False)
-        index = self._stack_tables.addWidget(_view)
-        self._stack_tables.setCurrentIndex(index)
-        self._result_list.add_item(rname, rela.cardinality())
+        table_widget = central_widget.get_active_db().table_widget
+        index = table_widget.stacked_result.addWidget(_view)
+        table_widget.stacked_result.setCurrentIndex(index)
+        lateral_widget.result_list.add_item(rname, rela.cardinality())
 
     def show_search_widget(self):
         self._editor_widget.show_search_widget()
@@ -467,11 +444,6 @@ class EditorWidget(QWidget):
                 self._toolbar.addAction(qaction)
             else:
                 self._toolbar.addSeparator()
-        self._toolbar.addSeparator()
-        self._rotate_editor = self._toolbar.addAction(
-            QIcon(":img/change-top"), '')
-        self._rotate_editor.setToolTip(self.tr("Change orientation"))
-        self._rotate_editor.triggered.connect(parent.change_orientation)
         hbox.addWidget(self._toolbar, 1)
         hbox.addWidget(self._column_lbl)
         vbox.addLayout(hbox)

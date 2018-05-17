@@ -28,10 +28,11 @@ from PyQt5.QtWidgets import (
     QToolBar
 )
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import (
-    QSettings,
-    QSize
-)
+
+from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import QSize
+from PyQt5.QtCore import Qt
+
 from src import keymap
 from src.core import settings
 from src.gui import (
@@ -61,16 +62,23 @@ class Pireal(QMainWindow):
         '',  # Is a separator!
         'new_query',
         'open_query',
+        'save_query',
         '',
         'create_new_relation',
         'remove_relation',
+        '',
+        'add_tuple',
+        'delete_tuple',
+        'add_column',
+        'delete_column',
+        '',
+        'execute_queries'
     ]
 
     def __init__(self):
         QMainWindow.__init__(self)
         self.setWindowTitle(self.tr("Pireal"))
         self.setMinimumSize(880, 600)
-
         # Load window geometry
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
         window_maximized = qsettings.value('window_max', True, type=bool)
@@ -83,9 +91,10 @@ class Pireal(QMainWindow):
             self.move(position)
         # Toolbar
         self.toolbar = QToolBar(self)
-        self.toolbar.setIconSize(QSize(22, 22))
+        self.toolbar.setFixedWidth(40)
+        self.toolbar.setIconSize(QSize(26, 26))
         self.toolbar.setMovable(False)
-        self.addToolBar(self.toolbar)
+        self.addToolBar(Qt.RightToolBarArea, self.toolbar)
 
         # Menu bar
         menubar = self.menuBar()

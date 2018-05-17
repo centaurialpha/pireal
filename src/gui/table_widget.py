@@ -19,10 +19,14 @@
 
 from PyQt5.QtWidgets import (
     QWidget,
+    QSplitter,
+    QTabWidget,
+    QToolButton,
     QVBoxLayout,
     QStackedWidget,
     QMenu
 )
+from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from src.gui import (
     view,
@@ -32,22 +36,64 @@ from src.gui import (
 from src.gui.main_window import Pireal
 
 
-class TableWidget(QWidget):
+class TableWidget(QSplitter):
 
     def __init__(self):
         super(TableWidget, self).__init__()
 
-        vbox = QVBoxLayout(self)
-        vbox.setContentsMargins(0, 0, 0, 0)
+        # vbox = QVBoxLayout(self)
+        # vbox.setContentsMargins(0, 0, 0, 0)
+
+        self._tabs = QTabWidget()
+        self._tabs.setDocumentMode(True)
+        self._other_tab = QTabWidget()
+        self._other_tab.setDocumentMode(True)
+        self.addWidget(self._tabs)
+        self.addWidget(self._other_tab)
+        self.setSizes([1, 1])
+        self._other_tab.hide()
 
         self.relations = {}
 
         # Stack
         self.stacked = QStackedWidget()
-        vbox.addWidget(self.stacked)
+        self._tabs.addTab(self.stacked, "Workspace")
+        self.stacked_result = QStackedWidget()
+        self.stacked_result.currentChanged.connect(
+            self._on_stacked_result_changed)
+        self._tabs.addTab(self.stacked_result, "Results")
 
+        btn_split = QToolButton()
+        btn_split.setAutoRaise(True)
+        btn_split.setCheckable(True)
+        btn_split.setIcon(QIcon(":img/split"))
+        self._tabs.setCornerWidget(btn_split)
+        btn_split.toggled.connect(self._split)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self._show_menu)
+
+        lateral_widget = Pireal.get_service("lateral_widget")
+        lateral_widget.result_list.itemClicked.connect(
+            lambda index: self.stacked_result.setCurrentIndex(
+                lateral_widget.result_list.row()))
+
+    def _on_stacked_result_changed(self, index):
+        print(index)
+
+    def _split(self, toggle):
+        if toggle:
+            # Split
+            result_widget = self._tabs.widget(1)
+            self._other_tab.addTab(result_widget, "Results")
+            self._other_tab.show()
+            self.setSizes([1, 1])
+        else:
+            # Unsiplit
+            self._other_tab.hide()
+            result_widget = self._other_tab.widget(0)
+            self._tabs.addTab(result_widget, "Results")
+
+        self.setOrientation(Qt.Horizontal)
 
     def _show_menu(self, position):
         menu = QMenu(self)

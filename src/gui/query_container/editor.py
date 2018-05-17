@@ -45,8 +45,9 @@ class Editor(QPlainTextEdit):
         super(Editor, self).__init__()
         self.setMouseTracking(True)
         self.setLineWrapMode(QPlainTextEdit.NoWrap)
-        self.setCursorWidth(8)
+        self.setCursorWidth(3)
         self.pfile = pfile
+        self.__visible_blocks = []
         self.modified = False
         # Highlight current line
         self._highlight_line = CONFIG.get("highlightCurrentLine")
@@ -69,11 +70,34 @@ class Editor(QPlainTextEdit):
         # self.snippets = snippets.SnippetManager(self)
         # Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
-
+        self.blockCountChanged.connect(self.update)
         # Connection
-        self.updateRequest['const QRect&', int].connect(
-            self._sidebar.update_area)
         self.cursorPositionChanged.connect(self.__cursor_position_changed)
+
+    @property
+    def visible_blocks(self):
+        return self.__visible_blocks
+
+    def _update_visible_blocks(self):
+        self.__visible_blocks.clear()
+        append = self.__visible_blocks.append
+
+        block = self.firstVisibleBlock()
+        block_number = block.blockNumber()
+        top = self.blockBoundingGeometry(block).translated(
+            self.contentOffset()).top()
+        bottom = top + self.blockBoundingRect(block).height()
+        editor_height = self.height()
+        while block.isValid():
+            visible = bottom <= editor_height
+            if not visible:
+                break
+            if block.isVisible():
+                append((top, block_number, block))
+            block = block.next()
+            top = bottom
+            bottom = top + self.blockBoundingRect(block).height()
+            block_number += 1
 
     @property
     def filename(self):
@@ -94,8 +118,8 @@ class Editor(QPlainTextEdit):
 
     def resizeEvent(self, event):
         super(Editor, self).resizeEvent(event)
-        # Fixed sidebar height
-        self._sidebar.setFixedHeight(self.height())
+        self._sidebar.redimensionar()
+        self._sidebar.update_viewport()
 
     def keyPressEvent(self, event):
         # key = event.key()
@@ -106,6 +130,10 @@ class Editor(QPlainTextEdit):
         #         self.snippets.insert_snippet()
         # else:
         super().keyPressEvent(event)
+
+    def paintEvent(self, event):
+        self._update_visible_blocks()
+        super().paintEvent(event)
 
     def word_under_cursor(self, cursor=None):
         """Returns QTextCursor that contains a word under passed cursor
@@ -143,7 +171,8 @@ class Editor(QPlainTextEdit):
 
         if self._highlight_line:
             _selection = QTextEdit.ExtraSelection()
-            color = QColor(Qt.lightGray).lighter(125)
+            color = QColor(Qt.yellow)
+            color.setAlpha(70)
             _selection.format.setBackground(color)
             _selection.format.setProperty(
                 QTextCharFormat.FullWidthSelection, True)
@@ -266,18 +295,23 @@ class Editor(QPlainTextEdit):
             start = None
 
     def zoom_in(self):
-        font = self.document().defaultFont()
+        font = self.font()
         point_size = font.pointSize()
         point_size += 1
         font.setPointSize(point_size)
-        self.document().setDefaultFont(font)
+        self.setFont(font)
+
+    def setFont(self, font):
+        super().setFont(font)
+        self._sidebar.update_viewport()
+        self._sidebar.redimensionar()
 
     def zoom_out(self):
-        font = self.document().defaultFont()
+        font = self.font()
         point_size = font.pointSize()
         point_size -= 1
         font.setPointSize(point_size)
-        self.document().setDefaultFont(font)
+        self.setFont(font)
 
     def show_run_cursor(self):
         """Highlight momentarily a piece of code. Tomado de Ninja-IDE"""

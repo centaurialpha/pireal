@@ -5,7 +5,7 @@ QTreeWidget {
 }
 
 QScrollBar {
-    background: #d9dbde;
+    background: transparent;
     width: 13px;
 }
 
@@ -87,7 +87,7 @@ QTreeView::item {
     border-top-color: transparent;
     border-bottom-color: transparent;
     min-height: 30px;
-    selection-background: red;
+    selection-background-color: transparent;
 }
 
 QTreeView::item:hover {

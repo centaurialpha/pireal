@@ -26,7 +26,7 @@ def main(path):
     if path is None:
         # Run all tests
         path = 'tests'
-    errno = pytest.main(['-x', path, '-vv'])
+    errno = pytest.main([path, '-vv'])
     if errno != 0:
         raise SystemExit(errno)
 

@@ -61,10 +61,11 @@ class Model(QAbstractTableModel):
         if not index.isValid():
             return QVariant()
         row, col = index.row(), index.column()
+        content = list(self.__data.content)
         if role == Qt.DisplayRole:
-            return self.__data.content[row][col]
+            return content[row][col]
         elif role == Qt.TextColorRole:
-            value = self.__data.content[row][col]
+            value = content[row][col]
             if value == 'null':
                 # Para las operaciones de left, right y full other join
                 return QColor('red')

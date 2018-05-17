@@ -28,8 +28,11 @@ from PyQt5.QtWidgets import QFrame
 from PyQt5.QtGui import (
     QFontMetrics,
     QPainter,
-    QColor
+    QPen,
+    QColor,
 )
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QSize
 
 
 class Sidebar(QFrame):
@@ -39,57 +42,53 @@ class Sidebar(QFrame):
         super(Sidebar, self).__init__(editor)
         self.editor = editor
 
+        self.editor.blockCountChanged.connect(self.update_viewport)
+        self.editor.updateRequest.connect(self.update)
+        # self.editor.blockCountChanged.connect(self.editor.update)
+
+    def sizeHint(self):
+        return QSize(self.__calculate_width(), 0)
+
+    def redimensionar(self):
+        cr = self.editor.contentsRect()
+        current_x = cr.left()
+        top = cr.top()
+        height = cr.height()
+        width = self.sizeHint().width()
+        self.setGeometry(current_x, top, width, height)
+
+    def update_viewport(self):
+        self.editor.setViewportMargins(self.sizeHint().width(), 0, 0, 0)
+
+    def __calculate_width(self):
+        digits = len(str(max(1, self.editor.blockCount())))
+        fmetrics_width = QFontMetrics(
+            self.editor.document().defaultFont()).width("9")
+        return 5 + fmetrics_width * digits + 3
+
     def paintEvent(self, event):
         """This method draws a left sidebar
 
         :param event: QEvent
         """
 
-        bottom = self.editor.viewport().height()
-        font_metrics = QFontMetrics(self.editor.document().defaultFont())
-        current_line = self.editor.document().findBlock(
-            self.editor.textCursor().position()).blockNumber() + 1
         painter = QPainter(self)
-        painter.fillRect(1, 1, self.width(),
-                         self.height() - 2, QColor("#e8e8e8"))
-        block = self.editor.firstVisibleBlock()
-        vpoffset = self.editor.contentOffset()
-        line = block.blockNumber()
-        painter.setFont(self.editor.document().defaultFont())
-
-        while block.isValid():
-            line += 1
-            pos = self.editor.blockBoundingGeometry(block).topLeft() + vpoffset
-            if pos.y() > bottom:
-                break
-
-            # Text bold
-            font = painter.font()
+        painter.fillRect(event.rect(), Qt.white)
+        width = self.width() - 8
+        height = self.editor.fontMetrics().height()
+        font = self.editor.font()
+        font_bold = self.editor.font()
+        font_bold.setBold(True)
+        painter.setFont(font)
+        pen = QPen(Qt.gray)
+        painter.setPen(QPen(QColor("#e9e9e9")))
+        painter.drawLine(width + 7, 0, width + 7, event.rect().height())
+        painter.setPen(pen)
+        current_line = self.editor.textCursor().blockNumber()
+        for top, line, block in self.editor.visible_blocks:
             if current_line == line:
-                font.setBold(True)
+                painter.setFont(font_bold)
             else:
-                font.setBold(False)
-            painter.setFont(font)
-
-            if block.isVisible():
-                painter.setPen(QColor("#9A9A9A"))
-                fm_ascent = font_metrics.ascent()
-                fm_descent = font_metrics.descent()
-                painter.drawText(self.width() -
-                                 font_metrics.width(str(line)) - 3,
-                                 pos.y() + fm_ascent + fm_descent, str(line))
-
-            block = block.next()
-        painter.end()
-        QFrame.paintEvent(self, event)
-
-    def update_area(self):
-        """ This method adjust the width of the sidebar """
-
-        # Length number, for example: 120 = 3
-        line = len(str(self.editor.blockCount())) + 1
-        width = self.fontMetrics().width('0' * line) + 5
-        if self.width() != width:
-            self.setFixedWidth(width)
-            self.editor.setViewportMargins(width, 0, 0, 0)
-        self.update()
+                painter.setFont(font)
+            painter.drawText(5, top, width, height,
+                             Qt.AlignRight, str(line + 1))
