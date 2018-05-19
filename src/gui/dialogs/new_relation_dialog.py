@@ -32,6 +32,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 
 from src.core import relation
 from src.gui import view
+from src.gui.main_window import Pireal
 
 
 class NewRelationDialog(QDialog):
@@ -132,6 +133,15 @@ class NewRelationDialog(QDialog):
                                  self.tr("Relation name "
                                          "not specified"))
             return
+        central = Pireal.get_service("central")
+        if relation_name in central.get_active_db().table_widget.relations:
+            QMessageBox.information(
+                self,
+                "Error",
+                self.tr("Ya existe una relación con el nombre "
+                        "<b>{}</b>.".format(relation_name))
+            )
+            return
         # Table model
         model = self._view.model()
         # Row and column count
@@ -162,13 +172,16 @@ class NewRelationDialog(QDialog):
                     if not item.text().strip():
                         raise Exception
                 except:
-                    QMessageBox.critical(self, "Error",
-                                         self.tr("Field '{0}:{1}'"
-                                                 "is empty!".format(
-                                                     row + 1, column + 1)))
+                    QMessageBox.information(
+                        self,
+                        "Algo ha salido mal",
+                        self.tr("Los espacios en blanco son tan aburridos :/."
+                                "<br><br>Por favor ingrese un dato en la "
+                                "fila <b>{}</b>, columna:<b>{}</b>".format(
+                                    row + 1, column + 1)))
                     return
                 tuples.append(item.text().strip())
-            rela.insert(tuples)
+            rela.insert(tuple(tuples))
 
         # Data
         # self.data = rela, relation_name

@@ -76,14 +76,12 @@ class DatabaseContainer(QSplitter):
 
         # Connections
         # FIXME
-        self.lateral_widget.relation_list.itemClicked.connect(
-            lambda: self.table_widget.stacked.setCurrentIndex(
-                self.lateral_widget.relation_list.row()))
+        self.lateral_widget.relationClicked.connect(
+            lambda i: self.table_widget.stacked.setCurrentIndex(i))
         # For change table widget item when up/down
         # see issue #39
-        self.lateral_widget.relation_list.itemSelectionChanged.connect(
-            lambda: self.table_widget.stacked.setCurrentIndex(
-                self.lateral_widget.relation_list.row()))
+        self.lateral_widget.relationSelectionChanged.connect(
+            lambda i: self.table_widget.stacked.setCurrentIndex(i))
         self.query_container.saveEditor['PyQt_PyObject'].connect(
             self.save_query)
         self.setSizes([1, 1])
@@ -123,8 +121,7 @@ class DatabaseContainer(QSplitter):
             self.lateral_widget.relation_list.add_item(
                 table_name, rela.cardinality())
         # Select first item
-        first_item = self.lateral_widget.relation_list.topLevelItem(0)
-        first_item.setSelected(True)
+        self.lateral_widget.relation_list.select_first()
 
     def create_table(self, relation_obj, relation_name, editable=True):
         """ Se crea la vista, el model y el delegado para @relation_obj """

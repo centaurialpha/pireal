@@ -428,9 +428,11 @@ class CentralWidget(QWidget):
     def create_new_relation(self):
         def create_relation(relation, relation_name):
             db = self.get_active_db()
+            lateral = Pireal.get_service("lateral_widget")
             table = db.create_table(relation, relation_name)
             db.table_widget.add_table(relation, relation_name, table)
-            db.lateral_widget.add_item(relation_name, relation.cardinality())
+            lateral.relation_list.add_item(
+                relation_name, relation.cardinality())
             db.modified = True
 
         dialog = new_relation_dialog.NewRelationDialog(self)

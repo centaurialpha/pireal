@@ -43,6 +43,11 @@ class Editor(QPlainTextEdit):
 
     def __init__(self, pfile=None):
         super(Editor, self).__init__()
+        pal = self.palette()
+        pal.setColor(pal.Text, QColor("#555"))
+        self.setPalette(pal)
+
+        self.setFrameShape(QPlainTextEdit.NoFrame)
         self.setMouseTracking(True)
         self.setLineWrapMode(QPlainTextEdit.NoWrap)
         self.setCursorWidth(3)
@@ -190,7 +195,8 @@ class Editor(QPlainTextEdit):
 
     def set_font(self, font_family, size):
         font = QFont(font_family, size)
-        self.document().setDefaultFont(font)
+        # self.setFont(font)
+        super().setFont(font)
 
     def __check_brackets(self):
         left, right = QTextEdit.ExtraSelection(), QTextEdit.ExtraSelection()

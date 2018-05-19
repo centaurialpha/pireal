@@ -40,11 +40,7 @@ from PyQt5.QtCore import (
     QSize
 )
 
-from src.core.interpreter import (
-    scanner,
-    lexer,
-    parser
-)
+from src.core.interpreter import parser
 from src.core.interpreter.exceptions import (
     InvalidSyntaxError,
     MissingQuoteError,
@@ -177,64 +173,44 @@ class QueryContainer(QWidget):
         self.currentWidget().clear_results()
 
         editor_widget.show_run_cursor()
-        # Parse query
-        sc = scanner.Scanner(query)
-        lex = lexer.Lexer(sc)
-        try:
-            par = parser.Parser(lex)
-            interpreter = parser.Interpreter(par)
-            interpreter.clear()
-            interpreter.to_python()
-        except MissingQuoteError as reason:
-            self._highlight_error_in_editor(reason.lineno, reason.column)
-            QMessageBox.critical(
-                self,
-                self.tr("Syntax Error"),
-                self.parse_error(str(reason))
-            )
-            return
-        except InvalidSyntaxError as reason:
-            QMessageBox.critical(
-                self,
-                self.tr("Syntax Error"),
-                self.parse_error(str(reason) + "\n" + self.tr(
-                    "The error start with " + reason.character))
-            )
-            self._highlight_error_in_editor(reason.lineno, reason.column)
-            return
-        except DuplicateRelationNameError as reason:
-            QMessageBox.critical(
-                self,
-                self.tr("Duplicate Name"),
-                self.tr("<b>{}</b> is a duplicate relation name. "
-                        "Please choose a unique name and re-execute "
-                        "the queries.".format(reason.rname))
-            )
-            return
-        except ConsumeError as reason:
-            self._highlight_error_in_editor(reason.lineno)
-            QMessageBox.critical(
-                self,
-                self.tr("Syntax Error"),
-                self.parse_error(str(reason))
-            )
-            return
 
+        # Parse query
+        error = True
+        try:
+            result = parser.parse(query)
+        except MissingQuoteError as reason:
+            title = self.tr("Error de Sintáxis")
+            text = self.parse_error(str(reason))
+        except InvalidSyntaxError as reason:
+            title = self.tr("Error de Sintáxis")
+            text = self.parse_error(str(reason) + "\n" + self.tr(
+                "El error comienza con " + reason.character))
+        except DuplicateRelationNameError as reason:
+            title = self.tr("Nombre duplicado")
+            text = self.tr("Ya existe una relación con el nombre <b>{}</b> :(."
+                           "<br><br>Elige otro por favor ;).".format(
+                               reason.rname))
+        except ConsumeError as reason:
+            title = self.tr("Error de Sintáxis")
+            text = self.parse_error(str(reason))
+        else:
+            error = False
+        if error:
+            QMessageBox.critical(self, title, text)
+            return
         relations.update(table_widget.relations)
-        for relation_name, expression in list(interpreter.SCOPE.items()):
+        for relation_name, expression in result.items():
             try:
                 new_relation = eval(expression, {}, relations)
-
             except Exception as reason:
                 QMessageBox.critical(
-                    self.tr("Query Error"),
+                    self,
+                    self.tr("Error de Consulta"),
                     self.parse_error(str(reason))
                 )
                 return
-
             relations[relation_name] = new_relation
             self.__add_table(new_relation, relation_name)
-        self._highlight_error_in_editor(-1)
 
     def _highlight_error_in_editor(self, line_error, col=-1):
         weditor = self.currentWidget().get_editor()
@@ -401,6 +377,7 @@ class QueryWidget(QWidget):
         index = table_widget.stacked_result.addWidget(_view)
         table_widget.stacked_result.setCurrentIndex(index)
         lateral_widget.result_list.add_item(rname, rela.cardinality())
+        lateral_widget.result_list.select_last()
 
     def show_search_widget(self):
         self._editor_widget.show_search_widget()

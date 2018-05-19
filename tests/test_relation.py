@@ -107,6 +107,44 @@ def test_selection(relation_fixture):
     assert r1.select("id==23").content == expected
 
 
+def test_selection2():
+    r = relation.Relation()
+    r.header = ["precio", "curso"]
+    data = {
+        ("400", "curso1"),
+        ("104", "curso2"),
+        ("500", "curso3"),
+        ("1000", "curso4"),
+        ("200", "curso5")
+    }
+    for d in data:
+        r.insert(d)
+    assert r.cardinality() == 5
+    assert r.degree() == 2
+    sel = r.select("precio > 400")
+    expected = {("500", "curso3"), ("1000", "curso4")}
+    assert sel.content == expected
+
+
+def test_selection3():
+    r = relation.Relation()
+    r.header = ["curso", "precio"]
+    data = {
+        ("curso1", "400"),
+        ("curso2", "104"),
+        ("curso3", "500"),
+        ("curso4", "1000"),
+        ("curso5", "200")
+    }
+    for d in data:
+        r.insert(d)
+    assert r.cardinality() == 5
+    assert r.degree() == 2
+    sel = r.select("precio > 400")
+    expected = {("curso3", "500"), ("curso4", "1000")}
+    assert sel.content == expected
+
+
 def test_combination(relation_fixture):
     r1, r2, r3 = relation_fixture
     join_natural = r1.njoin(r2)
@@ -155,6 +193,57 @@ def test_njoin(relation_fixture):
     assert r3.degree() == 4
     assert r3.content == expected
     assert r3.cardinality() == 3
+
+
+def test_louter(relation_fixture):
+    r1, r2, _ = relation_fixture
+    expected = {
+        ("1", "Gabriel", "Belén", "Python"),
+        ("23", "Rodrigo", "Belén", "Games"),
+        ("12", "Mercedes", "Las Juntas", "Rocas"),
+        ("2", "Diego", "Santiago del Estero", "null")
+    }
+    r = r1.louter(r2)
+    assert r.degree() == 4
+    assert r.cardinality() == 4
+    assert r.content == expected
+
+
+def test_router(relation_fixture):
+    r1, r2, _ = relation_fixture
+    expected = {
+        ("3", "null", "null", "Ruby"),
+        ("1", "Gabriel", "Belén", "Python"),
+        ("12", "Mercedes", "Las Juntas", "Rocas"),
+        ("23", "Rodrigo", "Belén", "Games")
+    }
+
+    r = r1.router(r2)
+    assert r.degree() == 4
+    assert r.cardinality() == 4
+    assert r.content == expected
+
+
+def test_relation_compatible(relation_fixture):
+    r1, r2, _ = relation_fixture
+    with pytest.raises(relation.UnionCompatibleError):
+        r1.intersect(r2)
+
+
+def test_fouther(relation_fixture):
+    r1, r2, _ = relation_fixture
+    expected = {
+        ("1", "Gabriel", "Belén", "Python"),
+        ("23", "Rodrigo", "Belén", "Games"),
+        ("12", "Mercedes", "Las Juntas", "Rocas"),
+        ("2", "Diego", "Santiago del Estero", "null"),
+        ("3", "null", "null", "Ruby")
+    }
+
+    r = r1.fouter(r2)
+    assert r.degree() == 4
+    assert r.cardinality() == 5
+    assert r.content == expected
 
 
 def test_difference(qtbot):

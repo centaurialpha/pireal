@@ -24,6 +24,7 @@ from PyQt5.QtWidgets import QTreeWidgetItem
 from PyQt5.QtWidgets import QAbstractItemView
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSignal
 
 from src.gui.main_window import Pireal
 
@@ -33,6 +34,12 @@ class LateralWidget(QSplitter):
     Widget que contiene la lista de relaciones y la lista de relaciones
     del resultado de consultas
     """
+
+    relationClicked = pyqtSignal(int)
+    relationSelectionChanged = pyqtSignal(int)
+
+    resultClicked = pyqtSignal(int)
+    resultSelectionChanged = pyqtSignal(int)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -47,6 +54,19 @@ class LateralWidget(QSplitter):
         self.addWidget(self._results_list)
 
         Pireal.load_service("lateral_widget", self)
+
+        self._relations_list.itemClicked.connect(
+            lambda: self.relationClicked.emit(
+                self._relations_list.row()))
+        self._relations_list.itemSelectionChanged.connect(
+            lambda: self.relationSelectionChanged.emit(
+                self._relations_list.row()))
+        self._results_list.itemClicked.connect(
+            lambda: self.resultClicked.emit(
+                self._results_list.row()))
+        self._results_list.itemSelectionChanged.connect(
+            lambda: self.resultSelectionChanged.emit(
+                self._results_list.row()))
 
     @property
     def relation_list(self):
@@ -65,6 +85,22 @@ class RelationList(QTreeWidget):
         self.setRootIsDecorated(False)
         self.header().setDefaultAlignment(Qt.AlignHCenter)
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.setFrameShape(QTreeWidget.NoFrame)
+        self.setFrameShadow(QTreeWidget.Plain)
+        self.setAnimated(True)
+
+    def select(self, fila):
+        item = self.topLevelItem(fila)
+        item.setSelected(True)
+
+    def select_last(self):
+        for i in range(self.topLevelItemCount()):
+            item = self.topLevelItem(i)
+            item.setSelected(False)
+        self.select(self.topLevelItemCount() - 1)
+
+    def select_first(self):
+        self.select(0)
 
     def set_title(self, title):
         self.setHeaderLabel(title)

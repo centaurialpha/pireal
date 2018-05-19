@@ -59,47 +59,48 @@ class TableWidget(QSplitter):
         self.stacked = QStackedWidget()
         self._tabs.addTab(self.stacked, "Workspace")
         self.stacked_result = QStackedWidget()
-        self.stacked_result.currentChanged.connect(
-            self._on_stacked_result_changed)
-        self._tabs.addTab(self.stacked_result, "Results")
+        self._tabs.addTab(self.stacked_result, self.tr("Resultados"))
 
         btn_split = QToolButton()
+        btn_split.setToolTip(self.tr("Click para mostrar los resultados"))
         btn_split.setAutoRaise(True)
-        btn_split.setCheckable(True)
         btn_split.setIcon(QIcon(":img/split"))
         self._tabs.setCornerWidget(btn_split)
-        btn_split.toggled.connect(self._split)
+        btn_split.clicked.connect(self._split)
+        btn_split = QToolButton()
+        btn_split.setToolTip(self.tr("Click para ocultar los resultados"))
+        btn_split.setAutoRaise(True)
+        btn_split.setIcon(QIcon(":img/split"))
+        btn_split.clicked.connect(self._unsplit)
+        self._other_tab.setCornerWidget(btn_split)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self._show_menu)
 
         lateral_widget = Pireal.get_service("lateral_widget")
-        lateral_widget.result_list.itemClicked.connect(
-            lambda index: self.stacked_result.setCurrentIndex(
-                lateral_widget.result_list.row()))
+        lateral_widget.resultClicked.connect(
+            lambda index: self.stacked_result.setCurrentIndex(index))
+        lateral_widget.resultSelectionChanged.connect(
+            lambda index: self.stacked_result.setCurrentIndex(index))
 
-    def _on_stacked_result_changed(self, index):
-        print(index)
+    def _unsplit(self):
+        self._other_tab.hide()
+        result_widget = self._other_tab.widget(0)
+        self._tabs.addTab(result_widget, self.tr("Resultados"))
+        self._tabs.cornerWidget().show()
 
-    def _split(self, toggle):
-        if toggle:
-            # Split
-            result_widget = self._tabs.widget(1)
-            self._other_tab.addTab(result_widget, "Results")
-            self._other_tab.show()
-            self.setSizes([1, 1])
-        else:
-            # Unsiplit
-            self._other_tab.hide()
-            result_widget = self._other_tab.widget(0)
-            self._tabs.addTab(result_widget, "Results")
-
+    def _split(self):
+        result_widget = self._tabs.widget(1)
+        self._other_tab.addTab(result_widget, self.tr("Resultados"))
+        self._other_tab.show()
+        self.setSizes([1, 1])
+        self._tabs.cornerWidget().hide()
         self.setOrientation(Qt.Horizontal)
 
     def _show_menu(self, position):
         menu = QMenu(self)
 
         if self.count() > 0:
-            add_tuple_action = menu.addAction(self.tr("Add Tuple"))
+            add_tuple_action = menu.addAction(self.tr("Agregar Tupla"))
             add_col_action = menu.addAction(self.tr("Add Column"))
 
             add_tuple_action.triggered.connect(self.add_tuple)

@@ -35,7 +35,8 @@ class View(QTableView):
 
     def __init__(self):
         super(View, self).__init__()
-        self.setAlternatingRowColors(True)
+        # self.setAlternatingRowColors(True)
+        # self.setShowGrid(False)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.verticalHeader().hide()
         self.setSelectionBehavior(QAbstractItemView.SelectItems)

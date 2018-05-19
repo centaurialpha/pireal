@@ -63,6 +63,7 @@ Rectangle {
         anchors.top: logo.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.topMargin: 10
+        renderType: Text.NativeRendering
     }
 
     Row {
@@ -136,6 +137,7 @@ Rectangle {
                 color: "#303336"
                 font.pixelSize: 20
                 anchors.centerIn: parent
+                renderType: Text.NativeRendering
             }
         }
 
@@ -196,12 +198,14 @@ Rectangle {
                             font.bold: true
                             font.pixelSize: 18
                             text: name
+                            renderType: Text.NativeRendering
                         }
                         Text {
                             color: "#555"
                             text: path
                             width: parent.width
                             elide: Text.ElideLeft
+                            renderType: Text.NativeRendering
                         }
                     }
 
@@ -246,6 +250,7 @@ Rectangle {
             height: logoPython.height
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 12
+            renderType: Text.NativeRendering
         }
 
         Image { id: logoPython; source: "python-logo.png"; opacity: 0.7 }
@@ -255,6 +260,7 @@ Rectangle {
     Text {
         text: "Copyright © 2015-" + new Date().getFullYear() + " Gabriel Acosta. Pireal is distributed under the terms of the GNU GPLv3+ copyleft license"
         color: "#444"
+        renderType: Text.NativeRendering
         anchors {
             bottom: parent.bottom
             left: parent.left
@@ -262,7 +268,6 @@ Rectangle {
             leftMargin: 10
         }
         font.pixelSize: 12
-//        renderType: Text.NativeRendering
     }
 
     //    property bool widthCompressed: false

@@ -22,6 +22,7 @@
 
 import re
 import itertools
+import functools
 
 from src.core.rtypes import RelationStr
 
@@ -78,12 +79,24 @@ class UnionCompatibleError(Error):
     pass
 
 
+def union_compatible(operation):
+    """Decorador que comprueba que dos relaciones sean compatibles"""
+    def inner(self, *args, **kwargs):
+        header_other = args[0].header
+        if len(self._header) != len(header_other):
+            raise UnionCompatibleError(
+                "Union not compatible for '{}'".format(operation.__name__))
+        return operation(self, *args, **kwargs)
+    return inner
+
+
 class Relation(object):
 
     def __init__(self):
         self.content = set()
         self._header = []
         self.name = ""
+        self._null_count = 1
 
     @property
     def header(self):
@@ -109,8 +122,11 @@ class Relation(object):
 
     def append_row(self):
         """Agrega una fila/tupla al final"""
-        null_row = ["null" for i in range(self.degree())]
-        self.insert(null_row)
+
+        null_row = ["null ({})".format(self._null_count)
+                    for i in range(self.degree())]
+        self.insert(tuple(null_row))
+        self._null_count += 1
 
     def cardinality(self):
         """Devuelve la cantidad de filas de la relación"""
@@ -156,16 +172,16 @@ class Relation(object):
         new_relation = Relation()
         new_relation.header = self._header
 
-        # Filtro
-        d = {}
+        expr = compile(expression, "select", "eval")
+
         for tupla in self.content:
-            for e, attr in enumerate(self._header):
-                d[attr] = RelationStr(tupla[e]).cast()
-                try:
-                    if eval(expression, datetime_dict, d):
-                        new_relation.insert(tupla)
-                except SyntaxError:
-                    raise Exception("Error")
+            attrs = {attr: RelationStr(tupla[e]).cast()
+                     for e, attr in enumerate(self.header)}
+            try:
+                if eval(expr, datetime_dict, attrs):
+                    new_relation.insert(tupla)
+            except SyntaxError:
+                raise Exception("Error")
         return new_relation
 
     def njoin(self, other_relation):
@@ -189,20 +205,88 @@ class Relation(object):
         # Project para eliminar campos repetidos
         return new_relation.project(*final_fields)
 
+    def louter(self, other_relation):
+        header = self.header + other_relation.header
+
+        new_relation = Relation()
+        new_relation.header = header
+
+        sharedf = set(self._header).intersection(set(other_relation.header))
+        final_fields = self._header + [i for i in other_relation.header
+                                       if i not in sharedf]
+
+        indexes_r = [self._header.index(i) for i in sharedf]
+        indexes_or = [other_relation.header.index(i) for i in sharedf]
+
+        for i in self.content:
+            added = False
+            for j in other_relation.content:
+                for k, l in itertools.product(indexes_r, indexes_or):
+                    if i[k] == j[l]:
+                        # Esto es un producto cartesiano con la
+                        # condición equi-join
+                        new_relation.insert(i + j)
+                        added = True
+            if not added:
+                nulls = ["null" for i in range(len(other_relation.header))]
+                new_relation.insert(tuple(list(i) + nulls))
+
+        return new_relation.project(*final_fields)
+
+    def router(self, other_relation):
+        r = other_relation.louter(self)
+        sharedf = [i for i in other_relation.header if i not in self._header]
+        return r.project(*self._header + sharedf)
+
+    def fouter(self, other_relation):
+        right = self.router(other_relation)
+        left = self.louter(other_relation)
+        return right.union(left)
+
+    @union_compatible
+    def union(self, other_relation):
+        """
+        The union is defined as: R ∪ S. Returns the set of tuples in R,
+        or S, or both. R and S must be compatible unions.
+        """
+
+        new_relation = Relation()
+        new_relation.header = self._header
+        content = self.content.union(other_relation.content)
+
+        for i in content:
+            new_relation.insert(i)
+
+        return new_relation
+
+    @union_compatible
     def difference(self, other_relation):
         """
         The difference is defined as: R - S. It is the set of all tuples
         in R, but not in S. R and S must be compatible unions
         """
 
-        if self._header != other_relation.header:
-            raise UnionCompatibleError("Not union compatible for difference")
-
         new_relation = Relation()
         new_relation.header = self._header
         content = self.content - other_relation.content
         for i in content:
             new_relation.insert(i)
+        return new_relation
+
+    @union_compatible
+    def intersect(self, other_relation):
+        """
+        The intersection is defined as: R ∩ S. corresponds to the set of
+        all tuples in R and S, R and S compatible unions.
+        """
+
+        new_relation = Relation()
+        new_relation.header = self._header
+        content = self.content.intersection(other_relation.content)
+
+        for i in content:
+            new_relation.insert(i)
+
         return new_relation
 
     def product(self, other_relation):

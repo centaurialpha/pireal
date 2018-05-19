@@ -51,6 +51,9 @@ from src.core.interpreter.exceptions import (
     DuplicateRelationNameError
 )
 
+from src.core.interpreter import scanner
+from src.core.interpreter import lexer
+
 # TODO: Mover los nodos AST a un módulo rast
 
 
@@ -571,3 +574,13 @@ class Interpreter(NodeVisitor):
 
     def clear(self):
         self.SCOPE.clear()
+
+
+def parse(query):
+    sc = scanner.Scanner(query)
+    lex = lexer.Lexer(sc)
+    parser = Parser(lex)
+    interpreter = Interpreter(parser)
+    interpreter.clear()
+    interpreter.to_python()
+    return interpreter.SCOPE

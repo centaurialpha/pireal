@@ -79,7 +79,8 @@ class Model(QAbstractTableModel):
         Este método actualiza el modelo """
         if index.isValid() and role == Qt.EditRole:
             modified = False
-            old_value = self.__data.content[index.row()][index.column()]
+            # old_value = self.__data.content[index.row()][index.column()]
+            old_value = list(self.__data.content)[index.row()][index.column()]
             if value != old_value:
                 # Si son distintos los datos, actualizo
                 self.__data.update(index.row(), index.column(), value)

@@ -51,7 +51,6 @@ QTableView {
     selection-color: white;
     selection-background-color: #c4c7ca;
     border-radius: 0px;
-    padding: 3px 3px;
 }
 
 QHeaderView {
@@ -66,16 +65,25 @@ QHeaderView {
     min-height: 30px;
 }
 
-QHeaderView::section {
-    color: #3f4347;
-    background-color: #e9ebec;
-    border: 5px solid red;
-    border-radius: 0px;
-    border-color: #e9ebec;
+QHeaderView::section{
+    border-top:0px solid #c4c7ca;
+    border-left:0px solid #c4c7ca;
+    border-right:1px solid #c4c7ca;
+    border-bottom: 1px solid #c4c7ca;
+    background-color: #dbdbdc;
+    padding: 2px;
+}
+QTableCornerButton::section{
+    border-top:0px solid #c4c7ca;
+    border-left:0px solid #c4c7ca;
+    border-right:1px solid #c4c7ca;
+    border-bottom: 1px solid #c4c7ca;
+    background-color: white;
 }
 
 QHeaderView#lateral::section {
     margin: 3px;
+    border: 0px solid black;
 }
 
 QTreeView {
@@ -94,15 +102,9 @@ QTreeView::item:hover {
     border: 0px solid #bfcde4;
 }
 
+QAbstractItemView:item:selected,
 QTreeView::item:selected {
     border: none;
-}
-
-QTreeView::item:selected:active{
-    background: #c4c7ca;
-}
-
-QTreeView::item:selected:!active {
-    background: #e9ebec;
-    color: #444;
+    background: #007dcd;
+    color: white;
 }

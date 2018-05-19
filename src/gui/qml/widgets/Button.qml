@@ -21,6 +21,7 @@ Rectangle {
         font.pixelSize: 16
         anchors.centerIn: parent
         color: "#303336"
+        renderType: Text.NativeRendering
     }
 
     MouseArea {
