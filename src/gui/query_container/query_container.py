@@ -378,6 +378,7 @@ class QueryWidget(QWidget):
         table_widget.stacked_result.setCurrentIndex(index)
         lateral_widget.result_list.add_item(rname, rela.cardinality())
         lateral_widget.result_list.select_last()
+        table_widget._tabs.setCurrentIndex(1)
 
     def show_search_widget(self):
         self._editor_widget.show_search_widget()
