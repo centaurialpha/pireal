@@ -76,8 +76,9 @@ class DatabaseContainer(QSplitter):
 
         # Connections
         # FIXME
-        self.lateral_widget.relationClicked.connect(
-            lambda i: self.table_widget.stacked.setCurrentIndex(i))
+        self.lateral_widget.relationClicked.connect(self._on_relation_clicked)
+
+            # lambda i: self.table_widget.stacked.setCurrentIndex(i))
         # For change table widget item when up/down
         # see issue #39
         self.lateral_widget.relationSelectionChanged.connect(
@@ -85,6 +86,11 @@ class DatabaseContainer(QSplitter):
         self.query_container.saveEditor['PyQt_PyObject'].connect(
             self.save_query)
         self.setSizes([1, 1])
+
+    def _on_relation_clicked(self, index):
+        if not self.table_widget._other_tab.isVisible():
+            self.table_widget._tabs.setCurrentIndex(0)
+        self.table_widget.stacked.setCurrentIndex(index)
 
     def dbname(self):
         """ Return display name """

@@ -75,10 +75,15 @@ class TableWidget(QSplitter):
         self.customContextMenuRequested.connect(self._show_menu)
 
         lateral_widget = Pireal.get_service("lateral_widget")
-        lateral_widget.resultClicked.connect(
-            lambda index: self.stacked_result.setCurrentIndex(index))
+        lateral_widget.resultClicked.connect(self._on_result_list_clicked)
+            # lambda index: self.stacked_result.setCurrentIndex(index))
         lateral_widget.resultSelectionChanged.connect(
             lambda index: self.stacked_result.setCurrentIndex(index))
+
+    def _on_result_list_clicked(self, index):
+        self.stacked_result.setCurrentIndex(index)
+        if not self._other_tab.isVisible():
+            self._tabs.setCurrentIndex(1)
 
     def _unsplit(self):
         self._other_tab.hide()
