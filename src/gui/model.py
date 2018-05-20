@@ -73,6 +73,8 @@ class Model(QAbstractTableModel):
             font = QFont()
             font.setPointSize(12)
             return font
+        elif role == Qt.TextAlignmentRole:
+            return Qt.AlignHCenter
 
     def setData(self, index, value, role):
         """ Método reimplementado.
