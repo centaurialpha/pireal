@@ -42,37 +42,23 @@ QSplitter:handle:hover {
     background: gray;
 }
 
-
-QTableView {
-    color: #3f4347;
-    gridline-color: #c4c7ca;
-    background-color: white;
-    alternate-background-color: #e9ebec;
-    selection-color: white;
-    selection-background-color: #c4c7ca;
-    border-radius: 0px;
+QTableView QHeaderView::section:horizontal:first {
+    border-left-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 #f4f4f6, stop: 1 #ceced6);
+}
+QTableView QHeaderView::section:horizontal:last {
+    border-left-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 #f4f4f6, stop: 1 #ceced6);
 }
 
-QHeaderView {
-    color: #3f4347;
-    font: bold 12pt;
-    background-color: white;
-    border: 0px solid rgb(144, 144, 144);
-    border: 0px solid rgb(191,191,191);
-    border-left-color: rgba(255, 255, 255, 0);
-    border-top-color: rgba(255, 255, 255, 0);
-    border-radius: 0px;
-    min-height: 30px;
+QTableView QHeaderView::section:horizontal {
+    border-style: none;
+    border-left: 1px solid #ecedef;
+    border-right: 1px solid #b1b1b5;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 #f4f4f6, stop: 1 #ceced6);
 }
 
-QHeaderView::section{
-    border-top:0px solid #c4c7ca;
-    border-left:0px solid #c4c7ca;
-    border-right:1px solid #c4c7ca;
-    border-bottom: 1px solid #c4c7ca;
-    background-color: #dbdbdc;
-    padding: 2px;
-}
 QTableCornerButton::section{
     border-top:0px solid #c4c7ca;
     border-left:0px solid #c4c7ca;
@@ -81,9 +67,15 @@ QTableCornerButton::section{
     background-color: white;
 }
 
+
 QHeaderView#lateral::section {
     margin: 3px;
     border: 0px solid black;
+}
+
+QHeaderView::section {
+    background-color: #dbdbdc;
+    padding: 2px;
 }
 
 QTreeView {
