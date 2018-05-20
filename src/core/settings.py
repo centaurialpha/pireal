@@ -117,7 +117,7 @@ class Config(QObject):
         self._settings[option] = value
 
     def _get_font(self):
-        font = QFont("courier", 10)
+        font = QFont("consolas", 11)
         if LINUX:
             font = QFont("monospace", 12)
         return font.family(), font.pointSize()
