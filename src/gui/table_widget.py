@@ -45,9 +45,7 @@ class TableWidget(QSplitter):
         # vbox.setContentsMargins(0, 0, 0, 0)
 
         self._tabs = QTabWidget()
-        self._tabs.setDocumentMode(True)
         self._other_tab = QTabWidget()
-        self._other_tab.setDocumentMode(True)
         self.addWidget(self._tabs)
         self.addWidget(self._other_tab)
         self.setSizes([1, 1])

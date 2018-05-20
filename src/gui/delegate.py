@@ -18,6 +18,13 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt5.QtWidgets import QItemDelegate
+from PyQt5.QtWidgets import QStyle
+from PyQt5.QtWidgets import QApplication
+
+from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QPalette
+from PyQt5.QtGui import QPen
+
 from PyQt5.QtCore import Qt
 
 
@@ -27,7 +34,7 @@ class Delegate(QItemDelegate):
     """
 
     def __init__(self, parent=None):
-        QItemDelegate.__init__(self, parent)
+        super().__init__(parent)
 
     def setModelData(self, editor, model, index):
         data = editor.text().strip()
@@ -37,3 +44,10 @@ class Delegate(QItemDelegate):
     def setEditorData(self, editor, index):
         text = index.model().data(index, Qt.DisplayRole)
         editor.setText(text)
+
+    def paint(self, painter, opt, index):
+        if opt.state & QStyle.State_Selected:
+            opt.palette.setColor(QPalette.Highlight, QColor("#fffde1"))
+            painter.drawRect(opt.rect)
+        opt.palette.setColor(QPalette.HighlightedText, Qt.black)
+        super().paint(painter, opt, index)

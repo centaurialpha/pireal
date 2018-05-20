@@ -35,7 +35,7 @@ class View(QTableView):
 
     def __init__(self):
         super(View, self).__init__()
-        self.setAlternatingRowColors(True)
+        # self.setAlternatingRowColors(True)
         self.verticalHeader().hide()
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         # Scroll content per pixel

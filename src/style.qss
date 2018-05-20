@@ -44,29 +44,24 @@ QSplitter:handle:hover {
 
 QTableView QHeaderView::section:horizontal:first {
     border-left-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-        stop: 0 #f4f4f6, stop: 1 #ceced6);
+        stop: 0 #eeeeef, stop: 1 #eeeeef);
 }
 QTableView QHeaderView::section:horizontal:last {
     border-left-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-        stop: 0 #f4f4f6, stop: 1 #ceced6);
+        stop: 0 #eeeeef, stop: 1 #eeeeef);
 }
 
 QTableView QHeaderView::section:horizontal {
     border-style: none;
-    border-left: 1px solid #ecedef;
-    border-right: 1px solid #b1b1b5;
+    border-left: 1px solid #e6e6e6;;
+    border-right: 1px solid #e6e6e6;
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-        stop: 0 #f4f4f6, stop: 1 #ceced6);
+        stop: 0 #eeeeef, stop: 1 #eeeeef);
 }
 
-QTableCornerButton::section{
-    border-top:0px solid #c4c7ca;
-    border-left:0px solid #c4c7ca;
-    border-right:1px solid #c4c7ca;
-    border-bottom: 1px solid #c4c7ca;
-    background-color: white;
+QTableView {
+    gridline-color: #e6e6e6;
 }
-
 
 QHeaderView#lateral::section {
     margin: 3px;
