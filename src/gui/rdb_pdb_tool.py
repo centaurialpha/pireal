@@ -110,5 +110,5 @@ class RDBPDBTool(QDialog):
             "~", "RDB Files (*.rdb)")[0]
         if filename:
             self._line_location.setText(filename)
-            pdb_name = os.path.basename(os.path.splitext(filename)[0])
-            self._line_name.setText(pdb_name + ".pdb")
+            # pdb_name = os.path.basename(os.path.splitext(filename)[0])
+            # self._line_name.setText(pdb_name + ".pdb")
