@@ -34,115 +34,115 @@ MENU = OrderedDict()
 
 # Menu File
 MENU['file'] = {
-    'name': translate("Pireal", "&File"),
+    'name': translate("Pireal", "&Archivo"),
     'items': [{
-        'name': translate("Pireal", "New Database"),
+        'name': translate("Pireal", "Nueva Base de Datos"),
         'slot': "central:create_database"
     }, {
-        'name': translate("Pireal", "Open Database"),
+        'name': translate("Pireal", "Abrir Base de Datos"),
         'slot': "central:open_database"
     }, {
-        'name': translate("Pireal", "Save Database"),
+        'name': translate("Pireal", "Guardar Base de Datos"),
         'slot': "central:save_database"
     }, {
-        'name': translate("Pireal", "Save Database As..."),
+        'name': translate("Pireal", "Guardar Base de Datos como..."),
         'slot': "central:save_database_as"
     }, {
-        'name': translate("Pireal", "Close Database"),
+        'name': translate("Pireal", "Cerrar Base de Datos"),
         'slot': "central:close_database"
     }, "-", {
-        'name': translate("Pireal", "New Query"),
+        'name': translate("Pireal", "Nueva Consulta"),
         'slot': "central:new_query"
     }, {
-        'name': translate("Pireal", "Open Query"),
+        'name': translate("Pireal", "Abrir Consulta"),
         'slot': "central:open_query"
     }, {
-        'name': translate("Pireal", "Save Query"),
+        'name': translate("Pireal", "Guardar Consulta"),
         'slot': "central:save_query"
     }, "-", {
-        'name': translate("Pireal", "Exit"),
+        'name': translate("Pireal", "Salir"),
         'slot': "pireal:close"}]}
 
 
 # Menu Edit
 MENU['edit'] = {
-    'name': translate("Pireal", "&Edit"),
+    'name': translate("Pireal", "&Editar"),
     'items': [{
-        'name': translate("Pireal", "Undo"),
+        'name': translate("Pireal", "Deshacer"),
         'slot': "central:undo_action"
     }, {
-        'name': translate("Pireal", "Redo"),
+        'name': translate("Pireal", "Rehacer"),
         'slot': "central:redo_action"
     }, "-", {
-        'name': translate("Pireal", "Cut"),
+        'name': translate("Pireal", "Cortar"),
         'slot': "central:cut_action"
     }, {
-        'name': translate("Pireal", "Copy"),
+        'name': translate("Pireal", "Copiar"),
         'slot': "central:copy_action"
     }, {
-        'name': translate("Pireal", "Paste"),
+        'name': translate("Pireal", "Pegar"),
         'slot': "central:paste_action"
     }, {
-        'name': translate("Pireal", "Comment"),
+        'name': translate("Pireal", "Comentar"),
         'slot': "central:comment"
     }, {
-        'name': translate("Pireal", "Uncomment"),
+        'name': translate("Pireal", "Descomentar"),
         'slot': "central:uncomment"
     }, "-", {
-        'name': translate("Pireal", "Zoom In"),
+        'name': translate("Pireal", "Acercar"),
         'slot': "central:zoom_in"
     }, {
-        'name': translate("Pireal", "Zoom Out"),
+        'name': translate("Pireal", "Alejar"),
         'slot': "central:zoom_out"
     }, "-", {
-        'name': translate("Pireal", "Search"),
+        'name': translate("Pireal", "Buscar..."),
         'slot': "central:search"
     }, "-", {
-        'name': translate("Pireal", "Preferences"),
+        'name': translate("Pireal", "Preferencias"),
         'slot': "central:show_settings"}]}
 
 
 # Menu Relation
 MENU['relation'] = {
-    'name': translate("Pireal", "&Relation"),
+    'name': translate("Pireal", "&Relación"),
     'items': [{
-        'name': translate("Pireal", "New Relation"),
+        'name': translate("Pireal", "Nueva Relación"),
         'slot': "central:create_new_relation"
     }, {
-        'name': translate("Pireal", "Delete Relation"),
+        'name': translate("Pireal", "Eliminar Relación"),
         'slot': "central:remove_relation"
     }, {
-        'name': translate("Pireal", "Load Relation"),
+        'name': translate("Pireal", "Cargar Relación"),
         'slot': "central:load_relation"
     }, "-", {
-        'name': translate("Pireal", "Add Tuple"),
+        'name': translate("Pireal", "Agregar Tupla"),
         'slot': "central:add_tuple"
     }, {
-        'name': translate("Pireal", "Delete Tuple"),
+        'name': translate("Pireal", "Eliminar Tupla"),
         'slot': "central:delete_tuple"
     }, {
-        'name': translate("Pireal", "Add Column"),
+        'name': translate("Pireal", "Agregar Columna"),
         'slot': "central:add_column"
     }, {
-        'name': translate("Pireal", "Delete Column"),
+        'name': translate("Pireal", "Eliminar Columna"),
         'slot': "central:delete_column"
     }, "-", {
-        'name': translate("Pireal", "Execute Queries"),
+        'name': translate("Pireal", "Ejecutar Consultas"),
         'slot': "central:execute_queries"}]}
 
 
 # Menu Help
 MENU['help'] = {
-    'name': translate("Pireal", "&Help"),
+    'name': translate("Pireal", "A&yuda"),
     'items': [{
-        'name': translate("Pireal", "Report Issue..."),
+        'name': translate("Pireal", "Reportar problema..."),
         'slot': "pireal:report_issue"
     }, "-", {
-        'name': translate("Pireal", "RDB to PDB"),
+        'name': translate("Pireal", "RDB a PDB"),
         'slot': "central:rdb_to_pdb"
     }, "-", {
-        'name': translate("Pireal", "About Pireal"),
+        'name': translate("Pireal", "Acerca de Pireal"),
         'slot': "pireal:about_pireal"
     }, {
-        'name': translate("Pireal", "About Qt"),
+        'name': translate("Pireal", "Acerca de Qt"),
         'slot': "pireal:about_qt"}]}

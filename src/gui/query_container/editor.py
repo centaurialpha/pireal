@@ -176,8 +176,7 @@ class Editor(QPlainTextEdit):
 
         if self._highlight_line:
             _selection = QTextEdit.ExtraSelection()
-            color = QColor(Qt.yellow)
-            color.setAlpha(70)
+            color = QColor("#fffde1")
             _selection.format.setBackground(color)
             _selection.format.setProperty(
                 QTextCharFormat.FullWidthSelection, True)

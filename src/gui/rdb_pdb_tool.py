@@ -39,7 +39,7 @@ class RDBPDBTool(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(self.tr("WinRDBI Database File to PDB"))
+        self.setWindowTitle(self.tr("WinRDBI DB File to PDB"))
         self.setModal(True)
         self.setMinimumWidth(600)
 
@@ -49,7 +49,7 @@ class RDBPDBTool(QDialog):
 
         vbox = QVBoxLayout(self)
         hbox = QHBoxLayout()
-        hbox.addWidget(QLabel(self.tr(".rdb location:")))
+        hbox.addWidget(QLabel(self.tr("Ubicación del .rdb:")))
         self._line_location = QLineEdit()
         self._line_location.setReadOnly(True)
         choose_location = self._line_location.addAction(
@@ -59,22 +59,26 @@ class RDBPDBTool(QDialog):
         vbox.addLayout(hbox)
         aviso = QLabel(
                 self.tr(
-                    "<b><i>The file will be saved in the same path as the "
-                    "original file</i></b>"))
+                    "<b><i>El archivo será guardado en el mismo directorio "
+                    "que el original.</i></b>"))
         f = aviso.font()
         f.setPointSize(10)
         aviso.setFont(f)
         vbox.addWidget(aviso)
+        self._check_open = QCheckBox(self.tr("Abrir la BD al finalizar"))
+        vbox.addWidget(self._check_open)
+
         hbox = QHBoxLayout()
-        self._check_open = QCheckBox(self.tr("Open PDB File..."))
-        hbox.addWidget(self._check_open)
-        start_btn = QPushButton("Convert!")
         hbox.addStretch(1)
+        start_btn = QPushButton(self.tr("Convertir!"))
         hbox.addWidget(start_btn)
+        cancel_btn = QPushButton(self.tr("Salir"))
+        hbox.addWidget(cancel_btn)
         vbox.addLayout(hbox)
 
         choose_location.triggered.connect(self._select_rdb_file)
         start_btn.clicked.connect(self._start_convertion)
+        cancel_btn.clicked.connect(self.close)
 
     def _start_convertion(self):
         rdb_filename = self._line_location.text()
@@ -88,8 +92,8 @@ class RDBPDBTool(QDialog):
     def _on_finished(self, code, status):
         if status == QProcess.NormalExit == code:
             QMessageBox.information(
-                self, self.tr("Completed!"),
-                self.tr("Everything went well"))
+                self, self.tr("Completado!"),
+                self.tr("Todo ha salido muy bien!"))
             if self._check_open.isChecked():
                 central = Pireal.get_service("central")
                 rdb = os.path.splitext(self._line_location.text())[0]
@@ -98,11 +102,12 @@ class RDBPDBTool(QDialog):
                 self.close()
         else:
             QMessageBox.critical(
-                self, "Error", "The process could not be completed")
+                self, "Error", "El proceso no se ha completado")
 
     def _select_rdb_file(self):
         filename = QFileDialog.getOpenFileName(
-            self, self.tr("Select RDB File"), "~", "RDB Files (*.rdb)")[0]
+            self, self.tr("Selecciona el arhico RDB"),
+            "~", "RDB Files (*.rdb)")[0]
         if filename:
             self._line_location.setText(filename)
             pdb_name = os.path.basename(os.path.splitext(filename)[0])

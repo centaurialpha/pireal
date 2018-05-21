@@ -59,7 +59,7 @@ Rectangle {
     }
     Text {
         id: textoWelcome
-        text: "Click on <b>New</b>, <b>Open</b> or <b>Example</b> to get started!"
+        text: "Click en <b>Nueva</b>, <b>Obrir</b> o <b>Ejemplo</b> para comenzar!"
         anchors.top: logo.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.topMargin: 10
@@ -75,7 +75,7 @@ Rectangle {
 
 
         Button {
-            texto: "New"
+            texto: "Nueva"
             radius: 3
             CustomBorder {
                 commonBorder: false
@@ -87,7 +87,7 @@ Rectangle {
             onClicked: root.newDatabase();
         }
         Button{
-            texto: "Open"
+            texto: "Abrir"
             z: 1
             CustomBorder {
                 commonBorder: true
@@ -96,7 +96,7 @@ Rectangle {
             onClicked: root.openDatabase();
         }
         Button {
-            texto: "Example"
+            texto: "Ejemplo"
             radius: 3
             CustomBorder {
                 commonBorder: false
@@ -131,7 +131,7 @@ Rectangle {
             anchors.top: parent.top
             anchors.margins: 8
             Text {
-                text: qsTr("Recent databases")
+                text: qsTr("Base de Datos Recientes")
                 font.bold: true
                 font.italic: true
                 color: "#303336"

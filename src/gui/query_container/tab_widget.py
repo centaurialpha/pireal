@@ -41,15 +41,15 @@ class TabWidget(QTabWidget):
         if editor.modified:
             msgbox = QMessageBox(self)
             msgbox.setIcon(QMessageBox.Question)
-            msgbox.setWindowTitle(self.tr("File modified"))
-            msgbox.setText(self.tr("The file <b>{}</b> has unsaved changes."
-                                   "You want to keep them?".format(
+            msgbox.setWindowTitle(self.tr("Archivo modificado"))
+            msgbox.setText(self.tr("El archivo <b>{}</b> tiene cambios sin "
+                                   "guardar. Quiere mantenerlos?".format(
                                        editor.name)))
-            cancel_btn = msgbox.addButton(self.tr("Cancel"),
+            cancel_btn = msgbox.addButton(self.tr("Cancelar"),
                                           QMessageBox.RejectRole)
             msgbox.addButton(self.tr("No"),
                              QMessageBox.NoRole)
-            yes_btn = msgbox.addButton(self.tr("Yes"),
+            yes_btn = msgbox.addButton(self.tr("Si"),
                                        QMessageBox.YesRole)
             msgbox.exec_()
             r = msgbox.clickedButton()

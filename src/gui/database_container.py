@@ -166,9 +166,9 @@ class DatabaseContainer(QSplitter):
                     rel.insert(i)
                 relation_name = file_manager.get_basename(filename)
                 if not self.table_widget.add_relation(relation_name, rel):
-                    QMessageBox.information(self, self.tr("Information"),
-                                            self.tr("There is already a "
-                                                    "relationship with name "
+                    QMessageBox.information(self, self.tr("Información"),
+                                            self.tr("Ya existe una relación "
+                                                    "con el nombre  "
                                                     "'{}'".format(
                                                         relation_name)))
                     return False
@@ -265,14 +265,15 @@ class DatabaseContainer(QSplitter):
             editor.pfile.save(data=content)
         except Exception as reason:
             QMessageBox.critical(self, "Error",
-                                 self.tr("The file couldn't be saved!"
+                                 self.tr("El archivo no se puede abrir!"
                                          "\n\n{}".format(reason)))
             return False
         editor.saved()
         return editor.pfile.filename
 
     def save_query_as(self, editor=None):
-        filename = QFileDialog.getSaveFileName(self, self.tr("Save File"),
+        filename = QFileDialog.getSaveFileName(self,
+                                               self.tr("Guardar Archivo"),
                                                editor.name,
                                                "Pireal query files(*.pqf)")
         filename = filename[0]

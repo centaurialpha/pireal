@@ -49,11 +49,11 @@ class LateralWidget(QSplitter):
         self.setOrientation(Qt.Vertical)
         # Lista de relaciones de la base de datos
         self._relations_list = RelationList()
-        self._relations_list.set_title(self.tr("Relations"))
+        self._relations_list.set_title(self.tr("Relaciones"))
         self.addWidget(self._relations_list)
         # Lista de relaciones del resultado de consultas
         self._results_list = RelationList()
-        self._results_list.set_title(self.tr("Result"))
+        self._results_list.set_title(self.tr("Resultados"))
         self.addWidget(self._results_list)
 
         self._relations_list.setContextMenuPolicy(Qt.CustomContextMenu)

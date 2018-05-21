@@ -24,6 +24,8 @@ from collections import Callable
 
 from PyQt5.QtWidgets import (
     QMainWindow,
+    QMenu,
+    QToolButton,
     QMessageBox,
     QToolBar
 )
@@ -64,14 +66,16 @@ class Pireal(QMainWindow):
         'open_query',
         'save_query',
         '',
-        'create_new_relation',
-        'remove_relation',
+        'relation_menu',
         '',
-        'add_tuple',
-        'delete_tuple',
-        'add_column',
-        'delete_column',
-        '',
+        # 'create_new_relation',
+        # 'remove_relation',
+        # '',
+        # 'add_tuple',
+        # 'delete_tuple',
+        # 'add_column',
+        # 'delete_column',
+        # '',
         'execute_queries'
     ]
 
@@ -147,12 +151,11 @@ class Pireal(QMainWindow):
 
         # Keymap
         kmap = keymap.KEYMAP
-        # Toolbar items
-        toolbar_items = {}
 
         central = Pireal.get_service("central")
 
         # Load menu bar
+        rela_actions = []
         for item in menu_actions.MENU:
             menubar_item = menu_actions.MENU[item]
             menu_name = menubar_item['name']
@@ -178,29 +181,38 @@ class Pireal(QMainWindow):
                     if shortcut is not None:
                         qaction.setShortcut(shortcut)
 
-                    # Items for toolbar
-                    if connection in Pireal.TOOLBAR_ITEMS:
-                        toolbar_items[connection] = qaction
-
                     # The name of QAction is the connection
+                    if item == "relation":
+                        if connection != "execute_queries":
+                            rela_actions.append(qaction)
                     Pireal.load_action(connection, qaction)
                     slot = getattr(obj, connection, None)
                     if isinstance(slot, Callable):
                         qaction.triggered.connect(slot)
 
         # Install toolbar
-        self.__install_toolbar(toolbar_items)
+        # self.__install_toolbar(toolbar_items, rela_actions)
+        self.__install_toolbar(rela_actions)
         # Disable some actions
         self.set_enabled_db_actions(False)
         self.set_enabled_relation_actions(False)
         self.set_enabled_query_actions(False)
         self.set_enabled_editor_actions(False)
 
-    def __install_toolbar(self, toolbar_items):
-        for action in Pireal.TOOLBAR_ITEMS:
-            qaction = toolbar_items.get(action, None)
-            if qaction is not None:
-                self.toolbar.addAction(qaction)
+    def __install_toolbar(self, rela_actions):
+        menu = QMenu()
+        tool_button = QToolButton()
+        tool_button.setIcon(QIcon(":img/create_new_relation"))
+        tool_button.setMenu(menu)
+        tool_button.setPopupMode(QToolButton.InstantPopup)
+        for item in self.TOOLBAR_ITEMS:
+            if item:
+                if item == "relation_menu":
+                    # Install menu for relation
+                    menu.addActions(rela_actions)
+                    self.toolbar.addWidget(tool_button)
+                else:
+                    self.toolbar.addAction(self.__ACTIONS[item])
             else:
                 self.toolbar.addSeparator()
 

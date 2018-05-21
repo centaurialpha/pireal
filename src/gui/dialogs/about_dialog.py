@@ -37,7 +37,7 @@ class AboutDialog(QDialog):
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
-        self.setWindowTitle(self.tr("About Pireal"))
+        self.setWindowTitle(self.tr("Acerca de Pireal"))
         vbox = QVBoxLayout(self)
         # Banner
         banner = QLabel()
@@ -80,11 +80,12 @@ class AboutDialog(QDialog):
         vbox.addWidget(copy)
 
         # License and source
-        lbl_license_source = QLabel(self.tr("<br>This sotfware is licensed "
-                                            "under <a href='{0}'><span style"
+        lbl_license_source = QLabel(self.tr("<br>Este software tiene licencia "
+                                            "<a href='{0}'><span style"
                                             "='color: #3465a4'>GNU GPL</span>"
-                                            "</a> version 3,<br>source code "
-                                            "is available on <a href='{1}'>"
+                                            "</a> version 3,<br>el código "
+                                            "fuente "
+                                            "está disponible en <a href='{1}'>"
                                             "<span style='color: #3465a4'>"
                                             "GitHub.</span></a>".format(
                                                 gui.__license__,
@@ -99,7 +100,7 @@ class AboutDialog(QDialog):
         # Buttons
         hbox = QHBoxLayout()
         hbox.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
-        btn_ok = QPushButton(self.tr("Done"))
+        btn_ok = QPushButton(self.tr("Aceptar"))
         hbox.addWidget(btn_ok)
         vbox.addLayout(hbox)
 
