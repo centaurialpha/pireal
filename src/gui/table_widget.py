@@ -24,6 +24,7 @@ from PyQt5.QtWidgets import (
     QToolButton,
     QVBoxLayout,
     QStackedWidget,
+    QMessageBox,
     QMenu
 )
 from PyQt5.QtGui import QIcon
@@ -33,6 +34,7 @@ from src.gui import (
     model,
     delegate
 )
+from src.core import relation
 from src.gui.main_window import Pireal
 
 
@@ -76,9 +78,17 @@ class TableWidget(QSplitter):
 
         lateral_widget = Pireal.get_service("lateral_widget")
         lateral_widget.resultClicked.connect(self._on_result_list_clicked)
-            # lambda index: self.stacked_result.setCurrentIndex(index))
         lateral_widget.resultSelectionChanged.connect(
             lambda index: self.stacked_result.setCurrentIndex(index))
+        lateral_widget.newRowsRequested.connect(self._insert_rows)
+
+    def _insert_rows(self, tuplas):
+        current_view = self.current_table()
+        if current_view is not None:
+            model = current_view.model()
+            for tupla in tuplas:
+                model.insertRow(model.rowCount(), tupla)
+        current_view.adjust_columns()
 
     def _on_result_list_clicked(self, index):
         self.stacked_result.setCurrentIndex(index)

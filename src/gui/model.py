@@ -125,13 +125,13 @@ class Model(QAbstractTableModel):
             flags |= Qt.ItemIsEditable
         return flags
 
-    def insertRow(self, position, index=QModelIndex()):
+    def insertRow(self, position, tupla, index=QModelIndex()):
         """ Método reimplementado.
         Inserta una fila al final de la tabla y emite una señal con
         el nuevo valor de cardinalidad """
 
         self.beginInsertRows(QModelIndex(), position, position)
-        self.__data.append_row()
+        self.__data.insert(tupla)
         self.cardinalityChanged.emit(self.__data.cardinality())
         self.set_modified(True)
         self.endInsertRows()

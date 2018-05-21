@@ -22,7 +22,6 @@
 
 import re
 import itertools
-import functools
 
 from src.core.rtypes import RelationStr
 
@@ -74,6 +73,13 @@ class WrongSizeError(Error):
     """Excepción lanzada cuando se trata de insertar un tamaño de
     tuplas diferente a los que acepta la relación"""
 
+    def __init__(self, expected, got, msg=None):
+        if msg is None:
+            msg = "Wrong size. Expected {}, got {}".format(expected, got)
+        super().__init__(msg)
+        self.expected = expected
+        self.got = got
+
 
 class UnionCompatibleError(Error):
     pass
@@ -114,11 +120,19 @@ class Relation(object):
             values = tuple(values.split())
 
         if len(values) != len(self._header):
-            raise WrongSizeError("Wrong size. Expected %d, got %d".format(
+            raise WrongSizeError(
                 len(self._header),
                 len(values)
-            ))
+            )
         self.content.add(values)
+
+    def update(self, row, column, new_value):
+        content = list(self.content)
+        self.content.remove(content[row])
+        content_row = list(content[row])
+        content_row[column] = new_value
+        content_row = tuple(content_row)
+        self.content.add(content_row)
 
     def append_row(self):
         """Agrega una fila/tupla al final"""
