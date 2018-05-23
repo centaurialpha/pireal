@@ -97,9 +97,10 @@ MENU['edit'] = {
     }, "-", {
         'name': translate("Pireal", "Buscar..."),
         'slot': "central:search"
-    }, "-", {
-        'name': translate("Pireal", "Preferencias"),
-        'slot': "central:show_settings"}]}
+    }]}
+    # }, "-", {
+    #     'name': translate("Pireal", "Preferencias"),
+    #     'slot': "central:show_settings"}]}
 
 
 # Menu Relation
@@ -120,12 +121,12 @@ MENU['relation'] = {
     }, {
         'name': translate("Pireal", "Eliminar Tupla"),
         'slot': "central:delete_tuple"
-    }, {
-        'name': translate("Pireal", "Agregar Columna"),
-        'slot': "central:add_column"
-    }, {
-        'name': translate("Pireal", "Eliminar Columna"),
-        'slot': "central:delete_column"
+
+    #     'name': translate("Pireal", "Agregar Columna"),
+    #     'slot': "central:add_column"
+    # }, {
+    #     'name': translate("Pireal", "Eliminar Columna"),
+    #     'slot': "central:delete_column"
     }, "-", {
         'name': translate("Pireal", "Ejecutar Consultas"),
         'slot': "central:execute_queries"}]}

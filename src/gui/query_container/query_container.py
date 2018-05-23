@@ -396,8 +396,6 @@ class EditorWidget(QWidget):
         'redo_action',
         'cut_action',
         'paste_action',
-        '',
-        'execute_queries'
     ]
 
     editorModified = pyqtSignal(bool)

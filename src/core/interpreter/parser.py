@@ -170,13 +170,18 @@ class Parser(object):
             self.token = self.lexer.next_token()
         else:
             raise ConsumeError(
-                "It is expected to find '{0}', "
-                "but '{1}' found, Line: '{2}', Col: '{3}'".format(
-                    token_type,
-                    self.token.type,
-                    self.lexer.sc.lineno,
-                    self.lexer.sc.colno
-                ), self.lexer.sc.lineno, self.lexer.sc.colno)
+                token_type,
+                self.token.type,
+                self.lexer.sc.lineno
+            )
+            # raise ConsumeError(
+            #     "It is expected to find '{0}', "
+            #     "but '{1}' found, Line: '{2}', Col: '{3}'".format(
+            #         token_type,
+            #         self.token.type,
+            #         self.lexer.sc.lineno,
+            #         self.lexer.sc.colno
+            #     ), self.lexer.sc.lineno, self.lexer.sc.colno)
 
     def parse(self):
         """

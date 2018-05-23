@@ -275,8 +275,8 @@ class Pireal(QMainWindow):
             'remove_relation',
             'add_tuple',
             'delete_tuple',
-            'add_column',
-            'delete_column'
+            # 'add_column',
+            # 'delete_column'
         ]
 
         for action in actions:

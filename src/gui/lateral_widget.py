@@ -22,7 +22,6 @@ from PyQt5.QtWidgets import QTreeWidget
 from PyQt5.QtWidgets import QSplitter
 from PyQt5.QtWidgets import QTreeWidgetItem
 from PyQt5.QtWidgets import QAbstractItemView
-from PyQt5.QtWidgets import QMenu
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSignal
@@ -56,8 +55,6 @@ class LateralWidget(QSplitter):
         self._results_list.set_title(self.tr("Resultados"))
         self.addWidget(self._results_list)
 
-        self._relations_list.setContextMenuPolicy(Qt.CustomContextMenu)
-        self._relations_list.customContextMenuRequested.connect(self._menu)
         Pireal.load_service("lateral_widget", self)
 
         self._relations_list.itemClicked.connect(
@@ -72,21 +69,6 @@ class LateralWidget(QSplitter):
         self._results_list.itemSelectionChanged.connect(
             lambda: self.resultSelectionChanged.emit(
                 self._results_list.row()))
-
-    def _menu(self, position):
-        if not self._relations_list.selectedItems():
-            return
-        menu = QMenu(self)
-        edit_action = menu.addAction(self.tr("Insertar Tuplas"))
-        edit_action.triggered.connect(self._edit_relation)
-        menu.exec_(self.mapToGlobal(position))
-
-    def _edit_relation(self):
-        rname = self._relations_list.item_text(self._relations_list.row())
-        from src.gui.dialogs.edit_relation_dialog import EditRelationDialog
-        dialog = EditRelationDialog(rname, self)
-        dialog.sendData.connect(lambda t: self.newRowsRequested.emit(t))
-        dialog.show()
 
     @property
     def relation_list(self):
@@ -104,7 +86,7 @@ class RelationList(QTreeWidget):
         self.header().setObjectName("lateral")
         self.setRootIsDecorated(False)
         self.header().setDefaultAlignment(Qt.AlignHCenter)
-        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setFrameShape(QTreeWidget.NoFrame)
         self.setFrameShadow(QTreeWidget.Plain)
         self.setAnimated(True)
@@ -137,8 +119,16 @@ class RelationList(QTreeWidget):
 
     def item_text(self, index):
         """Retorna el texto del item en el indice pasado"""
-        text = self.topLevelItem(index).text(0)
+        item = self.topLevelItem(index)
+        if item is None:
+            item = self.topLevelItem(self.selectedIndexes()[0].row())
+        text = item.text(0)
         return text.split()[0].strip()
+
+    def remove_item(self, index):
+        if index == -1:
+            index = 0  # primer elemento
+        self.takeTopLevelItem(index)
 
     def clear_items(self):
         """Elimina todos los items"""

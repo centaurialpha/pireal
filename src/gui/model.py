@@ -151,7 +151,8 @@ class Model(QAbstractTableModel):
         valor de cardinalidad """
 
         self.beginRemoveRows(QModelIndex(), row, row)
-        del self.__data.content[row]
+        data = list(self.__data.content)[row]
+        self.__data.content.remove(data)
         self.cardinalityChanged.emit(self.__data.cardinality())
         self.set_modified(True)
         self.endRemoveRows()

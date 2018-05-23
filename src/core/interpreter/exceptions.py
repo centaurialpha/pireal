@@ -48,10 +48,15 @@ class ConsumeError(InterpreterError):
     """ Excepción para errores generados por el Parser cuando no se espera
     un determinado símbolo del lenguaje """
 
-    def __init__(self, msg, lineno, col):
+    def __init__(self, expected, got, lineno, msg=None):
+        if msg is None:
+            msg = ("It is expected to find '{}',"
+                   " but '{}' found in line: '{}'".format(
+                       expected, got, lineno))
         super().__init__(msg)
+        self.expected = expected
+        self.got = got
         self.lineno = lineno
-        self.column = col
 
 
 class DuplicateRelationNameError(InterpreterError):

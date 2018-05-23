@@ -552,14 +552,26 @@ class CentralWidget(QWidget):
         query_container.uncomment()
 
     def add_tuple(self):
+        lateral = Pireal.get_service("lateral_widget")
+        rname = lateral.relation_list.item_text(lateral.relation_list.row())
+        from src.gui.dialogs.edit_relation_dialog import EditRelationDialog
+        dialog = EditRelationDialog(rname, self)
         tw = self.get_active_db().table_widget
-        tw.add_tuple()
+        dialog.sendData.connect(tw.insert_rows)
+        dialog.show()
 
     def add_column(self):
         tw = self.get_active_db().table_widget
         tw.add_column()
 
     def delete_tuple(self):
+        r = QMessageBox.question(
+                self,
+                self.tr("Eliminar tupla/s"),
+                self.tr("Seguro que quiere eliminar las tuplas seleccionadas?"),
+                QMessageBox.Yes | QMessageBox.Cancel)
+        if r == QMessageBox.Cancel:
+            return
         tw = self.get_active_db().table_widget
         tw.delete_tuple()
 

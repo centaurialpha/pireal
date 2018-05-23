@@ -80,9 +80,9 @@ class TableWidget(QSplitter):
         lateral_widget.resultClicked.connect(self._on_result_list_clicked)
         lateral_widget.resultSelectionChanged.connect(
             lambda index: self.stacked_result.setCurrentIndex(index))
-        lateral_widget.newRowsRequested.connect(self._insert_rows)
+        # lateral_widget.newRowsRequested.connect(self._insert_rows)
 
-    def _insert_rows(self, tuplas):
+    def insert_rows(self, tuplas):
         current_view = self.current_table()
         if current_view is not None:
             model = current_view.model()

@@ -16,4 +16,3 @@ query_11 := project nombre_curso, fecha_inicio (select fecha_inicio > '01/03/201
 
 % Ejemplo de Left Outer Join
 consulta_1 := alumno louter inscripto;
-consulta_2 := project nombre, cod_inscripto (consulta_1);

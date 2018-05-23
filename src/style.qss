@@ -89,7 +89,6 @@ QTreeView::item:hover {
     border: 0px solid #bfcde4;
 }
 
-QAbstractItemView:item:selected,
 QTreeView::item:selected {
     border: none;
     background: #007dcd;
