@@ -75,6 +75,7 @@ class CustomInstall(install):
         self._custom_data_dir = data_dir
         self._custom_apps_dir = apps_dir
 
+
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Environment :: X11 Applications',
@@ -93,7 +94,7 @@ DESCRIPTION = ""
 
 setup(
     name="pireal",
-    version="2.0.2",
+    version="3.0",
     description="",
     author="Gabriel Acosta",
     author_email="acostadariogabriel@gmail.com",

@@ -95,7 +95,7 @@ class Pireal(QMainWindow):
             self.move(position)
         # Toolbar
         self.toolbar = QToolBar(self)
-        self.toolbar.setFixedWidth(48)
+        self.toolbar.setFixedWidth(38)
         self.toolbar.setIconSize(QSize(38, 38))
         self.toolbar.setMovable(False)
         self.addToolBar(Qt.RightToolBarArea, self.toolbar)
