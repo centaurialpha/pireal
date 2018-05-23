@@ -101,3 +101,10 @@ QTabWidget::pane {
     border-right: none;
     border-top: 1px solid #b3b8bc;
 }
+
+QToolBar {
+    border-left: 1px solid #b3b8bc;
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+}

@@ -71,7 +71,7 @@ class Model(QAbstractTableModel):
                 return QColor('red')
         elif role == Qt.FontRole:
             font = QFont()
-            font.setPointSize(12)
+            font.setPointSize(10)
             return font
         elif role == Qt.TextAlignmentRole:
             return Qt.AlignHCenter

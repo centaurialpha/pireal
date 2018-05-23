@@ -76,7 +76,7 @@ Rectangle {
                     id: relationText
                     text: name
                     font.bold: true
-                    font.pointSize: 14
+                    font.pointSize: 12
                     renderType: Label.NativeRendering
                 }
                 Label {
