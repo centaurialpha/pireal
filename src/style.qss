@@ -95,24 +95,40 @@ QTreeView::item:selected {
     background: #007dcd;
     color: white;
 }
-QTabWidget::bar {
-    background-color: red;
-}
+
 QTabWidget::pane {
     border-bottom: none;
     border-left: none;
     border-right: none;
     border-top: 1px solid #b3b8bc;
 }
+QTabBar#tab_query {
+    border-top: 1px solid #b3b8bc;
+}
+QTabBar::tab {
+    background: transparent;
+}
+QTabBar::tab:selected {
+    color: #222;
+}
+
+QTabBar::tab:!selected {
+    color: #888;
+}
+
 QToolBar {
-    background-color: #ffffff;
+    background-color: white;
     border-left: 1px solid #b3b8bc;
     border-right: none;
     border-top: none;
     border-bottom: none;
+    padding-top: 0px;
 }
 
 QToolBar::separator {
-    background-color: #777;
+    background-color: #b3b8bc;
     height: 1px;
+}
+QMenuBar {
+    border-bottom: 1px solid #b3b8bc;
 }

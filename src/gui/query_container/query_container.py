@@ -72,7 +72,11 @@ class QueryContainer(QWidget):
 
         # Tab
         self._tabs = tab_widget.TabWidget()
-
+        self._tabs.tabBar().setObjectName("tab_query")
+        self._tabs.setAutoFillBackground(True)
+        p = self._tabs.palette()
+        p.setColor(p.Window, Qt.white)
+        self._tabs.setPalette(p)
         box.addWidget(self._tabs)
 
         self.relations = {}
@@ -421,8 +425,8 @@ class EditorWidget(QWidget):
                 self._toolbar.addAction(qaction)
             else:
                 self._toolbar.addSeparator()
-        hbox.addWidget(self._toolbar, 1)
-        hbox.addWidget(self._column_lbl)
+        # hbox.addWidget(self._toolbar, 1)
+        # hbox.addWidget(self._column_lbl)
         vbox.addLayout(hbox)
         # Editor
         self._editor = editor.Editor()
