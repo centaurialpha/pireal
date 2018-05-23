@@ -79,8 +79,8 @@ class TableWidget(QSplitter):
         btn_split.setIcon(QIcon(":img/split"))
         btn_split.clicked.connect(self._unsplit)
         self._other_tab.setCornerWidget(btn_split)
-        self.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.customContextMenuRequested.connect(self._show_menu)
+        # self.setContextMenuPolicy(Qt.CustomContextMenu)
+        # self.customContextMenuRequested.connect(self._show_menu)
 
         lateral_widget = Pireal.get_service("lateral_widget")
         lateral_widget.resultClicked.connect(self._on_result_list_clicked)
