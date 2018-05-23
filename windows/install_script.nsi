@@ -2,7 +2,7 @@
 #######################################################################
 # Startup
 !define VERSION "3.0"
-!define NAME "Pireal"
+!define NAME "Pireal ${VERSION}"
 !define DISPLAY_NAME "Pireal ${VERSION}"
 !define WEB_SITE "http://centaurialpha.github.io/pireal"
 !define FINALNAME "pireal-${VERSION}-installer.exe"

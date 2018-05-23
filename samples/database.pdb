@@ -1,26 +1,26 @@
-@alumno:id_alumno, nombre, ciudad, edad
-01, Pedro, Santiago, 14
-11, Juan, Buenos Aires, 18
-21, Diego, Lima, 12
-31, Rosita, Concepción, 15
-41, Manuel, Lima, 17
+@apoderado:id_apoderado,nombre_apoderado,telefono,id_alumno
+054,Victor,654644,21
+444,Paz,747423,01
+354,María,997455,31
+457,José,454654,11
 
-@apoderado:id_apoderado, nombre_apoderado, telefono, id_alumno
-054, Victor, 654644, 21
-457, José, 454654, 11
-354, María, 997455, 31
-444, Paz, 747423, 01
+@alumno:id_alumno,nombre,ciudad,edad
+11,Juan,Buenos Aires,18
+41,Manuel,Lima,16
+01,Pedro,Santiago,14
+21,Diego,Lima,12
+31,Rosita,Concepción,15
 
-@curso:cod_curso, nombre_curso, fecha_inicio, duración, valor
-01142, Python, 13/01/2017, 15, 4000
-02145, Django, 15/02/2017, 12, 2500
-03547, Introducción a la POO, 01/03/2017, 30, 4000
-04578, Programación Funcional, 05/04/2017, 10, 1500
-05478, Machine Learning, 20/04/2017, 20, 5000
+@curso:cod_curso,nombre_curso,fecha_inicio,duración,valor
+03547,Introducción a la POO,01/03/2017,30,4000
+05478,Machine Learning,20/04/2017,20,5000
+01142,Python,13/01/2017,15,4000
+04578,Programación Funcional,05/04/2017,10,1500
+02145,Django,15/02/2017,12,2500
 
-@inscripto:cod_inscripto, id_alumno, cod_curso
-1, 01, 05478
-2, 01, 02145
-3, 11, 03547
-4, 21, 02145
-5, 41, 03547
+@inscripto:cod_inscripto,id_alumno,cod_curso
+5,41,03547
+4,21,02145
+3,11,03547
+2,01,02145
+1,01,05478

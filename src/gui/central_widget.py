@@ -47,7 +47,7 @@ from src.gui import (
     database_container
 )
 from src.gui.dialogs import (
-    preferences,
+    # preferences,
     new_relation_dialog,
     new_database_dialog
 )
@@ -327,7 +327,7 @@ class CentralWidget(QWidget):
                     msgbox.setIcon(QMessageBox.Question)
                     msgbox.setWindowTitle(self.tr("Archivo modificado"))
                     msgbox.setText(self.tr("El archivo <b>{}</b> tiene cambios"
-                                           "no guardados. Quiere "
+                                           " no guardados. Quiere "
                                            "mantenerlos?".format(
                                                weditor.name)))
                     cancel_btn = msgbox.addButton(self.tr("Cancelar"),
@@ -474,16 +474,18 @@ class CentralWidget(QWidget):
     def show_settings(self):
         """ Show settings dialog on stacked """
 
-        preferences_dialog = preferences.Preferences(self)
+        # preferences_dialog = preferences.Preferences(self)
 
-        if isinstance(self.widget(1), preferences.Preferences):
-            self.widget(1).close()
-        else:
-            self.stacked.insertWidget(1, preferences_dialog)
-            self.stacked.setCurrentIndex(1)
+        # if isinstance(self.widget(1), preferences.Preferences):
+        #     self.widget(1).close()
+        # else:
+        #     self.stacked.insertWidget(1, preferences_dialog)
+        #     self.stacked.setCurrentIndex(1)
 
-        # Connect the closed signal
-        preferences_dialog.settingsClosed.connect(self._settings_closed)
+        # # Connect the closed signal
+        # preferences_dialog.settingsClosed.connect(self._settings_closed)
+        # TODO: para la próxima versión
+        pass
 
     def widget(self, index):
         """ Returns the widget at the given index """
