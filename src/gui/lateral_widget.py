@@ -115,7 +115,23 @@ class RelationListQML(QWidget):
         self._root.clear()
 
     def current_item(self):
-        return self._root.currentItem().toVariant()
+        item = self._root.currentItem()
+        name, index = None, None
+        if item is not None:
+            name, index = item.toVariant().values()
+        return index, name
+
+    def has_item(self):
+        return self._root.hasItem()
+
+    def current_text(self):
+        return self._root.currentItemText()
+
+    def current_index(self):
+        return self._root.currentIndex()
+
+    def update_cardinality(self, new_cardinality):
+        self._root.setCardinality(new_cardinality)
 
 
 class RelationList(QTreeWidget):

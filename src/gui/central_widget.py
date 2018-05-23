@@ -435,7 +435,7 @@ class CentralWidget(QWidget):
             table = db.create_table(relation, relation_name)
             db.table_widget.add_table(relation, relation_name, table)
             lateral.relation_list.add_item(
-                relation_name, relation.cardinality())
+                relation_name, relation.cardinality(), relation.degree())
             db.modified = True
 
         dialog = new_relation_dialog.NewRelationDialog(self)
@@ -553,7 +553,10 @@ class CentralWidget(QWidget):
 
     def add_tuple(self):
         lateral = Pireal.get_service("lateral_widget")
-        rname = lateral.relation_list.item_text(lateral.relation_list.row())
+        if lateral.relation_list.has_item() == 0:
+            return
+        # rname = lateral.relation_list.item_text(lateral.relation_list.row())
+        rname = lateral.relation_list.current_text()
         from src.gui.dialogs.edit_relation_dialog import EditRelationDialog
         dialog = EditRelationDialog(rname, self)
         tw = self.get_active_db().table_widget
@@ -565,6 +568,9 @@ class CentralWidget(QWidget):
         tw.add_column()
 
     def delete_tuple(self):
+        lateral = Pireal.get_service("lateral_widget")
+        if lateral.relation_list.has_item() == 0:
+            return
         r = QMessageBox.question(
                 self,
                 self.tr("Eliminar tupla/s"),

@@ -153,7 +153,7 @@ class DatabaseContainer(QSplitter):
     @pyqtSlot(int)
     def __on_cardinality_changed(self, value):
         # self.lateral_widget.update_item(value)
-        pass
+        self.lateral_widget.relation_list.update_cardinality(value)
 
     def load_relation(self, filenames):
         for filename in filenames:
@@ -178,15 +178,16 @@ class DatabaseContainer(QSplitter):
             return True
 
     def delete_relation(self):
-        item = self.lateral_widget.relation_list.current_item()
-        if not item:
+        name = self.lateral_widget.relation_list.current_text()
+        index = self.lateral_widget.relation_list.current_index()
+        if not name:
             return
         msgbox = QMessageBox(self)
         msgbox.setIcon(QMessageBox.Question)
         msgbox.setWindowTitle(self.tr("Confirmación"))
         msgbox.setText(
             self.tr("Está seguro de eliminar la relación <b>{}</b>?".format(
-                item["name"])))
+                name)))
         msgbox.addButton(self.tr("No!"), QMessageBox.NoRole)
 
         si = msgbox.addButton(self.tr("Si, estoy seguro"), QMessageBox.YesRole)
@@ -196,9 +197,9 @@ class DatabaseContainer(QSplitter):
         si.setPalette(palette)
         msgbox.exec_()
         if msgbox.clickedButton() == si:
-            self.lateral_widget.relation_list.remove_item(row)
-            self.table_widget.remove_table(item["index"])
-            self.table_widget.remove_relation(item["name"])
+            self.lateral_widget.relation_list.remove_item(index)
+            self.table_widget.remove_table(index)
+            self.table_widget.remove_relation(name)
             return True
         return False
 

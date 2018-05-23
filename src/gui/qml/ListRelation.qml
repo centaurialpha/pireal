@@ -20,9 +20,35 @@ Rectangle {
         relationModel.clear();
     }
 
+    function hasItem() {
+        return relationModel.count > 0;
+    }
+
+    function currentItemText() {
+        var index = relationView.currentIndex;
+        var item = relationModel.get(index);
+        var text = "";
+        if ( item !== undefined)
+            text = item.name;
+        return text;
+    }
+
+    function setCardinality(value) {
+        var item = relationModel.get(relationView.currentIndex);
+        item.cardinalidad = value;
+    }
+
+    function currentIndex() {
+        return relationView.currentIndex;
+    }
+
     function currentItem() {
         var index = relationView.currentIndex;
-        var name = relationModel.get(index).name;
+        var item = relationModel.get(index);
+        var name = "";
+        if (item !== undefined) {
+            name = relationModel.get(index).name;
+        }
         return {"index": index, "name": name};
     }
 
