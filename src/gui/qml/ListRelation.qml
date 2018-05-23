@@ -40,15 +40,16 @@ Rectangle {
     Rectangle {
         id: header
         anchors.top: parent.top
-        height: 40
+        height: 30
         width: parent.width
-        color: "#aaa"
+        color: "#ddd"
         property alias title: lblTitle.text
         Label {
             id: lblTitle
             text: "Relaciones"
             font.bold: true
-            color: "white"
+            font.pointSize: 12
+            color: "#232323"
             anchors.centerIn: parent
             renderType: Label.NativeRendering
         }
@@ -72,20 +73,24 @@ Rectangle {
             highlighted: ListView.isCurrentItem
             width: parent.width
             contentItem: Column {
+                spacing: 5
                 Label {
                     id: relationText
                     text: name
                     font.bold: true
                     font.pointSize: 12
+                    color: "#232323"
                     renderType: Label.NativeRendering
                 }
                 Label {
                     id: relationCard
                     text: "Cardinalidad: " + cardinalidad
+                    color: "#232323"
                     renderType: Label.NativeRendering
                 }
                 Label {
                     text: "Grado: " + grado
+                    color: "#232323"
                     renderType: Label.NativeRendering
                 }
             }
