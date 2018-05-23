@@ -5,6 +5,7 @@ import QtQuick.Controls 2.0
 Rectangle {
     id: root
 
+    color: "#423d4c"
     signal itemClicked(int index)
 
     function addItem(item, cardinalidad, grado) {
@@ -42,14 +43,14 @@ Rectangle {
         anchors.top: parent.top
         height: 30
         width: parent.width
-        color: "#ddd"
+        color: "#423d4c"
         property alias title: lblTitle.text
         Label {
             id: lblTitle
             text: "Relaciones"
             font.bold: true
             font.pointSize: 12
-            color: "#232323"
+            color: "#f9f9f9"
             anchors.centerIn: parent
             renderType: Label.NativeRendering
         }
@@ -72,6 +73,12 @@ Rectangle {
         delegate: ItemDelegate {
             highlighted: ListView.isCurrentItem
             width: parent.width
+            Binding {
+                target: background
+                property: "color"
+                value: "#54505c"
+            }
+
             contentItem: Column {
                 spacing: 5
                 Label {
@@ -79,18 +86,18 @@ Rectangle {
                     text: name
                     font.bold: true
                     font.pointSize: 12
-                    color: "#232323"
+                    color: "#f9f9f9"
                     renderType: Label.NativeRendering
                 }
                 Label {
                     id: relationCard
                     text: "Cardinalidad: " + cardinalidad
-                    color: "#232323"
+                    color: "#a1a1a1"
                     renderType: Label.NativeRendering
                 }
                 Label {
                     text: "Grado: " + grado
-                    color: "#232323"
+                    color: "#a1a1a1"
                     renderType: Label.NativeRendering
                 }
             }

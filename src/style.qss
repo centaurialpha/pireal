@@ -95,16 +95,24 @@ QTreeView::item:selected {
     background: #007dcd;
     color: white;
 }
+QTabWidget::bar {
+    background-color: red;
+}
 QTabWidget::pane {
     border-bottom: none;
     border-left: none;
     border-right: none;
     border-top: 1px solid #b3b8bc;
 }
-
 QToolBar {
+    background-color: #ffffff;
     border-left: 1px solid #b3b8bc;
     border-right: none;
     border-top: none;
     border-bottom: none;
+}
+
+QToolBar::separator {
+    background-color: #777;
+    height: 1px;
 }

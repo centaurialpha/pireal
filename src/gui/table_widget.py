@@ -27,7 +27,7 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QMenu
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtCore import Qt
 from src.gui import (
     view,
@@ -47,6 +47,10 @@ class TableWidget(QSplitter):
         # vbox.setContentsMargins(0, 0, 0, 0)
 
         self._tabs = QTabWidget()
+        # self._tabs.setAutoFillBackground(True)
+        # p = self._tabs.palette()
+        # p.setColor(p.Window, QColor("white"))
+        # self._tabs.setPalette(p)
         self._other_tab = QTabWidget()
         self.addWidget(self._tabs)
         self.addWidget(self._other_tab)
