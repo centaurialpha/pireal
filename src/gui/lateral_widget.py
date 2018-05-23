@@ -114,6 +114,9 @@ class RelationListQML(QWidget):
     def clear_items(self):
         self._root.clear()
 
+    def current_item(self):
+        return self._root.currentItem().toVariant()
+
 
 class RelationList(QTreeWidget):
 

@@ -19,6 +19,12 @@ Rectangle {
         relationModel.clear();
     }
 
+    function currentItem() {
+        var index = relationView.currentIndex;
+        var name = relationModel.get(index).name;
+        return {"index": index, "name": name};
+    }
+
     Component.onCompleted: clear();
 
 

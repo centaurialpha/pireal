@@ -178,16 +178,15 @@ class DatabaseContainer(QSplitter):
             return True
 
     def delete_relation(self):
-        if not self.lateral_widget.relation_list.selectedItems():
+        item = self.lateral_widget.relation_list.current_item()
+        if not item:
             return
-        row = self.lateral_widget.relation_list.row()
-        rname = self.lateral_widget.relation_list.item_text(row)
         msgbox = QMessageBox(self)
         msgbox.setIcon(QMessageBox.Question)
         msgbox.setWindowTitle(self.tr("Confirmación"))
         msgbox.setText(
             self.tr("Está seguro de eliminar la relación <b>{}</b>?".format(
-                rname)))
+                item["name"])))
         msgbox.addButton(self.tr("No!"), QMessageBox.NoRole)
 
         si = msgbox.addButton(self.tr("Si, estoy seguro"), QMessageBox.YesRole)
@@ -198,8 +197,8 @@ class DatabaseContainer(QSplitter):
         msgbox.exec_()
         if msgbox.clickedButton() == si:
             self.lateral_widget.relation_list.remove_item(row)
-            self.table_widget.remove_table(row)
-            self.table_widget.remove_relation(rname)
+            self.table_widget.remove_table(item["index"])
+            self.table_widget.remove_relation(item["name"])
             return True
         return False
 
