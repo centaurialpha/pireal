@@ -382,14 +382,14 @@ class Pireal(QMainWindow):
             if db.modified:
                 msg = QMessageBox(self)
                 msg.setIcon(QMessageBox.Question)
-                msg.setWindowTitle(self.tr("Some changes were not saved"))
+                msg.setWindowTitle(self.tr("Algunos cambios no fueron guardados"))
                 msg.setText(
-                    self.tr("Do you want to save changes to the database?"))
-                cancel_btn = msg.addButton(self.tr("Cancel"),
+                    self.tr("Desea guardar los cambios en la base de datos?"))
+                cancel_btn = msg.addButton(self.tr("Cancelar"),
                                            QMessageBox.RejectRole)
                 msg.addButton(self.tr("No"),
                               QMessageBox.NoRole)
-                yes_btn = msg.addButton(self.tr("Yes"),
+                yes_btn = msg.addButton(self.tr("Si"),
                                         QMessageBox.YesRole)
                 msg.exec_()
                 r = msg.clickedButton()
@@ -402,15 +402,15 @@ class Pireal(QMainWindow):
             if unsaved_editors:
                 msg = QMessageBox(self)
                 msg.setIcon(QMessageBox.Question)
-                msg.setWindowTitle(self.tr("Unsaved Queries"))
+                msg.setWindowTitle(self.tr("Consultas no guardadas"))
                 text = '\n'.join([editor.name for editor in unsaved_editors])
-                msg.setText(self.tr("{files}\n\nDo you want to "
-                                    "save them?".format(files=text)))
-                cancel_btn = msg.addButton(self.tr("Cancel"),
+                msg.setText(self.tr("{files}\n\nQuiere guardarlas?".format(
+                    files=text)))
+                cancel_btn = msg.addButton(self.tr("Cancelar"),
                                            QMessageBox.RejectRole)
                 msg.addButton(self.tr("No"),
                               QMessageBox.NoRole)
-                yes_btn = msg.addButton(self.tr("Yes"),
+                yes_btn = msg.addButton(self.tr("Si"),
                                         QMessageBox.YesRole)
                 msg.exec_()
                 if msg.clickedButton() == yes_btn:
