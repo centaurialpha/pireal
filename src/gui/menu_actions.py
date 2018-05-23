@@ -138,9 +138,9 @@ MENU['help'] = {
     'items': [{
         'name': translate("Pireal", "Reportar problema..."),
         'slot': "pireal:report_issue"
-    }, "-", {
-        'name': translate("Pireal", "RDB a PDB"),
-        'slot': "central:rdb_to_pdb"
+    # }, "-", {
+        # 'name': translate("Pireal", "RDB a PDB"),
+        # 'slot': "central:rdb_to_pdb"
     }, "-", {
         'name': translate("Pireal", "Acerca de Pireal"),
         'slot': "pireal:about_pireal"
