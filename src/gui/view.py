@@ -56,7 +56,7 @@ class View(QTableView):
             width = header.sectionSize(column)
             header.setSectionResizeMode(column, QHeaderView.Interactive)
             header.resizeSection(column, width)
-        self.horizontalHeader().setMinimumHeight(26)
+        self.horizontalHeader().setMinimumHeight(32)
 
 
 class Header(QHeaderView):

@@ -17,16 +17,23 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import os
 
 from PyQt5.QtWidgets import QTreeWidget
+from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QSplitter
 from PyQt5.QtWidgets import QTreeWidgetItem
 from PyQt5.QtWidgets import QAbstractItemView
+from PyQt5.QtWidgets import QVBoxLayout
+
+from PyQt5.QtQuickWidgets import QQuickWidget
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import QUrl
 
 from src.gui.main_window import Pireal
+from src.core import settings
 
 
 class LateralWidget(QSplitter):
@@ -47,28 +54,28 @@ class LateralWidget(QSplitter):
         super().__init__(parent)
         self.setOrientation(Qt.Vertical)
         # Lista de relaciones de la base de datos
-        self._relations_list = RelationList()
+        self._relations_list = RelationListQML()
         self._relations_list.set_title(self.tr("Relaciones"))
         self.addWidget(self._relations_list)
         # Lista de relaciones del resultado de consultas
-        self._results_list = RelationList()
+        self._results_list = RelationListQML()
         self._results_list.set_title(self.tr("Resultados"))
         self.addWidget(self._results_list)
 
         Pireal.load_service("lateral_widget", self)
 
         self._relations_list.itemClicked.connect(
-            lambda: self.relationClicked.emit(
-                self._relations_list.row()))
-        self._relations_list.itemSelectionChanged.connect(
-            lambda: self.relationSelectionChanged.emit(
-                self._relations_list.row()))
+            lambda i: self.relationClicked.emit(i))
+        #         self._relations_list.row()))
+        # self._relations_list.itemSelectionChanged.connect(
+        #     lambda: self.relationSelectionChanged.emit(
+        #         self._relations_list.row()))
         self._results_list.itemClicked.connect(
-            lambda: self.resultClicked.emit(
-                self._results_list.row()))
-        self._results_list.itemSelectionChanged.connect(
-            lambda: self.resultSelectionChanged.emit(
-                self._results_list.row()))
+            lambda i: self.resultClicked.emit(i))
+        #         self._results_list.row()))
+        # self._results_list.itemSelectionChanged.connect(
+        #     lambda: self.resultSelectionChanged.emit(
+        #         self._results_list.row()))
 
     @property
     def relation_list(self):
@@ -77,6 +84,35 @@ class LateralWidget(QSplitter):
     @property
     def result_list(self):
         return self._results_list
+
+
+class RelationListQML(QWidget):
+
+    itemClicked = pyqtSignal(int)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        vbox = QVBoxLayout(self)
+        vbox.setContentsMargins(0, 0, 0, 0)
+        view = QQuickWidget()
+        qml = os.path.join(settings.QML_PATH, "ListRelation.qml")
+        view.setSource(QUrl.fromLocalFile(qml))
+        view.setResizeMode(QQuickWidget.SizeRootObjectToView)
+        vbox.addWidget(view)
+
+        self._root = view.rootObject()
+
+        self._root.itemClicked.connect(
+            lambda i: self.itemClicked.emit(i))
+
+    def set_title(self, title):
+        self._root.setTitle(title)
+
+    def add_item(self, name, card, deg):
+        self._root.addItem(name, card, deg)
+
+    def clear_items(self):
+        self._root.clear()
 
 
 class RelationList(QTreeWidget):

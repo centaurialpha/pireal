@@ -376,8 +376,9 @@ class QueryWidget(QWidget):
         table_widget = central_widget.get_active_db().table_widget
         index = table_widget.stacked_result.addWidget(_view)
         table_widget.stacked_result.setCurrentIndex(index)
-        lateral_widget.result_list.add_item(rname, rela.cardinality())
-        lateral_widget.result_list.select_last()
+        lateral_widget.result_list.add_item(
+            rname, rela.cardinality(), rela.degree())
+        # lateral_widget.result_list.select_last()
         table_widget._tabs.setCurrentIndex(1)
 
     def show_search_widget(self):

@@ -125,9 +125,9 @@ class DatabaseContainer(QSplitter):
             self.table_widget.stacked.addWidget(_view)
             # Add table name to list widget
             self.lateral_widget.relation_list.add_item(
-                table_name, rela.cardinality())
+                table_name, rela.cardinality(), rela.degree())
         # Select first item
-        self.lateral_widget.relation_list.select_first()
+        # self.lateral_widget.relation_list.select_first()
 
     def create_table(self, relation_obj, relation_name, editable=True):
         """ Se crea la vista, el model y el delegado para @relation_obj """

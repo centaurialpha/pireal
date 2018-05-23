@@ -61,6 +61,7 @@ QTableView QHeaderView::section:horizontal {
 
 QTableView {
     gridline-color: #e6e6e6;
+    border: none;
 }
 
 QHeaderView#lateral::section {
@@ -93,4 +94,10 @@ QTreeView::item:selected {
     border: none;
     background: #007dcd;
     color: white;
+}
+QTabWidget::pane {
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid #b3b8bc;
 }
