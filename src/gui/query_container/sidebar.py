@@ -85,6 +85,7 @@ class Sidebar(QFrame):
         painter.drawLine(width + 7, 0, width + 7, event.rect().height())
         painter.setPen(pen)
         current_line = self.editor.textCursor().blockNumber()
+
         for top, line, block in self.editor.visible_blocks:
             if current_line == line:
                 painter.setFont(font_bold)

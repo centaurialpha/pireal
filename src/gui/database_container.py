@@ -295,7 +295,7 @@ class DatabaseContainer(QSplitter):
         if hsizes is not None:
             self.restoreState(hsizes)
         else:
-            self.setSizes([self.width() / 8, self.width() / 3])
+            self.setSizes([self.width() / 10, self.width() / 3])
 
     def save_sizes(self):
         """ Save sizes of Splitters """

@@ -83,7 +83,7 @@ class AboutDialog(QDialog):
         lbl_license_source = QLabel(self.tr("<br>Este software tiene licencia "
                                             "<a href='{0}'><span style"
                                             "='color: #3465a4'>GNU GPL</span>"
-                                            "</a> version 3,<br>el código "
+                                            "</a> versión 3,<br>el código "
                                             "fuente "
                                             "está disponible en <a href='{1}'>"
                                             "<span style='color: #3465a4'>"
