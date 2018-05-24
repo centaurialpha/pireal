@@ -11,7 +11,7 @@
 
 | Pireal running on Linux |
 |:--------:|
-| ![](pireal1.png)
+| ![](https://github.com/centaurialpha/pireal/blob/gh-pages/pireal.png)
 | Click image to enlarge |
 
 #### Platforms
