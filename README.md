@@ -5,13 +5,13 @@
 <p align="center">
   <img src="https://github.com/centaurialpha/pireal/blob/master/src/gui/qml/pireal_logo.png?raw=true" >
 <p>
-  
+
 **πireal** is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.
 
 
 | Pireal running on Linux |
 |:--------:|
-| ![](https://github.com/centaurialpha/pireal/blob/master/pireal1.png?raw=true)
+| ![](pireal1.png)
 | Click image to enlarge |
 
 #### Platforms
