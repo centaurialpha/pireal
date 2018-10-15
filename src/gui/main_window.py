@@ -22,18 +22,17 @@
 import webbrowser
 from collections import Callable
 
-from PyQt5.QtWidgets import (
-    QMainWindow,
-    QMenu,
-    QToolButton,
-    QMessageBox,
-    QToolBar
-)
-from PyQt5.QtGui import QIcon
+from PySide2.QtWidgets import QMainWindow
+from PySide2.QtWidgets import QMenu
+from PySide2.QtWidgets import QToolButton
+from PySide2.QtWidgets import QMessageBox
+from PySide2.QtWidgets import QToolBar
 
-from PyQt5.QtCore import QSettings
-from PyQt5.QtCore import QSize
-from PyQt5.QtCore import Qt
+from PySide2.QtGui import QIcon
+
+from PySide2.QtCore import QSettings
+from PySide2.QtCore import QSize
+from PySide2.QtCore import Qt
 
 from src import keymap
 from src.core import settings
@@ -85,7 +84,7 @@ class Pireal(QMainWindow):
         self.setMinimumSize(880, 600)
         # Load window geometry
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        window_maximized = qsettings.value('window_max', True, type=bool)
+        window_maximized = qsettings.value('window_max', True)
         if window_maximized:
             self.showMaximized()
         else:

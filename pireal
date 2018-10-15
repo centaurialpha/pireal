@@ -27,22 +27,16 @@ if sys.version_info.major != 3:
     sys.exit(-1)
 
 import os
-from PyQt5.QtWidgets import (
-    QApplication
-)
-from PyQt5.QtGui import (
-    QIcon,
-    QColor,
-    QPalette,
-)
-from PyQt5.QtCore import (
-    QLocale,
-    QTranslator,
-    QLibraryInfo,
-    QT_VERSION_STR,
-    Qt,
-    QTextCodec
-)
+from PySide2.QtWidgets import QApplication
+
+from PySide2.QtGui import QIcon
+from PySide2.QtGui import QColor
+from PySide2.QtGui import QPalette
+
+from PySide2.QtCore import QLocale
+from PySide2.QtCore import QTranslator
+from PySide2.QtCore import QLibraryInfo
+from PySide2.QtCore import Qt
 
 from src.core.logger import Logger
 
@@ -97,7 +91,7 @@ def __get_versions():
         'python': python_version,
         'os': system,
         'name': name,
-        'qt': QT_VERSION_STR  # Qt version
+        'qt': 'FIX'  # Qt version FIXME: arreglar
     }
 
 
@@ -121,8 +115,6 @@ if __name__ == "__main__":
 
     info = __get_versions()
     CONFIG.load_settings()
-
-    QTextCodec.setCodecForLocale(QTextCodec.codecForName("utf8"))
 
     # Import resources
     from src import resources  # noqa

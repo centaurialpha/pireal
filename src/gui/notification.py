@@ -17,13 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import (
+from PySide2.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QLabel,
     QSizePolicy
 )
-from PyQt5.QtCore import QTimer
+from PySide2.QtCore import QTimer
 
 from src.gui.main_window import Pireal
 

@@ -17,11 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import (
+from PySide2.QtWidgets import (
     QPlainTextEdit,
     QTextEdit,
 )
-from PyQt5.QtGui import (
+from PySide2.QtGui import (
     QTextCharFormat,
     QTextCursor,
     QFont,
@@ -29,7 +29,7 @@ from PyQt5.QtGui import (
     QTextOption,
     QTextDocument
 )
-from PyQt5.QtCore import Qt, QTimer
+from PySide2.QtCore import Qt, QTimer
 
 from src.gui.query_container import (
     highlighter,

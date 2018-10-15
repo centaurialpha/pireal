@@ -17,14 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtGui import (
+from PySide2.QtGui import (
     QSyntaxHighlighter,
     QTextCharFormat,
     QFont,
     QTextBlockUserData,
     QColor
 )
-from PyQt5.QtCore import (
+from PySide2.QtCore import (
     Qt,
     QRegExp
 )

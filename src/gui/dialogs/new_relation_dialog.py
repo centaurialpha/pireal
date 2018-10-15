@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import (
+from PySide2.QtWidgets import (
     QMessageBox,
     QDialog,
     QVBoxLayout,
@@ -27,8 +27,8 @@ from PyQt5.QtWidgets import (
     QSpacerItem,
     QSizePolicy
 )
-from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtCore import Qt, pyqtSignal
+from PySide2.QtGui import QStandardItemModel
+from PySide2.QtCore import Qt, Signal
 
 from src.core import relation
 from src.gui import view
@@ -37,7 +37,7 @@ from src.gui.main_window import Pireal
 
 class NewRelationDialog(QDialog):
 
-    created = pyqtSignal('PyQt_PyObject', 'QString')
+    created = Signal(str, str)
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)

@@ -19,7 +19,7 @@
 
 import re
 
-from PyQt5.QtWidgets import (
+from PySide2.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
@@ -33,9 +33,9 @@ from PyQt5.QtWidgets import (
     QAction,
     QToolBar
 )
-from PyQt5.QtCore import (
+from PySide2.QtCore import (
     Qt,
-    pyqtSignal,
+    Signal,
     QSettings,
     QSize
 )
@@ -56,7 +56,7 @@ from src.core import settings
 
 
 class QueryContainer(QWidget):
-    saveEditor = pyqtSignal('PyQt_PyObject')
+    saveEditor = Signal(object)
 
     def __init__(self, parent=None):
         super(QueryContainer, self).__init__(parent)
@@ -85,8 +85,7 @@ class QueryContainer(QWidget):
 
         # Connections
         self._tabs.tabCloseRequested.connect(self.__hide)
-        self._tabs.saveEditor['PyQt_PyObject'].connect(
-            self.__on_save_editor)
+        self._tabs.saveEditor.connect(self.__on_save_editor)
 
     def set_focus_editor_tab(self, index):
         self._tabs.setCurrentIndex(index)
@@ -296,7 +295,7 @@ class QueryContainer(QWidget):
 
 
 class QueryWidget(QWidget):
-    editorModified = pyqtSignal(bool)
+    editorModified = Signal(bool)
     # Editor positions
     TOP_POSITION = 0
     LEFT_POSITION = 1
@@ -403,7 +402,7 @@ class EditorWidget(QWidget):
         'paste_action',
     ]
 
-    editorModified = pyqtSignal(bool)
+    editorModified = Signal(bool)
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)

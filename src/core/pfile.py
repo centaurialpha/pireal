@@ -19,21 +19,19 @@
 
 import os
 
-from PyQt5.QtCore import (
-    QObject,
-    pyqtSignal,
-    QFile,
-    QTextStream,
-    QTextCodec,
-    QIODevice
-)
+from PySide2.QtCore import QObject
+from PySide2.QtCore import Signal
+from PySide2.QtCore import QFile
+from PySide2.QtCore import QTextStream
+from PySide2.QtCore import QTextCodec
+from PySide2.QtCore import QIODevice
 
 
 class File(QObject):
 
     """ This class represents an object file"""
 
-    fileSaved = pyqtSignal('QString')
+    fileSaved = Signal(str)
 
     def __init__(self, filename=''):
         QObject.__init__(self)

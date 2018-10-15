@@ -17,25 +17,24 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtGui import (
+from PySide2.QtGui import (
     QColor,
     QFont
 )
-from PyQt5.QtCore import (
+from PySide2.QtCore import (
     QAbstractTableModel,
     Qt,
-    QVariant,
     QModelIndex,
-    pyqtSignal
+    Signal
 )
 
 
 class Model(QAbstractTableModel):
     """ Modelo """
 
-    modelModified = pyqtSignal(bool)
-    degreeChanged = pyqtSignal(int)
-    cardinalityChanged = pyqtSignal(int)
+    modelModified = Signal(bool)
+    degreeChanged = Signal(int)
+    cardinalityChanged = Signal(int)
 
     def __init__(self, relation_obj):
         QAbstractTableModel.__init__(self)
@@ -59,7 +58,8 @@ class Model(QAbstractTableModel):
 
     def data(self, index, role):
         if not index.isValid():
-            return QVariant()
+            # return QVariant()
+            return None
         row, col = index.row(), index.column()
         content = list(self.__data.content)
         if role == Qt.DisplayRole:

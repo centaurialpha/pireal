@@ -20,20 +20,21 @@
 import os
 import csv
 
-from PyQt5.QtWidgets import (
-    QWidget,
-    QDialog,
-    QVBoxLayout,
-    QHBoxLayout,
-    QStackedWidget,
-    QLineEdit,
-    QLabel,
-    QFileDialog,
-    QMessageBox,
-    QShortcut,
-)
-from PyQt5.QtGui import QKeySequence
-from PyQt5.QtCore import pyqtSignal, Qt
+from PySide2.QtWidgets import QWidget
+from PySide2.QtWidgets import QDialog
+from PySide2.QtWidgets import QVBoxLayout
+from PySide2.QtWidgets import QHBoxLayout
+from PySide2.QtWidgets import QStackedWidget
+from PySide2.QtWidgets import QLineEdit
+from PySide2.QtWidgets import QLabel
+from PySide2.QtWidgets import QFileDialog
+from PySide2.QtWidgets import QMessageBox
+from PySide2.QtWidgets import QShortcut
+
+from PySide2.QtGui import QKeySequence
+from PySide2.QtCore import Qt
+from PySide2.QtCore import Signal
+
 
 from src.core import (
     settings,
@@ -58,9 +59,10 @@ logger = Logger(__name__)
 
 class CentralWidget(QWidget):
     # This signals is used by notificator
-    databaseSaved = pyqtSignal('QString')
-    querySaved = pyqtSignal('QString')
-    databaseConected = pyqtSignal('QString')
+    databaseSaved = Signal(str)
+    databaseSaved = Signal(str)
+    querySaved = Signal(str)
+    databaseConected = Signal(str)
 
     def __init__(self):
         QWidget.__init__(self)

@@ -25,9 +25,9 @@ import sys
 import os
 import json
 
-from PyQt5.QtCore import QObject
+from PySide2.QtCore import QObject
 
-from PyQt5.QtGui import QFont
+from PySide2.QtGui import QFont
 
 
 # Detecting Operating System

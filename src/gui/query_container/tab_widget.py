@@ -17,15 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import (
+from PySide2.QtWidgets import (
     QTabWidget,
     QMessageBox
 )
-from PyQt5.QtCore import pyqtSignal
+from PySide2.QtCore import Signal
 
 
 class TabWidget(QTabWidget):
-    saveEditor = pyqtSignal('PyQt_PyObject')
+    saveEditor = Signal()
 
     def __init__(self):
         super(TabWidget, self).__init__()

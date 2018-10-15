@@ -19,20 +19,16 @@
 
 import csv
 
-from PyQt5.QtWidgets import (
-    QSplitter,
-    QFileDialog,
-    QMessageBox
-)
-from PyQt5.QtCore import (
-    Qt,
-    QSettings,
-    pyqtSlot
-)
-from PyQt5.QtGui import (
-    QPalette,
-    QColor
-)
+from PySide2.QtWidgets import QSplitter
+from PySide2.QtWidgets import QFileDialog
+from PySide2.QtWidgets import QMessageBox
+
+from PySide2.QtCore import Qt
+from PySide2.QtCore import QSettings
+from PySide2.QtCore import Slot
+
+from PySide2.QtGui import QPalette
+from PySide2.QtGui import QColor
 
 from src.gui import (
     table_widget,
@@ -83,7 +79,7 @@ class DatabaseContainer(QSplitter):
         # see issue #39
         self.lateral_widget.relationSelectionChanged.connect(
             lambda i: self.table_widget.stacked.setCurrentIndex(i))
-        self.query_container.saveEditor['PyQt_PyObject'].connect(
+        self.query_container.saveEditor.connect(
             self.save_query)
         self.setSizes([1, 1])
 
@@ -146,11 +142,11 @@ class DatabaseContainer(QSplitter):
         _view.setHorizontalHeader(header)
         return _view
 
-    @pyqtSlot(bool)
+    @Slot(bool)
     def __on_model_modified(self, modified):
         self.modified = modified
 
-    @pyqtSlot(int)
+    @Slot(int)
     def __on_cardinality_changed(self, value):
         # self.lateral_widget.update_item(value)
         self.lateral_widget.relation_list.update_cardinality(value)
