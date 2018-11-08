@@ -2,3 +2,4 @@
 *.qmlc
 *.jsc
 .pytest_cache/
+.coverage*
