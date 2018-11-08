@@ -17,3 +17,5 @@ install:
 before_script: rm --recursive --force --verbose *.py[cod]
 
 script: python run-tests.py
+
+after_script: pytest tests --cov-report term-missing -vv -x --cov=src.core --no-cov-on-fail
