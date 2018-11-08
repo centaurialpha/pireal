@@ -4,10 +4,6 @@ python:
   - 3.5
   - 3.6
 
-env:
-  global:
-    - CODECOV_TOKEN="fbcc0fbd-215d-428b-be2d-24c4ffbd46ec"
-
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
@@ -23,8 +19,6 @@ install:
 before_script: rm --recursive --force --verbose *.py[cod]
 
 script: python run-tests.py
-
-after_script: pytest tests --cov-report term-missing -vv -x --cov=src.core --no-cov-on-fail
 
 after_succes:
   - codecov
