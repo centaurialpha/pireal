@@ -12,11 +12,11 @@ install:
   - pip install pip --upgrade
   - pip install pytest pytest-qt pytest-cov
   - pip install PyQt5==5.9
-  - pip install codecov
+  - pip install coveralls
 
 before_script: rm --recursive --force --verbose *.py[cod]
 
 script: py.test tests --cov=src.core
 
 after_succes:
-  - codecov
+  - coveralls
