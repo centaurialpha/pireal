@@ -1,7 +1,6 @@
 
 [![Build Status](https://travis-ci.org/centaurialpha/pireal.svg?branch=master)](https://travis-ci.org/centaurialpha/pireal)
-[![codecov](https://codecov.io/gh/centaurialpha/pireal/branch/master/graph/badge.svg)](https://codecov.io/gh/centaurialpha/pireal)
-
+[![Coverage Status](https://coveralls.io/repos/github/centaurialpha/pireal/badge.svg?branch=master)](https://coveralls.io/github/centaurialpha/pireal?branch=master)
 ---
 
 <p align="center">
