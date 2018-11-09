@@ -8,9 +8,15 @@ from src.core.interpreter import exceptions
 
 @pytest.fixture
 def lexer_bot():
-    sc = scanner.Scanner("q1 := select nombre='Gabriel' (personas);")
+    sc = scanner.Scanner("q1_ := select nombre='Gabriel' (personas);")
     lex = lexer.Lexer(sc)
     return lex
+
+
+@pytest.fixture
+def lexer_tokens():
+    sc = scanner.Scanner("> < <= >= = <> , ; ( )")
+    return lexer.Lexer(sc)
 
 
 def move_lexer_to(lex, n=1):
@@ -20,11 +26,38 @@ def move_lexer_to(lex, n=1):
     return token
 
 
+def test_token():
+    tkn = lexer.Token(type=tokens.ID, value='query_1')
+    assert str(tkn) == "Token(IDENTIFIER, query_1)"
+    assert repr(tkn) == "Token(IDENTIFIER, query_1)"
+
+
+def test_lexer_str(lexer_bot):
+    tkn = lexer.Token(type=tokens.ID, value='query_1')
+    lexer_bot.token = tkn
+    assert str(lexer_bot) == 'Token(IDENTIFIER, query_1)'
+    assert repr(lexer_bot) == "Token(IDENTIFIER, query_1)"
+
+
+def test_operators(lexer_tokens):
+    assert lexer_tokens.next_token().value == ">"
+    assert lexer_tokens.next_token().value == "<"
+    assert lexer_tokens.next_token().value == "<="
+    assert lexer_tokens.next_token().value == ">="
+    assert lexer_tokens.next_token().value == "="
+    assert lexer_tokens.next_token().value == "<>"
+    assert lexer_tokens.next_token().value == ","
+    assert lexer_tokens.next_token().value == ";"
+    assert lexer_tokens.next_token().value == "("
+    assert lexer_tokens.next_token().value == ")"
+    assert lexer_tokens.next_token().value is None
+
+
 def test_id_token(lexer_bot):
     assert lexer_bot.token is None
     token = lexer_bot.next_token()
     assert token.type == tokens.ID
-    assert token.value == "q1"
+    assert token.value == "q1_"
 
 
 def test_assignment_token(lexer_bot):
@@ -108,4 +141,13 @@ def test_with_comment2():
     t = lex.next_token()
     assert t.value == "="
     with pytest.raises(exceptions.MissingQuoteError):
+        lex.next_token()
+
+
+def test_invalid_syntax():
+    sc = scanner.Scanner("q1 := !!")
+    lex = lexer.Lexer(sc)
+    lex.next_token()  # ok
+    lex.next_token()  # ok
+    with pytest.raises(exceptions.InvalidSyntaxError):
         lex.next_token()
