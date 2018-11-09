@@ -19,4 +19,6 @@ before_script: rm --recursive --force --verbose *.py[cod]
 script: py.test tests --cov=src.core
 
 after_success:
-  - coveralls
+  - if [[ $ENV == python3.5* ]]; then
+        coveralls;
+    fi
