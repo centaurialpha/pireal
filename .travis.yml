@@ -10,9 +10,7 @@ before_install:
 
 install:
   - pip install pip --upgrade
-  - pip install pytest
-  - pip install pytest-qt
-  - pip install pytest-cov
+  - pip install pytest pytest-qt pytest-cov
   - pip install PyQt5==5.9
   - pip install codecov
 
