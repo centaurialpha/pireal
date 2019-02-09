@@ -22,10 +22,6 @@ import sys
 import ctypes
 import argparse
 
-if sys.version_info.major != 3:
-    print("Pireal need Python 3 :(")
-    sys.exit(-1)
-
 import os
 from PySide2.QtWidgets import QApplication
 
