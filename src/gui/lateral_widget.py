@@ -19,18 +19,18 @@
 
 import os
 
-from PySide2.QtWidgets import QTreeWidget
-from PySide2.QtWidgets import QWidget
-from PySide2.QtWidgets import QSplitter
-from PySide2.QtWidgets import QTreeWidgetItem
-from PySide2.QtWidgets import QAbstractItemView
-from PySide2.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QTreeWidget
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QSplitter
+from PyQt5.QtWidgets import QTreeWidgetItem
+from PyQt5.QtWidgets import QAbstractItemView
+from PyQt5.QtWidgets import QVBoxLayout
 
-from PySide2.QtQuickWidgets import QQuickWidget
+from PyQt5.QtQuickWidgets import QQuickWidget
 
-from PySide2.QtCore import Qt
-from PySide2.QtCore import Signal
-from PySide2.QtCore import QUrl
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSignal as Signal
+from PyQt5.QtCore import QUrl
 
 from src.gui.main_window import Pireal
 from src.core import settings

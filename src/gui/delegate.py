@@ -17,13 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PySide2.QtWidgets import QItemDelegate
-from PySide2.QtWidgets import QStyle
+from PyQt5.QtWidgets import QItemDelegate
+from PyQt5.QtWidgets import QStyle
 
-from PySide2.QtGui import QColor
-from PySide2.QtGui import QPalette
+from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QPalette
 
-from PySide2.QtCore import Qt
+from PyQt5.QtCore import Qt
 
 
 class Delegate(QItemDelegate):

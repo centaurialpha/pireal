@@ -19,7 +19,7 @@
 
 import re
 
-from PySide2.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
@@ -33,13 +33,12 @@ from PySide2.QtWidgets import (
     QAction,
     QToolBar
 )
-from PySide2.QtCore import (
+from PyQt5.QtCore import (
     Qt,
-    Signal,
     QSettings,
     QSize
 )
-
+from PyQt5.QtCore import pyqtSignal as Signal
 from src.core.interpreter import parser
 from src.core.interpreter.exceptions import (
     InvalidSyntaxError,

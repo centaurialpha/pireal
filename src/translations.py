@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PySide2.QtCore import QCoreApplication
+from PyQt5.QtCore import QCoreApplication
 
 tr = QCoreApplication.translate
 

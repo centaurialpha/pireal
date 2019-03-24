@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PySide2.QtWidgets import (
+from PyQt5.QtWidgets import (
     QMessageBox,
     QDialog,
     QVBoxLayout,
@@ -27,8 +27,9 @@ from PySide2.QtWidgets import (
     QSpacerItem,
     QSizePolicy
 )
-from PySide2.QtGui import QStandardItemModel
-from PySide2.QtCore import Qt, Signal
+from PyQt5.QtGui import QStandardItemModel
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSignal as Signal
 
 from src.core import relation
 from src.gui import view

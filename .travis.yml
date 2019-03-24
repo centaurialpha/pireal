@@ -16,7 +16,7 @@ install:
 
 before_script: rm --recursive --force --verbose *.py[cod]
 
-script: py.test tests --cov=src.core
+script: pytest tests --cov=src.core.interpreter --cov-report term-missing
 
 after_success:
   - coveralls

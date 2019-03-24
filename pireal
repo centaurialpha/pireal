@@ -23,16 +23,16 @@ import ctypes
 import argparse
 
 import os
-from PySide2.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication
 
-from PySide2.QtGui import QIcon
-from PySide2.QtGui import QColor
-from PySide2.QtGui import QPalette
+from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QPalette
 
-from PySide2.QtCore import QLocale
-from PySide2.QtCore import QTranslator
-from PySide2.QtCore import QLibraryInfo
-from PySide2.QtCore import Qt
+from PyQt5.QtCore import QLocale
+from PyQt5.QtCore import QTranslator
+from PyQt5.QtCore import QLibraryInfo
+from PyQt5.QtCore import Qt
 
 from src.core.logger import Logger
 

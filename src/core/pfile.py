@@ -19,12 +19,12 @@
 
 import os
 
-from PySide2.QtCore import QObject
-from PySide2.QtCore import Signal
-from PySide2.QtCore import QFile
-from PySide2.QtCore import QTextStream
-from PySide2.QtCore import QTextCodec
-from PySide2.QtCore import QIODevice
+from PyQt5.QtCore import QObject
+from PyQt5.QtCore import pyqtSignal as Signal
+from PyQt5.QtCore import QFile
+from PyQt5.QtCore import QTextStream
+from PyQt5.QtCore import QTextCodec
+from PyQt5.QtCore import QIODevice
 
 
 class File(QObject):

@@ -1,5 +1,5 @@
-from PySide2.QtGui import QPalette
-from PySide2.QtGui import QColor
+from PyQt5.QtGui import QPalette
+from PyQt5.QtGui import QColor
 
 _DARK = {
     'Window': '#303030',

@@ -19,16 +19,16 @@
 
 import csv
 
-from PySide2.QtWidgets import QSplitter
-from PySide2.QtWidgets import QFileDialog
-from PySide2.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QSplitter
+from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QMessageBox
 
-from PySide2.QtCore import Qt
-from PySide2.QtCore import QSettings
-from PySide2.QtCore import Slot
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import pyqtSlot as Slot
 
-from PySide2.QtGui import QPalette
-from PySide2.QtGui import QColor
+from PyQt5.QtGui import QPalette
+from PyQt5.QtGui import QColor
 
 from src.gui import (
     table_widget,

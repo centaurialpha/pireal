@@ -24,15 +24,15 @@ based on:
 john.nachtimwald.com/2009/08/19/better-qplaintextedit-with-line-numbers/
 """
 
-from PySide2.QtWidgets import QFrame
-from PySide2.QtGui import (
+from PyQt5.QtWidgets import QFrame
+from PyQt5.QtGui import (
     QFontMetrics,
     QPainter,
     QPen,
     QColor,
 )
-from PySide2.QtCore import Qt
-from PySide2.QtCore import QSize
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QSize
 
 
 class Sidebar(QFrame):

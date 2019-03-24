@@ -22,17 +22,17 @@
 import webbrowser
 from collections import Callable
 
-from PySide2.QtWidgets import QMainWindow
-from PySide2.QtWidgets import QMenu
-from PySide2.QtWidgets import QToolButton
-from PySide2.QtWidgets import QMessageBox
-from PySide2.QtWidgets import QToolBar
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMenu
+from PyQt5.QtWidgets import QToolButton
+from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QToolBar
 
-from PySide2.QtGui import QIcon
+from PyQt5.QtGui import QIcon
 
-from PySide2.QtCore import QSettings
-from PySide2.QtCore import QSize
-from PySide2.QtCore import Qt
+from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import QSize
+from PyQt5.QtCore import Qt
 
 from src import keymap
 from src.core import settings

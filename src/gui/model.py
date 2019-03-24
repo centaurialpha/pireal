@@ -17,16 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PySide2.QtGui import (
+from PyQt5.QtGui import (
     QColor,
     QFont
 )
-from PySide2.QtCore import (
-    QAbstractTableModel,
-    Qt,
-    QModelIndex,
-    Signal
-)
+from PyQt5.QtCore import QAbstractTableModel
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QModelIndex
+from PyQt5.QtCore import pyqtSignal as Signal
 
 
 class Model(QAbstractTableModel):

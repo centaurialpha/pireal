@@ -52,6 +52,8 @@ IS_DATE = re.compile(
 # Formato HH:MM
 IS_TIME = re.compile(r'^[\d+]{2}:[\d+]{2}$')
 
+# TODO: implementar __repr__ en el Lexer
+
 
 class Token(object):
     """ A Token is the kind of thing that Lexer returns.
@@ -83,7 +85,7 @@ class Token(object):
 
 
 class Lexer(object):
-    """ This is the first stage of analysys.
+    """ This is the first stage of analysis.
 
     The Lexer serves to break up the source text into chuncks, "tokens".
     It calls the Scanner to get characters one at a time and organizes them
@@ -162,16 +164,16 @@ class Lexer(object):
 
         return token
 
-    def peek(self, n=1):
-        index = self.sc.index
-        col = self.sc.colno
-        line = self.sc.lineno
-        for i in range(n):
-            token = self.next_token()
-        self.sc.index = index
-        self.sc.colno = col
-        self.sc.lineno = line
-        return token
+    # def peek(self, n=1):
+    #     index = self.sc.index
+    #     col = self.sc.colno
+    #     line = self.sc.lineno
+    #     for i in range(n):
+    #         token = self.next_token()
+    #     self.sc.index = index
+    #     self.sc.colno = col
+    #     self.sc.lineno = line
+    #     return token
 
     def next_token(self):
         """ Lexical analyzer.
@@ -184,6 +186,7 @@ class Lexer(object):
             # Recognize identifiers and keywords
             if self.sc.char.isalpha():
                 _id = self._get_identifier_or_keyword()
+
                 if _id in KEYWORDS:
                     return Token(KEYWORDS[_id], _id)
                 return Token(ID, _id)
@@ -289,14 +292,3 @@ class Lexer(object):
 
         # EOF
         return Token(EOF, None)
-
-    def __str__(self):
-        """ Returns a representation of token """
-
-        return 'Token({type}, {value})'.format(
-            type=self.token.type,
-            value=self.token.value
-        )
-
-    def __repr__(self):
-        return self.__str__()

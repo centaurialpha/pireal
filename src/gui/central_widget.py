@@ -20,20 +20,20 @@
 import os
 import csv
 
-from PySide2.QtWidgets import QWidget
-from PySide2.QtWidgets import QDialog
-from PySide2.QtWidgets import QVBoxLayout
-from PySide2.QtWidgets import QHBoxLayout
-from PySide2.QtWidgets import QStackedWidget
-from PySide2.QtWidgets import QLineEdit
-from PySide2.QtWidgets import QLabel
-from PySide2.QtWidgets import QFileDialog
-from PySide2.QtWidgets import QMessageBox
-from PySide2.QtWidgets import QShortcut
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QStackedWidget
+from PyQt5.QtWidgets import QLineEdit
+from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QShortcut
 
-from PySide2.QtGui import QKeySequence
-from PySide2.QtCore import Qt
-from PySide2.QtCore import Signal
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSignal as Signal
 
 
 from src.core import (

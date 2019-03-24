@@ -25,7 +25,7 @@ slot for each item in a menu.
 """
 
 from collections import OrderedDict
-# from PySide2.QtWidgets import QApplication
+# from PyQt5.QtWidgets import QApplication
 
 from src import translations as tr
 

@@ -17,11 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PySide2.QtWidgets import (
+from PyQt5.QtWidgets import (
     QTabWidget,
     QMessageBox
 )
-from PySide2.QtCore import Signal
+from PyQt5.QtCore import pyqtSignal as Signal
 
 
 class TabWidget(QTabWidget):

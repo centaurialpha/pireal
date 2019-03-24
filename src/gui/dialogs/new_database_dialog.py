@@ -18,7 +18,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from PySide2.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWizard,
     QWizardPage,
     QVBoxLayout,
@@ -28,10 +28,9 @@ from PySide2.QtWidgets import (
     QStyle,
     QFileDialog
 )
-from PySide2.QtCore import (
-    Slot,
-    Signal
-)
+from PyQt5.QtCore import pyqtSlot as Slot
+from PyQt5.QtCore import pyqtSignal as Signal
+
 from src.core import settings
 
 

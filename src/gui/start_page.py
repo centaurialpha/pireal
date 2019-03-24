@@ -23,12 +23,12 @@ QML interface
 
 import os
 
-from PySide2.QtWidgets import QWidget
-from PySide2.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QVBoxLayout
 
-from PySide2.QtQuick import QQuickView
-from PySide2.QtCore import QUrl
-from PySide2.QtCore import QTimer
+from PyQt5.QtQuick import QQuickView
+from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QTimer
 from src.gui.main_window import Pireal
 from src.core import settings
 

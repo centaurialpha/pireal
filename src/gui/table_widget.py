@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PySide2.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWidget,
     QSplitter,
     QTabWidget,
@@ -27,8 +27,8 @@ from PySide2.QtWidgets import (
     QMessageBox,
     QMenu
 )
-from PySide2.QtGui import QIcon, QColor
-from PySide2.QtCore import Qt
+from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtCore import Qt
 from src.gui import (
     view,
     model,
