@@ -10,13 +10,13 @@ before_install:
 
 install:
   - pip install pip --upgrade
-  - pip install pytest pytest-qt pytest-cov
+  - pip install pytest pytest-qt pytest-cov==2.5.1
   - pip install PyQt5==5.11.2
   - pip install coveralls
 
 before_script: rm --recursive --force --verbose *.py[cod]
 
-script: pytest tests --cov=src.core.interpreter --cov-report term-missing
+script: pytest tests --cov=src.core.interpreter --cov-report term-missing -s
 
 after_success:
   - coveralls
