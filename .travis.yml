@@ -11,7 +11,7 @@ before_install:
 install:
   - pip install pip --upgrade
   - pip install pytest pytest-qt pytest-cov
-  - pip install PyQt5
+  - pip install PyQt5==5.11
   - pip install coveralls
 
 before_script: rm --recursive --force --verbose *.py[cod]
