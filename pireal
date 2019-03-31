@@ -92,7 +92,9 @@ if __name__ == "__main__":
     # cli
     args = cliparser.get_cli().parse_args()
     logger.set_up(args.verbose)
-
+    if args.version:
+        print("3.0")
+        sys.exit()
     # Create dirs used by Pireal
     create_dirs()
 

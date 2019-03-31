@@ -38,7 +38,8 @@ def test_parser_args_valid(parser):
         '-d file.pdb',
         '--database lalala',
         '-v',
-        '--verbose'
+        '--verbose',
+        '--version'
     ]
     for line in cmd:
         cmdline = shlex.split(line)

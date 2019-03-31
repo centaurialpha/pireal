@@ -95,6 +95,18 @@ def test_bool_node(fixture_parser):
         assert 'or' in c.query.condition.ops
         for c, c2 in zip(['<', '>'], c.query.condition.conditions):
             assert c == c2.operator.value
+
+
+def test_expression_node(fixture_parser):
+    p = fixture_parser('q1 := (project a,b (select id=1 (p)));')
+    tree = p.parse()
+    assert isinstance(tree, parser.Compound)
+    for c in tree.children:
+        assert isinstance(c, parser.Assignment)
+        assert isinstance(c.query, parser.ProjectExpr)
+        assert isinstance(c.query.expr, parser.SelectExpr)
+
+
 # # @pytest.mark.parametrize(
 # #     'query',
 # #     [
