@@ -145,6 +145,11 @@ def test_selection3():
     assert sel.content == expected
 
 
+def test_selection_syntax_error(relation_fixture):
+    # TODO
+    pass
+
+
 def test_combination(relation_fixture):
     r1, r2, r3 = relation_fixture
     join_natural = r1.njoin(r2)
@@ -179,6 +184,14 @@ def test_product(relation_fixture):
     assert product.cardinality() == 12
     assert product.degree() == 4
     assert product.content == expected
+
+
+def test_product_duplicate_field_error(relation_fixture):
+    _, r2, _ = relation_fixture
+    r1 = relation.Relation()
+    r1.header = ['algo', 'skill']  # skill duplicado!
+    with pytest.raises(relation.DuplicateFieldError):
+        r1.product(r2)
 
 
 def test_njoin(relation_fixture):
@@ -230,6 +243,27 @@ def test_relation_compatible(relation_fixture):
         r1.intersect(r2)
 
 
+def test_intersect():
+    r1 = relation.Relation()
+    r1.header = ['id', 'name']
+    data = {
+        ("1", "Gabo"),
+        ("2", "Rodrigo")
+    }
+    for d in data:
+        r1.insert(d)
+    r2 = relation.Relation()
+    r2.header = ['id', 'name']
+    data = {
+        ("1", "Gabo"),
+        ("3", "Mercedes")
+    }
+    for d in data:
+        r2.insert(d)
+    expected = {("1", "Gabo")}
+    assert r1.intersect(r2).content == expected
+
+
 def test_fouther(relation_fixture):
     r1, r2, _ = relation_fixture
     expected = {
@@ -276,3 +310,14 @@ def test_difference(qtbot):
     new = r.difference(r2)
     assert new.content == expected
     assert new.cardinality() == 5
+
+
+def test_str(relation_fixture):
+    _, _, r3 = relation_fixture
+    expected = ("|     date     |\n"
+                "----------------\n"
+                "|  2012-07-09  |\n"
+                "|  1998-12-09  |\n"
+                "|  2015-12-12  |\n")
+    # assert str(r3) == expected
+    # FIXME: el orden

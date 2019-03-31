@@ -1,6 +1,7 @@
 import pytest
 
 from src.core import file_manager
+from src.core import relation
 
 
 @pytest.mark.parametrize(
@@ -53,3 +54,20 @@ def test_get_files_from_folder(tmpdir):
     assert len(tmpdir.listdir()) == len(files)
     _files = file_manager.get_files_from_folder(tmpdir.strpath)
     assert len(_files) == len(files)
+
+
+def test_generate_database():
+    # FIXME: arreglar
+    r = relation.Relation()
+    r.header = ['id', 'name']
+    data = {
+        ("1", "Gabriel"),
+        ("23", "Rodrigo")
+    }
+    for d in data:
+        r.insert(d)
+
+    relations = {'persona': r}
+    expected = "@persona:id,name\n1,Gabriel\n23,Rodrigo\n"
+
+    # assert expected in file_manager.generate_database(relations)

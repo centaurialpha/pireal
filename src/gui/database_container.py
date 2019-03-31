@@ -18,6 +18,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import csv
+import logging
 
 from PyQt5.QtWidgets import QSplitter
 from PyQt5.QtWidgets import QFileDialog
@@ -45,9 +46,10 @@ from src.core import (
     file_manager,
     settings
 )
-from src.core.logger import Logger
+# from src.core.logger import Logger
 
-logger = Logger(__name__)
+# logger = Logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class DatabaseContainer(QSplitter):
@@ -130,17 +132,22 @@ class DatabaseContainer(QSplitter):
 
         _view = view.View()
         header = view.Header()
-        _model = model.Model(relation_obj)
-        _model.modelModified[bool].connect(self.__on_model_modified)
-        _model.cardinalityChanged[int].connect(
-                self.__on_cardinality_changed)
-        if not editable:
-            _model.editable = False
-            header.editable = False
+        _model = model.RelationModel(relation_obj)
         _view.setModel(_model)
         _view.setItemDelegate(delegate.Delegate())
         _view.setHorizontalHeader(header)
         return _view
+        # _model = model.Model(relation_obj)
+        # _model.modelModified[bool].connect(self.__on_model_modified)
+        # _model.cardinalityChanged[int].connect(
+        #         self.__on_cardinality_changed)
+        # if not editable:
+        #     _model.editable = False
+        #     header.editable = False
+        # _view.setModel(_model)
+        # _view.setItemDelegate(delegate.Delegate())
+        # _view.setHorizontalHeader(header)
+        # return _view
 
     @Slot(bool)
     def __on_model_modified(self, modified):

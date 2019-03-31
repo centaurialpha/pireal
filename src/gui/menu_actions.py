@@ -57,7 +57,7 @@ MENU['query'] = {
     'name': tr.TR_MENU_QUERY,
     'items': ({
         'name': tr.TR_MENU_QUERY_NEW_QUERY,
-        'slot': None
+        'slot': "central:new_query"
     }, {
         'name': tr.TR_MENU_QUERY_OPEN_QUERY,
         'slot': None,

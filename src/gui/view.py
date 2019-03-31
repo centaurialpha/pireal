@@ -24,10 +24,10 @@ from PyQt5.QtWidgets import (
     QAbstractItemView,
     QMessageBox
 )
-from PyQt5.QtCore import (
-    Qt,
-    QModelIndex
-)
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QModelIndex
+
+from src.core.settings import CONFIG
 
 
 class View(QTableView):
@@ -35,7 +35,7 @@ class View(QTableView):
 
     def __init__(self):
         super(View, self).__init__()
-        # self.setAlternatingRowColors(True)
+        self.setAlternatingRowColors(CONFIG.get('alternatingRowColors'))
         self.verticalHeader().hide()
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         # Scroll content per pixel

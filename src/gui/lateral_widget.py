@@ -19,21 +19,58 @@
 
 import os
 
-from PyQt5.QtWidgets import QTreeWidget
+# from PyQt5.QtWidgets import QTreeWidget
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QSplitter
-from PyQt5.QtWidgets import QTreeWidgetItem
-from PyQt5.QtWidgets import QAbstractItemView
+# from PyQt5.QtWidgets import QTreeWidgetItem
+# from PyQt5.QtWidgets import QAbstractItemView
 from PyQt5.QtWidgets import QVBoxLayout
 
 from PyQt5.QtQuickWidgets import QQuickWidget
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QObject
+from PyQt5.QtCore import QAbstractListModel
+from PyQt5.QtCore import pyqtProperty
 from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtCore import QUrl
 
 from src.gui.main_window import Pireal
 from src.core import settings
+
+
+
+class RelationModel(QAbstractListModel):
+
+    NameRole = Qt.UserRole + 1
+    CardinalityRole = NameRole + 1
+    DegreeRole = CardinalityRole + 1
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._data = None
+
+    def set_data(self, data):
+        self._data = data
+
+    def rowCount(self, index):
+        return len(self._data)
+
+    def data(self, index, role=Qt.DisplayRole):
+        try:
+            data = self._data[index.row()]
+        except IndexError:
+            return None
+        if role == Qt.DisplayRole:
+            return data.name
+        return None
+
+    def roles(self):
+        return {
+            self.NameRole: b'name',
+            self.CardinalityRole: b'cardinality',
+            self.DegreeRole: b'degree'
+        }
 
 
 class LateralWidget(QSplitter):
@@ -55,11 +92,11 @@ class LateralWidget(QSplitter):
         self.setOrientation(Qt.Vertical)
         # Lista de relaciones de la base de datos
         self._relations_list = RelationListQML()
-        self._relations_list.set_title(self.tr("Relaciones"))
+        self._relations_list.set_title(self.tr("Relations"))
         self.addWidget(self._relations_list)
         # Lista de relaciones del resultado de consultas
         self._results_list = RelationListQML()
-        self._results_list.set_title(self.tr("Resultados"))
+        self._results_list.set_title(self.tr("Results"))
         self.addWidget(self._results_list)
 
         Pireal.load_service("lateral_widget", self)
@@ -134,84 +171,84 @@ class RelationListQML(QWidget):
         self._root.setCardinality(new_cardinality)
 
 
-class RelationList(QTreeWidget):
+# class RelationList(QTreeWidget):
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.header().setObjectName("lateral")
-        self.setRootIsDecorated(False)
-        self.header().setDefaultAlignment(Qt.AlignHCenter)
-        self.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.setFrameShape(QTreeWidget.NoFrame)
-        self.setFrameShadow(QTreeWidget.Plain)
-        self.setAnimated(True)
+#     def __init__(self, parent=None):
+#         super().__init__(parent)
+#         self.header().setObjectName("lateral")
+#         self.setRootIsDecorated(False)
+#         self.header().setDefaultAlignment(Qt.AlignHCenter)
+#         self.setSelectionMode(QAbstractItemView.SingleSelection)
+#         self.setFrameShape(QTreeWidget.NoFrame)
+#         self.setFrameShadow(QTreeWidget.Plain)
+#         self.setAnimated(True)
 
-    def select(self, fila):
-        item = self.topLevelItem(fila)
-        item.setSelected(True)
+#     def select(self, fila):
+#         item = self.topLevelItem(fila)
+#         item.setSelected(True)
 
-    def select_last(self):
-        for i in range(self.topLevelItemCount()):
-            item = self.topLevelItem(i)
-            item.setSelected(False)
-        self.select(self.topLevelItemCount() - 1)
+#     def select_last(self):
+#         for i in range(self.topLevelItemCount()):
+#             item = self.topLevelItem(i)
+#             item.setSelected(False)
+#         self.select(self.topLevelItemCount() - 1)
 
-    def select_first(self):
-        self.select(0)
+#     def select_first(self):
+#         self.select(0)
 
-    def set_title(self, title):
-        self.setHeaderLabel(title)
+#     def set_title(self, title):
+#         self.setHeaderLabel(title)
 
-    def row(self):
-        return self.indexOfTopLevelItem(self.currentItem())
+#     def row(self):
+#         return self.indexOfTopLevelItem(self.currentItem())
 
-    def add_item(self, text, numero_tuplas):
-        """Agrega un item"""
-        item = Item(text, str(numero_tuplas))
-        item.setText(0, item.display_name)
-        item.setToolTip(0, item.display_name)
-        self.addTopLevelItem(item)
+#     def add_item(self, text, numero_tuplas):
+#         """Agrega un item"""
+#         item = Item(text, str(numero_tuplas))
+#         item.setText(0, item.display_name)
+#         item.setToolTip(0, item.display_name)
+#         self.addTopLevelItem(item)
 
-    def item_text(self, index):
-        """Retorna el texto del item en el indice pasado"""
-        item = self.topLevelItem(index)
-        if item is None:
-            item = self.topLevelItem(self.selectedIndexes()[0].row())
-        text = item.text(0)
-        return text.split()[0].strip()
+#     def item_text(self, index):
+#         """Retorna el texto del item en el indice pasado"""
+#         item = self.topLevelItem(index)
+#         if item is None:
+#             item = self.topLevelItem(self.selectedIndexes()[0].row())
+#         text = item.text(0)
+#         return text.split()[0].strip()
 
-    def remove_item(self, index):
-        if index == -1:
-            index = 0  # primer elemento
-        self.takeTopLevelItem(index)
+#     def remove_item(self, index):
+#         if index == -1:
+#             index = 0  # primer elemento
+#         self.takeTopLevelItem(index)
 
-    def clear_items(self):
-        """Elimina todos los items"""
+#     def clear_items(self):
+#         """Elimina todos los items"""
 
-        self.clear()
+#         self.clear()
 
-    def update_item(self, tuplas_count):
-        item = self.current_item()
-        item.ntuples = str(tuplas_count)
-        item.setText(0, item.display_name)
+#     def update_item(self, tuplas_count):
+#         item = self.current_item()
+#         item.ntuples = str(tuplas_count)
+#         item.setText(0, item.display_name)
 
-    def current_item(self):
-        """ Returns the current item in the tree. If item is None
-        returns item in the index 0 """
+#     def current_item(self):
+#         """ Returns the current item in the tree. If item is None
+#         returns item in the index 0 """
 
-        item = self.currentItem()
-        if item is None:
-            item = self.topLevelItem(0)
-        return item
+#         item = self.currentItem()
+#         if item is None:
+#             item = self.topLevelItem(0)
+#         return item
 
 
-class Item(QTreeWidgetItem):
+# class Item(QTreeWidgetItem):
 
-    def __init__(self, text, ntuplas):
-        super(Item, self).__init__()
-        self.name = text
-        self.ntuples = ntuplas
+#     def __init__(self, text, ntuplas):
+#         super(Item, self).__init__()
+#         self.name = text
+#         self.ntuples = ntuplas
 
-    @property
-    def display_name(self):
-        return self.name + " [" + self.ntuples + "]"
+#     @property
+#     def display_name(self):
+#         return self.name + " [" + self.ntuples + "]"

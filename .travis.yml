@@ -14,9 +14,9 @@ install:
   - pip install PyQt5==5.11.2
   - pip install coveralls
 
-before_script: rm --recursive --force --verbose *.py[cod]
+before_script: make clean
 
-script: pytest tests --cov=src.core.interpreter --cov-report term-missing -s
+script: make test
 
 after_success:
   - coveralls
