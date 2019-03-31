@@ -19,13 +19,11 @@
 
 from PyQt5.QtWidgets import QItemDelegate
 from PyQt5.QtWidgets import QStyle
-from PyQt5.QtWidgets import QApplication
 
 from PyQt5.QtGui import QColor
 from PyQt5.QtGui import QPalette
-from PyQt5.QtGui import QPen
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt
 
 
 class Delegate(QItemDelegate):

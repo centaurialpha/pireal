@@ -5,7 +5,7 @@ import QtQuick.Controls 2.0
 Rectangle {
     id: root
 
-    color: "#423d4c"
+    color: "#404244"
     signal itemClicked(int index)
 
     function addItem(item, cardinalidad, grado) {
@@ -69,11 +69,11 @@ Rectangle {
         anchors.top: parent.top
         height: 30
         width: parent.width
-        color: "#423d4c"
+        color: "#404244"
         property alias title: lblTitle.text
         Label {
             id: lblTitle
-            text: "Relaciones"
+            text: ""
             font.bold: true
             font.pointSize: 12
             color: "#f9f9f9"
@@ -102,7 +102,7 @@ Rectangle {
             Binding {
                 target: background
                 property: "color"
-                value: "#54505c"
+                value: "#262829"
             }
 
             contentItem: Column {
@@ -117,12 +117,12 @@ Rectangle {
                 }
                 Label {
                     id: relationCard
-                    text: "Cardinalidad: " + cardinalidad
+                    text: qsTr("Cardinality: %1").arg(cardinalidad)
                     color: "#a1a1a1"
                     renderType: Label.NativeRendering
                 }
                 Label {
-                    text: "Grado: " + grado
+                    text: qsTr("Degree: %1").arg(grado)
                     color: "#a1a1a1"
                     renderType: Label.NativeRendering
                 }

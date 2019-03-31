@@ -10,13 +10,13 @@ before_install:
 
 install:
   - pip install pip --upgrade
-  - pip install pytest pytest-qt pytest-cov
-  - pip install PyQt5==5.9
+  - pip install pytest pytest-qt pytest-cov==2.5.1
+  - pip install PyQt5==5.11.2
   - pip install coveralls
 
-before_script: rm --recursive --force --verbose *.py[cod]
+before_script: make clean
 
-script: py.test tests --cov=src.core
+script: make test
 
 after_success:
   - coveralls

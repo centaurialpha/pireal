@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015-2018 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2019 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -18,21 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-import pytest
+import argparse
 
 
-def main(path):
-    if path is None:
-        # Run all tests
-        path = 'tests'
-    errno = pytest.main([path, '-vv'])
-    if errno != 0:
-        raise SystemExit(errno)
-
-
-if __name__ == '__main__':
-    path = None
-    if len(sys.argv) > 1:
-        path = sys.argv[1]
-    main(path)
+def get_cli():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--database', help='Database file')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Verbose')
+    return parser

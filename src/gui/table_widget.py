@@ -17,24 +17,24 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import (
-    QWidget,
-    QSplitter,
-    QTabWidget,
-    QToolButton,
-    QVBoxLayout,
-    QStackedWidget,
-    QMessageBox,
-    QMenu
-)
+from collections import OrderedDict
+
+# from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QSplitter
+from PyQt5.QtWidgets import QTabWidget
+from PyQt5.QtWidgets import QToolButton
+# from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QStackedWidget
+# from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMenu
+
 from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtCore import Qt
-from src.gui import (
-    view,
-    model,
-    delegate
-)
-from src.core import relation
+from src.gui import view
+from src.gui import model
+from src.gui import delegate
+
+# from src.core import relation
 from src.gui.main_window import Pireal
 
 
@@ -59,7 +59,7 @@ class TableWidget(QSplitter):
         self.setSizes([1, 1])
         self._other_tab.hide()
 
-        self.relations = {}
+        self.relations = OrderedDict()
 
         # Stack
         self.stacked = QStackedWidget()
@@ -214,9 +214,9 @@ class TableWidget(QSplitter):
         """ Se crea la vista y el modelo """
 
         _view = view.View()
-        _model = model.Model(rela)
-        if not editable:
-            _model.editable = False
+        _model = model.RelationModel(rela)
+        # if not editable:
+        #     _model.editable = False
         _view.setModel(_model)
         _view.setItemDelegate(delegate.Delegate())
         _view.setHorizontalHeader(view.Header())

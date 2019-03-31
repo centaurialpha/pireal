@@ -19,39 +19,52 @@
 
 import logging
 
-FORMAT = "%(levelname)-2s:%(name)s:%(lineno)-2d --> %(message)s"
+from src.core.settings import LOG_PATH
+
+FORMAT = "[%(asctime)s] [%(levelname)-6s]: %(name)-22s:%(funcName)-5s %(message)s"
+TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+# class _Logger(object):
+#     LEVELS = {
+#         'critical': 50,
+#         'error': 40,
+#         'warning': 30,
+#         'info': 20,
+#         'debug': 10,
+#         'no': 0
+#     }
+
+#     def __init__(self):
+#         self.__level = 0  # Default not logging
+#         logging.basicConfig(format=FORMAT)
+#         self.__loggers = {}
+
+#     def __call__(self, name):
+#         if name not in self.__loggers:
+#             logger = logging.getLogger(name)
+#             self.__loggers[name] = logger
+#             logger.setLevel(self.__level)
+#         return self.__loggers[name]
+
+#     def set_level(self, level):
+#         """ Set level for all loggers """
+
+#         if level in self.LEVELS.keys():
+#             self.__level = self.LEVELS[level]
+#             for log in self.__loggers.keys():
+#                 logger = self.__loggers[log]
+#                 logger.setLevel(self.__level)
 
 
-class _Logger(object):
-    LEVELS = {
-        'critical': 50,
-        'error': 40,
-        'warning': 30,
-        'info': 20,
-        'debug': 10,
-        'no': 0
-    }
+def set_up(verbose: bool):
+    root = logging.getLogger()
+    handler = logging.FileHandler(LOG_PATH)
+    root.addHandler(handler)
+    formatter = logging.Formatter(FORMAT, TIME_FORMAT)
+    handler.setFormatter(formatter)
+    root.setLevel(logging.DEBUG)
+    if verbose:
+        handler = logging.StreamHandler()
+        handler.setFormatter(formatter)
+        root.addHandler(handler)
 
-    def __init__(self):
-        self.__level = 0  # Default not logging
-        logging.basicConfig(format=FORMAT)
-        self.__loggers = {}
-
-    def __call__(self, name):
-        if name not in self.__loggers:
-            logger = logging.getLogger(name)
-            self.__loggers[name] = logger
-            logger.setLevel(self.__level)
-        return self.__loggers[name]
-
-    def set_level(self, level):
-        """ Set level for all loggers """
-
-        if level in self.LEVELS.keys():
-            self.__level = self.LEVELS[level]
-            for log in self.__loggers.keys():
-                logger = self.__loggers[log]
-                logger.setLevel(self.__level)
-
-
-Logger = _Logger()

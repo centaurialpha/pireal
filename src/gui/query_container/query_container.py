@@ -19,27 +19,24 @@
 
 import re
 
-from PyQt5.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QSplitter,
-    QMessageBox,
-    QStackedWidget,
-    QLabel,
-    QDialog,
-    QPushButton,
-    QLineEdit,
-    QAction,
-    QToolBar
-)
-from PyQt5.QtCore import (
-    Qt,
-    pyqtSignal,
-    QSettings,
-    QSize
-)
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QSplitter
+from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QStackedWidget
+from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QLineEdit
+from PyQt5.QtWidgets import QAction
+from PyQt5.QtWidgets import QToolBar
 
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import QSize
+
+from PyQt5.QtCore import pyqtSignal as Signal
 from src.core.interpreter import parser
 from src.core.interpreter.exceptions import (
     InvalidSyntaxError,
@@ -48,22 +45,21 @@ from src.core.interpreter.exceptions import (
     ConsumeError
 )
 from src.gui.main_window import Pireal
-from src.gui.query_container import (
-    editor,
-    tab_widget
-)
+from src.gui.query_container import editor
+from src.gui.query_container import tab_widget
+
 from src.core import settings
 
 
 class QueryContainer(QWidget):
-    saveEditor = pyqtSignal('PyQt_PyObject')
+    saveEditor = Signal(object)
 
     def __init__(self, parent=None):
         super(QueryContainer, self).__init__(parent)
         self._parent = parent
         box = QVBoxLayout(self)
         self.setObjectName("query_container")
-        box.setContentsMargins(0, 0, 0, 0)
+        box.setContentsMargins(0, 10, 0, 0)
         box.setSpacing(0)
         # Regex for validate variable name
         self.__validName = re.compile(r'^[a-z_]\w*$')
@@ -85,8 +81,7 @@ class QueryContainer(QWidget):
 
         # Connections
         self._tabs.tabCloseRequested.connect(self.__hide)
-        self._tabs.saveEditor['PyQt_PyObject'].connect(
-            self.__on_save_editor)
+        self._tabs.saveEditor.connect(self.__on_save_editor)
 
     def set_focus_editor_tab(self, index):
         self._tabs.setCurrentIndex(index)
@@ -296,7 +291,7 @@ class QueryContainer(QWidget):
 
 
 class QueryWidget(QWidget):
-    editorModified = pyqtSignal(bool)
+    editorModified = Signal(bool)
     # Editor positions
     TOP_POSITION = 0
     LEFT_POSITION = 1
@@ -403,7 +398,7 @@ class EditorWidget(QWidget):
         'paste_action',
     ]
 
-    editorModified = pyqtSignal(bool)
+    editorModified = Signal(bool)
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)

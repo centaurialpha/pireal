@@ -28,7 +28,8 @@ from PyQt5.QtWidgets import (
     QSizePolicy
 )
 from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSignal as Signal
 
 from src.core import relation
 from src.gui import view
@@ -37,7 +38,7 @@ from src.gui.main_window import Pireal
 
 class NewRelationDialog(QDialog):
 
-    created = pyqtSignal('PyQt_PyObject', 'QString')
+    created = Signal(str, str)
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)

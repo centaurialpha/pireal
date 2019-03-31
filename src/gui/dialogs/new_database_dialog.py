@@ -28,10 +28,9 @@ from PyQt5.QtWidgets import (
     QStyle,
     QFileDialog
 )
-from PyQt5.QtCore import (
-    pyqtSlot,
-    pyqtSignal
-)
+from PyQt5.QtCore import pyqtSlot as Slot
+from PyQt5.QtCore import pyqtSignal as Signal
+
 from src.core import settings
 
 
@@ -39,7 +38,7 @@ class NewDatabaseDialog(QWizard):
 
     # La señal se emite cuando se crea la DB, es decir
     # cuando se clickea en el botón 'Crear' del diálogo
-    created = pyqtSignal('QString', 'QString', 'QString')
+    created = Signal('QString', 'QString', 'QString')
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -98,7 +97,7 @@ class FirstPage(QWizardPage):
         self._database_name_line.textChanged.connect(self._update_filename)
         change_location_action.triggered.connect(self.__select_location)
 
-    @pyqtSlot()
+    @Slot()
     def __select_location(self):
         location = QFileDialog.getExistingDirectory(self,
                                                     self.tr("Select Folder"))
@@ -111,7 +110,7 @@ class FirstPage(QWizardPage):
         self._database_filename_line.setText(os.path.join(
             location, self._database_name_line.text()))
 
-    @pyqtSlot('QString')
+    @Slot('QString')
     def _update_filename(self, filename):
         new_filename = os.path.join(self.__location_folder, filename)
         self._database_filename_line.setText(new_filename + '.pdb')

@@ -17,25 +17,63 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtGui import (
-    QColor,
-    QFont
-)
-from PyQt5.QtCore import (
-    QAbstractTableModel,
-    Qt,
-    QVariant,
-    QModelIndex,
-    pyqtSignal
-)
+from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QFont
+
+from PyQt5.QtCore import QAbstractTableModel
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QModelIndex
+from PyQt5.QtCore import pyqtSignal as Signal
 
 
-class Model(QAbstractTableModel):
+class RelationModel(QAbstractTableModel):
+
+    def __init__(self, relation_object):
+        super().__init__()
+        self._relation = relation_object
+
+    def rowCount(self, index):
+        """Devuelve la cardinalidad de la relación"""
+        return self._relation.cardinality()
+
+    def columnCount(self, index):
+        """Devuelve el grado de la relación"""
+        return self._relation.degree()
+
+    def data(self, index, role=Qt.DisplayRole):
+        if not index.isValid():
+            return None
+
+        row, column = index.row(), index.column()
+        data = list(self._relation.content)
+        if role == Qt.DisplayRole:
+            return data[row][column]
+        return None
+
+    def headerData(self, section, orientation, role):
+        if role == Qt.DisplayRole:
+            return self._relation.header[section]
+        # elif role == Qt.FontRole:
+        #     font = QFont()
+        #     font.setBold(True)
+        #     font.setPointSize(12)
+        #     return font
+
+    def setHeaderData(self, section, orientation, value, role):
+        if role == Qt.DisplayRole:
+            old_value = self._relation.header[section]
+            if value != old_value:
+                self._relation.header[section] = value
+                self.headerDataChanged.emit(orientation, section, section)
+                return True
+
+
+class _Model(QAbstractTableModel):
     """ Modelo """
 
-    modelModified = pyqtSignal(bool)
-    degreeChanged = pyqtSignal(int)
-    cardinalityChanged = pyqtSignal(int)
+    modelModified = Signal(bool)
+    degreeChanged = Signal(int)
+    cardinalityChanged = Signal(int)
 
     def __init__(self, relation_obj):
         QAbstractTableModel.__init__(self)
@@ -59,7 +97,8 @@ class Model(QAbstractTableModel):
 
     def data(self, index, role):
         if not index.isValid():
-            return QVariant()
+            # return QVariant()
+            return None
         row, col = index.row(), index.column()
         content = list(self.__data.content)
         if role == Qt.DisplayRole:

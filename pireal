@@ -19,35 +19,23 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-import ctypes
-import argparse
-
-if sys.version_info.major != 3:
-    print("Pireal need Python 3 :(")
-    sys.exit(-1)
-
 import os
-from PyQt5.QtWidgets import (
-    QApplication
-)
-from PyQt5.QtGui import (
-    QIcon,
-    QColor,
-    QPalette,
-)
-from PyQt5.QtCore import (
-    QLocale,
-    QTranslator,
-    QLibraryInfo,
-    QT_VERSION_STR,
-    Qt,
-    QTextCodec
-)
+import ctypes
 
-from src.core.logger import Logger
+from PyQt5.QtWidgets import QApplication
 
-# Logger
-logger = Logger(__name__)
+from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QPalette
+
+# from PyQt5.QtCore import QLocale
+from PyQt5.QtCore import QTranslator
+# from PyQt5.QtCore import QLibraryInfo
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QT_VERSION_STR
+
+from src.core import logger
+from src.core import cliparser
 
 INSTALL_DIR = "@ INSTALLED_BASE_DIR @"
 
@@ -60,10 +48,8 @@ else:
 if project not in sys.path:
     sys.path.insert(0, project)
 
-from src.core import settings
-from src.core.settings import CONFIG
-
-# PSetting = settings.PSetting
+from src.core import settings  # noqa
+from src.core.settings import CONFIG  # noqa
 
 
 def create_dirs():
@@ -97,33 +83,24 @@ def __get_versions():
         'python': python_version,
         'os': system,
         'name': name,
-        'qt': QT_VERSION_STR  # Qt version
+        'qt': QT_VERSION_STR  # Qt version FIXME: arreglar
     }
 
 
 if __name__ == "__main__":
 
-    # Parse arguments
-    pargs = argparse.ArgumentParser(
-        prog='Pireal',
-        usage='./pireal [-h] [--log loglevel]',
-        description='Pireal is a tool for working with Relational Algebra',
-        epilog='Pireal website: http://centaurialpha.github.io/pireal')
-    pargs.add_argument('--log', metavar='loglevel',
-                       help="Level to use for logging: 'debug', 'info', "
-                            "'warning', 'error', 'critical'")
-    args = pargs.parse_args()
-    if args.log is not None:
-        Logger.set_level(args.log)
+    # cli
+    args = cliparser.get_cli().parse_args()
+    logger.set_up(args.verbose)
 
     # Create dirs used by Pireal
     create_dirs()
 
     info = __get_versions()
     CONFIG.load_settings()
-
-    QTextCodec.setCodecForLocale(QTextCodec.codecForName("utf8"))
-
+    print('Running Pireal {}...\nPython {} on {}-{}, Qt {}'.format(
+        '3.0', info['python'], info['os'], info['name'], info['qt']
+    ))
     # Import resources
     from src import resources  # noqa
 
@@ -132,7 +109,7 @@ if __name__ == "__main__":
     palette = QPalette()
     palette.setColor(QPalette.ToolTipBase, QColor(225, 225, 225))
     palette.setColor(QPalette.Highlight, QColor("#5294e2"))
-    qapp.setPalette(palette)
+    # qapp.setPalette(palette)
 
     if not settings.WINDOWS:
         qapp.setCursorFlashTime(0)
@@ -153,8 +130,8 @@ if __name__ == "__main__":
     from src.gui.main_window import Pireal
 
     # Set stylesheet
-    with open(settings.STYLE_SHEET) as f:
-        qapp.setStyleSheet(f.read())
+    # with open(settings.STYLE_SHEET) as f:
+    #     qapp.setStyleSheet(f.read())
 
     gui = Pireal()
     gui.show()

@@ -75,7 +75,7 @@ SUPPORTED_FILES = ("Pireal Database File (*.pdb);;"
                    "Pireal Query File (*.pqf);;"
                    "Pireal Relation File (*.prf)")
 
-
+# FIXME: si agrego algo y el archivo existe BOOOM!
 DEFAULT_SETTINGS = {
     "language": "English",
     "highlightCurrentLine": True,
@@ -83,7 +83,8 @@ DEFAULT_SETTINGS = {
     "recentFiles": [],
     "lastOpenFolder": None,
     "fontFamily": None,
-    "fontSize": 12
+    "fontSize": 14,
+    "alternatingRowColors": True
 }
 
 

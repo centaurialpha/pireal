@@ -22,13 +22,12 @@
 import webbrowser
 from collections import Callable
 
-from PyQt5.QtWidgets import (
-    QMainWindow,
-    QMenu,
-    QToolButton,
-    QMessageBox,
-    QToolBar
-)
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMenu
+from PyQt5.QtWidgets import QToolButton
+from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QToolBar
+
 from PyQt5.QtGui import QIcon
 
 from PyQt5.QtCore import QSettings
@@ -85,7 +84,7 @@ class Pireal(QMainWindow):
         self.setMinimumSize(880, 600)
         # Load window geometry
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        window_maximized = qsettings.value('window_max', True, type=bool)
+        window_maximized = qsettings.value('window_max', True)
         if window_maximized:
             self.showMaximized()
         else:
@@ -94,18 +93,18 @@ class Pireal(QMainWindow):
             position = qsettings.value('window_pos')
             self.move(position)
         # Toolbar
-        self.toolbar = QToolBar(self)
-        self.toolbar.setFixedWidth(38)
-        self.toolbar.setIconSize(QSize(38, 38))
-        self.toolbar.setMovable(False)
-        self.addToolBar(Qt.RightToolBarArea, self.toolbar)
+        # self.toolbar = QToolBar(self)
+        # self.toolbar.setFixedWidth(38)
+        # self.toolbar.setIconSize(QSize(38, 38))
+        # self.toolbar.setMovable(False)
+        # self.addToolBar(Qt.RightToolBarArea, self.toolbar)
 
         # Menu bar
         menubar = self.menuBar()
         self.__load_menubar(menubar)
         # Load notification widget after toolbar actions
         notification_widget = Pireal.get_service("notification")
-        self.toolbar.addWidget(notification_widget)
+        # self.toolbar.addWidget(notification_widget)
         # Message error
         # self._msg_error_widget = message_error.MessageError(self)
         # Central widget
@@ -167,54 +166,57 @@ class Pireal(QMainWindow):
                     menu.addSeparator()
                 else:
                     action = menu_item['name']
-                    obj_name, connection = menu_item['slot'].split(':')
+                    slot_name = menu_item['slot']
+
+                    qaction = menu.addAction(action)
+                    if slot_name is None:
+                        continue
+                    obj_name, connection = slot_name.split(':')
+                    # icon = QIcon(':img/%s' % connection)
+                    # qaction.setIcon(icon)
+
                     obj = central
                     if obj_name.startswith('pireal'):
                         obj = self
-                    qaction = menu.addAction(action)
-                    # Icon name is connection
-                    icon = QIcon(":img/%s" % connection)
-                    qaction.setIcon(icon)
-
                     # Install shortcuts
                     shortcut = kmap.get(connection, None)
                     if shortcut is not None:
                         qaction.setShortcut(shortcut)
 
                     # The name of QAction is the connection
-                    if item == "relation":
-                        if connection != "execute_queries":
-                            rela_actions.append(qaction)
+                    # if item == "relation":
+                    #     if connection != "execute_queries":
+                    #         rela_actions.append(qaction)
                     Pireal.load_action(connection, qaction)
                     slot = getattr(obj, connection, None)
-                    if isinstance(slot, Callable):
+                    if callable(slot):
                         qaction.triggered.connect(slot)
 
         # Install toolbar
         # self.__install_toolbar(toolbar_items, rela_actions)
-        self.__install_toolbar(rela_actions)
+        # self.__install_toolbar(rela_actions)
         # Disable some actions
         self.set_enabled_db_actions(False)
         self.set_enabled_relation_actions(False)
         self.set_enabled_query_actions(False)
         self.set_enabled_editor_actions(False)
 
-    def __install_toolbar(self, rela_actions):
-        menu = QMenu()
-        tool_button = QToolButton()
-        tool_button.setIcon(QIcon(":img/create_new_relation"))
-        tool_button.setMenu(menu)
-        tool_button.setPopupMode(QToolButton.InstantPopup)
-        for item in self.TOOLBAR_ITEMS:
-            if item:
-                if item == "relation_menu":
-                    # Install menu for relation
-                    menu.addActions(rela_actions)
-                    self.toolbar.addWidget(tool_button)
-                else:
-                    self.toolbar.addAction(self.__ACTIONS[item])
-            else:
-                self.toolbar.addSeparator()
+    # def __install_toolbar(self, rela_actions):
+    #     menu = QMenu()
+    #     tool_button = QToolButton()
+    #     tool_button.setIcon(QIcon(":img/create_new_relation"))
+    #     tool_button.setMenu(menu)
+    #     tool_button.setPopupMode(QToolButton.InstantPopup)
+    #     for item in self.TOOLBAR_ITEMS:
+    #         if item:
+    #             if item == "relation_menu":
+    #                 # Install menu for relation
+    #                 menu.addActions(rela_actions)
+    #                 self.toolbar.addWidget(tool_button)
+    #             else:
+    #                 self.toolbar.addAction(self.__ACTIONS[item])
+    #         else:
+    #             self.toolbar.addSeparator()
 
     def __show_status_message(self, msg):
         status = Pireal.get_service("status")
@@ -251,6 +253,12 @@ class Pireal(QMainWindow):
             _title = "Pireal"
         self.setWindowTitle(_title)
 
+    def set_enabled_actions(self, actions, value):
+        for action in actions:
+            qaction = Pireal.get_action(action)
+            if qaction is not None:
+                qaction.setEnabled(value)
+
     def set_enabled_db_actions(self, value):
         """ Public method. Enables or disables db QAction """
 
@@ -262,43 +270,34 @@ class Pireal(QMainWindow):
             'save_database_as',
             'load_relation'
         ]
-
-        for action in actions:
-            qaction = Pireal.get_action(action)
-            qaction.setEnabled(value)
+        self.set_enabled_actions(actions, value)
 
     def set_enabled_relation_actions(self, value):
         """ Public method. Enables or disables relation's QAction """
 
-        actions = [
+        actions = (
             'create_new_relation',
             'remove_relation',
             'add_tuple',
             'delete_tuple',
             # 'add_column',
             # 'delete_column'
-        ]
-
-        for action in actions:
-            qaction = Pireal.get_action(action)
-            qaction.setEnabled(value)
+        )
+        self.set_enabled_actions(actions, value)
 
     def set_enabled_query_actions(self, value):
         """ Public method. Enables or disables queries QAction """
 
-        actions = [
+        actions = (
             'execute_queries',
             'save_query'
-        ]
-
-        for action in actions:
-            qaction = Pireal.get_action(action)
-            qaction.setEnabled(value)
+        )
+        self.set_enabled_actions(actions, value)
 
     def set_enabled_editor_actions(self, value):
         """ Public slot. Enables or disables editor actions """
 
-        actions = [
+        actions = (
             'undo_action',
             'redo_action',
             'copy_action',
@@ -309,11 +308,8 @@ class Pireal(QMainWindow):
             'comment',
             'uncomment',
             'search'
-        ]
-
-        for action in actions:
-            qaction = Pireal.get_action(action)
-            qaction.setEnabled(value)
+        )
+        self.set_enabled_actions(actions, value)
 
     def about_qt(self):
         """ Show about qt dialog """
@@ -340,13 +336,13 @@ class Pireal(QMainWindow):
         else:
             self.menuBar().show()
 
-    def show_hide_toolbar(self):
-        """ Change visibility of tool bar """
+    # def show_hide_toolbar(self):
+    #     """ Change visibility of tool bar """
 
-        if self.toolbar.isVisible():
-            self.toolbar.hide()
-        else:
-            self.toolbar.show()
+    #     if self.toolbar.isVisible():
+    #         self.toolbar.hide()
+    #     else:
+    #         self.toolbar.show()
 
     def show_error_message(self, text, syntax_error=True):
         self._msg_error_widget.show_msg(text, syntax_error)

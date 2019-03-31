@@ -18,21 +18,18 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import csv
+import logging
 
-from PyQt5.QtWidgets import (
-    QSplitter,
-    QFileDialog,
-    QMessageBox
-)
-from PyQt5.QtCore import (
-    Qt,
-    QSettings,
-    pyqtSlot
-)
-from PyQt5.QtGui import (
-    QPalette,
-    QColor
-)
+from PyQt5.QtWidgets import QSplitter
+from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QMessageBox
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import pyqtSlot as Slot
+
+from PyQt5.QtGui import QPalette
+from PyQt5.QtGui import QColor
 
 from src.gui import (
     table_widget,
@@ -49,9 +46,10 @@ from src.core import (
     file_manager,
     settings
 )
-from src.core.logger import Logger
+# from src.core.logger import Logger
 
-logger = Logger(__name__)
+# logger = Logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class DatabaseContainer(QSplitter):
@@ -83,7 +81,7 @@ class DatabaseContainer(QSplitter):
         # see issue #39
         self.lateral_widget.relationSelectionChanged.connect(
             lambda i: self.table_widget.stacked.setCurrentIndex(i))
-        self.query_container.saveEditor['PyQt_PyObject'].connect(
+        self.query_container.saveEditor.connect(
             self.save_query)
         self.setSizes([1, 1])
 
@@ -134,23 +132,28 @@ class DatabaseContainer(QSplitter):
 
         _view = view.View()
         header = view.Header()
-        _model = model.Model(relation_obj)
-        _model.modelModified[bool].connect(self.__on_model_modified)
-        _model.cardinalityChanged[int].connect(
-                self.__on_cardinality_changed)
-        if not editable:
-            _model.editable = False
-            header.editable = False
+        _model = model.RelationModel(relation_obj)
         _view.setModel(_model)
         _view.setItemDelegate(delegate.Delegate())
         _view.setHorizontalHeader(header)
         return _view
+        # _model = model.Model(relation_obj)
+        # _model.modelModified[bool].connect(self.__on_model_modified)
+        # _model.cardinalityChanged[int].connect(
+        #         self.__on_cardinality_changed)
+        # if not editable:
+        #     _model.editable = False
+        #     header.editable = False
+        # _view.setModel(_model)
+        # _view.setItemDelegate(delegate.Delegate())
+        # _view.setHorizontalHeader(header)
+        # return _view
 
-    @pyqtSlot(bool)
+    @Slot(bool)
     def __on_model_modified(self, modified):
         self.modified = modified
 
-    @pyqtSlot(int)
+    @Slot(int)
     def __on_cardinality_changed(self, value):
         # self.lateral_widget.update_item(value)
         self.lateral_widget.relation_list.update_cardinality(value)

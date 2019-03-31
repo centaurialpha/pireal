@@ -19,28 +19,31 @@
 
 import os
 import csv
+import logging
+from collections import defaultdict
 
-from PyQt5.QtWidgets import (
-    QWidget,
-    QDialog,
-    QVBoxLayout,
-    QHBoxLayout,
-    QStackedWidget,
-    QLineEdit,
-    QLabel,
-    QFileDialog,
-    QMessageBox,
-    QShortcut,
-)
+from PyQt5.QtWidgets import QWidget
+# from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QVBoxLayout
+# from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QStackedWidget
+# from PyQt5.QtWidgets import QLineEdit
+# from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QShortcut
+
 from PyQt5.QtGui import QKeySequence
-from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSignal as Signal
+
 
 from src.core import (
     settings,
     file_manager,
     pfile,
 )
-from src.core.logger import Logger
+# from src.core.logger import Logger
 from src.gui.main_window import Pireal
 from src.gui import (
     start_page,
@@ -53,14 +56,15 @@ from src.gui.dialogs import (
 )
 from src.core.settings import CONFIG
 # Logger
-logger = Logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class CentralWidget(QWidget):
     # This signals is used by notificator
-    databaseSaved = pyqtSignal('QString')
-    querySaved = pyqtSignal('QString')
-    databaseConected = pyqtSignal('QString')
+    databaseSaved = Signal(str)
+    databaseSaved = Signal(str)
+    querySaved = Signal(str)
+    databaseConected = Signal(str)
 
     def __init__(self):
         QWidget.__init__(self)
@@ -86,7 +90,10 @@ class CentralWidget(QWidget):
         esc_short.activated.connect(self._hide_search)
 
     def _hide_search(self):
-        query_container = self.get_active_db().query_container
+        db_container = self.get_active_db()
+        if db_container is None:
+            return
+        query_container = db_container.query_container
         if query_container is not None:
             query_container.set_editor_focus()
 
@@ -144,48 +151,45 @@ class CentralWidget(QWidget):
             logger.debug("La base de datos ha sido creada con éxito")
 
     def __say_about_one_db_at_time(self):
-        logger.info("Una base de datos a la vez")
+        logger.warning("Oops! One database at a time please")
         QMessageBox.information(self,
-                                self.tr("Información"),
-                                self.tr("Una base de datos a la vez por "
-                                        "favor."))
+                                self.tr("Information"),
+                                self.tr("Oops! One database at a time please"))
 
     def open_database(self, filename='', remember=True):
         """ This function opens a database and set this on the UI """
-
+        logger.debug('Triying to open database...')
         if self.created:
             return self.__say_about_one_db_at_time()
 
         # If not filename provide, then open dialog to select
         if not filename:
+            logger.debug('Filename not provided')
             if self.__last_open_folder is None:
                 directory = os.path.expanduser("~")
             else:
                 directory = self.__last_open_folder
             filter_ = settings.SUPPORTED_FILES.split(';;')[0]
-            filename, _ = QFileDialog.getOpenFileName(self,
-                                                      self.tr("Abrir Base de "
-                                                              "Datos"),
-                                                      directory,
-                                                      filter_)
+            filename, _ = QFileDialog.getOpenFileName(
+                self, self.tr("Open Database"), directory, filter_)
             # If is canceled, return
             if not filename:
+                logger.debug('File not selected, bye!')
                 return
 
         # If filename provide
         try:
-            logger.debug("Intentando abrir el archivo {}".format(filename))
+            logger.debug("Triying to open the database file %s", filename)
             # Read pdb file
             pfile_object = pfile.File(filename)
             db_data = pfile_object.read()
             # Create a dict to manipulate data more easy
             db_data = self.__sanitize_data(db_data)
+            logger.debug('Database loaded successful')
         except Exception as reason:
-            QMessageBox.information(self,
-                                    self.tr("El archivo no se puede abrir"),
-                                    reason.__str__())
-            logger.debug("Error al abrir el archivo {0}: '{1}'".format(
-                filename, reason.__str__()))
+            logger.exception('The database file could not be opened: %s', filename)
+            QMessageBox.information(
+                self, self.tr('The database file could not be opened'), str(reason))
             return
 
         # Create a database container widget
@@ -194,11 +198,8 @@ class CentralWidget(QWidget):
         try:
             db_container.create_database(db_data)
         except Exception as reason:
-            QMessageBox.information(self,
-                                    self.tr("Error"),
-                                    str(reason))
-            logger.debug("Error al crear la base de datos: {}".format(
-                reason.__str__()))
+            logger.exception('Error creating the database')
+            QMessageBox.information(self, self.tr("Error"), str(reason))
             return
 
         # Set the PFile object to the new database
@@ -209,7 +210,7 @@ class CentralWidget(QWidget):
         db_name = file_manager.get_basename(filename)
         # Update title with the new database name, and enable some actions
         pireal = Pireal.get_service("pireal")
-        self.databaseConected.emit(self.tr("Conectado a: {}".format(db_name)))
+        self.databaseConected.emit(self.tr("Connected to: {}".format(db_name)))
         pireal.set_enabled_db_actions(True)
         pireal.set_enabled_relation_actions(True)
         if remember:
@@ -257,7 +258,6 @@ class CentralWidget(QWidget):
         """
 
         # FIXME: controlar cuando al final de la línea hay una coma
-        from collections import defaultdict
         data_dict = defaultdict(list)
         for line_count, line in enumerate(data.splitlines()):
             # Ignore blank lines
@@ -361,18 +361,18 @@ class CentralWidget(QWidget):
         # Enable editor actions
         # FIXME: refactoring
         pireal.set_enabled_query_actions(True)
-        zoom_in_action = Pireal.get_action("zoom_in")
-        zoom_in_action.setEnabled(True)
-        zoom_out_action = Pireal.get_action("zoom_out")
-        zoom_out_action.setEnabled(True)
-        paste_action = Pireal.get_action("paste_action")
-        paste_action.setEnabled(True)
-        comment_action = Pireal.get_action("comment")
-        comment_action.setEnabled(True)
-        uncomment_action = Pireal.get_action("uncomment")
-        uncomment_action.setEnabled(True)
-        search_action = Pireal.get_action("search")
-        search_action.setEnabled(True)
+        # zoom_in_action = Pireal.get_action("zoom_in")
+        # zoom_in_action.setEnabled(True)
+        # zoom_out_action = Pireal.get_action("zoom_out")
+        # zoom_out_action.setEnabled(True)
+        # paste_action = Pireal.get_action("paste_action")
+        # paste_action.setEnabled(True)
+        # comment_action = Pireal.get_action("comment")
+        # comment_action.setEnabled(True)
+        # uncomment_action = Pireal.get_action("uncomment")
+        # uncomment_action.setEnabled(True)
+        # search_action = Pireal.get_action("search")
+        # search_action.setEnabled(True)
 
     def execute_queries(self):
         db_container = self.get_active_db()

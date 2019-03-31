@@ -21,11 +21,11 @@ from PyQt5.QtWidgets import (
     QTabWidget,
     QMessageBox
 )
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal as Signal
 
 
 class TabWidget(QTabWidget):
-    saveEditor = pyqtSignal('PyQt_PyObject')
+    saveEditor = Signal()
 
     def __init__(self):
         super(TabWidget, self).__init__()
