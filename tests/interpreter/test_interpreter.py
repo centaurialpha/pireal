@@ -42,15 +42,15 @@ def test_visit_Variable():
 def test_visit_Select():
     var = ast.Variable(lexer.Token(lexer.ID, 'edad'))
     var2 = ast.Number(lexer.Token(lexer.INTEGER, 11))
-    # operator = lexer.Token()
-    node_condition = ast.Condition(var, '>', var2)
+    operator = lexer.Token(lexer.GREATER, '>')
+    node_condition = ast.Condition(var, operator, var2)
     node_rela = ast.Variable(lexer.Token(lexer.ID, 'p'))
 
     node_select = ast.SelectExpr(node_condition, node_rela)
-    print(node_select.operator)
-    # inter = parser.Interpreter(None)
-    # expected = "p.select(edad > 11)"
-    # assert inter.visit_SelectExpr(node_select) == expected
+    # print(node_select.operator)
+    inter = parser.Interpreter(None)
+    expected = "p.select(\"edad > 11\")"
+    assert inter.visit_SelectExpr(node_select) == expected
 
 
 def test_visit_Project():
