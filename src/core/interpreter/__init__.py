@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015-2017 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2019 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -17,7 +17,3 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-# This module is responsible for organizing called "tokens" pieces,
-# each of these tokens has a meaning in language
-
-# TODO: poner acá la API __all__

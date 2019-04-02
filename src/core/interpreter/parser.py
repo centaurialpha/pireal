@@ -18,7 +18,6 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from collections import OrderedDict
-import datetime
 
 from src.core.interpreter.tokens import (
     STRING,
@@ -46,108 +45,12 @@ from src.core.interpreter.tokens import (
     ASSIGNMENT,
     EOF
 )
-from src.core.interpreter.exceptions import (
-    ConsumeError,
-    DuplicateRelationNameError
-)
+from src.core.interpreter.exceptions import ConsumeError
+from src.core.interpreter.exceptions import DuplicateRelationNameError
 
 from src.core.interpreter import scanner
 from src.core.interpreter import lexer
-
-# TODO: Mover los nodos AST a un módulo rast
-
-
-class AST(object):
-    """ Base class for all nodes """
-    pass
-
-
-class Variable(AST):
-
-    def __init__(self, token):
-        self.token = token
-        self.value = token.value
-
-
-class Number(AST):
-
-    def __init__(self, token):
-        self.num = token.value
-        self.token = token
-
-
-class String(AST):
-
-    def __init__(self, token):
-        self.string = token.value
-        self.token = token
-
-
-class Date(AST):
-
-    def __init__(self, token):
-        try:
-            date = datetime.datetime.strptime(token.value, "%d/%m/%Y").date()
-        except ValueError:
-            date = datetime.datetime.strptime(token.value, "%Y/%m/%d").date()
-        self.date = date
-
-
-class Time(AST):
-
-    def __init__(self, token):
-        hour, minute = map(int, token.value.split(':'))
-        self.time = datetime.time(hour, minute)
-
-
-class ProjectExpr(AST):
-
-    def __init__(self, attrs, expr):
-        self.attrs = attrs
-        self.expr = expr
-
-
-class SelectExpr(AST):
-
-    def __init__(self, cond, expr):
-        self.condition = cond
-        self.expr = expr
-
-
-class BinaryOp(AST):
-
-    def __init__(self, left, op, right):
-        self.left = left
-        self.token = self.op = op
-        self.right = right
-
-
-class Condition(AST):
-
-    def __init__(self, op1, operator, op2):
-        self.op1 = op1
-        self.operator = operator
-        self.op2 = op2
-
-
-class BoolOp(AST):
-
-    def __init__(self):
-        self.ops = []
-        self.conditions = []
-
-
-class Assignment(AST):
-
-    def __init__(self, rname, query):
-        self.rname = rname
-        self.query = query
-
-
-class Compound(AST):
-
-    def __init__(self):
-        self.children = []
+from src.core.interpreter import rast as ast
 
 
 class Parser(object):
@@ -174,14 +77,6 @@ class Parser(object):
                 self.token.type,
                 self.lexer.sc.lineno
             )
-            # raise ConsumeError(
-            #     "It is expected to find '{0}', "
-            #     "but '{1}' found, Line: '{2}', Col: '{3}'".format(
-            #         token_type,
-            #         self.token.type,
-            #         self.lexer.sc.lineno,
-            #         self.lexer.sc.colno
-            #     ), self.lexer.sc.lineno, self.lexer.sc.colno)
 
     def parse(self):
         """
@@ -236,7 +131,7 @@ class Parser(object):
         while self.token.type != EOF:
             nodes.append(self._assignment())
 
-        compound = Compound()
+        compound = ast.Compound()
         compound.children = nodes
 
         return compound
@@ -246,11 +141,11 @@ class Parser(object):
         Assignment : RNAME := Expression;
         """
 
-        rname = Variable(self.token)
+        rname = ast.Variable(self.token)
         self.consume(ID)
         self.consume(ASSIGNMENT)
         q = self._expression()
-        node = Assignment(rname, q)
+        node = ast.Assignment(rname, q)
         self.consume(SEMICOLON)
 
         return node
@@ -263,10 +158,10 @@ class Parser(object):
         operator = self.token
         self.consume(KEYWORDS.get(operator.value))
         right_node = self._expression()
-        return BinaryOp(left_node, operator, right_node)
+        return ast.BinaryOp(left_node, operator, right_node)
 
     def _variable(self):
-        node = Variable(self.token)
+        node = ast.Variable(self.token)
         self.consume(ID)
         return node
 
@@ -280,7 +175,7 @@ class Parser(object):
         self.consume(LPAREN)
         expression = self._expression()
         self.consume(RPAREN)
-        return ProjectExpr(attributes, expression)
+        return ast.ProjectExpr(attributes, expression)
 
     def _select_expression(self):
         """
@@ -292,7 +187,7 @@ class Parser(object):
         # Bool operation
         bool_op = None
         if self.token.type in (AND, OR):
-            bool_op = BoolOp()
+            bool_op = ast.BoolOp()
             bool_op.conditions.append(condition)
 
             while self.token.type in (AND, OR):
@@ -307,7 +202,7 @@ class Parser(object):
         self.consume(LPAREN)
         expression = self._expression()
         self.consume(RPAREN)
-        return SelectExpr(condition, expression)
+        return ast.SelectExpr(condition, expression)
 
     def _expression(self):
         """
@@ -360,7 +255,7 @@ class Parser(object):
             compared = self._compared()
             comp = self._comp()
             compared2 = self._compared()
-            node = Condition(compared, comp, compared2)
+            node = ast.Condition(compared, comp, compared2)
         else:
             self.consume("CONDITION")
 
@@ -402,7 +297,7 @@ class Parser(object):
         """
 
         if self.token.type == ID:
-            node = Variable(self.token)
+            node = ast.Variable(self.token)
             self.consume(ID)
         else:
             node = self._data()
@@ -419,19 +314,19 @@ class Parser(object):
         """
 
         if self.token.type == INTEGER:
-            node = Number(self.token)
+            node = ast.Number(self.token)
             self.consume(INTEGER)
         elif self.token.type == REAL:
-            node = Number(self.token)
+            node = ast.Number(self.token)
             self.consume(REAL)
         elif self.token.type == DATE:
-            node = Date(self.token)
+            node = ast.Date(self.token)
             self.consume(DATE)
         elif self.token.type == TIME:
-            node = Time(self.token)
+            node = ast.Time(self.token)
             self.consume(TIME)
         elif self.token.type == STRING:
-            node = String(self.token)
+            node = ast.String(self.token)
             self.consume(STRING)
         else:
             self.consume("CONSTANT")
@@ -444,50 +339,20 @@ class Parser(object):
                  | NAME, AttrsList
         """
 
-        node = Variable(self.token)
+        node = ast.Variable(self.token)
         self.consume(ID)
 
         results = [node]
 
         while self.token.type == SEMI:
             self.consume(SEMI)
-            results.append(Variable(self.token))
+            results.append(ast.Variable(self.token))
             self.consume(ID)
 
         return results
 
 
-class NodeVisitor(object):
-    """ Visitor pattern
-
-    A node visitor base class that walks the abstract syntax tree and calls
-    a visitor function for every node found. This function may return a value
-    which is forwarded by the `visit` method.
-
-    This class is meant to be subclassed, with the subclass adding visitor
-    methods.
-
-    Per default the visitor functions for the nodes are `visit_` + class
-    name of the node. So a `BinOp` node visit function would be
-    `visit_BinOp`. This behavior can be changed by overriding the `visit`
-    method. If no visitor function exists for a node the `_generic_visit`
-    visitor is used instead.
-    """
-
-    def visit(self, node):
-        """ Visit a node """
-
-        method_name = 'visit_' + node.__class__.__name__
-        visitor = getattr(self, method_name, self._generic_visit)
-        return visitor(node)
-
-    def _generic_visit(self, node):
-        """ Called if not explicit visitor function exists for a node """
-
-        raise Exception("No visit_{} method".format(node.__class__.__name__))
-
-
-class Interpreter(NodeVisitor):
+class Interpreter(ast.NodeVisitor):
     """ Este objeto es el encargado de 'visitar' los nodos con el
     método Interpreter.to_python(), que convierte a un string que luego
     es evaluado como código Python

@@ -3,7 +3,6 @@ from unittest import mock
 
 from src.core.interpreter import scanner
 from src.core.interpreter import lexer
-from src.core.interpreter import tokens
 from src.core.interpreter import exceptions
 
 
