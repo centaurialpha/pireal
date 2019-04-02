@@ -303,8 +303,6 @@ class Pireal(QMainWindow):
             'copy_action',
             'cut_action',
             'paste_action',
-            'zoom_in',
-            'zoom_out',
             'comment',
             'uncomment',
             'search'

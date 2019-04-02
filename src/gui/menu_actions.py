@@ -69,7 +69,7 @@ MENU['query'] = {
         'slot': None,
     }, {
         'name': tr.TR_MENU_QUERY_EXECUTE,
-        'slot': None
+        'slot': "central:execute_queries"
     })
 }
 # MENU['file'] = {
@@ -127,12 +127,6 @@ MENU['query'] = {
 #     }, {
 #         'name': translate("Pireal", "Descomentar"),
 #         'slot': "central:uncomment"
-#     }, "-", {
-#         'name': translate("Pireal", "Acercar"),
-#         'slot': "central:zoom_in"
-#     }, {
-#         'name': translate("Pireal", "Alejar"),
-#         'slot': "central:zoom_out"
 #     }, "-", {
 #         'name': translate("Pireal", "Buscar..."),
 #         'slot': "central:search"

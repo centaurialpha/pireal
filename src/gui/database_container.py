@@ -279,13 +279,6 @@ class DatabaseContainer(QSplitter):
     def execute_queries(self):
         self.query_container.execute_queries()
 
-    def execute_selection(self):
-        editor = self.query_container.currentWidget().get_editor()
-        text_cursor = editor.textCursor()
-        if text_cursor.hasSelection():
-            query = text_cursor.selectedText()
-            self.query_container.execute_queries(query)
-
     def showEvent(self, event):
         QSplitter.showEvent(self, event)
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)

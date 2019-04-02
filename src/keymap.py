@@ -40,8 +40,6 @@ KEYMAP = {
     'cut_action': QKeySequence(Qt.CTRL + Qt.Key_X),
     'copy_action': QKeySequence(Qt.CTRL + Qt.Key_C),
     'paste_action': QKeySequence(Qt.CTRL + Qt.Key_V),
-    'zoom_in': QKeySequence(Qt.CTRL + Qt.Key_Plus),
-    'zoom_out': QKeySequence(Qt.CTRL + Qt.Key_Minus),
     'comment': QKeySequence(Qt.CTRL + Qt.Key_D),
     'uncomment': QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_D),
     'show_settings': QKeySequence(Qt.CTRL + Qt.Key_P),
@@ -49,6 +47,5 @@ KEYMAP = {
     'create_new_relation': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_N),
     'remove_relation': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_W),
     'load_relation': QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_O),
-    'execute_queries': QKeySequence(Qt.CTRL + Qt.Key_R),
-    'execute_selection': QKeySequence(Qt.CTRL + Qt.Key_F6)
+    'execute_queries': QKeySequence(Qt.CTRL + Qt.Key_R)
 }

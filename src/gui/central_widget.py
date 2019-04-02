@@ -361,10 +361,6 @@ class CentralWidget(QWidget):
         # Enable editor actions
         # FIXME: refactoring
         pireal.set_enabled_query_actions(True)
-        # zoom_in_action = Pireal.get_action("zoom_in")
-        # zoom_in_action.setEnabled(True)
-        # zoom_out_action = Pireal.get_action("zoom_out")
-        # zoom_out_action.setEnabled(True)
         # paste_action = Pireal.get_action("paste_action")
         # paste_action.setEnabled(True)
         # comment_action = Pireal.get_action("comment")
@@ -377,10 +373,6 @@ class CentralWidget(QWidget):
     def execute_queries(self):
         db_container = self.get_active_db()
         db_container.execute_queries()
-
-    def execute_selection(self):
-        db_container = self.get_active_db()
-        db_container.execute_selection()
 
     def save_database(self):
 
@@ -536,14 +528,6 @@ class CentralWidget(QWidget):
     def paste_action(self):
         query_container = self.get_active_db().query_container
         query_container.paste()
-
-    def zoom_in(self):
-        query_container = self.get_active_db().query_container
-        query_container.zoom_in()
-
-    def zoom_out(self):
-        query_container = self.get_active_db().query_container
-        query_container.zoom_out()
 
     def comment(self):
         query_container = self.get_active_db().query_container

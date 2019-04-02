@@ -260,16 +260,6 @@ class QueryContainer(QWidget):
         if weditor.hasFocus():
             weditor.paste()
 
-    def zoom_in(self):
-        weditor = self.currentWidget().get_editor()
-        if weditor.hasFocus():
-            weditor.zoom_in()
-
-    def zoom_out(self):
-        weditor = self.currentWidget().get_editor()
-        if weditor.hasFocus():
-            weditor.zoom_out()
-
     def comment(self):
         weditor = self.currentWidget().get_editor()
         if weditor.hasFocus():
@@ -436,14 +426,14 @@ class EditorWidget(QWidget):
             self.__show_context_menu)
         self._editor.modificationChanged[bool].connect(
             lambda modified: self.editorModified.emit(modified))
-        self._editor.undoAvailable[bool].connect(
-            self.__on_undo_available)
-        self._editor.redoAvailable[bool].connect(
-            self.__on_redo_available)
-        self._editor.copyAvailable[bool].connect(
-            self.__on_copy_available)
-        self._editor.cursorPositionChanged.connect(
-            self._update_column_label)
+        # self._editor.undoAvailable[bool].connect(
+        #     self.__on_undo_available)
+        # self._editor.redoAvailable[bool].connect(
+        #     self.__on_redo_available)
+        # self._editor.copyAvailable[bool].connect(
+        #     self.__on_copy_available)
+        # self._editor.cursorPositionChanged.connect(
+        #     self._update_column_label)
 
     def show_search_widget(self):
         self._search_widget.show()

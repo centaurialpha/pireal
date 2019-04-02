@@ -17,18 +17,18 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import (
-    QPlainTextEdit,
-    QTextEdit,
-)
-from PyQt5.QtGui import (
-    QTextCharFormat,
-    QTextCursor,
-    QFont,
-    QColor,
-    QTextOption,
-    QTextDocument
-)
+from PyQt5.QtWidgets import QPlainTextEdit
+from PyQt5.QtWidgets import QTextEdit
+from PyQt5.QtWidgets import QShortcut
+
+from PyQt5.QtGui import QTextCharFormat
+from PyQt5.QtGui import QTextCursor
+from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QKeySequence
+# from PyQt5.QtGui import QTextOption
+from PyQt5.QtGui import QTextDocument
+
 from PyQt5.QtCore import Qt, QTimer
 
 from src.gui.query_container import (
@@ -79,6 +79,18 @@ class Editor(QPlainTextEdit):
         # Connection
         self.cursorPositionChanged.connect(self.__cursor_position_changed)
 
+        short_zoom_in = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Plus), self)
+        short_zoom_in.activated.connect(lambda: self.zoom('in'))
+        short_zoom_out = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Minus), self)
+        short_zoom_out.activated.connect(lambda: self.zoom('out'))
+
+    def zoom(self, mode):
+        if mode == 'out':
+            self.zoomOut(1)
+        else:
+            self.zoomIn(1)
+        self._sidebar.update_viewport()
+
     @property
     def visible_blocks(self):
         return self.__visible_blocks
@@ -125,16 +137,6 @@ class Editor(QPlainTextEdit):
         super(Editor, self).resizeEvent(event)
         self._sidebar.redimensionar()
         self._sidebar.update_viewport()
-
-    def keyPressEvent(self, event):
-        # key = event.key()
-        # if key == Qt.Key_Tab:
-        #     if self.snippets._current_snippet is not None:
-        #         self.snippets.select_next()
-        #     else:
-        #         self.snippets.insert_snippet()
-        # else:
-        super().keyPressEvent(event)
 
     def paintEvent(self, event):
         self._update_visible_blocks()
@@ -299,24 +301,10 @@ class Editor(QPlainTextEdit):
             block = block.previous()
             start = None
 
-    def zoom_in(self):
-        font = self.font()
-        point_size = font.pointSize()
-        point_size += 1
-        font.setPointSize(point_size)
-        self.setFont(font)
-
     def setFont(self, font):
         super().setFont(font)
         self._sidebar.update_viewport()
         self._sidebar.redimensionar()
-
-    def zoom_out(self):
-        font = self.font()
-        point_size = font.pointSize()
-        point_size -= 1
-        font.setPointSize(point_size)
-        self.setFont(font)
 
     def show_run_cursor(self):
         """Highlight momentarily a piece of code. Tomado de Ninja-IDE"""
