@@ -76,13 +76,14 @@ SUPPORTED_FILES = ("Pireal Database File (*.pdb);;"
                    "Pireal Relation File (*.prf)")
 
 # FIXME: si agrego algo y el archivo existe BOOOM!
+
 DEFAULT_SETTINGS = {
     "language": "English",
     "highlightCurrentLine": True,
     "matchParenthesis": True,
     "recentFiles": [],
     "lastOpenFolder": None,
-    "fontFamily": None,
+    "fontFamily": 'monospace',
     "fontSize": 14,
     "alternatingRowColors": True
 }
@@ -117,6 +118,7 @@ class Config(QObject):
     def set_value(self, option, value):
         self._settings[option] = value
 
+    @staticmethod
     def _get_font(self):
         font = QFont("consolas", 11)
         if LINUX:

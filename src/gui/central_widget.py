@@ -49,11 +49,10 @@ from src.gui import (
     start_page,
     database_container
 )
-from src.gui.dialogs import (
-    # preferences,
-    new_relation_dialog,
-    new_database_dialog
-)
+from src.gui.dialogs import preferences
+from src.gui.dialogs import new_relation_dialog
+from src.gui.dialogs import new_database_dialog
+
 from src.core.settings import CONFIG
 # Logger
 logger = logging.getLogger(__name__)
@@ -477,7 +476,9 @@ class CentralWidget(QWidget):
         # # Connect the closed signal
         # preferences_dialog.settingsClosed.connect(self._settings_closed)
         # TODO: para la próxima versión
-        pass
+        logger.debug('Showing preferences...')
+        widget = preferences.Preferences(self)
+        widget.show()
 
     def widget(self, index):
         """ Returns the widget at the given index """

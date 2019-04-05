@@ -166,6 +166,13 @@ MENU['relation'] = {
     #     'slot': "central:execute_queries"}]}
 
 
+MENU['tools'] = {
+    'name': tr.TR_MENU_TOOLS,
+    'items': [{
+        'name': tr.TR_MENU_TOOLS_PREFERENCES,
+        'slot': "central:show_settings",
+    }]
+}
 
 # # Menu Help
 MENU['help'] = {

@@ -26,6 +26,7 @@ TR_MENU_DB = tr('Pireal', '&Database')
 TR_MENU_QUERY = tr('Preail', '&Query')
 # TR_MENU_EDIT = tr('Pireal', '&Edit')
 TR_MENU_RELATION = tr('Pireal', '&Relation')
+TR_MENU_TOOLS = tr('Pireal', '&Tools')
 TR_MENU_HELP = tr('Pireal', '&Help')
 # Menu Database
 TR_MENU_FILE_NEW_DB = tr('Pireal', 'New...')
@@ -43,6 +44,8 @@ TR_MENU_QUERY_EXECUTE = tr('Pireal', 'Execute')
 TR_MENU_RELATION_NEW = tr('Pireal', 'New...')
 TR_MENU_RELATION_DELETE = tr('Pireal', 'Delete')
 TR_MENU_RELATION_LOAD = tr('Pireal', 'Load')
+# Menu Tools
+TR_MENU_TOOLS_PREFERENCES = tr('Pireal', 'Preferences')
 # Menu Help
 TR_MENU_HELP_HELP = tr('Pireal', 'Help')
 TR_MENU_HELP_REPORT_ISSUE = tr('Pireal', 'Report Issue')

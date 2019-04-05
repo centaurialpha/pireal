@@ -56,6 +56,8 @@ class Editor(QPlainTextEdit):
         self.modified = False
         # Highlight current line
         self._highlight_line = CONFIG.get("highlightCurrentLine")
+        # Highlight braces
+        self._match_parenthesis = CONFIG.get("matchParenthesis")
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
@@ -90,6 +92,16 @@ class Editor(QPlainTextEdit):
         else:
             self.zoomIn(1)
         self._sidebar.update_viewport()
+
+    def set_highlight_line(self, value: bool):
+        if self._highlight_line != value:
+            self._highlight_line = value
+            self.clear_selections('current_line')
+
+    def set_match_parenthesis(self, value: bool):
+        if self._match_parenthesis != value:
+            self._match_parenthesis = value
+            self.clear_selections('parenthesis')
 
     @property
     def visible_blocks(self):
@@ -187,7 +199,7 @@ class Editor(QPlainTextEdit):
             self.add_selection("current_line", [_selection])
 
         # Paren matching
-        if CONFIG.get("matchParenthesis"):
+        if self._match_parenthesis:
             self.clear_selections("parenthesis")
             extras = self.__check_brackets()
             if extras is not None:
