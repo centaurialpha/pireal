@@ -77,6 +77,11 @@ def test_date_node(fixture_parser, date):
         assert isinstance(c.query.condition.op2, ast.Date)
 
 
+def test_date_failure():
+    with pytest.raises(ast.DateFormatError):
+        ast.parse_date('01/20/1991')
+
+
 def test_time_node(fixture_parser):
     p = fixture_parser('q1 := select hour=\'20:15\' (p);')
     tree = p.parse()

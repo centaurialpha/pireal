@@ -1,6 +1,25 @@
 import datetime
 
 
+class ParserError(Exception):
+    pass
+
+
+class DateFormatError(ParserError):
+    pass
+
+
+def parse_date(date: str):
+    try:
+        date = datetime.datetime.strptime(date, "%d/%m/%Y").date()
+    except ValueError:
+        try:
+            date = datetime.datetime.strptime(date, "%Y/%m/%d").date()
+        except ValueError:
+            raise DateFormatError
+    return date
+
+
 class AST(object):
     """ Base class for all nodes """
     pass
@@ -30,11 +49,8 @@ class String(AST):
 class Date(AST):
 
     def __init__(self, token):
-        try:
-            date = datetime.datetime.strptime(token.value, "%d/%m/%Y").date()
-        except ValueError:
-            date = datetime.datetime.strptime(token.value, "%Y/%m/%d").date()
-        self.date = date
+
+        self.date = parse_date(token.value)
 
 
 class Time(AST):
