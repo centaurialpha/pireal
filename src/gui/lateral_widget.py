@@ -29,15 +29,15 @@ from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtQuickWidgets import QQuickWidget
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtCore import QObject
+# from PyQt5.QtCore import QObject
 from PyQt5.QtCore import QAbstractListModel
-from PyQt5.QtCore import pyqtProperty
+# from PyQt5.QtCore import pyqtProperty
 from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtCore import QUrl
 
+from src import translations as tr
 from src.gui.main_window import Pireal
 from src.core import settings
-
 
 
 class RelationModel(QAbstractListModel):
@@ -92,11 +92,11 @@ class LateralWidget(QSplitter):
         self.setOrientation(Qt.Vertical)
         # Lista de relaciones de la base de datos
         self._relations_list = RelationListQML()
-        self._relations_list.set_title(self.tr("Relations"))
+        self._relations_list.set_title(tr.TR_RELATIONS)
         self.addWidget(self._relations_list)
         # Lista de relaciones del resultado de consultas
         self._results_list = RelationListQML()
-        self._results_list.set_title(self.tr("Results"))
+        self._results_list.set_title(tr.TR_TABLE_RESULTS)
         self.addWidget(self._results_list)
 
         Pireal.load_service("lateral_widget", self)

@@ -268,7 +268,7 @@ class Pireal(QMainWindow):
             'close_database',
             'save_database',
             'save_database_as',
-            'load_relation'
+            # 'load_relation'
         ]
         self.set_enabled_actions(actions, value)
 

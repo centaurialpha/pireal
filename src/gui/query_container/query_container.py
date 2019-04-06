@@ -37,6 +37,8 @@ from PyQt5.QtCore import QSettings
 from PyQt5.QtCore import QSize
 
 from PyQt5.QtCore import pyqtSignal as Signal
+
+from src import translations as tr
 from src.core.interpreter import parser
 from src.core.interpreter.exceptions import (
     InvalidSyntaxError,
@@ -178,19 +180,17 @@ class QueryContainer(QWidget):
         try:
             result = parser.parse(query)
         except MissingQuoteError as reason:
-            title = self.tr("Error de Sintáxis")
+            title = tr.TR_SYNTAX_ERROR
             text = self.parse_error(str(reason))
         except InvalidSyntaxError as reason:
-            title = self.tr("Error de Sintáxis")
+            title = tr.TR_SYNTAX_ERROR
             text = self.parse_error(str(reason) + "\n" + self.tr(
                 "El error comienza con " + reason.character))
         except DuplicateRelationNameError as reason:
-            title = self.tr("Nombre duplicado")
-            text = self.tr("Ya existe una relación con el nombre <b>{}</b> :(."
-                           "<br><br>Elige otro por favor ;).".format(
-                               reason.rname))
+            title = tr.TR_NAME_DUPLICATED
+            text = tr.TR_RELATION_NAME_ALREADY_EXISTS.format(reason.rname)
         except ConsumeError as reason:
-            title = self.tr("Error de Sintáxis")
+            title = tr.TR_SYNTAX_ERROR
             text = self.parse_error(str(reason))
         else:
             error = False
@@ -204,7 +204,7 @@ class QueryContainer(QWidget):
             except Exception as reason:
                 QMessageBox.critical(
                     self,
-                    self.tr("Error de Consulta"),
+                    tr.TR_QUERY_ERROR,
                     self.parse_error(str(reason))
                 )
                 return
@@ -318,7 +318,7 @@ class QueryWidget(QWidget):
         table = table_widget.create_table(rela, editable=False)
         box.addWidget(table)
         hbox = QHBoxLayout()
-        btn = QPushButton(self.tr("Ok"))
+        btn = QPushButton(tr.TR_MSG_OK)
         btn.clicked.connect(dialog.close)
         hbox.addStretch()
         hbox.addWidget(btn)
@@ -454,7 +454,7 @@ class EditorWidget(QWidget):
     def __show_context_menu(self, point):
         popup_menu = self._editor.createStandardContextMenu()
 
-        undock_editor = QAction(self.tr("Undock"), self)
+        undock_editor = QAction(tr.TR_UNDOCK, self)
         popup_menu.insertAction(popup_menu.actions()[0],
                                 undock_editor)
         popup_menu.insertSeparator(popup_menu.actions()[1])
