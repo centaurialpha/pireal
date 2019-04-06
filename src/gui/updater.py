@@ -26,7 +26,7 @@ from PyQt5.QtCore import (
     pyqtSignal
 )
 
-from src import gui
+import src
 
 
 URL = "http://centaurialpha.github.io/pireal/version"
@@ -43,7 +43,7 @@ class Updater(QObject):
     def check_updates(self):
         try:
             web_version = urlopen(URL).read().decode('utf8').strip()
-            if LooseVersion(gui.__version__) < LooseVersion(web_version):
+            if LooseVersion(src.__version__) < LooseVersion(web_version):
                 self.version = web_version
         except URLError as reason:
             self.error = True

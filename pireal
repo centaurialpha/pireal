@@ -34,6 +34,8 @@ from PyQt5.QtCore import QTranslator
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QT_VERSION_STR
 
+import src
+
 from src.core import logger
 from src.core import cliparser
 
@@ -93,7 +95,7 @@ if __name__ == "__main__":
     args = cliparser.get_cli().parse_args()
     logger.set_up(args.verbose)
     if args.version:
-        print("3.0")
+        print(src.__version__)
         sys.exit()
     # Create dirs used by Pireal
     create_dirs()

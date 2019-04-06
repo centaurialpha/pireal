@@ -17,15 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import (
-    QTableView,
-    QHeaderView,
-    QLineEdit,
-    QAbstractItemView,
-    QMessageBox
-)
+from PyQt5.QtWidgets import QTableView
+from PyQt5.QtWidgets import QHeaderView
+from PyQt5.QtWidgets import QLineEdit
+from PyQt5.QtWidgets import QAbstractItemView
+from PyQt5.QtWidgets import QMessageBox
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QModelIndex
+
+from src import translations as tr
 
 from src.core.settings import CONFIG
 
@@ -96,8 +97,7 @@ class Header(QHeaderView):
         text = self.line.text()
         if not text.strip():
             # No debe ser vacío
-            QMessageBox.critical(self, "Error",
-                                 self.tr("El campo no debe ser vacío"))
+            QMessageBox.critical(self, tr.TR_MSG_ERROR, tr.TR_HEADER_NOT_EMPTY)
             self.line.hide()
             return
         self.line.blockSignals(True)

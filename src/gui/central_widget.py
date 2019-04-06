@@ -38,6 +38,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSignal as Signal
 
 
+from src import translations as tr
 from src.core import (
     settings,
     file_manager,
@@ -151,9 +152,7 @@ class CentralWidget(QWidget):
 
     def __say_about_one_db_at_time(self):
         logger.warning("Oops! One database at a time please")
-        QMessageBox.information(self,
-                                self.tr("Information"),
-                                self.tr("Oops! One database at a time please"))
+        QMessageBox.information(self, tr.TR_MSG_INFORMATION, tr.TR_MSG_ONE_DB_AT_TIME)
 
     def open_database(self, filename='', remember=True):
         """ This function opens a database and set this on the UI """
@@ -170,7 +169,7 @@ class CentralWidget(QWidget):
                 directory = self.__last_open_folder
             filter_ = settings.SUPPORTED_FILES.split(';;')[0]
             filename, _ = QFileDialog.getOpenFileName(
-                self, self.tr("Open Database"), directory, filter_)
+                self, tr.TR_OPEN_DATABASE, directory, filter_)
             # If is canceled, return
             if not filename:
                 logger.debug('File not selected, bye!')
@@ -188,7 +187,7 @@ class CentralWidget(QWidget):
         except Exception as reason:
             logger.exception('The database file could not be opened: %s', filename)
             QMessageBox.information(
-                self, self.tr('The database file could not be opened'), str(reason))
+                self, tr.TR_MSG_DB_NOT_OPENED, str(reason))
             return
 
         # Create a database container widget
@@ -198,7 +197,7 @@ class CentralWidget(QWidget):
             db_container.create_database(db_data)
         except Exception as reason:
             logger.exception('Error creating the database')
-            QMessageBox.information(self, self.tr("Error"), str(reason))
+            QMessageBox.information(self, tr.TR_MSG_ERROR, str(reason))
             return
 
         # Set the PFile object to the new database
@@ -209,7 +208,7 @@ class CentralWidget(QWidget):
         db_name = file_manager.get_basename(filename)
         # Update title with the new database name, and enable some actions
         pireal = Pireal.get_service("pireal")
-        self.databaseConected.emit(self.tr("Connected to: {}".format(db_name)))
+        self.databaseConected.emit(tr.TR_NOTIFICATION_DB_CONNECTED.format(db_name))
         pireal.set_enabled_db_actions(True)
         pireal.set_enabled_relation_actions(True)
         if remember:
@@ -227,8 +226,7 @@ class CentralWidget(QWidget):
                 directory = self.__last_open_folder
             filter_ = settings.SUPPORTED_FILES.split(';;')[1]
             filename, _ = QFileDialog.getOpenFileName(self,
-                                                      self.tr(
-                                                          "Abrir Consulta"),
+                                                      tr.TR_OPEN_QUERY,
                                                       directory,
                                                       filter_)
             if not filename:
@@ -298,16 +296,11 @@ class CentralWidget(QWidget):
         if db.modified:
             msgbox = QMessageBox(self)
             msgbox.setIcon(QMessageBox.Question)
-            msgbox.setWindowTitle(self.tr("Guardar cambios?"))
-            msgbox.setText(self.tr("La base de datos <b>{}</b> ha sido "
-                                    "modificada.<br>Quiere guardar los "
-                                    "cambios?".format(db.dbname())))
-            cancel_btn = msgbox.addButton(self.tr("Cancelar"),
-                                          QMessageBox.RejectRole)
-            msgbox.addButton(self.tr("No"),
-                             QMessageBox.NoRole)
-            yes_btn = msgbox.addButton(self.tr("Si"),
-                                       QMessageBox.YesRole)
+            msgbox.setWindowTitle(tr.TR_MSG_SAVE_CHANGES)
+            msgbox.setText(tr.TR_MSG_SAVE_CHANGES_BODY)
+            cancel_btn = msgbox.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
+            msgbox.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
+            yes_btn = msgbox.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
             msgbox.exec_()
             r = msgbox.clickedButton()
             if r == cancel_btn:
@@ -324,17 +317,11 @@ class CentralWidget(QWidget):
                 if weditor.modified:
                     msgbox = QMessageBox(self)
                     msgbox.setIcon(QMessageBox.Question)
-                    msgbox.setWindowTitle(self.tr("Archivo modificado"))
-                    msgbox.setText(self.tr("El archivo <b>{}</b> tiene cambios"
-                                           " no guardados. Quiere "
-                                           "mantenerlos?".format(
-                                               weditor.name)))
-                    cancel_btn = msgbox.addButton(self.tr("Cancelar"),
-                                                  QMessageBox.RejectRole)
-                    msgbox.addButton(self.tr("No"),
-                                     QMessageBox.NoRole)
-                    yes_btn = msgbox.addButton(self.tr("Si"),
-                                               QMessageBox.YesRole)
+                    msgbox.setWindowTitle(tr.TR_MSG_FILE_MODIFIED)
+                    msgbox.setText(tr.TR_MSG_FILE_MODIFIED_BODY.format(weditor.name))
+                    cancel_btn = msgbox.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
+                    msgbox.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
+                    yes_btn = msgbox.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
                     msgbox.exec_()
                     r = msgbox.clickedButton()
                     if r == cancel_btn:
@@ -386,16 +373,13 @@ class CentralWidget(QWidget):
         db.pfile.save(data=content)
         filename = db.pfile.filename
         # Emit signal
-        self.databaseSaved.emit(
-            self.tr("Base de datos guardada: {}".format(filename)))
+        self.databaseSaved.emit(tr.TR_NOTIFICATION_DB_SAVED.format(filename))
 
         db.modified = False
 
     def save_database_as(self):
         filter = settings.SUPPORTED_FILES.split(';;')[0]
-        filename, _ = QFileDialog.getSaveFileName(self,
-                                                  self.tr("Guardar Base de "
-                                                          "Datos como..."),
+        filename, _ = QFileDialog.getSaveFileName(tr.TR_MSG_SAVE_DB_AS,
                                                   settings.PIREAL_DATABASES,
                                                   filter)
         if not filename:
@@ -409,8 +393,7 @@ class CentralWidget(QWidget):
         if not os.path.splitext(filename)[1]:
             filename += '.pdb'
         db.pfile.save(content, filename)
-        self.databaseSaved.emit(
-            self.tr("Base de datos guardada: {}".format(db.pfile.filename)))
+        self.databaseSaved.emit(tr.TR_NOTIFICATION_DB_SAVEDformat(db.pfile.filename))
 
         db.modified = False
 
@@ -433,28 +416,28 @@ class CentralWidget(QWidget):
         dialog.created.connect(create_relation)
         dialog.show()
 
-    def load_relation(self, filename=''):
-        """ Load Relation file """
+    # def load_relation(self, filename=''):
+    #     """ Load Relation file """
 
-        if not filename:
-            if self.__last_open_folder is None:
-                directory = os.path.expanduser("~")
-            else:
-                directory = self.__last_open_folder
+    #     if not filename:
+    #         if self.__last_open_folder is None:
+    #             directory = os.path.expanduser("~")
+    #         else:
+    #             directory = self.__last_open_folder
 
-            msg = self.tr("Abrir Relación")
-            filter_ = settings.SUPPORTED_FILES.split(';;')[-1]
-            filenames = QFileDialog.getOpenFileNames(self, msg, directory,
-                                                     filter_)[0]
+    #         msg = self.tr("Abrir Relación")
+    #         filter_ = settings.SUPPORTED_FILES.split(';;')[-1]
+    #         filenames = QFileDialog.getOpenFileNames(self, msg, directory,
+    #                                                  filter_)[0]
 
-            if not filenames:
-                return
+    #         if not filenames:
+    #             return
 
-        # Save folder
-        self.__last_open_folder = file_manager.get_path(filenames[0])
-        db_container = self.get_active_db()
-        if db_container.load_relation(filenames):
-            db_container.modified = True
+    #     # Save folder
+    #     self.__last_open_folder = file_manager.get_path(filenames[0])
+    #     db_container = self.get_active_db()
+    #     if db_container.load_relation(filenames):
+    #         db_container.modified = True
 
     def add_start_page(self):
         """ This function adds the Start Page to the stacked widget """
@@ -560,8 +543,8 @@ class CentralWidget(QWidget):
             return
         r = QMessageBox.question(
                 self,
-                self.tr("Eliminar tupla/s"),
-                self.tr("Seguro que quiere eliminar las tuplas seleccionadas?"),
+                tr.TR_MSG_REMOVE_TUPLES,
+                tr.TR_MSG_REMOVE_TUPLES_BODY,
                 QMessageBox.Yes | QMessageBox.Cancel)
         if r == QMessageBox.Cancel:
             return

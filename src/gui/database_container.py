@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import csv
+# import csv
 import logging
 
 from PyQt5.QtWidgets import QSplitter
@@ -31,21 +31,20 @@ from PyQt5.QtCore import pyqtSlot as Slot
 from PyQt5.QtGui import QPalette
 from PyQt5.QtGui import QColor
 
-from src.gui import (
-    table_widget,
-    lateral_widget,
-    view,
-    model,
-    delegate
-)
+from src import translations as tr
+
+from src.gui import table_widget
+from src.gui import lateral_widget
+from src.gui import view
+from src.gui import model
+from src.gui import delegate
 
 from src.gui.query_container import query_container
-from src.core import (
-    relation,
-    pfile,
-    file_manager,
-    settings
-)
+from src.core import relation
+from src.core import pfile
+# from src.core import file_manager
+from src.core import settings
+
 # from src.core.logger import Logger
 
 # logger = Logger(__name__)
@@ -158,27 +157,27 @@ class DatabaseContainer(QSplitter):
         # self.lateral_widget.update_item(value)
         self.lateral_widget.relation_list.update_cardinality(value)
 
-    def load_relation(self, filenames):
-        for filename in filenames:
-            with open(filename) as f:
-                csv_reader = csv.reader(f)
-                header = next(csv_reader)
-                rel = relation.Relation()
-                rel.header = header
-                for i in csv_reader:
-                    rel.insert(i)
-                relation_name = file_manager.get_basename(filename)
-                if not self.table_widget.add_relation(relation_name, rel):
-                    QMessageBox.information(self, self.tr("Información"),
-                                            self.tr("Ya existe una relación "
-                                                    "con el nombre  "
-                                                    "'{}'".format(
-                                                        relation_name)))
-                    return False
+    # def load_relation(self, filenames):
+    #     for filename in filenames:
+    #         with open(filename) as f:
+    #             csv_reader = csv.reader(f)
+    #             header = next(csv_reader)
+    #             rel = relation.Relation()
+    #             rel.header = header
+    #             for i in csv_reader:
+    #                 rel.insert(i)
+    #             relation_name = file_manager.get_basename(filename)
+    #             if not self.table_widget.add_relation(relation_name, rel):
+    #                 QMessageBox.information(self, self.tr("Información"),
+    #                                         self.tr("Ya existe una relación "
+    #                                                 "con el nombre  "
+    #                                                 "'{}'".format(
+    #                                                     relation_name)))
+    #                 return False
 
-            self.table_widget.add_table(rel, relation_name)
-            # self.lateral_widget.add_item(relation_name, rel.cardinality())
-            return True
+    #         self.table_widget.add_table(rel, relation_name)
+    #         # self.lateral_widget.add_item(relation_name, rel.cardinality())
+    #         return True
 
     def delete_relation(self):
         name = self.lateral_widget.relation_list.current_text()
@@ -187,13 +186,11 @@ class DatabaseContainer(QSplitter):
             return
         msgbox = QMessageBox(self)
         msgbox.setIcon(QMessageBox.Question)
-        msgbox.setWindowTitle(self.tr("Confirmación"))
-        msgbox.setText(
-            self.tr("Está seguro de eliminar la relación <b>{}</b>?".format(
-                name)))
-        msgbox.addButton(self.tr("No!"), QMessageBox.NoRole)
+        msgbox.setWindowTitle(tr.TR_MSG_CONFIRMATION)
+        msgbox.setText(tr.TR_MSG_REMOVE_RELATION.format(name))
+        msgbox.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
 
-        si = msgbox.addButton(self.tr("Si, estoy seguro"), QMessageBox.YesRole)
+        si = msgbox.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
         palette = QPalette()
         palette.setColor(QPalette.Button, QColor("#cc575d"))
         palette.setColor(QPalette.ButtonText, QColor("white"))
@@ -254,17 +251,16 @@ class DatabaseContainer(QSplitter):
         content = editor.toPlainText()
         try:
             editor.pfile.save(data=content)
-        except Exception as reason:
-            QMessageBox.critical(self, "Error",
-                                 self.tr("El archivo no se puede abrir!"
-                                         "\n\n{}".format(reason)))
+        except Exception:
+            logger.exception('The file could not be opened')
+            QMessageBox.critical(self, tr.TR_MSG_ERROR, tr.TR_MSG_FILE_NOT_OPENED)
             return False
         editor.saved()
         return editor.pfile.filename
 
     def save_query_as(self, editor=None):
         filename = QFileDialog.getSaveFileName(self,
-                                               self.tr("Guardar Archivo"),
+                                               tr.TR_MSG_SAVE_QUERY_FILE,
                                                editor.name,
                                                "Pireal query files(*.pqf)")
         filename = filename[0]

@@ -19,25 +19,27 @@
 
 from datetime import datetime
 
-from PyQt5.QtWidgets import (
-    QDialog,
-    QVBoxLayout,
-    QLabel,
-    QHBoxLayout,
-    QSpacerItem,
-    QSizePolicy,
-    QPushButton
-)
+from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QSpacerItem
+from PyQt5.QtWidgets import QSizePolicy
+from PyQt5.QtWidgets import QPushButton
+
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
-from src import gui
+
+import src
+from src import translations as tr
+
 
 
 class AboutDialog(QDialog):
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
-        self.setWindowTitle(self.tr("Acerca de Pireal"))
+        self.setWindowTitle(tr.TR_DIALOG_ABOUT_PIREAL_TITLE)
         vbox = QVBoxLayout(self)
         # Banner
         banner = QLabel()
@@ -46,7 +48,7 @@ class AboutDialog(QDialog):
         vbox.addWidget(banner)
 
         # Version
-        lbl_version = QLabel("{0}".format(gui.__version__))
+        lbl_version = QLabel("{0}".format(src.__version__))
         lbl_version.setAlignment(Qt.AlignHCenter)
         font = lbl_version.font()
         font.setPointSize(10)
@@ -80,16 +82,8 @@ class AboutDialog(QDialog):
         vbox.addWidget(copy)
 
         # License and source
-        lbl_license_source = QLabel(self.tr("<br>Este software tiene licencia "
-                                            "<a href='{0}'><span style"
-                                            "='color: #3465a4'>GNU GPL</span>"
-                                            "</a> versión 3,<br>el código "
-                                            "fuente "
-                                            "está disponible en <a href='{1}'>"
-                                            "<span style='color: #3465a4'>"
-                                            "GitHub.</span></a>".format(
-                                                gui.__license__,
-                                                gui.__source_code__)))
+        lbl_license_source = QLabel(
+            tr.TR_DIALOG_ABOUT_PIREAL_COPY.format(src.__license__, src.__source_code__))
         lbl_license_source.setAlignment(Qt.AlignHCenter)
         lbl_license_source.setOpenExternalLinks(True)
         font = lbl_license_source.font()
@@ -100,7 +94,7 @@ class AboutDialog(QDialog):
         # Buttons
         hbox = QHBoxLayout()
         hbox.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
-        btn_ok = QPushButton(self.tr("Aceptar"))
+        btn_ok = QPushButton(tr.TR_MSG_OK)
         hbox.addWidget(btn_ok)
         vbox.addLayout(hbox)
 

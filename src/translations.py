@@ -51,3 +51,74 @@ TR_MENU_HELP_HELP = tr('Pireal', 'Help')
 TR_MENU_HELP_REPORT_ISSUE = tr('Pireal', 'Report Issue')
 TR_MENU_HELP_ABOUT = tr('Pireal', 'About Pireal')
 TR_MENU_HELP_ABOUT_QT = tr('Pireal', 'About Qt')
+
+TR_MSG_INFORMATION = tr('Pireal', 'Information')
+TR_MSG_ONE_DB_AT_TIME = tr('Pireal', 'Oops! One database at a time please')
+
+TR_OPEN_DATABASE = tr('Pireal', 'Open Database')
+TR_MSG_DB_NOT_OPENED = tr('Pireal', 'The database file could not be opened')
+
+TR_MSG_ERROR = tr('Pireal', 'Error')
+TR_MSG_CANCEL = tr('Pireal', 'Cancel')
+TR_MSG_NO = tr('Pireal', 'No')
+TR_MSG_YES = tr('Pireal', 'Yes')
+TR_MSG_CONFIRMATION = tr('Pireal', 'Confirmation')
+TR_MSG_OK = tr('Pireal', 'Ok')
+
+TR_OPEN_QUERY = tr('Pireal', 'Open Query')
+
+TR_MSG_SAVE_CHANGES = tr('Pireal', 'Save changes?')
+TR_MSG_SAVE_CHANGES_BODY = tr(
+    'Pireal',
+    'The database has been modified. Do you want to save the changes?')
+
+TR_MSG_FILE_MODIFIED = tr('Pireal', 'File modified')
+TR_MSG_FILE_MODIFIED_BODY = tr(
+    'Pireal',
+    'The file <b>{}</b> has unsaved changes. Do you want to keep them?')
+
+TR_NOTIFICATION_DB_SAVED = tr('Pireal', 'The database has been saved: {}')
+TR_NOTIFICATION_DB_CONNECTED = tr('Pireal', 'Connected to: {}')
+
+TR_MSG_SAVE_DB_AS = tr('Pireal', 'Save Database As...')
+
+TR_MSG_REMOVE_TUPLES = tr('Pireal', 'Delete tuple/s?')
+TR_MSG_REMOVE_TUPLES_BODY = tr('Pireal', 'Are you sure you want to delete the selected tuples?')
+
+TR_MSG_REMOVE_RELATION = tr('Pireal', 'Are you sure you want to delete the relation <b>{}</b>?')
+
+TR_MSG_FILE_NOT_OPENED = tr('Pireal', 'The file could not be opened')
+
+TR_MSG_SAVE_QUERY_FILE = tr('Pieal', 'Save Query File')
+
+# DIALOGS
+TR_DIALOG_ABOUT_PIREAL_TITLE = tr('Pireal', 'About Pireal')
+TR_DIALOG_ABOUT_PIREAL_BODY = tr('Pireal', 'Relational Algebra Query Evaluator')
+TR_DIALOG_ABOUT_PIREAL_COPY = tr(
+    'Pireal',
+    "<br>This Software is distributed under <a href='{}'><span style='color: #3465a4'>"
+    "GNU GPL</span></a> 3.<br> The source code is available in"
+    " <a href='{}'><span style='color: #3465a4'>GitHub.</span></a>"
+)
+
+TR_HEADER_NOT_EMPTY = tr('Pireal', 'The field must not be empty')
+
+# Table Widget
+TR_TABLE_WORKSPACE = tr('Pireal', 'Workspace')
+TR_TABLE_RESULTS = tr('Pireal', 'Results')
+TR_TABLE_CLICK_TO_SPLIT = tr('Pireal', 'Click to split window')
+TR_TABLE_CLICK_TO_JOIN = tr('Pireal', 'Click to join window')
+TR_TABLE_ADD_TUPLE = tr('Pireal', 'Add Tuple')
+TR_TABLE_ADD_COL = tr('Pireal', 'Add Column')
+TR_TABLE_CREATE_RELATION = tr('Pireal', 'Create new Relation')
+
+# Query Container
+TR_UNDOCK = tr('Pireal', 'Undock')
+TR_SYNTAX_ERROR = tr('Pireal', 'Syntax Error')
+TR_NAME_DUPLICATED = tr('Pireal', 'Name Duplicated')
+TR_RELATION_NAME_ALREADY_EXISTS = tr(
+    'Pireal',
+    'There is already a relationship with name <b>{}</b> :(<br><br>Please choose another.')
+TR_QUERY_ERROR = tr('Pireal', 'Query Error')
+
+TR_RELATIONS = tr('Pireal', 'Relations')

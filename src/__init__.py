@@ -17,4 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-# This necesary for sphinx
+"""
+Metadata
+"""
+
+__author__ = "Gabriel Acosta"
+__email__ = "acostadariogabriel at gmail"
+__version__ = "3.1"
+__source_code__ = "https://github.com/centaurialpha/pireal"
+__license__ = "http://www.gnu.org/licenses/gpl-3.0"
