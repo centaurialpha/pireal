@@ -394,7 +394,7 @@ class Pireal(QMainWindow):
                 msg.setIcon(QMessageBox.Question)
                 msg.setWindowTitle(tr.TR_QUERY_NOT_SAVED)
                 text = '\n'.join([editor.name for editor in unsaved_editors])
-                msg.setText(tr.TR_QUERY_NOT_SAVED_BODY.format(files=text)))
+                msg.setText(tr.TR_QUERY_NOT_SAVED_BODY.format(files=text))
                 cancel_btn = msg.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
                 msg.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
                 yes_btn = msg.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
