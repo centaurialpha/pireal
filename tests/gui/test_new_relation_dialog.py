@@ -12,6 +12,7 @@ def dialog():
         return w
 
 
+@pytest.mark.testgui
 @pytest.mark.parametrize(
     'row_to_insert, expected',
     [
@@ -27,6 +28,7 @@ def test_add_tuple(qtbot, dialog, row_to_insert, expected):
     assert dialog._view.model().rowCount() == expected
 
 
+@pytest.mark.testgui
 @pytest.mark.parametrize(
     'columns_to_insert, expected',
     [
@@ -39,4 +41,22 @@ def test_add_column(qtbot, dialog, columns_to_insert, expected):
     qtbot.addWidget(dialog)
     for i in range(columns_to_insert):
         dialog._NewRelationDialog__add_column()
+    assert dialog._view.model().columnCount() == expected
+
+@pytest.mark.testgui
+@pytest.mark.parametrize(
+    'columns_to_insert, to_delete, expected',
+    [
+        (0, 1, 2),
+        (3, 1, 4),
+        (10, 6, 6)
+    ]
+)
+def test_delete_column(qtbot, dialog, columns_to_insert, to_delete, expected):
+    qtbot.addWidget(dialog)
+    for _ in range(columns_to_insert):
+        dialog._NewRelationDialog__add_column()
+    for _ in range(to_delete):
+        dialog._NewRelationDialog__delete_column()
+
     assert dialog._view.model().columnCount() == expected

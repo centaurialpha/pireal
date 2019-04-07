@@ -97,7 +97,6 @@ class NewRelationDialog(QDialog):
     def __delete_tuple(self):
         model = self._view.model()
         selection = self._view.selectionModel()
-
         if selection.hasSelection():
             r = QMessageBox.question(self,
                                      self.tr("Confirm tuple delete"),
@@ -123,7 +122,7 @@ class NewRelationDialog(QDialog):
 
     def __delete_column(self):
         model = self._view.model()
-        if model.columnCount() >= 2:
+        if model.columnCount() > 2:
             model.takeColumn(model.columnCount() - 1)
 
     def _create(self):
