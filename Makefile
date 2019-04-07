@@ -4,7 +4,10 @@ clean:
 	rm -rf `find -name "*qmlc"`
 
 test:
-	pytest -v tests --cov src.core.relation --cov src.core.interpreter  --cov src.core.file_manager --cov src.core.cliparser --cov src.core.pfile --cov-report term-missing 
+	pytest -v tests --cov src.core.relation --cov src.core.interpreter  --cov src.core.file_manager --cov src.core.cliparser --cov src.core.pfile --cov-report term-missing
+
+test-gui:
+	echo "Testing GUI..."
 
 dist: clean
 	rm -rf /tmp/pireal/

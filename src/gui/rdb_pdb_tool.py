@@ -58,9 +58,9 @@ class RDBPDBTool(QDialog):
         hbox.addWidget(self._line_location)
         vbox.addLayout(hbox)
         aviso = QLabel(
-                self.tr(
-                    "<b><i>El archivo será guardado en el mismo directorio "
-                    "que el original.</i></b>"))
+            self.tr(
+                "<b><i>El archivo será guardado en el mismo directorio "
+                "que el original.</i></b>"))
         f = aviso.font()
         f.setPointSize(10)
         aviso.setFont(f)

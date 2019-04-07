@@ -172,7 +172,7 @@ class NewRelationDialog(QDialog):
                 try:
                     if not item.text().strip():
                         raise Exception
-                except:
+                except Exception:
                     QMessageBox.information(
                         self,
                         "Algo ha salido mal",

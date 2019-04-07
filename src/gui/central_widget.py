@@ -542,10 +542,10 @@ class CentralWidget(QWidget):
         if lateral.relation_list.has_item() == 0:
             return
         r = QMessageBox.question(
-                self,
-                tr.TR_MSG_REMOVE_TUPLES,
-                tr.TR_MSG_REMOVE_TUPLES_BODY,
-                QMessageBox.Yes | QMessageBox.Cancel)
+            self,
+            tr.TR_MSG_REMOVE_TUPLES,
+            tr.TR_MSG_REMOVE_TUPLES_BODY,
+            QMessageBox.Yes | QMessageBox.Cancel)
         if r == QMessageBox.Cancel:
             return
         tw = self.get_active_db().table_widget

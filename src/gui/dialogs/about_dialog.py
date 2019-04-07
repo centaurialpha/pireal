@@ -34,7 +34,6 @@ import src
 from src import translations as tr
 
 
-
 class AboutDialog(QDialog):
 
     def __init__(self, parent=None):

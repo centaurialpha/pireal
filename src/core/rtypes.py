@@ -53,7 +53,7 @@ class RelationStr(str):
             try:
                 date = datetime.datetime.strptime(
                     self.value, "%Y/%m/%d")
-            except:
+            except Exception:
                 date = datetime.datetime.strptime(
                     self.value, "%d/%m/%Y")
             return date.date()

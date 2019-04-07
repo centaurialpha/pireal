@@ -23,7 +23,6 @@ from PyQt5.QtWidgets import QGridLayout
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QComboBox
 from PyQt5.QtWidgets import QFontComboBox
-from PyQt5.QtWidgets import QDoubleSpinBox
 from PyQt5.QtWidgets import QCheckBox
 from PyQt5.QtWidgets import QGroupBox
 from PyQt5.QtWidgets import QDialogButtonBox
