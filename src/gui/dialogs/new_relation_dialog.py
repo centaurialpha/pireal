@@ -28,7 +28,6 @@ from PyQt5.QtWidgets import QSizePolicy
 
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtCore import Qt
-from PyQt5.QtCore import pyqtSignal as Signal
 
 from src import translations as tr
 
@@ -39,14 +38,12 @@ from src.gui.main_window import Pireal
 
 class NewRelationDialog(QDialog):
 
-    created = Signal(str, str)
-
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         self.setWindowTitle(tr.TR_RELATION_DIALOG_TITLE)
         # self.setModal(True)
+        self._data = None
         self.resize(700, 500)
-        self.data = None
         box = QVBoxLayout(self)
         # Campo para el nombre de la relación
         self._line_relation_name = QLineEdit()
@@ -88,6 +85,9 @@ class NewRelationDialog(QDialog):
         btn_delete_column.clicked.connect(self.__delete_column)
         btn_cancel.clicked.connect(self.close)
         btn_create.clicked.connect(self._create)
+
+    def get_data(self):
+        return self._data
 
     def __add_tuple(self):
         """ Agrega una tupla/fila al final de la tabla """
@@ -180,6 +180,5 @@ class NewRelationDialog(QDialog):
             rela.insert(tuple(tuples))
 
         # Data
-        # self.data = rela, relation_name
-        self.created.emit(rela, relation_name)
-        self.close()
+        self._data = (rela, relation_name)
+        self.accept()

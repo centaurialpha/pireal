@@ -403,18 +403,17 @@ class CentralWidget(QWidget):
             db.modified = True
 
     def create_new_relation(self):
-        def create_relation(relation, relation_name):
+        dialog = new_relation_dialog.NewRelationDialog(self)
+        if dialog.exec_():
             db = self.get_active_db()
             lateral = Pireal.get_service("lateral_widget")
+            relation, relation_name = dialog.get_data()
             table = db.create_table(relation, relation_name)
             db.table_widget.add_table(relation, relation_name, table)
             lateral.relation_list.add_item(
                 relation_name, relation.cardinality(), relation.degree())
             db.modified = True
 
-        dialog = new_relation_dialog.NewRelationDialog(self)
-        dialog.created.connect(create_relation)
-        dialog.show()
 
     # def load_relation(self, filename=''):
     #     """ Load Relation file """
