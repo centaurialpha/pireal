@@ -414,7 +414,6 @@ class CentralWidget(QWidget):
                 relation_name, relation.cardinality(), relation.degree())
             db.modified = True
 
-
     # def load_relation(self, filename=''):
     #     """ Load Relation file """
 
