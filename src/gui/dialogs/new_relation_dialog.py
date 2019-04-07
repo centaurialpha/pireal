@@ -17,19 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import (
-    QMessageBox,
-    QDialog,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLineEdit,
-    QPushButton,
-    QSpacerItem,
-    QSizePolicy
-)
+from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QLineEdit
+from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QSpacerItem
+from PyQt5.QtWidgets import QSizePolicy
+
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSignal as Signal
+
+from src import translations as tr
 
 from src.core import relation
 from src.gui import view
@@ -42,24 +43,24 @@ class NewRelationDialog(QDialog):
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
-        self.setWindowTitle(self.tr("Relation Creator"))
+        self.setWindowTitle(tr.TR_RELATION_DIALOG_TITLE)
         # self.setModal(True)
         self.resize(700, 500)
         self.data = None
         box = QVBoxLayout(self)
         # Campo para el nombre de la relación
         self._line_relation_name = QLineEdit()
-        self._line_relation_name.setPlaceholderText(self.tr("Relation Name"))
+        self._line_relation_name.setPlaceholderText(tr.TR_RELATION_DIALOG_NAME)
         box.addWidget(self._line_relation_name)
         hbox = QHBoxLayout()
         # Botones para agregar y eliminar tuplas/columnas
-        btn_add_tuple = QPushButton(self.tr("Add Tuple"))
+        btn_add_tuple = QPushButton(tr.TR_RELATION_DIALOG_ADD_TUPLE)
         hbox.addWidget(btn_add_tuple)
-        btn_delete_tuple = QPushButton(self.tr("Delete Tuple"))
+        btn_delete_tuple = QPushButton(tr.TR_RELATION_DIALOG_DELETE_TUPLE)
         hbox.addWidget(btn_delete_tuple)
-        btn_add_column = QPushButton(self.tr("Add Column"))
+        btn_add_column = QPushButton(tr.TR_RELATION_DIALOG_ADD_COLUMN)
         hbox.addWidget(btn_add_column)
-        btn_delete_column = QPushButton(self.tr("Delete Column"))
+        btn_delete_column = QPushButton(tr.TR_RELATION_DIALOG_DELETE_COLUMN)
         hbox.addWidget(btn_delete_column)
         box.addLayout(hbox)
         # Vista (tabla)
@@ -69,14 +70,14 @@ class NewRelationDialog(QDialog):
         header = view.Header()
         self._view.setHorizontalHeader(header)
         self._view.setModel(QStandardItemModel(0, 2))
-        header.model().setHeaderData(0, Qt.Horizontal, self.tr("Field 1"))
-        header.model().setHeaderData(1, Qt.Horizontal, self.tr("Field 2"))
+        header.model().setHeaderData(0, Qt.Horizontal, tr.TR_RELATION_DIALOG_FIELD1)
+        header.model().setHeaderData(1, Qt.Horizontal, tr.TR_RELATION_DIALOG_FIELD2)
         # Botones para crear/cancelar
         hhbox = QHBoxLayout()
         hhbox.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
-        btn_create = QPushButton(self.tr("Create"))
+        btn_create = QPushButton(tr.TR_RELATION_DIALOG_CREATE)
         hhbox.addWidget(btn_create)
-        btn_cancel = QPushButton(self.tr("Cancel"))
+        btn_cancel = QPushButton(tr.TR_MSG_CANCEL)
         hhbox.addWidget(btn_cancel)
         box.addLayout(hhbox)
 
@@ -98,12 +99,12 @@ class NewRelationDialog(QDialog):
         model = self._view.model()
         selection = self._view.selectionModel()
         if selection.hasSelection():
-            r = QMessageBox.question(self,
-                                     self.tr("Confirm tuple delete"),
-                                     self.tr("Are you sure you want "
-                                             "to delete the selected "
-                                             "tuple(s)?"),
-                                     QMessageBox.Yes | QMessageBox.No)
+            r = QMessageBox.question(
+                self,
+                tr.TR_RELATION_DIALOG_CONFIRM_DELETE_TUPLE,
+                tr.TR_RELATION_DIALOG_CONFIRM_DELETE_TUPLE_BODY,
+                QMessageBox.Yes | QMessageBox.No
+            )
             if r == QMessageBox.Yes:
                 selection = selection.selection()
                 rows = set([index.row() for index in selection.indexes()])
@@ -129,17 +130,15 @@ class NewRelationDialog(QDialog):
 
         relation_name = self._line_relation_name.text().strip()
         if not relation_name:
-            QMessageBox.critical(self, "Error",
-                                 self.tr("Relation name "
-                                         "not specified"))
+            QMessageBox.critical(self, tr.TR_MSG_ERROR,
+                                 tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME)
             return
         central = Pireal.get_service("central")
         if relation_name in central.get_active_db().table_widget.relations:
             QMessageBox.information(
                 self,
-                "Error",
-                self.tr("Ya existe una relación con el nombre "
-                        "<b>{}</b>.".format(relation_name))
+                tr.TR_MSG_ERROR,
+                tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name)
             )
             return
         # Table model
@@ -159,7 +158,7 @@ class NewRelationDialog(QDialog):
             rela.header = header
         except Exception as reason:
             QMessageBox.critical(self,
-                                 self.tr("Header error"),
+                                 tr.TR_MSG_ERROR,
                                  str(reason))
             return
 
@@ -174,11 +173,8 @@ class NewRelationDialog(QDialog):
                 except Exception:
                     QMessageBox.information(
                         self,
-                        "Algo ha salido mal",
-                        self.tr("Los espacios en blanco son tan aburridos :/."
-                                "<br><br>Por favor ingrese un dato en la "
-                                "fila <b>{}</b>, columna:<b>{}</b>".format(
-                                    row + 1, column + 1)))
+                        tr.TR_MSG_ERROR,
+                        tr.TR_RELATION_DIALOG_WHITESPACE.format(row + 1, column + 1))
                     return
                 tuples.append(item.text().strip())
             rela.insert(tuple(tuples))

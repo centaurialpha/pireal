@@ -122,3 +122,35 @@ TR_RELATION_NAME_ALREADY_EXISTS = tr(
 TR_QUERY_ERROR = tr('Pireal', 'Query Error')
 
 TR_RELATIONS = tr('Pireal', 'Relations')
+
+# New Relation Dialog
+TR_RELATION_DIALOG_TITLE = tr('Pireal', 'Relation Creator')
+TR_RELATION_DIALOG_NAME = tr('Pireal', 'Relation Name')
+TR_RELATION_DIALOG_ADD_TUPLE = tr('Pireal', 'Add Tuple')
+TR_RELATION_DIALOG_DELETE_TUPLE = tr('Pireal', 'Delete Tuple')
+TR_RELATION_DIALOG_ADD_COLUMN = tr('Pireal', 'Add Column')
+TR_RELATION_DIALOG_DELETE_COLUMN = tr('Pireal', 'Delete Column')
+TR_RELATION_DIALOG_FIELD1 = tr('Pireal', 'Field 1')
+TR_RELATION_DIALOG_FIELD2 = tr('Pireal', 'Field 2')
+TR_RELATION_DIALOG_CREATE = tr('Pireal', 'Create')
+TR_RELATION_DIALOG_CONFIRM_DELETE_TUPLE = tr('Pireal', 'Confirm tuple delete')
+TR_RELATION_DIALOG_CONFIRM_DELETE_TUPLE_BODY = tr(
+    'pireal',
+    'Are you sure you want to delete the selected tuple(s)?'
+)
+TR_RELATION_DIALOG_EMPTY_RELATION_NAME = tr('Pireal', 'Relation name not specified')
+TR_RELATION_DIALOG_WHITESPACE = tr(
+    'Pireal',
+    'The blanks are so boring :(.<br><br>Please enter data in <b>{}:{}</b>')
+
+TR_QUERY_NOT_SAVED = tr('Pireal', 'Queries not saved')
+TR_QUERY_NOT_SAVED_BODY = tr('Pireal', '{files}<br><br>Do you want to save the queries?')
+
+# New Database
+TR_DB_DIALOG_TITLE = tr('Pireal', 'New Database Wizard')
+TR_DB_DIALOG_NEW_DB = tr('Pireal', 'Pireal New Database')
+TR_DB_DIALOG_NEW_DB_SUB = tr('Pireal', 'Choose the name and destination of the database')
+TR_DB_DIALOG_DB_NAME = tr('Pireal', 'Database Name:')
+TR_DB_DIALOG_DB_LOCATION = tr('Pireal', 'Location:')
+TR_DB_DIALOG_DB_FILENAME = tr('Pireal', 'Filename:')
+TR_DB_DIALOG_SELECT_FOLDER = tr('Pireal', 'Select Folder')

@@ -34,6 +34,7 @@ from PyQt5.QtCore import QSettings
 # from PyQt5.QtCore import QSize
 # from PyQt5.QtCore import Qt
 
+from src import translations as tr
 from src import keymap
 from src.core import settings
 from src.gui import (
@@ -80,7 +81,7 @@ class Pireal(QMainWindow):
 
     def __init__(self):
         QMainWindow.__init__(self)
-        self.setWindowTitle(self.tr("Pireal"))
+        self.setWindowTitle('Pireal')
         self.setMinimumSize(880, 600)
         # Load window geometry
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
@@ -237,8 +238,7 @@ class Pireal(QMainWindow):
                                     version)))
             download_btn = msg.addButton(self.tr("Download!"),
                                          QMessageBox.YesRole)
-            msg.addButton(self.tr("Cancel"),
-                          QMessageBox.RejectRole)
+            msg.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
             msg.exec_()
             r = msg.clickedButton()
             if r == download_btn:
@@ -376,15 +376,11 @@ class Pireal(QMainWindow):
             if db.modified:
                 msg = QMessageBox(self)
                 msg.setIcon(QMessageBox.Question)
-                msg.setWindowTitle(self.tr("Algunos cambios no fueron guardados"))
-                msg.setText(
-                    self.tr("Desea guardar los cambios en la base de datos?"))
-                cancel_btn = msg.addButton(self.tr("Cancelar"),
-                                           QMessageBox.RejectRole)
-                msg.addButton(self.tr("No"),
-                              QMessageBox.NoRole)
-                yes_btn = msg.addButton(self.tr("Si"),
-                                        QMessageBox.YesRole)
+                msg.setWindowTitle(tr.TR_MSG_SAVE_CHANGES)
+                msg.setText(tr.TR_MSG_SAVE_CHANGES_BODY)
+                cancel_btn = msg.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
+                msg.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
+                yes_btn = msg.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
                 msg.exec_()
                 r = msg.clickedButton()
                 if r == yes_btn:
@@ -396,16 +392,12 @@ class Pireal(QMainWindow):
             if unsaved_editors:
                 msg = QMessageBox(self)
                 msg.setIcon(QMessageBox.Question)
-                msg.setWindowTitle(self.tr("Consultas no guardadas"))
+                msg.setWindowTitle(tr.TR_QUERY_NOT_SAVED)
                 text = '\n'.join([editor.name for editor in unsaved_editors])
-                msg.setText(self.tr("{files}\n\nQuiere guardarlas?".format(
-                    files=text)))
-                cancel_btn = msg.addButton(self.tr("Cancelar"),
-                                           QMessageBox.RejectRole)
-                msg.addButton(self.tr("No"),
-                              QMessageBox.NoRole)
-                yes_btn = msg.addButton(self.tr("Si"),
-                                        QMessageBox.YesRole)
+                msg.setText(tr.TR_QUERY_NOT_SAVED_BODY.format(files=text)))
+                cancel_btn = msg.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
+                msg.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
+                yes_btn = msg.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
                 msg.exec_()
                 if msg.clickedButton() == yes_btn:
                     for editor in unsaved_editors:
