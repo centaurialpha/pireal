@@ -15,8 +15,8 @@ script: make test
 
 stages:
   - lint
-  - test
-  # - test-gui
+  - unit tests
+  - test-gui
 
 jobs:
   include:
@@ -26,5 +26,6 @@ jobs:
       python: 3.6
       script: flake8 src
     - stage: test-gui
+      name: GUI Tests
       python: 3.5
       script: make test-gui
