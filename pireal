@@ -90,15 +90,14 @@ def __get_versions():
 
 
 if __name__ == "__main__":
-
+    # Create dirs used by Pireal
+    create_dirs()
     # cli
     args = cliparser.get_cli().parse_args()
     logger.set_up(args.verbose)
     if args.version:
         print(src.__version__)
         sys.exit()
-    # Create dirs used by Pireal
-    create_dirs()
 
     info = __get_versions()
     CONFIG.load_settings()
