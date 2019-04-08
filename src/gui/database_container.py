@@ -132,6 +132,8 @@ class DatabaseContainer(QSplitter):
         _view = view.View()
         header = view.Header()
         _model = model.RelationModel(relation_obj)
+        _model.editable = editable
+        header.editable = editable
         _view.setModel(_model)
         _view.setItemDelegate(delegate.Delegate())
         _view.setHorizontalHeader(header)
