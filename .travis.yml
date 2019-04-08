@@ -11,6 +11,8 @@ install:
 
 before_script: make clean
 
+script: make test
+
 stages:
   - lint
   - test
@@ -18,25 +20,11 @@ stages:
 
 jobs:
   include:
+    - python: 3.5
+    - python: 3.6
     - stage: lint
       python: 3.6
       script: flake8 src
-    - stage: test
-      name: Unit Tests
-      python:
-        - 3.5
-        - 3.6
-      script: make test
     - stage: test-gui
-      name: GUI Tests
       python: 3.5
       script: make test-gui
-    # - python: 3.5
-    # - python: 3.6
-    # - stage: lint
-    #   python: 3.6
-    #   script: flake8 src
-    # - stage: test-gui
-    #   name: GUI Tests
-    #   python: 3.5
-    #   script: make test-gui
