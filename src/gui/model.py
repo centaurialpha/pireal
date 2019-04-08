@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
 from PyQt5.QtGui import QColor
 from PyQt5.QtGui import QFont
 
@@ -25,11 +27,14 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import pyqtSignal as Signal
 
+logger = logging.getLogger(__name__)
+
 
 class RelationModel(QAbstractTableModel):
 
     def __init__(self, relation_object):
         super().__init__()
+        self.editable = True
         self._relation = relation_object
 
     def rowCount(self, index):
@@ -48,16 +53,15 @@ class RelationModel(QAbstractTableModel):
         data = list(self._relation.content)
         if role == Qt.DisplayRole:
             return data[row][column]
+        elif role == Qt.TextColorRole:
+            value = data[row][column]
+            if value == 'null':
+                return QColor('red')
         return None
 
     def headerData(self, section, orientation, role):
         if role == Qt.DisplayRole:
             return self._relation.header[section]
-        # elif role == Qt.FontRole:
-        #     font = QFont()
-        #     font.setBold(True)
-        #     font.setPointSize(12)
-        #     return font
 
     def setHeaderData(self, section, orientation, value, role):
         if role == Qt.DisplayRole:
@@ -66,6 +70,24 @@ class RelationModel(QAbstractTableModel):
                 self._relation.header[section] = value
                 self.headerDataChanged.emit(orientation, section, section)
                 return True
+
+    def flags(self, index):
+        flags = super().flags(index)
+        if self.editable:
+            flags |= Qt.ItemIsEditable
+        return flags
+
+    def setData(self, index, value, role):
+        if index.isValid() and role == Qt.EditRole:
+            current_value = self.data(index)
+            if current_value != value:
+                self._relation.update(index.row(), index.column(), value)
+                self.dataChanged.emit(index, index)
+                logger.debug('Editing %d:%d - Current: %s, New: %s',
+                             index.row(), index.column(), current_value, value)
+                # FIXME: avisar que se ha modificado la base de datos
+                return True
+        return False
 
 
 class _Model(QAbstractTableModel):
