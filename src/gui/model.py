@@ -51,7 +51,7 @@ class RelationModel(QAbstractTableModel):
 
         row, column = index.row(), index.column()
         data = list(self._relation.content)
-        if role == Qt.DisplayRole:
+        if role == Qt.DisplayRole or role == Qt.EditRole:
             return data[row][column]
         elif role == Qt.TextColorRole:
             value = data[row][column]

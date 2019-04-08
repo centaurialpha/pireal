@@ -21,7 +21,7 @@ import logging
 
 from src.core.settings import LOG_PATH
 
-FORMAT = "[%(asctime)s] [%(levelname)-6s]: %(name)-22s:%(funcName)-5s %(message)s"
+FORMAT = "[%(asctime)s] [%(levelname)-6s]: %(name)s:%(funcName)-5s %(message)s"
 TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
