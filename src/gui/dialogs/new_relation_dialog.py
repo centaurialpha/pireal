@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtWidgets import QVBoxLayout
@@ -34,6 +36,8 @@ from src import translations as tr
 from src.core import relation
 from src.gui import view
 from src.gui.main_window import Pireal
+
+logger = logging.getLogger(__name__)
 
 
 class NewRelationDialog(QDialog):
@@ -130,8 +134,9 @@ class NewRelationDialog(QDialog):
 
         relation_name = self._line_relation_name.text().strip()
         if not relation_name:
-            QMessageBox.critical(self, tr.TR_MSG_ERROR,
-                                 tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME)
+            QMessageBox.information(self, tr.TR_MSG_ERROR,
+                                    tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME)
+            logger.debug('Relation name not specified')
             return
         central = Pireal.get_service("central")
         if relation_name in central.get_active_db().table_widget.relations:
@@ -140,7 +145,9 @@ class NewRelationDialog(QDialog):
                 tr.TR_MSG_ERROR,
                 tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name)
             )
+            logger.debug('Relation already exists with this name')
             return
+        logger.debug('Creating new relation: %s', relation_name)
         # Table model
         model = self._view.model()
         # Row and column count
@@ -150,33 +157,34 @@ class NewRelationDialog(QDialog):
         rela = relation.Relation()
 
         # Header
+        header = []
+        for i in range(ncol):
+            text = model.horizontalHeaderItem(i).text().strip()
+            header.append(text)
         try:
-            header = []
-            for i in range(ncol):
-                text = model.horizontalHeaderItem(i).text().strip()
-                header.append(text)
             rela.header = header
-        except Exception as reason:
+        except relation.InvalidFieldNameError as reason:
             QMessageBox.critical(self,
                                  tr.TR_MSG_ERROR,
                                  str(reason))
+            logger.warning('Invalid field name \'%s\'', reason.campo)
             return
 
         # Load relation
         for row in range(nrow):
             tuples = []
             for column in range(ncol):
+
                 item = model.item(row, column)
-                try:
-                    if not item.text().strip():
-                        raise Exception
-                except Exception:
+                if item is None:
                     QMessageBox.information(
                         self,
                         tr.TR_MSG_ERROR,
                         tr.TR_RELATION_DIALOG_WHITESPACE.format(row + 1, column + 1))
+                    logger.warning('Not data in \'%d:%d\'', row + 1, column + 1)
                     return
-                tuples.append(item.text().strip())
+                data = item.text().strip()
+                tuples.append(data)
             rela.insert(tuple(tuples))
 
         # Data
