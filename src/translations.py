@@ -154,3 +154,5 @@ TR_DB_DIALOG_DB_NAME = tr('Pireal', 'Database Name:')
 TR_DB_DIALOG_DB_LOCATION = tr('Pireal', 'Location:')
 TR_DB_DIALOG_DB_FILENAME = tr('Pireal', 'Filename:')
 TR_DB_DIALOG_SELECT_FOLDER = tr('Pireal', 'Select Folder')
+
+TR_DB_FILE_EMPTY = tr('Pireal', 'The file <b>{}</b> is empty, aborting.')

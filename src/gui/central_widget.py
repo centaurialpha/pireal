@@ -18,17 +18,11 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import csv
 import logging
-from collections import defaultdict
 
 from PyQt5.QtWidgets import QWidget
-# from PyQt5.QtWidgets import QDialog
 from PyQt5.QtWidgets import QVBoxLayout
-# from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QStackedWidget
-# from PyQt5.QtWidgets import QLineEdit
-# from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QShortcut
@@ -39,17 +33,14 @@ from PyQt5.QtCore import pyqtSignal as Signal
 
 
 from src import translations as tr
-from src.core import (
-    settings,
-    file_manager,
-    pfile,
-)
-# from src.core.logger import Logger
+from src.core import settings
+from src.core import file_manager
+from src.core import pfile
+
 from src.gui.main_window import Pireal
-from src.gui import (
-    start_page,
-    database_container
-)
+from src.gui import start_page
+from src.gui import database_container
+
 from src.gui.dialogs import preferences
 from src.gui.dialogs import new_relation_dialog
 from src.gui.dialogs import new_database_dialog
@@ -181,8 +172,12 @@ class CentralWidget(QWidget):
             # Read pdb file
             pfile_object = pfile.File(filename)
             db_data = pfile_object.read()
+            if not db_data:
+                QMessageBox.warning(self, tr.TR_MSG_ERROR, tr.TR_DB_FILE_EMPTY.format(filename))
+                logger.warning('The file \'%s\'is empty, aborting...', filename)
+                return
             # Create a dict to manipulate data more easy
-            db_data = self.__sanitize_data(db_data)
+            db_data = file_manager.parse_database_content(db_data)
             logger.debug('Database loaded successful')
         except Exception as reason:
             logger.exception('The database file could not be opened: %s', filename)
@@ -247,39 +242,6 @@ class CentralWidget(QWidget):
 
     def save_query_as(self):
         pass
-
-    def __sanitize_data(self, data):
-        """
-        Este método convierte el contenido de la base de datos a un
-        diccionario para un mejor manejo despues
-        """
-
-        # FIXME: controlar cuando al final de la línea hay una coma
-        data_dict = defaultdict(list)
-        for line_count, line in enumerate(data.splitlines()):
-            # Ignore blank lines
-            if not line.strip():
-                continue
-            if line.startswith("@"):
-                # Header de una relación
-                tpoint = line.find(":")
-                if tpoint == -1:
-                    raise Exception("Error de sintáxis en la línea {}".format(
-                        line_count + 1))
-                table_name, line = line.split(":")
-                table_name = table_name[1:].strip()
-                table_dict = {}
-                table_dict["name"] = table_name
-                table_dict["header"] = list(map(str.strip, line.split(",")))
-                table_dict["tuples"] = set()
-            else:
-                # Tuplas de la relación
-                for l in csv.reader([line]):
-                    tupla = tuple(map(str.strip, l))
-                    table_dict["tuples"].add(tupla)
-            if not table_dict["tuples"]:
-                data_dict["tables"].append(table_dict)
-        return data_dict
 
     def remove_last_widget(self):
         """ Remove last widget from stacked """
