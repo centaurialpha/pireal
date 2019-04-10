@@ -17,7 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+from collections import defaultdict
+import csv
 import os
+
+
+class DBParserSyntaxError(Exception):
+    pass
 
 
 def get_extension(filename):
@@ -68,3 +74,36 @@ def generate_database(relations):
 def get_files_from_folder(path):
     return [os.path.splitext(f)[0] for f in os.listdir(path)
             if os.path.isfile(os.path.join(path, f))]
+
+
+def parse_database_content(text):
+        """
+        Este método convierte el contenido de la base de datos a un
+        diccionario para un mejor manejo despues
+        """
+        # FIXME: controlar cuando al final de la línea hay una coma
+        data_dict = defaultdict(list)
+        for line_count, line in enumerate(text.splitlines()):
+            # Ignore blank lines
+            if not line.strip():
+                continue
+            if line.startswith("@"):
+                # Header de una relación
+                tpoint = line.find(":")
+                if tpoint == -1:
+                    raise DBParserSyntaxError("Syntax error, line {}".format(
+                        line_count + 1))
+                table_name, line = line.split(":")
+                table_name = table_name[1:].strip()
+                table_dict = {}
+                table_dict["name"] = table_name
+                table_dict["header"] = list(map(str.strip, line.split(",")))
+                table_dict["tuples"] = set()
+            else:
+                # Tuplas de la relación
+                for l in csv.reader([line]):
+                    tupla = tuple(map(str.strip, l))
+                    table_dict["tuples"].add(tupla)
+            if not table_dict["tuples"]:
+                data_dict["tables"].append(table_dict)
+        return data_dict

@@ -1,4 +1,5 @@
 import pytest
+from collections import defaultdict
 
 from src.core import file_manager
 from src.core import relation
@@ -71,3 +72,22 @@ def test_generate_database():
     expected = "@persona:id,name\n1,Gabriel\n23,Rodrigo\n"
 
     # assert expected in file_manager.generate_database(relations)
+
+
+def test_parse_database_content():
+    content = "@persona:id,name\n1,Gabriel\n23,Rodrigo\n"
+    data = defaultdict(list)
+    data['tables'] = [
+        {
+            'header': ['id', 'name'],
+            'name': 'persona',
+            'tuples': {('1', 'Gabriel'), ('23', 'Rodrigo')}
+        }
+    ]
+    assert file_manager.parse_database_content(content) == data
+
+
+def test_parse_database_content_raise_syntax_error():
+    content = "@persona id,name\n1,Gabriel\n23,Rodrigo\n"
+    with pytest.raises(file_manager.DBParserSyntaxError):
+        file_manager.parse_database_content(content)
