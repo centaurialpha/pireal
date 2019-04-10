@@ -60,13 +60,13 @@ MENU['query'] = {
         'slot': "central:new_query"
     }, {
         'name': tr.TR_MENU_QUERY_OPEN_QUERY,
-        'slot': None,
+        'slot': "central:open_query",
     }, {
         'name': tr.TR_MENU_QUERY_SAVE_QUERY,
-        'slot': None,
+        'slot': "central:save_query",
     }, {
         'name': tr.TR_MENU_QUERY_SAVE_AS_QUERY,
-        'slot': None,
+        'slot': "central:save_query_as",
     }, {
         'name': tr.TR_MENU_QUERY_EXECUTE,
         'slot': "central:execute_queries"
