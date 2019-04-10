@@ -378,12 +378,15 @@ class CentralWidget(QWidget):
         db.modified = False
 
     def save_database_as(self):
+        logger.debug('Triying to save as...')
         filter = settings.SUPPORTED_FILES.split(';;')[0]
-        filename, _ = QFileDialog.getSaveFileName(tr.TR_MSG_SAVE_DB_AS,
+        filename, _ = QFileDialog.getSaveFileName(self, tr.TR_MSG_SAVE_DB_AS,
                                                   settings.PIREAL_DATABASES,
                                                   filter)
         if not filename:
+            logger.debug('Not filename provided, exiting.')
             return
+        logger.debug('Filename provided: \'%s\'', filename)
         db = self.get_active_db()
         # Get relations
         relations = db.table_widget.relations
@@ -393,8 +396,8 @@ class CentralWidget(QWidget):
         if not os.path.splitext(filename)[1]:
             filename += '.pdb'
         db.pfile.save(content, filename)
-        self.databaseSaved.emit(tr.TR_NOTIFICATION_DB_SAVEDformat(db.pfile.filename))
-
+        self.databaseSaved.emit(tr.TR_NOTIFICATION_DB_SAVED.format(db.pfile.filename))
+        logger.debug('Database saved as: \'%s\'', filename)
         db.modified = False
 
     def remove_relation(self):
