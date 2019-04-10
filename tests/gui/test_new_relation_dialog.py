@@ -1,6 +1,8 @@
 from unittest import mock
 import pytest
 
+from PyQt5.QtGui import QStandardItem
+
 from src.gui.dialogs.new_relation_dialog import NewRelationDialog
 
 
@@ -60,3 +62,29 @@ def test_delete_column(qtbot, dialog, columns_to_insert, to_delete, expected):
         dialog._NewRelationDialog__delete_column()
 
     assert dialog._view.model().columnCount() == expected
+
+
+@pytest.mark.testgui
+@pytest.mark.parametrize(
+    'relation_name, header, tuples',
+    [
+        ('prueba', ['a', 'b'], {('1', '2'), ('2', '1')}),
+        ('persona', ['id', 'name'], {('1', 'gabo'), ('2', 'rodrigo')}),
+    ]
+)
+def test_create_new(qtbot, dialog, relation_name, header, tuples):
+    qtbot.addWidget(dialog)
+    dialog._line_relation_name.setText(relation_name)
+    with mock.patch('src.gui.main_window.Pireal.get_service'):
+        view = dialog._view
+        for e, i in enumerate(header):
+            view.horizontalHeader().model().setHeaderData(e, 1, i)
+        for row, t in enumerate(tuples):
+            for col, a in enumerate(t):
+                item = QStandardItem(a)
+                view.model().setItem(row, col, item)
+        dialog._create()
+        robject, rname = dialog._data
+        assert rname == relation_name
+        assert robject.header == header
+        assert robject.content == tuples
