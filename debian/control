@@ -1,0 +1,15 @@
+Source: pireal
+Section: math
+Priority: optional
+Maintainer: Gabriel 'gabo' Acosta <gabriel.acosta@ninja-ide.org>
+Build-Depends: debhelper (>= 10), dh-python, python3-all
+Standards-Version: 4.0.1
+X-Python3-Version: >= 3.4
+Homepage: http://centaurialpha.github.io/pireal/
+
+Package: pireal
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, python3-pyqt5, python3-pyqt5.qtquick
+Description: Educational tool for Relational Algebra
+ Pireal is a teaching tool for use in learning introduction to database.
+ It allows the user to interactively experiment with Relational Algebra.

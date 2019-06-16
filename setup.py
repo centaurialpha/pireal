@@ -20,6 +20,7 @@
 import os
 from distutils.command.install import install
 from distutils.core import setup
+from setuptools import find_packages
 
 
 class CustomInstall(install):
@@ -94,27 +95,22 @@ DESCRIPTION = ""
 
 setup(
     name="pireal",
-    version="3.0",
-    description="",
+    version="3.1",
+    description="Relational Algebra Query Evaluator",
     author="Gabriel Acosta",
     author_email="acostadariogabriel@gmail.com",
     url="http://centaurialpha.github.io/pireal",
     license='GPLv3+',
-    long_description=open('README.rst').read(),
+    long_description=open('README.md').read(),
     package_data={
         "src": [
             "gui/qml/*",
+            "gui/qml/widgets/*",
             "images/pireal_icon.png",
             "lang/*.qm"]
     },
-    packages=[
-        "src",
-        "src.core",
-        "src.gui",
-        "src.gui.dialogs",
-        "src.gui.query_container"
-    ],
+    packages=find_packages(exclude=["tests"]),
     scripts=['pireal'],
     classifiers=classifiers,
-    cmdclass={'install': CustomInstall},
+    # cmdclass={'install': CustomInstall},
 )
