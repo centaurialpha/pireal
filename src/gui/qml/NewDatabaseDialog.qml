@@ -1,4 +1,4 @@
-import QtQuick 2.6
+import QtQuick 2.7
 import "widgets"
 import "logic.js" as Logic
 
