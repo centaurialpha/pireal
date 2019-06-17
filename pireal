@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2019 Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -34,24 +34,23 @@ from PyQt5.QtCore import QTranslator
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QT_VERSION_STR
 
-import src
-
-from src.core import logger
-from src.core import cliparser
-
 INSTALL_DIR = "@ INSTALLED_BASE_DIR @"
 
 if os.path.exists(INSTALL_DIR):
     project = INSTALL_DIR
 else:
-    project = os.path.abspath(os.path.dirname(
-        os.path.realpath(sys.argv[0])))
+    project = os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])))
 
 if project not in sys.path:
     sys.path.insert(0, project)
 
-from src.core import settings  # noqa
-from src.core.settings import CONFIG  # noqa
+import src
+
+from src.core import logger
+from src.core import cliparser
+
+from src.core import settings
+from src.core.settings import CONFIG
 
 
 def create_dirs():

@@ -18,6 +18,8 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import shutil
+
 from distutils.command.install import install
 from distutils.core import setup
 from setuptools import find_packages
@@ -57,13 +59,20 @@ class CustomInstall(install):
             with open(dst_desktop, 'w') as f:
                 f.write(content)
 
+            # Man dir
+            if not os.path.exists(self._custom_man_dir):
+                os.makedirs(self._custom_man_dir)
+            shutil.copy("man/pireal.1", self._custom_man_dir)
+
     def finalize_options(self):
         """ Alter the installation path """
 
         install.finalize_options(self)
+
         data_dir = os.path.join(self.prefix, "share",
                                 self.distribution.get_name())
         apps_dir = os.path.join(self.prefix, "share", "applications")
+        man_dir = os.path.join(self.prefix, "share", "man", "man1")
 
         if self.root is None:
             build_dir = data_dir
@@ -71,10 +80,13 @@ class CustomInstall(install):
 
             build_dir = os.path.join(self.root, data_dir[1:])
             apps_dir = os.path.join(self.root, apps_dir[1:])
+            man_dir = os.path.join(self.root, man_dir[1:])
 
         self.install_lib = build_dir
+
         self._custom_data_dir = data_dir
         self._custom_apps_dir = apps_dir
+        self._custom_man_dir = man_dir
 
 
 classifiers = [
@@ -112,5 +124,5 @@ setup(
     packages=find_packages(exclude=["tests"]),
     scripts=['pireal'],
     classifiers=classifiers,
-    # cmdclass={'install': CustomInstall},
+    cmdclass={'install': CustomInstall},
 )
