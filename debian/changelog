@@ -1,0 +1,40 @@
+pireal (3.0) unstable; urgency=low
+
+  * Preparando release 3.0
+  * disable context menu in table widget
+  * Fix translations
+  * Sacada la herramient rdb2pdb, para la proxima version
+  * Bump
+  * Fixed splitter sizes
+  * probando nuevos iconos
+  * Probando nueva ui
+  * Fix in qml list relations
+  * Algunos fixes en la ui
+  * Fix eliminar relación
+  * Add qtquick controls in lateral widget
+  * Fix problema en la herramienta rdb2pdb
+  * update
+  * add edit relation dialog
+  * center alignment text in model
+  * Improve show widgets in table widget
+  * Set current widget when execute queries
+  * Some improves in model/view/delegate
+  * minimum size in view
+  * default font in windows
+  * stylesheet
+  * Select rows in view
+  * remove python 3.4 from travis
+  * Muchos bugs solucionados, casi terminada la release
+  * Beta version
+  * Update README.md
+  * Merge branch 'master' of https://github.com/centaurialpha/pireal
+  * screenshot on linux
+  * Add context menu in Table widget
+  * Preparing new version
+  * Nuevo sistema de configuraciones
+  * Cursor width to 8
+  * Add correctly attribute copyright. #53
+  * Add action to change orientation
+  * Create appveyor.yml
+
+ -- Gabriel Acosta <gabriel.acosta@ninja-ide.org>  Thu, 24 May 2018 12:41:00 -0300

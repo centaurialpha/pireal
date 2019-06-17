@@ -5,7 +5,7 @@ Maintainer: Gabriel 'gabo' Acosta <gabriel.acosta@ninja-ide.org>
 Build-Depends: debhelper (>= 10), dh-python, python3-all
 Standards-Version: 4.0.1
 X-Python3-Version: >= 3.4
-Homepage: http://centaurialpha.github.io/pireal/
+Homepage: https://github.com/centaurialpha/pireal/
 
 Package: pireal
 Architecture: all
