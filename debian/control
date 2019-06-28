@@ -9,7 +9,10 @@ Homepage: https://github.com/centaurialpha/pireal/
 
 Package: pireal
 Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends}, python3-pyqt5, python3-pyqt5.qtquick
+Depends: ${misc:Depends}, ${python3:Depends},
+ python3-pyqt5,
+ python3-pyqt5.qtquick,
+ qml-module-qtquick2
 Description: Educational tool for Relational Algebra
  Pireal is a teaching tool for use in learning introduction to database.
  It allows the user to interactively experiment with Relational Algebra.

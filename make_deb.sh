@@ -1,14 +1,18 @@
 #!/bin/sh
 
-# Create dist
-make dist
-
-# Make deb
 debuild -b -uc -us
 
-# Clean
-rm -rf dist
+python setup.py sdist
+
+mv dist/* ../
+
+rm -rf .pybuild
 rm -rf debian/debhelper-build-stamp
 rm -rf debian/files
+rm -rf debian/pireal
+rm -rf debian/pireal.postinst.debhelper
+rm -rf debian/pireal.prerm.debhelper
 rm -rf debian/pireal.substvars
-rm -rf debian/pireal/
+rm -rf pireal.egg-info
+rm -rf build
+rm -rf dist
