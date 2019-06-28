@@ -28,3 +28,20 @@ jobs:
     - stage: test-gui
       python: 3.5
       script: make test-gui
+
+before_deploy:
+  - git config --local user.name "centaurialpha"
+  - git config --local user.email "acostadariogabriel@gmail.com"
+  - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+  - git tag $TRAVIS_TAG
+
+deploy:
+  provider: releases
+  api_key:
+    secure: lox5Z6vPIfDN5QroPrEop/74Tp3meQkFh+LEJVhUU9LgeR/j6C2MX9EVk0TngrHNxCvZLHbhfr1ZEBksCSlWdJ/eY1XLAj4llYE8e7mv+UdKFV7G6Uxzy+YEiVLEs+pWvDvv2xkkrXFKbJMiTZrNCpn1dyFB4F1jagqJop7CgdSHFbknihC2J9zUcrcu7LuBfR4p5NpS5tWAYUxSjAavQYIsa/u+MaknnME9d4I5nt74eKB/kwMIXS6m1gndyEd9SNlPUpuzZsYpo9brdH4kfYEQc+IvSRQReyJ5sL0Ll2vfS9361zJIf7/xhhhzvqpeZKrrU3Tw8vfPDKjnncVipMOuPtPvWNOryw1lN0T8ptZLMi5QCrsm1Xk7otFmoco1RLb3Y6GN8F+lpc60faxXzW8boMaWg+Au/Z6g5fPBObToFynJtgofXRJtmOBHZx7y/iOn8Mh5RNvCye6mYcrjFge5V+FY8SDk/6V2UZqFMnKVT0yrLdVNHMF5fQnxwVl+INW2vl9b82fBFkh58niOZgEdPZvG8lA+90qPQ0W5g7bxX46yv+wBl+wRRNu6SD3+OuHTHy/ii74conH6PzvZkbkNbWZyplvmd/S1Oeo7d0zgI/GE1oo2F+lS2WHhPmcXVIUKnA72LH3tnvqea9yHiLnAQz6n24PZBMTDvtNCGkI=
+  file:
+    - "lala"
+    - "llll"
+  skip_clean: true
+  on:
+    branch: test
