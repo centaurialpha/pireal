@@ -1,6 +1,4 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.0
-
+import QtQuick 2.7
 
 Rectangle {
     id: root
@@ -71,14 +69,13 @@ Rectangle {
         width: parent.width
         color: "#404244"
         property alias title: lblTitle.text
-        Label {
+        Text {
             id: lblTitle
             text: ""
             font.bold: true
             font.pointSize: 12
             color: "#f9f9f9"
             anchors.centerIn: parent
-            renderType: Label.NativeRendering
         }
     }
 
@@ -90,46 +87,57 @@ Rectangle {
             left: parent.left
             right: parent.right
         }
-        ScrollBar.vertical: ScrollBar {}
+        // TODO: hacer scrollbar sin Controls
+        // ScrollBar.vertical: ScrollBar {}
 
         clip: true
         spacing: 3
         model: relationModel
 
-        delegate: ItemDelegate {
-            highlighted: ListView.isCurrentItem
-            width: parent.width
-            Binding {
-                target: background
-                property: "color"
-                value: "#262829"
+        delegate: Rectangle {
+            id: relationItem
+            anchors {
+                left: parent.left
+                right: parent.right
             }
 
-            contentItem: Column {
+            height: 70
+            property bool current: ListView.isCurrentItem
+            color: relationItem.current ? "#262829" : "transparent"
+
+            Column {
                 spacing: 5
-                Label {
+                anchors.fill: parent
+                anchors {
+                    rightMargin: 10
+                    leftMargin: 10
+                    topMargin: 5
+                    bottomMargin: 5
+                }
+
+                Text {
                     id: relationText
                     text: name
                     font.bold: true
                     font.pointSize: 12
-                    color: "#f9f9f9"
-                    renderType: Label.NativeRendering
+                    color: "#f1f1f1"
                 }
-                Label {
+                Text {
                     id: relationCard
-                    text: qsTr("Cardinality: %1").arg(cardinalidad)
                     color: "#a1a1a1"
-                    renderType: Label.NativeRendering
+                    text: qsTr("Cardinality: %1").arg(cardinalidad)
                 }
-                Label {
+                Text {
                     text: qsTr("Degree: %1").arg(grado)
                     color: "#a1a1a1"
-                    renderType: Label.NativeRendering
                 }
             }
-            onClicked: {
-                relationView.currentIndex = index
-                root.itemClicked(index)
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    relationView.currentIndex = index
+                    root.itemClicked(index)
+                }
             }
         }
     }
