@@ -1,3 +1,10 @@
+help:
+	@echo "test \t\t run tests"
+	@echo "test-gui \t run tests for GUI"
+	@echo "dist \t\t run python setup.py sdist"
+	@echo "deb \t\t make Debian package"
+	@echo "install \t run python setup.py install"
+
 clean:
 	rm -rf `find -name "*pyc"`
 	rm -rf `find -name "*pyo"`
