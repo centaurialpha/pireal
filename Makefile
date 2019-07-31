@@ -1,3 +1,5 @@
+PYTEST = pytest tests
+
 help:
 	@echo "test \t\t run tests"
 	@echo "test-gui \t run tests for GUI"
@@ -18,11 +20,20 @@ clean:
 	rm -rf debian/pireal.substvars
 	rm -rf pireal.egg-info
 	rm -rf build/
+
+pep8:
+	pycodestyle src
+
+flake8:
+	flake8 src -v
+
+lint: pep8 flake8
+
 test:
-	pytest -v tests --cov src.core.relation --cov src.core.interpreter  --cov src.core.file_manager --cov src.core.cliparser --cov src.core.pfile --cov-report term-missing -m "not testgui"
+	@$(PYTEST) -v --cov src.core --cov-report term-missing -m "not testgui"
 
 test-gui:
-	pytest -v tests -m testgui
+	@$(PYTEST) -v -m testgui
 
 dist: clean
 	python setup.py sdist
@@ -32,4 +43,4 @@ deb:
 	debuild -b -uc -us
 
 install:
-	python3 setup.py install
+	python setup.py install

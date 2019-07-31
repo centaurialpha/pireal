@@ -151,7 +151,7 @@ def test_selection_syntax_error(relation_fixture):
 
 
 def test_combination(relation_fixture):
-    r1, r2, r3 = relation_fixture
+    r1, r2, _ = relation_fixture
     join_natural = r1.njoin(r2)
     projection = join_natural.project("name", "skill")
     expected = {
@@ -280,7 +280,7 @@ def test_fouther(relation_fixture):
     assert r.content == expected
 
 
-def test_difference(qtbot):
+def test_difference():
     r = relation.Relation()
     r.header = ["patente"]
     data = {
@@ -312,12 +312,12 @@ def test_difference(qtbot):
     assert new.cardinality() == 5
 
 
-def test_str(relation_fixture):
-    _, _, r3 = relation_fixture
-    expected = ("|     date     |\n"
-                "----------------\n"
-                "|  2012-07-09  |\n"
-                "|  1998-12-09  |\n"
-                "|  2015-12-12  |\n")
-    # assert str(r3) == expected
-    # FIXME: el orden
+# def test_str(relation_fixture):
+#     _, _, r3 = relation_fixture
+#     expected = ("|     date     |\n"
+#                 "----------------\n"
+#                 "|  2012-07-09  |\n"
+#                 "|  1998-12-09  |\n"
+#                 "|  2015-12-12  |\n")
+#     # assert str(r3) == expected
+#     # FIXME: el orden
