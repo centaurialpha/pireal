@@ -1,5 +1,6 @@
 pytest
 pytest-qt
-pytest-cov==2.5.1
+pytest-cov
 flake8
+pycodestyle
 coveralls

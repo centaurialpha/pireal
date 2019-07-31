@@ -1,8 +1,12 @@
 language: python
 
+dist: xenial
+
+services:
+  - xvfb
+
 before_install:
   - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
 
 install:
   - pip install pip --upgrade
@@ -11,20 +15,23 @@ install:
 
 before_script: make clean
 
-script: make test
+script: echo "Skip global script..."
 
 stages:
-  - lint
-  - test
-  - test-gui
+  - Static Analisys
+  - Test
 
 jobs:
   include:
-    - python: 3.5
-    - python: 3.6
-    - stage: lint
-      python: 3.6
-      script: flake8 src
-    - stage: test-gui
-      python: 3.5
+    - stage: Static Analisys
+      name: pycodestyle
+      script: make pep8
+    - stage: Static Analisys
+      name: flake8
+      script: make flake8
+    - stage: Test
+      name: unit test
+      script: make test
+    - stage: Test
+      name: test gui
       script: make test-gui

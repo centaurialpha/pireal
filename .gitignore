@@ -3,3 +3,4 @@
 *.jsc
 .pytest_cache/
 .coverage*
+.mypy_cache/
