@@ -1,4 +1,0 @@
-[flake8]
-exclude = resources.py
-max-line-length = 100
-ignore = E402, W504, W605
