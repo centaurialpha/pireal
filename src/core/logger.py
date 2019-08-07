@@ -36,12 +36,12 @@ class CustomRotatingFileHandler(RotatingFileHandler):
 
 def set_up(verbose: bool):
     root = logging.getLogger()
-    handler = CustomRotatingFileHandler(LOG_FILE, maxBytes=1e6, backupCount=10)
-    root.addHandler(handler)
+    fhandler = CustomRotatingFileHandler(LOG_FILE, maxBytes=1e6, backupCount=10)
+    root.addHandler(fhandler)
     formatter = logging.Formatter(FORMAT, TIME_FORMAT)
-    handler.setFormatter(formatter)
+    fhandler.setFormatter(formatter)
     root.setLevel(logging.DEBUG)
     if verbose:
-        handler = logging.StreamHandler()
-        handler.setFormatter(formatter)
-        root.addHandler(handler)
+        shandler = logging.StreamHandler()
+        shandler.setFormatter(formatter)
+        root.addHandler(shandler)
