@@ -3,8 +3,11 @@ PYTEST = pytest tests
 help:
 	@echo "test \t\t run tests"
 	@echo "test-gui \t run tests for GUI"
+	@echo "pep8 \t\t run pycodestyle"
+	@echo "flake8 \t run flake8"
+	@echo "lint \t\t run pycodestyle and flake8"
 	@echo "dist \t\t run python setup.py sdist"
-	@echo "deb \t\t make Debian package"
+	@echo "deb \t\t build a .deb package"
 	@echo "install \t run python setup.py install"
 
 clean:
