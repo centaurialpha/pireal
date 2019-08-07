@@ -58,8 +58,9 @@ PIREAL_DATABASES = os.path.join(HOME, 'PirealDatabases')
 SETTINGS_PATH = os.path.join(PIREAL_DIR, 'settings.ini')
 # User settings
 USER_SETTINGS_PATH = os.path.join(PIREAL_DIR, "config.json")
-# Log file
-LOG_PATH = os.path.join(PIREAL_DIR, 'pireal_log.log')
+# Log files
+LOGS_PATH = os.path.join(PIREAL_DIR, "logs")
+LOG_FILE = os.path.join(LOGS_PATH, 'pireal.log')
 # Language files
 LANGUAGE_PATH = os.path.join(ROOT_DIR, 'src', 'lang')
 # Path for QML files

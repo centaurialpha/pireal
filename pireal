@@ -58,7 +58,7 @@ def create_dirs():
 
     pireal_dir = settings.PIREAL_DIR
     is_win = settings.WINDOWS
-    for path in (pireal_dir, settings.PIREAL_DATABASES):
+    for path in (pireal_dir, settings.PIREAL_DATABASES, settings.LOGS_PATH):
         if not os.path.isdir(path):
             os.mkdir(path)
             if path == pireal_dir and is_win:
