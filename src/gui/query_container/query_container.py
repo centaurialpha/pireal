@@ -344,7 +344,7 @@ class QueryWidget(QWidget):
     def clear_results(self):
         central_widget = Pireal.get_service("central")
         lateral_widget = Pireal.get_service("lateral_widget")
-        lateral_widget.result_list.clear_items()
+        # lateral_widget.result_list.clear_items()
         table_widget = central_widget.get_active_db().table_widget
         i = table_widget.stacked_result.count()
         # i = self._stack_tables.count()
@@ -365,8 +365,9 @@ class QueryWidget(QWidget):
         table_widget = central_widget.get_active_db().table_widget
         index = table_widget.stacked_result.addWidget(_view)
         table_widget.stacked_result.setCurrentIndex(index)
-        lateral_widget.result_list.add_item(
-            rname, rela.cardinality(), rela.degree())
+        lateral_widget.add_relation_result(rname, rela.cardinality(), rela.degree())
+        # lateral_widget.result_list.add_item(
+        #     rname, rela.cardinality(), rela.degree())
         # lateral_widget.result_list.select_last()
         table_widget._tabs.setCurrentIndex(1)
 

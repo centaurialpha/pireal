@@ -4,103 +4,17 @@ Rectangle {
     id: root
 
     color: "#404244"
-    signal itemClicked(int index)
-
-    function addItem(item, cardinalidad, grado) {
-        relationModel.append({"name": item, "cardinalidad": cardinalidad, "grado": grado});
-    }
-
-    function setTitle(title) {
-        header.title = title;
-    }
-
-    function clear() {
-        relationModel.clear();
-    }
-
-    function hasItem() {
-        return relationModel.count > 0;
-    }
-
-    function currentItemText() {
-        var index = relationView.currentIndex;
-        var item = relationModel.get(index);
-        var text = "";
-        if ( item !== undefined)
-            text = item.name;
-        return text;
-    }
-
-    function setCardinality(value) {
-        var item = relationModel.get(relationView.currentIndex);
-        item.cardinalidad = value;
-    }
-
-    function currentIndex() {
-        return relationView.currentIndex;
-    }
-
-    function currentItem() {
-        var index = relationView.currentIndex;
-        var item = relationModel.get(index);
-        var name = "";
-        if (item !== undefined) {
-            name = relationModel.get(index).name;
-        }
-        return {"index": index, "name": name};
-    }
-
-    Component.onCompleted: clear();
-
-
-    ListModel {
-        id: relationModel
-        ListElement {
-            name: ""
-            cardinalidad: 0
-            grado: 0
-        }
-    }
-
-    Rectangle {
-        id: header
-        anchors.top: parent.top
-        height: 30
-        width: parent.width
-        color: "#404244"
-        property alias title: lblTitle.text
-        Text {
-            id: lblTitle
-            text: ""
-            font.bold: true
-            font.pointSize: 12
-            color: "#f9f9f9"
-            anchors.centerIn: parent
-        }
-    }
 
     ListView {
         id: relationView
-        anchors {
-            top: header.bottom
-            bottom: parent.bottom
-            left: parent.left
-            right: parent.right
-        }
-        // TODO: hacer scrollbar sin Controls
-        // ScrollBar.vertical: ScrollBar {}
-
+        anchors.fill: parent
         clip: true
         spacing: 3
-        model: relationModel
-
+        model: relation_model
         delegate: Rectangle {
             id: relationItem
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
-
+            anchors.left: parent.left
+            anchors.right: parent.right
             height: 70
             property bool current: ListView.isCurrentItem
             color: relationItem.current ? "#262829" : "transparent"
@@ -125,10 +39,10 @@ Rectangle {
                 Text {
                     id: relationCard
                     color: "#a1a1a1"
-                    text: qsTr("Cardinality: %1").arg(cardinalidad)
+                    text: qsTr("Cardinality: %1").arg(cardinality)
                 }
                 Text {
-                    text: qsTr("Degree: %1").arg(grado)
+                    text: qsTr("Degree: %1").arg(degree)
                     color: "#a1a1a1"
                 }
             }
@@ -136,7 +50,7 @@ Rectangle {
                 anchors.fill: parent
                 onClicked: {
                     relationView.currentIndex = index
-                    root.itemClicked(index)
+                    backend.item_clicked(index)
                 }
             }
         }
