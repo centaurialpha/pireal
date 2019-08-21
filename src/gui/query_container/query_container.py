@@ -344,14 +344,11 @@ class QueryWidget(QWidget):
     def clear_results(self):
         central_widget = Pireal.get_service("central")
         lateral_widget = Pireal.get_service("lateral_widget")
-        # lateral_widget.result_list.clear_items()
+        lateral_widget.clear_results()
         table_widget = central_widget.get_active_db().table_widget
         i = table_widget.stacked_result.count()
-        # i = self._stack_tables.count()
         while i >= 0:
-            # widget = self._stack_tables.widget(i)
             widget = table_widget.stacked_result.widget(i)
-            # self._stack_tables.removeWidget(widget)
             table_widget.stacked_result.removeWidget(widget)
             if widget is not None:
                 widget.deleteLater()

@@ -5,8 +5,11 @@ Rectangle {
 
     color: "#404244"
 
+    function setTitle(title) {}
+
     ListView {
         id: relationView
+
         anchors.fill: parent
         clip: true
         spacing: 3

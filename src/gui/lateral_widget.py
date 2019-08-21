@@ -53,19 +53,24 @@ class RelationModel(QAbstractListModel):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._data = []
+        self._relations = []
 
     def add_item(self, item: RelationItem):
-        self.beginInsertRows(QModelIndex(), 0, 0)
-        self._data.append(item)
+        self.beginInsertRows(QModelIndex(), self.rowCount(), self.rowCount())
+        self._relations.append(item)
         self.endInsertRows()
 
+    def clear(self):
+        self.beginResetModel()
+        self._relations.clear()
+        self.endResetModel()
+
     def rowCount(self, index=QModelIndex()):
-        return len(self._data)
+        return len(self._relations)
 
     def data(self, index, role=Qt.DisplayRole):
         try:
-            rel = self._data[index.row()]
+            rel = self._relations[index.row()]
         except IndexError:
             return None
         if role == self.NameRole:
@@ -92,7 +97,7 @@ class LateralWidget(QSplitter):
 
     # FIXME: puede que no necesite estas signals ya que la idea es usar el modelo
 
-    newRowsRequested = Signal(list)
+    # newRowsRequested = Signal(list)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -100,14 +105,12 @@ class LateralWidget(QSplitter):
         # Lista de relaciones de la base de datos
         self._relations_list_model = RelationModel()
         self._relations_list = RelationListQML(self._relations_list_model)
-
-        # self._relations_list.set_title(tr.TR_RELATIONS)
+        self._relations_list.set_title(tr.TR_RELATIONS)
         self.addWidget(self._relations_list)
         # Lista de relaciones del resultado de consultas
         self._results_list_model = RelationModel()
         self._results_list = RelationListQML(self._results_list_model)
-
-        # self._results_list.set_title(tr.TR_TABLE_RESULTS)
+        self._results_list.set_title(tr.TR_TABLE_RESULTS)
         self.addWidget(self._results_list)
 
         Pireal.load_service("lateral_widget", self)
@@ -123,13 +126,11 @@ class LateralWidget(QSplitter):
     def add_relation_result(self, name: str, cardinality: int, degree: int):
         self._results_list_model.add_item(RelationItem(name, cardinality, degree))
 
-    # @property
-    # def relation_list(self):
-    #     return self._relations_list
+    def clear_relations(self):
+        self._relations_list_model.clear()
 
-    # @property
-    # def result_list(self):
-    #     return self._results_list
+    def clear_results(self):
+        self._results_list_model.clear()
 
 
 class RelationListQML(QWidget):
@@ -152,8 +153,8 @@ class RelationListQML(QWidget):
         # self._root.itemClicked.connect(
         #     lambda i: self.itemClicked.emit(i))
 
-    # def set_title(self, title):
-    #     self._root.setTitle(title)
+    def set_title(self, title):
+        self._root.setTitle(title)
 
     @Slot(int)
     def item_clicked(self, index):

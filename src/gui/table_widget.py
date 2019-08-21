@@ -83,9 +83,9 @@ class TableWidget(QSplitter):
         # self.customContextMenuRequested.connect(self._show_menu)
 
         lateral_widget = Pireal.get_service("lateral_widget")
-        lateral_widget.resultClicked.connect(self._on_result_list_clicked)
-        lateral_widget.resultSelectionChanged.connect(
-            lambda index: self.stacked_result.setCurrentIndex(index))
+        # lateral_widget.resultClicked.connect(self._on_result_list_clicked)
+        # lateral_widget.resultSelectionChanged.connect(
+        #     lambda index: self.stacked_result.setCurrentIndex(index))
         # lateral_widget.newRowsRequested.connect(self._insert_rows)
 
     def insert_rows(self, tuplas):
