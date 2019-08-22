@@ -161,30 +161,3 @@ class RelationListQML(QWidget):
         db = Pireal.get_service("central").get_active_db()
         if db is not None:
             db.relation_clicked(index)
-
-    def add_item(self, name, card, deg):
-        pass
-    #     self._root.addItem(name, card, deg)
-
-    def clear_items(self):
-        pass
-    #     self._root.clear()
-
-    # def current_item(self):
-    #     item = self._root.currentItem()
-    #     name, index = None, None
-    #     if item is not None:
-    #         name, index = item.toVariant().values()
-    #     return index, name
-
-    # def has_item(self):
-    #     return self._root.hasItem()
-
-    # def current_text(self):
-    #     return self._root.currentItemText()
-
-    # def current_index(self):
-    #     return self._root.currentIndex()
-
-    # def update_cardinality(self, new_cardinality):
-    #     self._root.setCardinality(new_cardinality)
