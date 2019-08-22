@@ -119,8 +119,6 @@ class DatabaseContainer(QSplitter):
             self.table_widget.stacked.addWidget(_view)
             # Add table name to list widget
             self.lateral_widget.add_relation_item(table_name, rela.cardinality(), rela.degree())
-            # self.lateral_widget.relation_list.add_item(
-            #     table_name, rela.cardinality(), rela.degree())
         # Select first item
         # self.lateral_widget.relation_list.select_first()
 
@@ -136,17 +134,6 @@ class DatabaseContainer(QSplitter):
         _view.setItemDelegate(delegate.Delegate())
         _view.setHorizontalHeader(header)
         return _view
-        # _model = model.Model(relation_obj)
-        # _model.modelModified[bool].connect(self.__on_model_modified)
-        # _model.cardinalityChanged[int].connect(
-        #         self.__on_cardinality_changed)
-        # if not editable:
-        #     _model.editable = False
-        #     header.editable = False
-        # _view.setModel(_model)
-        # _view.setItemDelegate(delegate.Delegate())
-        # _view.setHorizontalHeader(header)
-        # return _view
 
     @Slot(bool)
     def __on_model_modified(self, modified):
