@@ -28,7 +28,10 @@ from src.core import file_manager
 
 
 class QMLInterface(QWidget):
-    """Componente que se encarga de cargar una interfáz QML"""
+    """Componente que se encarga de cargar una interfáz QML
+
+    La clase base debe sobreescribir `source` + .qml
+    """
 
     source = None
 
@@ -49,7 +52,7 @@ class QMLInterface(QWidget):
 
     @abc.abstractmethod
     def initialize(self):
-        pass
+        """Es un buen lugar para inicializar/conectar cosas como por ejemplo signals"""
 
     @property
     def root(self):

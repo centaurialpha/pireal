@@ -21,6 +21,10 @@ from collections import defaultdict
 import csv
 import os
 
+from PyQt5.QtCore import QUrl
+
+from src.core import settings
+
 
 class DBParserSyntaxError(Exception):
     pass
@@ -107,3 +111,10 @@ def parse_database_content(text):
         if not table_dict["tuples"]:
             data_dict["tables"].append(table_dict)
     return data_dict
+
+
+def get_qml_resource(name):
+    """Devuelve una representación QUrl de `name`, name es el nombre del
+    archivo QML en QML_PATH"""
+    qml = os.path.join(settings.QML_PATH, name)
+    return QUrl.fromLocalFile(qml)

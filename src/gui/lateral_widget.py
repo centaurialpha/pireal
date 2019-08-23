@@ -19,24 +19,15 @@
 
 import os
 
-# from PyQt5.QtWidgets import QTreeWidget
-from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QSplitter
-# from PyQt5.QtWidgets import QTreeWidgetItem
-# from PyQt5.QtWidgets import QAbstractItemView
-from PyQt5.QtWidgets import QVBoxLayout
-
-from PyQt5.QtQuickWidgets import QQuickWidget
 
 from PyQt5.QtCore import Qt
-# from PyQt5.QtCore import QObject
 from PyQt5.QtCore import QAbstractListModel
-# from PyQt5.QtCore import pyqtProperty
 from PyQt5.QtCore import pyqtSignal as Signal
-from PyQt5.QtCore import QUrl
 
 from src import translations as tr
 from src.gui.main_window import Pireal
+from src.gui import qml_interface
 from src.core import settings
 
 
@@ -123,24 +114,14 @@ class LateralWidget(QSplitter):
         return self._results_list
 
 
-class RelationListQML(QWidget):
+class RelationListQML(qml_interface.QMLInterface):
+
+    source = "ListRelation.qml"
 
     itemClicked = Signal(int)
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        vbox = QVBoxLayout(self)
-        vbox.setContentsMargins(0, 0, 0, 0)
-        view = QQuickWidget()
-        qml = os.path.join(settings.QML_PATH, "ListRelation.qml")
-        view.setSource(QUrl.fromLocalFile(qml))
-        view.setResizeMode(QQuickWidget.SizeRootObjectToView)
-        vbox.addWidget(view)
-
-        self._root = view.rootObject()
-
-        self._root.itemClicked.connect(
-            lambda i: self.itemClicked.emit(i))
+    def initialize(self):
+        self.root.itemClicked.connect(self.itemClicked.emit)
 
     def set_title(self, title):
         self._root.setTitle(title)
@@ -169,86 +150,3 @@ class RelationListQML(QWidget):
 
     def update_cardinality(self, new_cardinality):
         self._root.setCardinality(new_cardinality)
-
-
-# class RelationList(QTreeWidget):
-
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#         self.header().setObjectName("lateral")
-#         self.setRootIsDecorated(False)
-#         self.header().setDefaultAlignment(Qt.AlignHCenter)
-#         self.setSelectionMode(QAbstractItemView.SingleSelection)
-#         self.setFrameShape(QTreeWidget.NoFrame)
-#         self.setFrameShadow(QTreeWidget.Plain)
-#         self.setAnimated(True)
-
-#     def select(self, fila):
-#         item = self.topLevelItem(fila)
-#         item.setSelected(True)
-
-#     def select_last(self):
-#         for i in range(self.topLevelItemCount()):
-#             item = self.topLevelItem(i)
-#             item.setSelected(False)
-#         self.select(self.topLevelItemCount() - 1)
-
-#     def select_first(self):
-#         self.select(0)
-
-#     def set_title(self, title):
-#         self.setHeaderLabel(title)
-
-#     def row(self):
-#         return self.indexOfTopLevelItem(self.currentItem())
-
-#     def add_item(self, text, numero_tuplas):
-#         """Agrega un item"""
-#         item = Item(text, str(numero_tuplas))
-#         item.setText(0, item.display_name)
-#         item.setToolTip(0, item.display_name)
-#         self.addTopLevelItem(item)
-
-#     def item_text(self, index):
-#         """Retorna el texto del item en el indice pasado"""
-#         item = self.topLevelItem(index)
-#         if item is None:
-#             item = self.topLevelItem(self.selectedIndexes()[0].row())
-#         text = item.text(0)
-#         return text.split()[0].strip()
-
-#     def remove_item(self, index):
-#         if index == -1:
-#             index = 0  # primer elemento
-#         self.takeTopLevelItem(index)
-
-#     def clear_items(self):
-#         """Elimina todos los items"""
-
-#         self.clear()
-
-#     def update_item(self, tuplas_count):
-#         item = self.current_item()
-#         item.ntuples = str(tuplas_count)
-#         item.setText(0, item.display_name)
-
-#     def current_item(self):
-#         """ Returns the current item in the tree. If item is None
-#         returns item in the index 0 """
-
-#         item = self.currentItem()
-#         if item is None:
-#             item = self.topLevelItem(0)
-#         return item
-
-
-# class Item(QTreeWidgetItem):
-
-#     def __init__(self, text, ntuplas):
-#         super(Item, self).__init__()
-#         self.name = text
-#         self.ntuples = ntuplas
-
-#     @property
-#     def display_name(self):
-#         return self.name + " [" + self.ntuples + "]"
