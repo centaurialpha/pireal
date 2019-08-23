@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 from PyQt5.QtWidgets import QSplitter
 
 from PyQt5.QtCore import Qt
@@ -28,7 +26,6 @@ from PyQt5.QtCore import pyqtSignal as Signal
 from src import translations as tr
 from src.gui.main_window import Pireal
 from src.gui import qml_interface
-from src.core import settings
 
 
 class RelationModel(QAbstractListModel):
