@@ -36,7 +36,7 @@ test:
 	@$(PYTEST) -v --cov src.core --cov-report term-missing -m "not testgui"
 
 test-gui:
-	@$(PYTEST) -v -m testgui
+	@$(PYTEST) -v -m gui
 
 dist: clean
 	python setup.py sdist
