@@ -23,27 +23,41 @@ QML interface
 
 import os
 
-from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QVBoxLayout
 
+from PyQt5.QtQuick import QQuickView
+from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QTimer
 from src.gui.main_window import Pireal
-from src.gui import qml_interface
 from src.core import settings
 
 from src.core.settings import CONFIG
 
 
-class StartPage(qml_interface.QMLInterface):
+class StartPage(QWidget):
     """Lógical para la UI QML de la página principal"""
 
-    source = "StartPage.qml"
+    def __init__(self):
+        super(StartPage, self).__init__()
+        vbox = QVBoxLayout(self)
+        vbox.setContentsMargins(0, 0, 0, 0)
+        view = QQuickView()
+        qml = os.path.join(settings.QML_PATH, "StartPage.qml")
+        view.setSource(QUrl.fromLocalFile(qml))
+        view.setResizeMode(QQuickView.SizeRootObjectToView)
+        widget = QWidget.createWindowContainer(view)
+        vbox.addWidget(widget)
 
-    def initialize(self):
-        self.root.openRecentDatabase.connect(self.__open_database)
-        self.root.openPreferences.connect(self.__open_preferences)
-        self.root.openExample.connect(self.__open_example)
-        self.root.openDatabase.connect(self.__open_database)
-        self.root.newDatabase.connect(self.__new_database)
-        self.root.removeCurrent.connect(self.__remove_current)
+        self.__root = view.rootObject()
+
+        # Connections
+        self.__root.openRecentDatabase.connect(self.__open_database)
+        self.__root.openPreferences.connect(self.__open_preferences)
+        self.__root.openExample.connect(self.__open_example)
+        self.__root.openDatabase.connect(self.__open_database)
+        self.__root.newDatabase.connect(self.__new_database)
+        self.__root.removeCurrent.connect(self.__remove_current)
 
     def __open_example(self):
         central_widget = Pireal.get_service("central")
@@ -71,11 +85,11 @@ class StartPage(qml_interface.QMLInterface):
         central_widget.create_database()
 
     def load_items(self):
-        self.root.clear()
+        self.__root.clear()
         if CONFIG.get("recentFiles"):
             for file_ in CONFIG.get("recentFiles"):
                 name = os.path.splitext(os.path.basename(file_))[0]
-                self.root.loadItem(name, file_)
+                self.__root.loadItem(name, file_)
 
     def showEvent(self, event):
         """ Load list view every time the start page is displayed """
