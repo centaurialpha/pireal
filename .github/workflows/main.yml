@@ -1,0 +1,31 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 2
+      matrix:
+        python-version: [3.7]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Test
+      run: ls -l
+#     - name: Static Analisys ${{ matrix.python-version }}
+#       uses: actions/setup-python@v1
+#       with:
+#         python-version: ${{ matrix.python-version }}
+#     - name: pycodestyle
+#       run: |
+#         python -m pip install --upgrade pip
+#         pip install -r requirements.txt
+#         pip install -r requirements-dev.txt
+#     - name: Lint with Pycodestyle
+#       run: |
+#         make pep8
+#     - name: Lint with Flake8
+#       run: |
+#         make flake8
