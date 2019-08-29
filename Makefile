@@ -33,7 +33,7 @@ flake8:
 lint: pep8 flake8
 
 test:
-	@$(PYTEST) -v --cov src.core --cov-report term-missing -m "not testgui"
+	@$(PYTEST) -v --cov src.core --cov-report term-missing -m "not gui"
 
 test-gui:
 	@$(PYTEST) -v -m gui
