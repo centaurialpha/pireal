@@ -20,7 +20,7 @@
 import shlex
 import pytest
 
-from src.core import cliparser
+from pireal.core import cliparser
 
 
 @pytest.fixture

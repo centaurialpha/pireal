@@ -19,7 +19,7 @@
 
 import pytest
 
-from src.core import relation
+from pireal.core import relation
 
 
 @pytest.fixture

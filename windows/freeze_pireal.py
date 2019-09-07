@@ -22,7 +22,7 @@ from cx_Freeze import setup, Executable
 
 # PYQT5_DIR = "C:/Python34/Lib/site-packages/PyQt5"
 # include_files = [
-#    "src/gui/qml",
+#    "pireal/gui/qml",
 #    (os.path.join(PYQT5_DIR, "qml", "QtQuick.2"), "QtQuick.2"),
 #    (os.path.join(PYQT5_DIR, "qml", "QtQuick"), "QtQuick"),
 #    (os.path.join(PYQT5_DIR, "qml", "QtGraphicalEffects"),
@@ -59,14 +59,14 @@ setup(
     author="Gabriel Acosta",
     options=opt,
     packages=[
-        "src",
-        "src.core",
-        "src.gui",
-        "src.gui.dialogs",
-        "src.gui.query_container"
+        "pireal",
+        "pireal.core",
+        "pireal.gui",
+        "pireal.gui.dialogs",
+        "pireal.gui.query_container"
     ],
     package_data={
-        "src": ["gui/qml/*"]
+        "pireal": ["gui/qml/*"]
     },
     executables=[exe]
 )
