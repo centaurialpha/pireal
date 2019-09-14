@@ -83,6 +83,7 @@ class Pireal(QMainWindow):
         QMainWindow.__init__(self)
         self.setWindowTitle('Pireal')
         self.setMinimumSize(880, 600)
+        self.resize(1035, 760)
         # Load window geometry
         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
         window_maximized = qsettings.value('window_max', True)
