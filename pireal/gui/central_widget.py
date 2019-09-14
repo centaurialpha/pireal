@@ -21,8 +21,7 @@ import os
 import logging
 
 from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QVBoxLayout
-from PyQt5.QtWidgets import QStackedWidget
+from PyQt5.QtWidgets import QStackedLayout
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QShortcut
@@ -30,6 +29,7 @@ from PyQt5.QtWidgets import QShortcut
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSignal as Signal
+from PyQt5.QtCore import pyqtSlot as Slot
 
 
 from pireal import translations as tr
@@ -37,7 +37,6 @@ from pireal.core import settings
 from pireal.core import file_manager
 from pireal.core import pfile
 
-from pireal.gui.main_window import Pireal
 from pireal.gui import start_page
 from pireal.gui import database_container
 
@@ -53,29 +52,22 @@ logger = logging.getLogger(__name__)
 class CentralWidget(QWidget):
     # This signals is used by notificator
     databaseSaved = Signal(str)
-    databaseSaved = Signal(str)
     querySaved = Signal(str)
     databaseConected = Signal(str)
 
-    def __init__(self):
-        QWidget.__init__(self)
-        box = QVBoxLayout(self)
-        box.setContentsMargins(0, 0, 0, 0)
-        box.setSpacing(0)
-
-        self.stacked = QStackedWidget()
-        box.addWidget(self.stacked)
+    def __init__(self, parent=None):
+        QWidget.__init__(self, parent)
+        self.pireal = parent
+        self._stacked = QStackedLayout(self)
 
         self.created = False
         # Acá cacheo la última carpeta accedida
-        self.__last_open_folder = None
+        self._last_open_folder = None
         if CONFIG.get("lastOpenFolder") is not None:
-            self.__last_open_folder = CONFIG.get("lastOpenFolder")
-        self.__recent_dbs = []
+            self._last_open_folder = CONFIG.get("lastOpenFolder")
+        self._recent_dbs = []
         if CONFIG.get("recentFiles"):
-            self.__recent_dbs = CONFIG.get("recentFiles")
-
-        Pireal.load_service("central", self)
+            self._recent_dbs = CONFIG.get("recentFiles")
 
         esc_short = QShortcut(QKeySequence(Qt.Key_Escape), self)
         esc_short.activated.connect(self._hide_search)
@@ -90,7 +82,7 @@ class CentralWidget(QWidget):
 
     @property
     def recent_databases(self):
-        return self.__recent_dbs
+        return self._recent_dbs
 
     @recent_databases.setter
     def recent_databases(self, database_file):
@@ -98,11 +90,11 @@ class CentralWidget(QWidget):
         if database_file in recent_files:
             recent_files.remove(database_file)
         recent_files.insert(0, database_file)
-        self.__recent_dbs = recent_files
+        self._recent_dbs = recent_files
 
     @property
     def last_open_folder(self):
-        return self.__last_open_folder
+        return self._last_open_folder
 
     def rdb_to_pdb(self):
         from pireal.gui import rdb_pdb_tool
@@ -114,19 +106,20 @@ class CentralWidget(QWidget):
         only have one database open at time."""
 
         if self.created:
-            return self.__say_about_one_db_at_time()
-        dialog = new_database_dialog.NewDatabaseDialog(self)
-        dialog.created.connect(self.__on_wizard_finished)
-        dialog.show()
+            self.__say_about_one_db_at_time()
+        else:
+            dialog = new_database_dialog.NewDatabaseDialog(self)
+            dialog.created.connect(self._on_wizard_finished)
+            dialog.show()
 
-    def __on_wizard_finished(self, *data):
+    @Slot(str, str, str)
+    def _on_wizard_finished(self, *data):
         """This slot execute when wizard to create a database is finished"""
 
-        pireal = Pireal.get_service("pireal")
         if data:
-            db_name, location, fname = data
+            _, _, fname = data
             # Create a new data base container
-            db_container = database_container.DatabaseContainer()
+            db_container = database_container.DatabaseContainer(self)
             # Associate the file name with the PFile object
             pfile_object = pfile.File(fname)
             # Associate PFile object with data base container
@@ -134,10 +127,10 @@ class CentralWidget(QWidget):
             db_container.pfile = pfile_object
             self.add_widget(db_container)
             # Set window title
-            pireal.change_title(file_manager.get_basename(fname))
+            self.pireal.change_title(file_manager.get_basename(fname))
             # Enable db actions
-            pireal.set_enabled_db_actions(True)
-            pireal.set_enabled_relation_actions(True)
+            self.pireal.set_enabled_db_actions(True)
+            self.pireal.set_enabled_relation_actions(True)
             self.created = True
             logger.debug("La base de datos ha sido creada con éxito")
 
@@ -154,10 +147,10 @@ class CentralWidget(QWidget):
         # If not filename provide, then open dialog to select
         if not filename:
             logger.debug('Filename not provided')
-            if self.__last_open_folder is None:
+            if self._last_open_folder is None:
                 directory = os.path.expanduser("~")
             else:
-                directory = self.__last_open_folder
+                directory = self._last_open_folder
             filter_ = settings.SUPPORTED_FILES.split(';;')[0]
             filename, _ = QFileDialog.getOpenFileName(
                 self, tr.TR_OPEN_DATABASE, directory, filter_)
@@ -186,7 +179,7 @@ class CentralWidget(QWidget):
             return
 
         # Create a database container widget
-        db_container = database_container.DatabaseContainer()
+        db_container = database_container.DatabaseContainer(self)
 
         try:
             db_container.create_database(db_data)
@@ -202,23 +195,22 @@ class CentralWidget(QWidget):
         # Database name
         db_name = file_manager.get_basename(filename)
         # Update title with the new database name, and enable some actions
-        pireal = Pireal.get_service("pireal")
         self.databaseConected.emit(tr.TR_NOTIFICATION_DB_CONNECTED.format(db_name))
-        pireal.set_enabled_db_actions(True)
-        pireal.set_enabled_relation_actions(True)
+        self.pireal.set_enabled_db_actions(True)
+        self.pireal.set_enabled_relation_actions(True)
         if remember:
             # Add to recent databases
             self.recent_databases = filename
             # Remember the folder
-            self.__last_open_folder = file_manager.get_path(filename)
+            self._last_open_folder = file_manager.get_path(filename)
         self.created = True
 
     def open_query(self, filename='', remember=True):
         if not filename:
-            if self.__last_open_folder is None:
+            if self._last_open_folder is None:
                 directory = os.path.expanduser("~")
             else:
-                directory = self.__last_open_folder
+                directory = self._last_open_folder
             filter_ = settings.SUPPORTED_FILES.split(';;')[1]
             filename, _ = QFileDialog.getOpenFileName(self,
                                                       tr.TR_OPEN_QUERY,
@@ -229,7 +221,7 @@ class CentralWidget(QWidget):
         # Si @filename no es False
         # Cacheo la carpeta accedida
         if remember:
-            self.__last_open_folder = file_manager.get_path(filename)
+            self._last_open_folder = file_manager.get_path(filename)
         # FIXME: mejorar éste y new_query
         self.new_query(filename)
 
@@ -246,8 +238,8 @@ class CentralWidget(QWidget):
     def remove_last_widget(self):
         """ Remove last widget from stacked """
 
-        widget = self.stacked.widget(self.stacked.count() - 1)
-        self.stacked.removeWidget(widget)
+        widget = self._stacked.widget(self._stacked.count() - 1)
+        self._stacked.removeWidget(widget)
 
     def close_database(self):
         """ Close the database and return to the main widget """
@@ -291,24 +283,22 @@ class CentralWidget(QWidget):
                     if r == yes_btn:
                         self.save_query(weditor)
 
-        self.stacked.removeWidget(db)
+        self._stacked.removeWidget(db)
 
-        pireal = Pireal.get_service("pireal")
-        pireal.set_enabled_db_actions(False)
-        pireal.set_enabled_relation_actions(False)
-        pireal.set_enabled_query_actions(False)
-        pireal.set_enabled_editor_actions(False)
-        pireal.change_title()  # Título en la ventana principal 'Pireal'
+        self.pireal.set_enabled_db_actions(False)
+        self.pireal.set_enabled_relation_actions(False)
+        self.pireal.set_enabled_query_actions(False)
+        self.pireal.set_enabled_editor_actions(False)
+        self.pireal.change_title()  # Título en la ventana principal 'Pireal'
         self.created = False
         del db
 
     def new_query(self, filename=''):
-        pireal = Pireal.get_service("pireal")
         db_container = self.get_active_db()
         db_container.new_query(filename)
         # Enable editor actions
         # FIXME: refactoring
-        pireal.set_enabled_query_actions(True)
+        self.pireal.set_enabled_query_actions(True)
         # paste_action = Pireal.get_action("paste_action")
         # paste_action.setEnabled(True)
         # comment_action = Pireal.get_action("comment")
@@ -371,41 +361,17 @@ class CentralWidget(QWidget):
         dialog = new_relation_dialog.NewRelationDialog(self)
         if dialog.exec_():
             db = self.get_active_db()
-            lateral = Pireal.get_service("lateral_widget")
             relation, relation_name = dialog.get_data()
             table = db.create_table(relation, relation_name)
             db.table_widget.add_table(relation, relation_name, table)
-            lateral.relation_list.add_item(
+            db.lateral_widget.relation_list.add_item(
                 relation_name, relation.cardinality(), relation.degree())
             db.modified = True
-
-    # def load_relation(self, filename=''):
-    #     """ Load Relation file """
-
-    #     if not filename:
-    #         if self.__last_open_folder is None:
-    #             directory = os.path.expanduser("~")
-    #         else:
-    #             directory = self.__last_open_folder
-
-    #         msg = self.tr("Abrir Relación")
-    #         filter_ = settings.SUPPORTED_FILES.split(';;')[-1]
-    #         filenames = QFileDialog.getOpenFileNames(self, msg, directory,
-    #                                                  filter_)[0]
-
-    #         if not filenames:
-    #             return
-
-    #     # Save folder
-    #     self.__last_open_folder = file_manager.get_path(filenames[0])
-    #     db_container = self.get_active_db()
-    #     if db_container.load_relation(filenames):
-    #         db_container.modified = True
 
     def add_start_page(self):
         """ This function adds the Start Page to the stacked widget """
 
-        sp = start_page.StartPage()
+        sp = start_page.StartPage(self)
         self.add_widget(sp)
 
     def show_settings(self):
@@ -421,7 +387,6 @@ class CentralWidget(QWidget):
 
         # # Connect the closed signal
         # preferences_dialog.settingsClosed.connect(self._settings_closed)
-        # TODO: para la próxima versión
         logger.debug('Showing preferences...')
         widget = preferences.Preferences(self)
         widget.show()
@@ -429,24 +394,24 @@ class CentralWidget(QWidget):
     def widget(self, index):
         """ Returns the widget at the given index """
 
-        return self.stacked.widget(index)
+        return self._stacked.widget(index)
 
     def add_widget(self, widget):
         """ Appends and show the given widget to the Stacked """
 
-        index = self.stacked.addWidget(widget)
-        self.stacked.setCurrentIndex(index)
+        index = self._stacked.addWidget(widget)
+        self._stacked.setCurrentIndex(index)
 
     def _settings_closed(self):
-        self.stacked.removeWidget(self.widget(1))
-        self.stacked.setCurrentWidget(self.stacked.currentWidget())
+        self._stacked.removeWidget(self.widget(1))
+        self._stacked.setCurrentWidget(self._stacked.currentWidget())
 
     def get_active_db(self):
         """ Return an instance of DatabaseContainer widget if the
         stacked contains an DatabaseContainer in last index or None if it's
         not an instance of DatabaseContainer """
 
-        index = self.stacked.count() - 1
+        index = self._stacked.count() - 1
         widget = self.widget(index)
         if isinstance(widget, database_container.DatabaseContainer):
             return widget
@@ -485,10 +450,9 @@ class CentralWidget(QWidget):
         query_container.uncomment()
 
     def add_tuple(self):
-        lateral = Pireal.get_service("lateral_widget")
+        lateral = self.get_active_db().lateral_widget
         if lateral.relation_list.has_item() == 0:
             return
-        # rname = lateral.relation_list.item_text(lateral.relation_list.row())
         rname = lateral.relation_list.current_text()
         from pireal.gui.dialogs.edit_relation_dialog import EditRelationDialog
         dialog = EditRelationDialog(rname, self)
@@ -501,7 +465,7 @@ class CentralWidget(QWidget):
         tw.add_column()
 
     def delete_tuple(self):
-        lateral = Pireal.get_service("lateral_widget")
+        lateral = self.get_active_db().lateral_widget
         if lateral.relation_list.has_item() == 0:
             return
         r = QMessageBox.question(
@@ -521,6 +485,3 @@ class CentralWidget(QWidget):
     def search(self):
         query_container = self.get_active_db().query_container
         query_container.search()
-
-
-central = CentralWidget()

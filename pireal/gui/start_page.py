@@ -29,7 +29,7 @@ from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtQuick import QQuickView
 from PyQt5.QtCore import QUrl
 from PyQt5.QtCore import QTimer
-from pireal.gui.main_window import Pireal
+# from pireal.gui.main_window import Pireal
 from pireal.core import settings
 
 from pireal.core.settings import CONFIG
@@ -38,8 +38,9 @@ from pireal.core.settings import CONFIG
 class StartPage(QWidget):
     """Lógical para la UI QML de la página principal"""
 
-    def __init__(self):
-        super(StartPage, self).__init__()
+    def __init__(self, parent=None):
+        super(StartPage, self).__init__(parent)
+        self._central = parent
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         view = QQuickView()
@@ -60,29 +61,30 @@ class StartPage(QWidget):
         self.__root.removeCurrent.connect(self.__remove_current)
 
     def __open_example(self):
-        central_widget = Pireal.get_service("central")
+        # central_widget = Pireal.get_service("central")
+
         db_filename = os.path.join(settings.EXAMPLES, 'database.pdb')
-        central_widget.open_database(filename=db_filename, remember=False)
+        self._central.open_database(filename=db_filename, remember=False)
         query_filename = os.path.join(settings.EXAMPLES, 'queries.pqf')
-        central_widget.open_query(filename=query_filename, remember=False)
+        self._central.open_query(filename=query_filename, remember=False)
         # Ejecuto las consultas de ejemplo luego de 1.3 segundos
-        QTimer.singleShot(1300, central_widget.execute_queries)
+        QTimer.singleShot(1300, self._central.execute_queries)
 
     def __open_preferences(self):
-        central_widget = Pireal.get_service("central")
-        central_widget.show_settings()
+        # central_widget = Pireal.get_service("central")
+        self._central.show_settings()
 
     def __remove_current(self, path):
-        central_widget = Pireal.get_service("central")
-        central_widget.recent_databases.remove(path)
+        # central_widget = Pireal.get_service("central")
+        self._central.recent_databases.remove(path)
 
     def __open_database(self, path=''):
-        central_widget = Pireal.get_service("central")
-        central_widget.open_database(path)
+        # central_widget = Pireal.get_service("central")
+        self._central.open_database(path)
 
     def __new_database(self):
-        central_widget = Pireal.get_service("central")
-        central_widget.create_database()
+        # central_widget = Pireal.get_service("central")
+        self._central.create_database()
 
     def load_items(self):
         self.__root.clear()

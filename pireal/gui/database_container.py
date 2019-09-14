@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-# import csv
 import logging
 
 from PyQt5.QtWidgets import QSplitter
@@ -42,23 +41,19 @@ from pireal.gui import delegate
 from pireal.gui.query_container import query_container
 from pireal.core import relation
 from pireal.core import pfile
-# from pireal.core import file_manager
 from pireal.core import settings
 
-# from pireal.core.logger import Logger
-
-# logger = Logger(__name__)
 logger = logging.getLogger(__name__)
 
 
 class DatabaseContainer(QSplitter):
 
-    def __init__(self, orientation=Qt.Horizontal):
-        QSplitter.__init__(self, orientation)
+    def __init__(self, parent=None, orientation=Qt.Horizontal):
+        super().__init__(orientation, parent)
         self.pfile = None
-
-        self.lateral_widget = lateral_widget.LateralWidget()
-        self.table_widget = table_widget.TableWidget()
+        self.central = parent
+        self.lateral_widget = lateral_widget.LateralWidget(self)
+        self.table_widget = table_widget.TableWidget(self)
         self.query_container = query_container.QueryContainer(self)
 
         self._vsplitter = QSplitter(Qt.Vertical)
@@ -80,8 +75,7 @@ class DatabaseContainer(QSplitter):
         # see issue #39
         self.lateral_widget.relationSelectionChanged.connect(
             lambda i: self.table_widget.stacked.setCurrentIndex(i))
-        self.query_container.saveEditor.connect(
-            self.save_query)
+        self.query_container.saveEditor.connect(self.save_query)
         self.setSizes([1, 1])
 
     def _on_relation_clicked(self, index):
@@ -159,28 +153,6 @@ class DatabaseContainer(QSplitter):
         # self.lateral_widget.update_item(value)
         self.lateral_widget.relation_list.update_cardinality(value)
 
-    # def load_relation(self, filenames):
-    #     for filename in filenames:
-    #         with open(filename) as f:
-    #             csv_reader = csv.reader(f)
-    #             header = next(csv_reader)
-    #             rel = relation.Relation()
-    #             rel.header = header
-    #             for i in csv_reader:
-    #                 rel.insert(i)
-    #             relation_name = file_manager.get_basename(filename)
-    #             if not self.table_widget.add_relation(relation_name, rel):
-    #                 QMessageBox.information(self, self.tr("Información"),
-    #                                         self.tr("Ya existe una relación "
-    #                                                 "con el nombre  "
-    #                                                 "'{}'".format(
-    #                                                     relation_name)))
-    #                 return False
-
-    #         self.table_widget.add_table(rel, relation_name)
-    #         # self.lateral_widget.add_item(relation_name, rel.cardinality())
-    #         return True
-
     def delete_relation(self):
         name = self.lateral_widget.relation_list.current_text()
         index = self.lateral_widget.relation_list.current_index()
@@ -205,33 +177,12 @@ class DatabaseContainer(QSplitter):
             return True
         return False
 
-    def __on_data_table_changed(self, row, col, data):
-        # current_relation = self.lateral_widget.current_text()
-        # # Relation to be update
-        # rela = self.table_widget.relations.get(current_relation)
-        # # Clear old content
-        # rela.clear()
-        # current_table = self.table_widget.stacked.currentWidget()
-        # model = current_table.model()
-        # for i in range(model.rowCount()):
-        #     reg = []
-        #     for j in range(model.columnCount()):
-        #         if row == i and col == j:
-        #             reg.append(data)
-        #         else:
-        #             reg.append(model.item(i, j).text())
-        #     # Insert new content
-        #     rela.insert(reg)
-        # # Update relation
-        # self.table_widget.relations[current_relation] = rela
-        pass
-
     def new_query(self, filename):
         editor_tab_at = self.query_container.is_open(filename)
         if editor_tab_at != -1:
             self.query_container.set_focus_editor_tab(editor_tab_at)
         else:
-            query_widget = query_container.QueryWidget()
+            query_widget = query_container.QueryWidget(self)
             # Create object file
             ffile = pfile.File(filename)
             editor = query_widget.get_editor()

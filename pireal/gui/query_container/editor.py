@@ -26,7 +26,6 @@ from PyQt5.QtGui import QTextCursor
 from PyQt5.QtGui import QFont
 from PyQt5.QtGui import QColor
 from PyQt5.QtGui import QKeySequence
-# from PyQt5.QtGui import QTextOption
 from PyQt5.QtGui import QTextDocument
 
 from PyQt5.QtCore import Qt, QTimer
@@ -36,7 +35,6 @@ from pireal.gui.query_container import (
     sidebar
 )
 from pireal.core.settings import CONFIG
-# from pireal.gui.query_container import snippets
 
 
 class Editor(QPlainTextEdit):

@@ -19,24 +19,18 @@
 
 import os
 
-# from PyQt5.QtWidgets import QTreeWidget
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QSplitter
-# from PyQt5.QtWidgets import QTreeWidgetItem
-# from PyQt5.QtWidgets import QAbstractItemView
 from PyQt5.QtWidgets import QVBoxLayout
 
 from PyQt5.QtQuickWidgets import QQuickWidget
 
 from PyQt5.QtCore import Qt
-# from PyQt5.QtCore import QObject
 from PyQt5.QtCore import QAbstractListModel
-# from PyQt5.QtCore import pyqtProperty
 from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtCore import QUrl
 
 from pireal import translations as tr
-from pireal.gui.main_window import Pireal
 from pireal.core import settings
 
 
@@ -89,6 +83,7 @@ class LateralWidget(QSplitter):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.db_container = parent
         self.setOrientation(Qt.Vertical)
         # Lista de relaciones de la base de datos
         self._relations_list = RelationListQML()
@@ -99,7 +94,7 @@ class LateralWidget(QSplitter):
         self._results_list.set_title(tr.TR_TABLE_RESULTS)
         self.addWidget(self._results_list)
 
-        Pireal.load_service("lateral_widget", self)
+        # Pireal.load_service("lateral_widget", self)
 
         self._relations_list.itemClicked.connect(
             lambda i: self.relationClicked.emit(i))

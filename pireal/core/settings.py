@@ -120,7 +120,7 @@ class Config(QObject):
         self._settings[option] = value
 
     @staticmethod
-    def _get_font(self):
+    def _get_font():
         font = QFont("consolas", 11)
         if LINUX:
             font = QFont("monospace", 12)

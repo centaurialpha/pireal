@@ -30,13 +30,14 @@ from PyQt5.QtWidgets import QDialogButtonBox
 from PyQt5.QtGui import QFontDatabase
 
 from pireal.core.settings import CONFIG
-from pireal.gui.main_window import Pireal
+# from pireal.gui.main_window import Pireal
 
 
 class Preferences(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._central = parent
         self.setWindowTitle('Preferences')
         vbox = QVBoxLayout(self)
 
@@ -87,8 +88,8 @@ class Preferences(QDialog):
         CONFIG.set_value('highlightCurrentLine', self._check_highlight_current_line.isChecked())
         CONFIG.set_value('matchParenthesis', self._check_highlight_braces.isChecked())
 
-        central = Pireal.get_service('central')
-        db = central.get_active_db()
+        # central = Pireal.get_service('central')
+        db = self._central.get_active_db()
         if db is not None:
             qw = db.query_container.currentWidget()
             if qw is not None:
