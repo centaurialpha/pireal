@@ -53,7 +53,7 @@ class CustomInstall(install):
             dst_desktop = os.path.join(self._custom_apps_dir, src_desktop)
             with open(src_desktop, 'r') as f:
                 content = f.read()
-            icon = os.path.join(self._custom_data_dir, 'src', 'images',
+            icon = os.path.join(self._custom_data_dir, 'pireal', 'images',
                                 'pireal_icon.png')
             content = content.replace('@ INSTALLED_ICON @', icon)
             with open(dst_desktop, 'w') as f:
@@ -115,7 +115,7 @@ setup(
     license='GPLv3+',
     long_description=open('README.md').read(),
     package_data={
-        "src": [
+        "pireal": [
             "gui/qml/*",
             "gui/qml/widgets/*",
             "images/pireal_icon.png",

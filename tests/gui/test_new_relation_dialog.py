@@ -3,12 +3,12 @@ import pytest
 
 from PyQt5.QtGui import QStandardItem
 
-from src.gui.dialogs.new_relation_dialog import NewRelationDialog
+from pireal.gui.dialogs.new_relation_dialog import NewRelationDialog
 
 
 @pytest.fixture
 def dialog():
-    module = 'src.gui.view.CONFIG.get'
+    module = 'pireal.gui.view.CONFIG.get'
     with mock.patch(module):
         w = NewRelationDialog()
         return w
@@ -80,7 +80,7 @@ def test_delete_column(qtbot, dialog, columns_to_insert, to_delete, expected):
 def test_create_new(qtbot, dialog, relation_name, header, tuples):
     qtbot.addWidget(dialog)
     dialog._line_relation_name.setText(relation_name)
-    with mock.patch('src.gui.main_window.Pireal.get_service'):
+    with mock.patch('pireal.gui.main_window.Pireal.get_service'):
         view = dialog._view
         for e, i in enumerate(header):
             view.horizontalHeader().model().setHeaderData(e, 1, i)

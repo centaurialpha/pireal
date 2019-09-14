@@ -5,7 +5,7 @@
 ---
 
 <p align="center">
-  <img src="https://github.com/centaurialpha/pireal/blob/master/src/gui/qml/pireal_logo.png?raw=true" >
+  <img pireal="https://github.com/centaurialpha/pireal/blob/master/pireal/gui/qml/pireal_logo.png?raw=true" >
 <p>
 
 **πireal** is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.
@@ -27,7 +27,7 @@
 - PyQt5 Qt Quick Module (package `python3-pyqt5.qtquick` in Debian)
 
 ### Implemented Operators
-The operations are implemented in [relation.py](https://github.com/centaurialpha/pireal/blob/master/src/core/relation.py).
+The operations are implemented in [relation.py](https://github.com/centaurialpha/pireal/blob/master/pireal/core/relation.py).
 
 |Operator|Supported|
 |--------|---------|
