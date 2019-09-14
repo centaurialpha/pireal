@@ -22,6 +22,21 @@
 
 import os
 import sys
+import ctypes
+
+
+def create_dirs():
+    """This functions create a structure folders used by Pireal"""
+
+    pireal_dir = settings.PIREAL_DIR
+    is_win = settings.WINDOWS
+    for path in (pireal_dir, settings.PIREAL_DATABASES, settings.LOGS_PATH):
+        if not os.path.isdir(path):
+            os.mkdir(path)
+            if path == pireal_dir and is_win:
+                # Set hide attribute if OS is WIndows
+                ctypes.windll.kernel32.SetFileAttributesW(path, 0x02)
+
 
 # Esto es reemplazado en tiempo de instalación
 INSTALLED_BASE_DIR = '@ BASE_DIR @'
@@ -36,6 +51,7 @@ if project_base_dir not in sys.path:
 
 from pireal.core import cliparser
 from pireal import __version__
+from pireal.core import settings
 
 # Parse CLI
 args = cliparser.get_cli().parse_args()
@@ -43,6 +59,9 @@ args = cliparser.get_cli().parse_args()
 if args.version:
     print(__version__)
     sys.exit(0)
+
+# Creo los dirs antes de leer logs see #84
+create_dirs()
 
 from pireal.core import logger
 from pireal import main

@@ -23,7 +23,6 @@ import sys
 import os
 import platform
 import logging
-import ctypes
 
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QT_VERSION_STR
@@ -38,22 +37,7 @@ from pireal.gui import main_window
 logger = logging.getLogger(__name__)
 
 
-def create_dirs():
-    """This functions create a structure folders used by Pireal"""
-
-    pireal_dir = settings.PIREAL_DIR
-    is_win = settings.WINDOWS
-    for path in (pireal_dir, settings.PIREAL_DATABASES, settings.LOGS_PATH):
-        if not os.path.isdir(path):
-            os.mkdir(path)
-            if path == pireal_dir and is_win:
-                # Set hide attribute if OS is WIndows
-                ctypes.windll.kernel32.SetFileAttributesW(path, 0x02)
-
-
 def start_pireal():
-    # Create dirs used by Pireal
-    create_dirs()
     CONFIG.load_settings()
 
     # OS
