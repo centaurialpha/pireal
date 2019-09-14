@@ -16,6 +16,7 @@ clean:
 	rm -rf `find -name "*qmlc"`
 	rm -rf .pybuild/
 	rm -rf debian/debhelper-build-stamp
+	rm -rf debian/.debhelper
 	rm -rf debian/files
 	rm -rf debian/pireal/
 	rm -rf debian/pireal.postinst.debhelper
