@@ -35,5 +35,6 @@ jobs:
       - name: unittest-core
         run: |
           pip install --upgrade pip
-          pip install pytest pytest-cov
+          pip install pyqt5
+          pip install pytest pytest-qt pytest-cov
           make test

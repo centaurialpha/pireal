@@ -14,6 +14,7 @@ def dialog():
         return w
 
 
+@pytest.mark.skip(reason='Todavía no necesito estos tests')
 @pytest.mark.gui
 @pytest.mark.parametrize(
     'row_to_insert, expected',
@@ -30,6 +31,7 @@ def test_add_tuple(qtbot, dialog, row_to_insert, expected):
     assert dialog._view.model().rowCount() == expected
 
 
+@pytest.mark.skip(reason='Todavía no necesito estos tests')
 @pytest.mark.gui
 @pytest.mark.parametrize(
     'columns_to_insert, expected',
@@ -45,6 +47,8 @@ def test_add_column(qtbot, dialog, columns_to_insert, expected):
         dialog._NewRelationDialog__add_column()
     assert dialog._view.model().columnCount() == expected
 
+
+@pytest.mark.skip(reason='Todavía no necesito estos tests')
 @pytest.mark.gui
 @pytest.mark.parametrize(
     'columns_to_insert, to_delete, expected',
@@ -64,6 +68,7 @@ def test_delete_column(qtbot, dialog, columns_to_insert, to_delete, expected):
     assert dialog._view.model().columnCount() == expected
 
 
+@pytest.mark.skip(reason='Todavía no necesito estos tests')
 @pytest.mark.gui
 @pytest.mark.parametrize(
     'relation_name, header, tuples',
