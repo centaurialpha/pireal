@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# Copyright 2015-2019 - Gabriel Acosta <acostadariogabriel@gmail.com>
+#
+# This file is part of Pireal.
+#
+# Pireal is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# any later version.
+#
+# Pireal is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Pireal; If not, see <http://www.gnu.org/licenses/>.
+
+"""Script to show stats of Pireal code"""
+
+import os
+import argparse
+from collections import defaultdict
+
+PIREAL_REPO = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+
+_LANG_MAP = {
+    '.py': 'Python',
+    '.qml': 'QML',
+    '.yml': 'Yaml',
+    '.sh': 'Shell'
+}
+_DIR_EXCLUDES = ('.git', '.pytest_cache', '__pycache__')
+_FILE_EXCLUDES = ('.bmp', '.png', '.ico', '.svg', '.qm', '.ts', '.qmlc')
+
+
+def get_command_line_parser():
+    parser = argparse.ArgumentParser(__doc__)
+    parser.add_argument('-w', help='Count white spaces')
+    parser.add_argument('-c', help='Ignore comments')
+    return parser
+
+
+def main(args):
+    total_lines = 0
+    lines_per_lang = defaultdict(int)
+
+    for dirpath, dirnames, filenames in os.walk(PIREAL_REPO, topdown=True):
+        dirnames[:] = [d for d in dirnames if d not in _DIR_EXCLUDES]
+        filenames[:] = [f for f in filenames if not f.endswith(_FILE_EXCLUDES)]
+        for filename in filenames:
+            shebang = False
+            filepath = os.path.join(dirpath, filename)
+            with open(filepath) as fp:
+                ext = os.path.splitext(filename)[-1]
+                if not ext:
+                    if not fp.readline().strip().startswith('#!/usr/bin/env python'):
+                        continue
+                    shebang = True
+                lines = sum(1 for _ in fp)
+                lang_name = _LANG_MAP.get(ext)
+                if shebang:
+                    lang_name = 'Python'
+                if lang_name is not None:
+                    lines_per_lang[lang_name] += lines
+                    total_lines += lines
+
+    print('{:>10} |{:>10}'.format('Language', 'LoC'))
+    print('{:->11}|{:->11}'.format('', ''))
+    for lang, lines in lines_per_lang.items():
+        print('{:>10} |{:>10}'.format(lang, lines))
+    print('{:->11}|{:->11}'.format('', ''))
+    print('{:>22}'.format(total_lines))
+
+
+if __name__ == '__main__':
+    args = get_command_line_parser().parse_args()
+    main(args)
