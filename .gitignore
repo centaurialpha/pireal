@@ -3,3 +3,9 @@
 *.jsc
 .pytest_cache/
 .coverage*
+*.gem
+.bundle
+.sass-cache
+_site
+Gemfile.lock
+node_modules
