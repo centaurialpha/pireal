@@ -24,15 +24,15 @@ $logo: "{{ site.logo | absolute_url }}";
 // Import custom overrides
 //
 
-@import "./custom/custom";
-
-//
 // Import custom color scheme scss
 //
 
 {% if site.color_scheme == "dark" %}
 @import "./color_schemes/dark.scss";
 {% endif %}
+
+@import "./custom/custom";
+
 
 // Modules
 @import "./base";

@@ -3,6 +3,7 @@ layout: default
 title: Responsive Modifiers
 parent: Utilities
 nav_order: 1
+nav_exclude: true
 ---
 
 # Responsive modifiers
