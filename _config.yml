@@ -39,7 +39,7 @@ aux_links:
     - "//github.com/centaurialpha/pireal"
 
 # Footer content appears at the bottom of every page's main content
-footer_content: "Copyright &copy; 2015-2019 Gabriel Acosta. Distributed by an <a href=\"https://github.com/pmarsceill/just-the-docs/tree/master/LICENSE.txt\">MIT license.</a>"
+footer_content: "Copyright &copy; 2015-2019 Gabriel Acosta. Distributed by an <a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">GPL v3 license.</a>"
 
 # Color scheme currently only supports "dark" or nil (default)
 color_scheme: dark
