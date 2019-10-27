@@ -6,19 +6,18 @@ description: ""
 permalink: /
 ---
 
-# πreal - work with Relational Algebra
+# πreal
 {: .fs-9 }
 
-Pireal is a cross-platform tool for working with Relational Algebra.
+Pireal is a **free** and **open source** cross-platform tool for working with <span style="color: #57a7f8;">Re</span>lational <span style="color: #57a7f8;">Al</span>gebra
 {: .fs-6 .fw-300 }
 
-[<i class="fab fa-linux"></i> Download <strong class="fs-1">debian</strong>](#getting-started){: .btn .btn-purple }
-[<i class="fab fa-windows"></i> Download <strong class="fs-1">windows</strong>](#getting-started){: .btn .btn-blue }
-[<i class="fab fa-github"></i> Download <strong class="fs-1">source code</strong>](#getting-started){: .btn .btn-green }
+![](assets/images/pireal-3-screen.png)
+[<i class="fab fa-linux"></i> Debian package](#getting-started){: .btn  .fs-5 .mb-4 .mb-md-0 .mr-4 }
+[<i class="fab fa-windows"></i> Windows installer](#getting-started){: .btn  .fs-5 .mb-4 .mb-md-0 .mr-4 }
+[<i class="fas fa-code"></i> Source code](#getting-started){: .btn  .fs-5 .mb-4 .mb-md-0 }
 
 ---
-
-## Getting started
 
 #### Thank you to the contributors of Pireal!
 
