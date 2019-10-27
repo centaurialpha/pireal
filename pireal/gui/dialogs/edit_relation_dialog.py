@@ -30,7 +30,6 @@ from PyQt5.QtGui import QFont
 
 from PyQt5.QtCore import pyqtSignal
 
-from pireal.gui.main_window import Pireal
 from pireal.core.settings import CONFIG
 
 
@@ -40,6 +39,7 @@ class EditRelationDialog(QDialog):
 
     def __init__(self, rname, parent=None):
         super().__init__(parent)
+        self._central = parent
         self._rname = rname
         self.setWindowTitle(self.tr("Editor - {}".format(rname)))
         self.resize(400, 300)
@@ -76,8 +76,7 @@ class EditRelationDialog(QDialog):
         btn_accept.clicked.connect(self._on_accept)
 
     def _on_accept(self):
-        central = Pireal.get_service("central")
-        table_widget = central.get_active_db().table_widget
+        table_widget = self._central.get_active_db().table_widget
         relation = table_widget.relations[self._rname]
         lines = self._editor.toPlainText().splitlines()
         tuples = [tuple(t.split(",")) for t in lines]

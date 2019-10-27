@@ -156,3 +156,7 @@ TR_DB_DIALOG_DB_FILENAME = tr('Pireal', 'Filename:')
 TR_DB_DIALOG_SELECT_FOLDER = tr('Pireal', 'Select Folder')
 
 TR_DB_FILE_EMPTY = tr('Pireal', 'The file <b>{}</b> is empty, aborting.')
+
+# Search widget
+TR_BTN_FIND_PREVIOUS = tr('Pireal', 'Find Previous')
+TR_BTN_FIND_NEXT = tr('Pireal', 'Find Next')

@@ -20,29 +20,21 @@
 """ Pireal Main Window """
 
 import webbrowser
-# from collections import Callable
 
 from PyQt5.QtWidgets import QMainWindow
-# from PyQt5.QtWidgets import QMenu
-# from PyQt5.QtWidgets import QToolButton
 from PyQt5.QtWidgets import QMessageBox
-# from PyQt5.QtWidgets import QToolBar
-
-# from PyQt5.QtGui import QIcon
 
 from PyQt5.QtCore import QSettings
-# from PyQt5.QtCore import QSize
-# from PyQt5.QtCore import Qt
 
 from pireal import translations as tr
 from pireal import keymap
 from pireal.core import settings
-from pireal.gui import (
-    menu_actions,
-    # message_error
-)
+from pireal.gui import central_widget
+from pireal.gui import menu_actions
 
 from pireal.core.settings import CONFIG
+
+TOOLBAR_ITEMS = []  # TODO: hacer esto cuando se active toolbar
 
 
 class Pireal(QMainWindow):
@@ -53,31 +45,7 @@ class Pireal(QMainWindow):
     This class is responsible for installing all application services.
     """
 
-    __SERVICES = {}
     __ACTIONS = {}
-
-    # The name of items is the connection text
-    TOOLBAR_ITEMS = [
-        'create_database',
-        'open_database',
-        'save_database',
-        '',  # Is a separator!
-        'new_query',
-        'open_query',
-        'save_query',
-        '',
-        'relation_menu',
-        '',
-        # 'create_new_relation',
-        # 'remove_relation',
-        # '',
-        # 'add_tuple',
-        # 'delete_tuple',
-        # 'add_column',
-        # 'delete_column',
-        # '',
-        'execute_queries'
-    ]
 
     def __init__(self):
         QMainWindow.__init__(self)
@@ -94,43 +62,16 @@ class Pireal(QMainWindow):
             self.resize(size)
             position = qsettings.value('window_pos')
             self.move(position)
-        # Toolbar
-        # self.toolbar = QToolBar(self)
-        # self.toolbar.setFixedWidth(38)
-        # self.toolbar.setIconSize(QSize(38, 38))
-        # self.toolbar.setMovable(False)
-        # self.addToolBar(Qt.RightToolBarArea, self.toolbar)
+        # TODO: Create toolbar
+        # TODO: Notification widget
 
+        # Central widget
+        self.central_widget = central_widget.CentralWidget(self)
+        self.setCentralWidget(self.central_widget)
+        self.central_widget.add_start_page()
         # Menu bar
         menubar = self.menuBar()
-        self.__load_menubar(menubar)
-        # Load notification widget after toolbar actions
-        notification_widget = Pireal.get_service("notification")
-        # self.toolbar.addWidget(notification_widget)
-        # Message error
-        # self._msg_error_widget = message_error.MessageError(self)
-        # Central widget
-        central_widget = Pireal.get_service("central")
-        central_widget.databaseSaved.connect(notification_widget.show_text)
-        central_widget.querySaved.connect(notification_widget.show_text)
-        central_widget.databaseConected.connect(self.change_title)
-        self.setCentralWidget(central_widget)
-        central_widget.add_start_page()
-
-        # Install service
-        Pireal.load_service("pireal", self)
-
-    @classmethod
-    def get_service(cls, service):
-        """ Return the instance of a loaded service """
-
-        return cls.__SERVICES.get(service, None)
-
-    @classmethod
-    def load_service(cls, name, instance):
-        """ Load a service providing the service name and the instance """
-
-        cls.__SERVICES[name] = instance
+        self._load_menubar(menubar)
 
     @classmethod
     def get_action(cls, name):
@@ -144,7 +85,7 @@ class Pireal(QMainWindow):
 
         cls.__ACTIONS[name] = action
 
-    def __load_menubar(self, menubar):
+    def _load_menubar(self, menubar):
         """
         This method installs the menubar and toolbar, menus and QAction's,
         also connects to a slot each QAction.
@@ -153,10 +94,7 @@ class Pireal(QMainWindow):
         # Keymap
         kmap = keymap.KEYMAP
 
-        central = Pireal.get_service("central")
-
         # Load menu bar
-        # rela_actions = []
         for item in menu_actions.MENU:
             menubar_item = menu_actions.MENU[item]
             menu_name = menubar_item['name']
@@ -174,10 +112,8 @@ class Pireal(QMainWindow):
                     if slot_name is None:
                         continue
                     obj_name, connection = slot_name.split(':')
-                    # icon = QIcon(':img/%s' % connection)
-                    # qaction.setIcon(icon)
 
-                    obj = central
+                    obj = self.central_widget
                     if obj_name.startswith('pireal'):
                         obj = self
                     # Install shortcuts
@@ -185,10 +121,6 @@ class Pireal(QMainWindow):
                     if shortcut is not None:
                         qaction.setShortcut(shortcut)
 
-                    # The name of QAction is the connection
-                    # if item == "relation":
-                    #     if connection != "execute_queries":
-                    #         rela_actions.append(qaction)
                     Pireal.load_action(connection, qaction)
                     slot = getattr(obj, connection, None)
                     if callable(slot):
@@ -221,14 +153,17 @@ class Pireal(QMainWindow):
     #             self.toolbar.addSeparator()
 
     def __show_status_message(self, msg):
-        status = Pireal.get_service("status")
-        status.show_message(msg)
+        # status = Pireal.get_service("status")
+        # status.show_message(msg)
+        # TODO
+        pass
 
     def __on_thread_update_finished(self):
         self._thread.quit()
         # Clear notificator
-        notification_widget = Pireal.get_service("notification")
-        notification_widget.clear()
+        # notification_widget = Pireal.get_service("notification")
+        # notification_widget.clear()
+        # FIXME:
 
         msg = QMessageBox(self)
         if not self._updater.error and self._updater.version:
@@ -269,7 +204,6 @@ class Pireal(QMainWindow):
             'close_database',
             'save_database',
             'save_database_as',
-            # 'load_relation'
         ]
         self.set_enabled_actions(actions, value)
 
@@ -281,8 +215,6 @@ class Pireal(QMainWindow):
             'remove_relation',
             'add_tuple',
             'delete_tuple',
-            # 'add_column',
-            # 'delete_column'
         )
         self.set_enabled_actions(actions, value)
 
@@ -348,9 +280,8 @@ class Pireal(QMainWindow):
         self._msg_error_widget.show()
 
     def save_user_settings(self):
-        central_widget = Pireal.get_service("central")
-        CONFIG.set_value("lastOpenFolder", central_widget.last_open_folder)
-        CONFIG.set_value("recentFiles", central_widget.recent_databases)
+        CONFIG.set_value("lastOpenFolder", self.central_widget.last_open_folder)
+        CONFIG.set_value("recentFiles", self.central_widget.recent_databases)
 
         # Write settings
         CONFIG.save_settings()
@@ -368,8 +299,7 @@ class Pireal(QMainWindow):
             qsettings.setValue('window_pos', self.pos())
             qsettings.setValue('window_size', self.size())
 
-        central_widget = Pireal.get_service("central")
-        db = central_widget.get_active_db()
+        db = self.central_widget.get_active_db()
         if db is not None:
             # Save splitters size
             db.save_sizes()
@@ -385,11 +315,11 @@ class Pireal(QMainWindow):
                 msg.exec_()
                 r = msg.clickedButton()
                 if r == yes_btn:
-                    central_widget.save_database()
+                    self.central_widget.save_database()
                 if r == cancel_btn:
                     event.ignore()
             # Query files
-            unsaved_editors = central_widget.get_unsaved_queries()
+            unsaved_editors = self.central_widget.get_unsaved_queries()
             if unsaved_editors:
                 msg = QMessageBox(self)
                 msg.setIcon(QMessageBox.Question)
@@ -402,6 +332,6 @@ class Pireal(QMainWindow):
                 msg.exec_()
                 if msg.clickedButton() == yes_btn:
                     for editor in unsaved_editors:
-                        central_widget.save_query(editor)
+                        self.central_widget.save_query(editor)
                 if msg.clickedButton() == cancel_btn:
                     event.ignore()

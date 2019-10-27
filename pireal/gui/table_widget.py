@@ -35,17 +35,17 @@ from pireal.gui import model
 from pireal.gui import delegate
 
 from pireal import translations as tr
-from pireal.gui.main_window import Pireal
+# from pireal.gui.main_window import Pireal
 
 
 class TableWidget(QSplitter):
 
-    def __init__(self):
-        super(TableWidget, self).__init__()
+    def __init__(self, parent=None):
+        super(TableWidget, self).__init__(parent)
 
         # vbox = QVBoxLayout(self)
         # vbox.setContentsMargins(0, 0, 0, 0)
-
+        self.db_container = parent
         self._tabs = QTabWidget()
         self._tabs.setAutoFillBackground(True)
         p = self._tabs.palette()
@@ -82,7 +82,7 @@ class TableWidget(QSplitter):
         # self.setContextMenuPolicy(Qt.CustomContextMenu)
         # self.customContextMenuRequested.connect(self._show_menu)
 
-        lateral_widget = Pireal.get_service("lateral_widget")
+        lateral_widget = self.db_container.lateral_widget
         lateral_widget.resultClicked.connect(self._on_result_list_clicked)
         lateral_widget.resultSelectionChanged.connect(
             lambda index: self.stacked_result.setCurrentIndex(index))
@@ -132,8 +132,7 @@ class TableWidget(QSplitter):
         menu.exec_(self.mapToGlobal(position))
 
     def __new_relation(self):
-        central_service = Pireal.get_service("central")
-        central_service.create_new_relation()
+        self.db_container._central.create_new_relation()
 
     def count(self):
         return self.stacked.count()

@@ -74,10 +74,6 @@ def start_pireal():
 
     # TODO: Load stylesheet
 
-    # FIXME: Cambiar la forma de esto
-    from pireal.gui import central_widget  # noqa
-    from pireal.gui import notification  # noqa
-
     pireal_gui = main_window.Pireal()
     pireal_gui.show()
 

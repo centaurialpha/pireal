@@ -46,10 +46,8 @@ from pireal.core.interpreter.exceptions import (
     DuplicateRelationNameError,
     ConsumeError
 )
-from pireal.gui.main_window import Pireal
 from pireal.gui.query_container import editor
 from pireal.gui.query_container import tab_widget
-
 from pireal.core import settings
 
 
@@ -58,13 +56,11 @@ class QueryContainer(QWidget):
 
     def __init__(self, parent=None):
         super(QueryContainer, self).__init__(parent)
-        self._parent = parent
+        self.db_container = parent
         box = QVBoxLayout(self)
         self.setObjectName("query_container")
         box.setContentsMargins(0, 10, 0, 0)
         box.setSpacing(0)
-        # Regex for validate variable name
-        self.__validName = re.compile(r'^[a-z_]\w*$')
 
         self.__nquery = 1
 
@@ -79,10 +75,10 @@ class QueryContainer(QWidget):
 
         self.relations = {}
 
-        self.__hide()
+        # self._hide()
 
         # Connections
-        self._tabs.tabCloseRequested.connect(self.__hide)
+        # self._tabs.tabCloseRequested.connect(self.__hide)
         self._tabs.saveEditor.connect(self.__on_save_editor)
 
     def set_focus_editor_tab(self, index):
@@ -100,11 +96,18 @@ class QueryContainer(QWidget):
 
         return self._tabs.tabText(index)
 
-    def __hide(self):
+    def change_visibility(self):
+        if self.isVisible():
+            self._hide()
+        else:
+            self.show()
+
+    def _hide(self):
         if self.count() == 0:
             self.hide()
             # Disable query actions
-            pireal = Pireal.get_service("pireal")
+            # FIXME: mejorar esto, mover a otro lado?
+            pireal = self.db_container.central.pireal
             pireal.set_enabled_query_actions(False)
             pireal.set_enabled_editor_actions(False)
 
@@ -166,8 +169,9 @@ class QueryContainer(QWidget):
         else:
             query = editor_widget.toPlainText()
         relations = self.currentWidget().relations
-        central = Pireal.get_service("central")
-        table_widget = central.get_active_db().table_widget
+        table_widget = self.db_container.table_widget
+        # central = Pireal.get_service("central")
+        # table_widget = central.get_active_db().table_widget
 
         # Restore
         relations.clear()
@@ -286,8 +290,9 @@ class QueryWidget(QWidget):
     TOP_POSITION = 0
     LEFT_POSITION = 1
 
-    def __init__(self):
-        super(QueryWidget, self).__init__()
+    def __init__(self, parent=None):
+        super(QueryWidget, self).__init__(parent)
+        self.db_container = parent
         box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 0, 0)
 
@@ -307,7 +312,8 @@ class QueryWidget(QWidget):
         box.addWidget(self._editor_splitter)
 
     def show_relation(self, item):
-        central_widget = Pireal.get_service("central")
+        # central_widget = Pireal.get_service("central")
+        central_widget = self.db_container.central
         table_widget = central_widget.get_active_db().table_widget
         rela = self.relations[item.name]
         dialog = QDialog(self)
@@ -342,8 +348,11 @@ class QueryWidget(QWidget):
         # self.result_splitter.setSizes([1, self._result_list.width() * 0.1])
 
     def clear_results(self):
-        central_widget = Pireal.get_service("central")
-        lateral_widget = Pireal.get_service("lateral_widget")
+        # FIXME:
+        # central_widget = Pireal.get_service("central")
+        # lateral_widget = Pireal.get_service("lateral_widget")
+        central_widget = self.db_container.central
+        lateral_widget = self.db_container.lateral_widget
         lateral_widget.result_list.clear_items()
         table_widget = central_widget.get_active_db().table_widget
         i = table_widget.stacked_result.count()
@@ -358,9 +367,12 @@ class QueryWidget(QWidget):
             i -= 1
 
     def add_table(self, rela, rname):
-        central_widget = Pireal.get_service("central")
-        lateral_widget = Pireal.get_service("lateral_widget")
-        db = central_widget.get_active_db()
+        # FIXME:
+        # central_widget = Pireal.get_service("central")
+        # lateral_widget = Pireal.get_service("lateral_widget")
+        central_widget = self.db_container.central
+        lateral_widget = self.db_container.lateral_widget
+        db = self.db_container
         _view = db.create_table(rela, rname, editable=False)
         table_widget = central_widget.get_active_db().table_widget
         index = table_widget.stacked_result.addWidget(_view)
@@ -392,6 +404,7 @@ class EditorWidget(QWidget):
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
+        self.query_widget = parent
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         vbox.setSpacing(0)
@@ -403,15 +416,15 @@ class EditorWidget(QWidget):
         # Toolbar
         self._toolbar = QToolBar(self)
         self._toolbar.setIconSize(QSize(16, 16))
-        pireal = Pireal.get_service("pireal")
+
+        pireal = self.query_widget.db_container.central.pireal
         for action in self.TOOLBAR_ITEMS:
             qaction = pireal.get_action(action)
             if qaction is not None:
                 self._toolbar.addAction(qaction)
             else:
                 self._toolbar.addSeparator()
-        # hbox.addWidget(self._toolbar, 1)
-        # hbox.addWidget(self._column_lbl)
+
         vbox.addLayout(hbox)
         # Editor
         self._editor = editor.Editor()
@@ -426,14 +439,10 @@ class EditorWidget(QWidget):
             self.__show_context_menu)
         self._editor.modificationChanged[bool].connect(
             lambda modified: self.editorModified.emit(modified))
-        # self._editor.undoAvailable[bool].connect(
-        #     self.__on_undo_available)
-        # self._editor.redoAvailable[bool].connect(
-        #     self.__on_redo_available)
-        # self._editor.copyAvailable[bool].connect(
-        #     self.__on_copy_available)
-        # self._editor.cursorPositionChanged.connect(
-        #     self._update_column_label)
+
+    @property
+    def editor(self):
+        return self._editor
 
     def show_search_widget(self):
         self._search_widget.show()
@@ -471,49 +480,53 @@ class EditorWidget(QWidget):
         tc = self._editor.textCursor()
         new_editor.setTextCursor(tc)
         # Set title
-        db = Pireal.get_service("central").get_active_db()
+        # db = Pireal.get_service("central").get_active_db()
+        db = self.query_widget.db_container
         qc = db.query_container
         new_editor.setWindowTitle(qc.tab_text(qc.current_index()))
         new_editor.show()
 
     def __on_undo_available(self, value):
         """ Change state of undo action """
-
-        pireal = Pireal.get_service("pireal")
-        action = pireal.get_action("undo_action")
-        action.setEnabled(value)
+        # TODO:
+        # pireal = self.query_widget.db_container.central.pireal
+        # action = pireal.get_action("undo_action")
+        # action.setEnabled(value)
+        pass
 
     def __on_redo_available(self, value):
         """ Change state of redo action """
-
-        pireal = Pireal.get_service("pireal")
-        action = pireal.get_action("redo_action")
-        action.setEnabled(value)
+        # TODO:
+        # pireal = self.query_widget.db_container.central.pireal
+        # action = pireal.get_action("redo_action")
+        # action.setEnabled(value)
+        pass
 
     def __on_copy_available(self, value):
         """ Change states of cut and copy action """
 
-        cut_action = Pireal.get_action("cut_action")
-        cut_action.setEnabled(value)
-        copy_action = Pireal.get_action("copy_action")
-        copy_action.setEnabled(value)
+        # TODO:
+        # cut_action = Pireal.get_action("cut_action")
+        # cut_action.setEnabled(value)
+        # copy_action = Pireal.get_action("copy_action")
+        # copy_action.setEnabled(value)
+        pass
 
 
 class SearchWidget(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._parent = parent
         box = QHBoxLayout(self)
         box.setContentsMargins(0, 3, 0, 3)
         box.setSpacing(0)
         self._line_search = QLineEdit()
         box.addWidget(self._line_search)
-        btn_find_previous = QPushButton("Find Previous")
+        btn_find_previous = QPushButton(tr.TR_BTN_FIND_PREVIOUS)
         box.addWidget(btn_find_previous)
-        btn_find_next = QPushButton("Find Next")
+        btn_find_next = QPushButton(tr.TR_BTN_FIND_NEXT)
         box.addWidget(btn_find_next)
-
-        self._parent = parent
 
         self._line_search.textChanged.connect(self._execute_search)
         btn_find_next.clicked.connect(self._find_next)
@@ -529,7 +542,7 @@ class SearchWidget(QWidget):
         text = self.search_text
         if not text:
             return
-        weditor = self._parent._editor
+        weditor = self._parent.editor
         weditor.find_text(text, find_next=find_next, backward=backward)
 
     @property

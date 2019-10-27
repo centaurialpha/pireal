@@ -25,8 +25,6 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import QTimer
 
-from pireal.gui.main_window import Pireal
-
 
 class Notification(QWidget):
 
@@ -41,9 +39,6 @@ class Notification(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.clear)
 
-        # Install service
-        Pireal.load_service("notification", self)
-
     def clear(self):
         self.notificator.clear()
 
@@ -51,6 +46,3 @@ class Notification(QWidget):
         if time_out != 0:
             self.timer.start(time_out)
         self.notificator.setText(text)
-
-
-Notification()
