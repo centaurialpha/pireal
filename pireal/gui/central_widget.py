@@ -36,9 +36,11 @@ from pireal import translations as tr
 from pireal.core import settings
 from pireal.core import file_manager
 from pireal.core import pfile
+from pireal.core.relation import Relation
 
 from pireal.gui import start_page
-from pireal.gui import database_container
+# from pireal.gui import database_container
+from pireal.gui.main_panel import MainPanel
 
 from pireal.gui.dialogs import preferences
 from pireal.gui.dialogs import new_relation_dialog
@@ -69,16 +71,16 @@ class CentralWidget(QWidget):
         if CONFIG.get("recentFiles"):
             self._recent_dbs = CONFIG.get("recentFiles")
 
-        esc_short = QShortcut(QKeySequence(Qt.Key_Escape), self)
-        esc_short.activated.connect(self._hide_search)
+    #     esc_short = QShortcut(QKeySequence(Qt.Key_Escape), self)
+    #     esc_short.activated.connect(self._hide_search)
 
-    def _hide_search(self):
-        db_container = self.get_active_db()
-        if db_container is None:
-            return
-        query_container = db_container.query_container
-        if query_container is not None:
-            query_container.set_editor_focus()
+    # def _hide_search(self):
+    #     db_container = self.get_active_db()
+    #     if db_container is None:
+    #         return
+    #     query_container = db_container.query_container
+    #     if query_container is not None:
+    #         query_container.set_editor_focus()
 
     @property
     def recent_databases(self):
@@ -139,71 +141,119 @@ class CentralWidget(QWidget):
         QMessageBox.information(self, tr.TR_MSG_INFORMATION, tr.TR_MSG_ONE_DB_AT_TIME)
 
     def open_database(self, filename='', remember=True):
-        """ This function opens a database and set this on the UI """
-        logger.debug('Triying to open database...')
+        logger.debug('Triying to open a database...')
         if self.created:
             return self.__say_about_one_db_at_time()
-
-        # If not filename provide, then open dialog to select
+        # If not filename provide, ten open dialog to select one
         if not filename:
-            logger.debug('Filename not provided')
             if self._last_open_folder is None:
-                directory = os.path.expanduser("~")
+                directory = os.path.expanduser('~')
             else:
                 directory = self._last_open_folder
-            filter_ = settings.SUPPORTED_FILES.split(';;')[0]
-            filename, _ = QFileDialog.getOpenFileName(
-                self, tr.TR_OPEN_DATABASE, directory, filter_)
+            filters = settings.SUPPORTED_FILES.split(';;')[0]
+            filename, _ = QFileDialog.getOpenFileName(self, tr.TR_OPEN_DATABASE, directory, filters)
             # If is canceled, return
             if not filename:
                 logger.debug('File not selected, bye!')
                 return
-
         # If filename provide
         try:
-            logger.debug("Triying to open the database file %s", filename)
-            # Read pdb file
-            pfile_object = pfile.File(filename)
-            db_data = pfile_object.read()
-            if not db_data:
-                QMessageBox.warning(self, tr.TR_MSG_ERROR, tr.TR_DB_FILE_EMPTY.format(filename))
-                logger.warning('The file \'%s\'is empty, aborting...', filename)
+            logger.debug('Triying to open the database file "%s"', filename)
+            with open(filename) as fp:
+                database_content = fp.read()
+            if not database_content:
                 return
-            # Create a dict to manipulate data more easy
-            db_data = file_manager.parse_database_content(db_data)
-            logger.debug('Database loaded successful')
+            database_content = file_manager.parse_database_content(database_content)
         except Exception as reason:
-            logger.exception('The database file could not be opened: %s', filename)
-            QMessageBox.information(
-                self, tr.TR_MSG_DB_NOT_OPENED, str(reason))
+            logger.exception('The database file could not be opened', exc_info=True)
             return
 
-        # Create a database container widget
-        db_container = database_container.DatabaseContainer(self)
+        # Create main panel for table view
+        main_panel = MainPanel(self)
+        self.add_widget(main_panel)
 
-        try:
-            db_container.create_database(db_data)
-        except Exception as reason:
-            logger.exception('Error creating the database')
-            QMessageBox.information(self, tr.TR_MSG_ERROR, str(reason))
-            return
+        # XXX: quizas eso se deba mover, por ahora lo hacemos acá
+        for table in database_content.get('tables'):
+            table_name = table['name']
+            header = table['header']
+            tuples = table['tuples']
 
-        # Set the PFile object to the new database
-        db_container.pfile = pfile_object
-        # Add data base container to stacked
-        self.add_widget(db_container)
-        # Database name
-        db_name = file_manager.get_basename(filename)
-        # Update title with the new database name, and enable some actions
-        self.databaseConected.emit(tr.TR_NOTIFICATION_DB_CONNECTED.format(db_name))
-        self.pireal.set_enabled_db_actions(True)
-        self.pireal.set_enabled_relation_actions(True)
-        if remember:
-            # Add to recent databases
-            self.recent_databases = filename
-            # Remember the folder
-            self._last_open_folder = file_manager.get_path(filename)
+            relation_obj = Relation()
+            relation_obj.header = header
+
+            for tuple_ in tuples:
+                relation_obj.insert(tuple_)
+
+            main_panel.central_view.table_widget.add_relation(relation_obj, table_name)
+
         self.created = True
+
+    # def _open_database(self, filename='', remember=True):
+    #     """ This function opens a database and set this on the UI """
+    #     logger.debug('Triying to open database...')
+    #     if self.created:
+    #         return self.__say_about_one_db_at_time()
+
+    #     # If not filename provide, then open dialog to select
+    #     if not filename:
+    #         logger.debug('Filename not provided')
+    #         if self._last_open_folder is None:
+    #             directory = os.path.expanduser("~")
+    #         else:
+    #             directory = self._last_open_folder
+    #         filter_ = settings.SUPPORTED_FILES.split(';;')[0]
+    #         filename, _ = QFileDialog.getOpenFileName(
+    #             self, tr.TR_OPEN_DATABASE, directory, filter_)
+    #         # If is canceled, return
+    #         if not filename:
+    #             logger.debug('File not selected, bye!')
+    #             return
+
+    #     # If filename provide
+    #     try:
+    #         logger.debug("Triying to open the database file %s", filename)
+    #         # Read pdb file
+    #         pfile_object = pfile.File(filename)
+    #         db_data = pfile_object.read()
+    #         if not db_data:
+    #             QMessageBox.warning(self, tr.TR_MSG_ERROR, tr.TR_DB_FILE_EMPTY.format(filename))
+    #             logger.warning('The file \'%s\'is empty, aborting...', filename)
+    #             return
+    #         # Create a dict to manipulate data more easy
+    #         db_data = file_manager.parse_database_content(db_data)
+    #         logger.debug('Database loaded successful')
+    #     except Exception as reason:
+    #         logger.exception('The database file could not be opened: %s', filename)
+    #         QMessageBox.information(
+    #             self, tr.TR_MSG_DB_NOT_OPENED, str(reason))
+    #         return
+
+    #     # Create a database container widget
+    #     db_container = database_container.DatabaseContainer(self)
+
+    #     try:
+    #         db_container.create_database(db_data)
+    #     except Exception as reason:
+    #         logger.exception('Error creating the database')
+    #         QMessageBox.information(self, tr.TR_MSG_ERROR, str(reason))
+    #         return
+
+    #     # Set the PFile object to the new database
+    #     db_container.pfile = pfile_object
+    #     # Add data base container to stacked
+    #     self.add_widget(db_container)
+    #     # Database name
+    #     db_name = file_manager.get_basename(filename)
+    #     # Update title with the new database name, and enable some actions
+    #     self.databaseConected.emit(tr.TR_NOTIFICATION_DB_CONNECTED.format(db_name))
+    #     self.pireal.set_enabled_db_actions(True)
+    #     self.pireal.set_enabled_relation_actions(True)
+    #     if remember:
+    #         # Add to recent databases
+    #         self.recent_databases = filename
+    #         # Remember the folder
+    #         self._last_open_folder = file_manager.get_path(filename)
+    #     self.created = True
 
     def open_query(self, filename='', remember=True):
         if not filename:
@@ -225,15 +275,16 @@ class CentralWidget(QWidget):
         # FIXME: mejorar éste y new_query
         self.new_query(filename)
 
-    def save_query(self, editor=None):
-        db = self.get_active_db()
-        fname = db.save_query(editor)
-        if fname:
-            self.querySaved.emit(self.tr("Consulta guardada: {}".format(
-                fname)))
+    # TODO
+    # def save_query(self, editor=None):
+    #     db = self.get_active_db()
+    #     fname = db.save_query(editor)
+    #     if fname:
+    #         self.querySaved.emit(self.tr("Consulta guardada: {}".format(
+    #             fname)))
 
-    def save_query_as(self):
-        pass
+    # def save_query_as(self):
+    #     pass
 
     def remove_last_widget(self):
         """ Remove last widget from stacked """
