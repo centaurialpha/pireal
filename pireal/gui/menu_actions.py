@@ -171,6 +171,10 @@ MENU['tools'] = {
     'items': [{
         'name': tr.TR_MENU_TOOLS_PREFERENCES,
         'slot': "central:show_settings",
+    }, {
+        'name': tr.TR_DARK_MODE,
+        'checkable': True,
+        'slot': 'pireal:switch_theme'
     }]
 }
 

@@ -46,6 +46,7 @@ TR_MENU_RELATION_DELETE = tr('Pireal', 'Delete')
 TR_MENU_RELATION_LOAD = tr('Pireal', 'Load')
 # Menu Tools
 TR_MENU_TOOLS_PREFERENCES = tr('Pireal', 'Preferences')
+TR_DARK_MODE = tr('Pireal', 'Dark Mode')
 # Menu Help
 TR_MENU_HELP_HELP = tr('Pireal', 'Help')
 TR_MENU_HELP_REPORT_ISSUE = tr('Pireal', 'Report Issue')

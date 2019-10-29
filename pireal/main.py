@@ -26,7 +26,7 @@ import logging
 
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QT_VERSION_STR
-from PyQt5.QtCore import QTranslator, QTimer
+from PyQt5.QtCore import QTranslator
 from PyQt5.QtGui import QIcon
 
 from pireal import __version__
@@ -73,13 +73,13 @@ def start_pireal():
     #     translator.load(os.path.join(settings.LANGUAGE_PATH, lang + '.qm'))
     #     app.installTranslator(translator)
 
+    dark_mode = True  # FIXME: desde configuraciones
+    if dark_mode:
+        apply_dark_mode(app)
+
     # TODO: Load stylesheet
 
     pireal_gui = main_window.Pireal()
     pireal_gui.show()
-
-    dark_mode = True  # FIXME: desde configuraciones
-    if dark_mode:
-        apply_dark_mode(app)
 
     sys.exit(app.exec_())

@@ -23,6 +23,7 @@ import webbrowser
 
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QApplication
 
 from PyQt5.QtCore import QPoint
 from PyQt5.QtCore import QSize
@@ -33,6 +34,7 @@ from pireal import keymap
 from pireal.core import settings
 from pireal.gui import central_widget
 from pireal.gui import menu_actions
+from pireal.gui import theme
 
 from pireal.core.settings import DATA_SETTINGS, SETTINGS_PATH
 
@@ -74,6 +76,10 @@ class Pireal(QMainWindow):
         menubar = self.menuBar()
         self._load_menubar(menubar)
 
+    def switch_theme(self):
+        # TODO: hacer un not segun la configuracion
+        app = QApplication.instance()
+
     @classmethod
     def get_action(cls, name):
         """ Return the instance of a loaded QAction """
@@ -112,6 +118,9 @@ class Pireal(QMainWindow):
                     qaction = menu.addAction(action)
                     if slot_name is None:
                         continue
+
+                    qaction.setCheckable(menu_item.get('checkable', False))
+
                     obj_name, connection = slot_name.split(':')
 
                     obj = self.central_widget
@@ -131,10 +140,10 @@ class Pireal(QMainWindow):
         # self.__install_toolbar(toolbar_items, rela_actions)
         # self.__install_toolbar(rela_actions)
         # Disable some actions
-        self.set_enabled_db_actions(False)
-        self.set_enabled_relation_actions(False)
-        self.set_enabled_query_actions(False)
-        self.set_enabled_editor_actions(False)
+        # self.set_enabled_db_actions(False)
+        # self.set_enabled_relation_actions(False)
+        # self.set_enabled_query_actions(False)
+        # self.set_enabled_editor_actions(False)
 
     # def __install_toolbar(self, rela_actions):
     #     menu = QMenu()

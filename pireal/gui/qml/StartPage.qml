@@ -23,7 +23,9 @@ import "widgets"
 Rectangle {
     id: root
 
-    color: "#ffffff"
+    SystemPalette { id: darkPalette; colorGroup: SystemPalette.Active }
+
+    color: darkPalette.base
 
     signal openRecentDatabase(string path)
     signal openPreferences();
@@ -59,6 +61,7 @@ Rectangle {
     }
     Text {
         id: textoWelcome
+        color: darkPalette.text
         text: qsTr("Click in <b>New</b>, <b>Open</b> or <b>Example</b> to get started!")
         anchors.top: logo.bottom
         anchors.horizontalCenter: parent.horizontalCenter
@@ -76,7 +79,9 @@ Rectangle {
 
         Button {
             texto: qsTr("New")
+            textColor: darkPalette.buttonText
             radius: 3
+            color: darkPalette.button
             CustomBorder {
                 commonBorder: false
                 borderColor: "#c4c7ca"
@@ -88,6 +93,8 @@ Rectangle {
         }
         Button{
             texto: qsTr("Open")
+            textColor: darkPalette.buttonText
+            color: darkPalette.button
             z: 1
             CustomBorder {
                 commonBorder: true
@@ -97,7 +104,9 @@ Rectangle {
         }
         Button {
             texto: qsTr("Example")
+            textColor: darkPalette.buttonText
             radius: 3
+            color: darkPalette.button
             CustomBorder {
                 commonBorder: false
                 borderColor: "#c4c7ca"
@@ -112,9 +121,9 @@ Rectangle {
     Rectangle {
 
         id: listContainer
-        color: "#c9cccf"
+        color: darkPalette.button
         radius: 3
-        border.color: "#ccc"
+        border.color: darkPalette.shadow
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: buttons.bottom
         anchors.topMargin: 20
@@ -125,7 +134,7 @@ Rectangle {
             id: title
 
             height: 35
-            color: "#e9ebec"
+            color: darkPalette.button
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
@@ -134,7 +143,7 @@ Rectangle {
                 text: qsTr("Recent Databases")
                 font.bold: true
                 font.italic: true
-                color: "#303336"
+                color: darkPalette.text
                 font.pixelSize: 20
                 anchors.centerIn: parent
                 renderType: Text.NativeRendering
@@ -143,7 +152,7 @@ Rectangle {
 
         Rectangle {
 
-            color: "#c9cccf"
+            color: darkPalette.button
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
@@ -161,7 +170,7 @@ Rectangle {
                 model: listModel
                 delegate: Rectangle {
                     id: listItem
-                    color: "#f4f5f5"
+                    color: darkPalette.window
                     height: 60
                     radius: 3
                     anchors {
@@ -194,14 +203,14 @@ Rectangle {
                         anchors.top: parent.top
                         anchors.topMargin: 10
                         Text {
-                            color: "#555"
+                            color: darkPalette.text
                             font.bold: true
                             font.pixelSize: 18
                             text: name
                             renderType: Text.NativeRendering
                         }
                         Text {
-                            color: "#555"
+                            color: darkPalette.windowText
                             text: path
                             width: parent.width
                             elide: Text.ElideLeft
@@ -246,7 +255,7 @@ Rectangle {
 
         Text {
             text: "Powered by: "
-            color: "#444"
+            color: darkPalette.text
             height: logoPython.height
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 12
@@ -259,7 +268,7 @@ Rectangle {
 
     Text {
         text: "Copyright © 2015-" + new Date().getFullYear() + " Gabriel Acosta. Pireal is distributed under the terms of the GNU GPLv3+ copyleft license"
-        color: "#444"
+        color: darkPalette.text
         renderType: Text.NativeRendering
         anchors {
             bottom: parent.bottom
