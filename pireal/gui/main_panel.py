@@ -46,7 +46,6 @@ class _MainPanel(QSplitter):
 
     def __init__(self, parent=None, orientation=Qt.Horizontal):
         super().__init__(orientation, parent)
-
         # La UI se divide en 3
         self._lateral_widget = LateralWidget(self)
         self._central_view = CentralView(self)
@@ -58,6 +57,7 @@ class _MainPanel(QSplitter):
 
         self.addWidget(self._lateral_widget)
         self.addWidget(self._vertical_splitter)
+        self.setSizes([70, 1])
 
     @property
     def lateral_widget(self):
@@ -92,3 +92,6 @@ class CentralView(QWidget):
     def add_widget(self, widget, title=''):
         """Add widget in QTabWidget"""
         self._tabs.addTab(widget, title)
+
+    def add_relation(self, relation_obj, relation_name):
+        self._table_widget.add_relation(relation_obj, relation_name)

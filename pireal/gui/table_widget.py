@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
 from collections import OrderedDict
 
 from PyQt5.QtWidgets import QWidget
@@ -26,17 +28,17 @@ from PyQt5.QtWidgets import QTabWidget
 from PyQt5.QtWidgets import QToolButton
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QStackedWidget
-# from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QMenu
 
-from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QColor
+
 from PyQt5.QtCore import Qt
-# from pireal.gui import view
-# from pireal.gui import model
-# from pireal.gui import delegate
+
 from pireal.gui import model_view_delegate as mvd
 from pireal import translations as tr
-# from pireal.gui.main_window import Pireal
+
+logger = logging.getLogger(__name__)
 
 
 class TableWidget(QSplitter):
@@ -57,7 +59,10 @@ class TableWidget(QSplitter):
         self._result_stack = QStackedWidget()
         self._tab_results.addTab(self._result_stack, tr.TR_TABLE_RESULTS)
 
+        self.setSizes([1, 1])
+
     def add_relation(self, relation_obj, relation_name, editable=True):
+        logger.debug('Creating new relation <%s>', relation_name)
         table_view = self.create_table(relation_obj, editable)
         self._relations[relation_name] = relation_obj
         self._relation_stack.addWidget(table_view)

@@ -44,13 +44,21 @@ class NewDatabaseDialog(QWizard):
         super().__init__(parent)
         self.setWindowTitle(tr.TR_DB_DIALOG_TITLE)
         self.addPage(FirstPage())
+        self._data = {}
+
+    @property
+    def data(self):
+        return self._data
 
     def done(self, result):
         if result == 1:
-            dbname = self.field("dbname")
-            location = self.field("dblocation")
-            filename = self.field("dbfilename")
-            self.created.emit(dbname, location, filename)
+            self._data['db_name'] = self.field('dbname')
+            self._data['db_location'] = self.field('dblocation')
+            self._data['db_filename'] = self.field('dbfilename')
+            # dbname = self.field("dbname")
+            # location = self.field("dblocation")
+            # filename = self.field("dbfilename")
+            # self.created.emit(dbname, location, filename)
         super().done(result)
 
 

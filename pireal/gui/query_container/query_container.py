@@ -62,8 +62,6 @@ class QueryContainer(QWidget):
         self._search_widget = SearchWidget()
         vbox.addWidget(self._search_widget)
 
-        self._editor_widget.create_editor()
-
     def change_visibility(self):
         if self.isVisible():
             self._hide()
@@ -75,11 +73,18 @@ class EditorWidget(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._editor_count = 0
+        self._opened_editors = {}
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         self._tabs_editor = QTabWidget()
         vbox.addWidget(self._tabs_editor)
+
+    def is_open(self, filepath) -> bool:
+        try:
+            self._opened_editors[filepath]
+        except KeyError:
+            return False
+        return True
 
     def current_editor(self):
         return self._tabs_editor.currentWidget()
@@ -87,7 +92,6 @@ class EditorWidget(QWidget):
     def create_editor(self, title=''):
         weditor = editor.Editor()
         self._tabs_editor.addTab(weditor, title)
-        self._editor_count += 1
         return weditor
 
 # class QueryContainer(QWidget):

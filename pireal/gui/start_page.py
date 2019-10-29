@@ -50,48 +50,39 @@ class StartPage(QWidget):
         widget = QWidget.createWindowContainer(view)
         vbox.addWidget(widget)
 
-        self.__root = view.rootObject()
+        self._root = view.rootObject()
 
         # Connections
-        self.__root.openRecentDatabase.connect(self.__open_database)
-        self.__root.openPreferences.connect(self.__open_preferences)
-        self.__root.openExample.connect(self.__open_example)
-        self.__root.openDatabase.connect(self.__open_database)
-        self.__root.newDatabase.connect(self.__new_database)
-        self.__root.removeCurrent.connect(self.__remove_current)
+        self._root.openRecentDatabase.connect(lambda: self._central.open_database(path))
+        # self._root.openPreferences.connect(self._open_preferences)
+        self._root.openExample.connect(self._open_example)
+        # self._root.openDatabase.connect(lambda path: self._central.open_database(path))
+        self._root.newDatabase.connect(self._central.create_database)
+        # self._root.removeCurrent.connect(self._remove_current)
 
-    def __open_example(self):
-        # central_widget = Pireal.get_service("central")
-
+    def _open_example(self):
         db_filename = os.path.join(settings.EXAMPLES, 'database.pdb')
-        self._central.open_database(filename=db_filename, remember=False)
+        self._central.open_database(filename=db_filename)
         query_filename = os.path.join(settings.EXAMPLES, 'queries.pqf')
-        self._central.open_query(filename=query_filename, remember=False)
+        self._central.open_query(filename=query_filename)
         # Ejecuto las consultas de ejemplo luego de 1.3 segundos
         QTimer.singleShot(1300, self._central.execute_queries)
 
-    def __open_preferences(self):
-        # central_widget = Pireal.get_service("central")
+    def _open_preferences(self):
         self._central.show_settings()
 
-    def __remove_current(self, path):
-        # central_widget = Pireal.get_service("central")
+    def _remove_current(self, path):
         self._central.recent_databases.remove(path)
 
-    def __open_database(self, path=''):
-        # central_widget = Pireal.get_service("central")
+    def _open_database(self, path=''):
         self._central.open_database(path)
 
-    def __new_database(self):
-        # central_widget = Pireal.get_service("central")
-        self._central.create_database()
-
     def load_items(self):
-        self.__root.clear()
+        self._root.clear()
         if CONFIG.get("recentFiles"):
             for file_ in CONFIG.get("recentFiles"):
                 name = os.path.splitext(os.path.basename(file_))[0]
-                self.__root.loadItem(name, file_)
+                self._root.loadItem(name, file_)
 
     def showEvent(self, event):
         """ Load list view every time the start page is displayed """
