@@ -97,11 +97,6 @@ class CentralWidget(QWidget):
     # def last_open_folder(self):
     #     return self._last_open_folder
 
-    # def rdb_to_pdb(self):
-    #     from pireal.gui import rdb_pdb_tool
-    #     dialog = rdb_pdb_tool.RDBPDBTool(self)
-    #     dialog.exec_()
-
     def has_main_panel(self):
         return self._main_panel is not None
 
