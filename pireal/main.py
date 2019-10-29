@@ -26,13 +26,14 @@ import logging
 
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QT_VERSION_STR
-from PyQt5.QtCore import QTranslator
+from PyQt5.QtCore import QTranslator, QTimer
 from PyQt5.QtGui import QIcon
 
 from pireal import __version__
 from pireal.core import settings
 # from pireal.core.settings import CONFIG
 from pireal.gui import main_window
+from pireal.gui.theme import apply_dark_mode
 
 logger = logging.getLogger(__name__)
 
@@ -76,5 +77,9 @@ def start_pireal():
 
     pireal_gui = main_window.Pireal()
     pireal_gui.show()
+
+    dark_mode = True  # FIXME: desde configuraciones
+    if dark_mode:
+        apply_dark_mode(app)
 
     sys.exit(app.exec_())
