@@ -29,7 +29,7 @@ from PyQt5.QtWidgets import QDialogButtonBox
 
 from PyQt5.QtGui import QFontDatabase
 
-from pireal.core.settings import CONFIG
+# from pireal.core.settings import CONFIG
 # from pireal.gui.main_window import Pireal
 
 
@@ -49,10 +49,10 @@ class Preferences(QDialog):
         group_editor = QGroupBox('Editor:')
         grid_editor = QGridLayout(group_editor)
         self._check_highlight_current_line = QCheckBox('Highlight Current Line')
-        self._check_highlight_current_line.setChecked(CONFIG.get('highlightCurrentLine'))
+        # self._check_highlight_current_line.setChecked(CONFIG.get('highlightCurrentLine'))
         grid_editor.addWidget(self._check_highlight_current_line, 0, 0)
         self._check_highlight_braces = QCheckBox('Highlight Braces')
-        self._check_highlight_braces.setChecked(CONFIG.get('matchParenthesis'))
+        # self._check_highlight_braces.setChecked(CONFIG.get('matchParenthesis'))
         grid_editor.addWidget(self._check_highlight_braces, 0, 1)
 
         group_font = QGroupBox('Font:')
@@ -61,11 +61,11 @@ class Preferences(QDialog):
         self._combo_font_family = QFontComboBox()
         grid_font.addWidget(QLabel('Family:'), 0, 0)
         grid_font.addWidget(self._combo_font_family, 0, 1)
-        self._combo_font_family.setCurrentText(CONFIG.get('fontFamily'))
-        cur_font = CONFIG.get('fontFamily')
+        # self._combo_font_family.setCurrentText(CONFIG.get('fontFamily'))
+        # cur_font = CONFIG.get('fontFamily')
         self._combo_font_size = QComboBox()
-        self._combo_font_size.addItems(map(str, font_db.pointSizes(cur_font)))
-        self._combo_font_size.setCurrentText(str(CONFIG.get('fontSize')))
+        # self._combo_font_size.addItems(map(str, font_db.pointSizes(cur_font)))
+        # self._combo_font_size.setCurrentText(str(CONFIG.get('fontSize')))
         grid_font.addWidget(QLabel('Size:'), 0, 2)
         grid_font.addWidget(self._combo_font_size, 0, 3)
 
@@ -83,10 +83,10 @@ class Preferences(QDialog):
         font_size = int(self._combo_font_size.currentText())
         font_family = self._combo_font_family.currentText()
 
-        CONFIG.set_value('fontSize', font_size)
-        CONFIG.set_value('fontFamily', font_family)
-        CONFIG.set_value('highlightCurrentLine', self._check_highlight_current_line.isChecked())
-        CONFIG.set_value('matchParenthesis', self._check_highlight_braces.isChecked())
+        # CONFIG.set_value('fontSize', font_size)
+        # CONFIG.set_value('fontFamily', font_family)
+        # CONFIG.set_value('highlightCurrentLine', self._check_highlight_current_line.isChecked())
+        # CONFIG.set_value('matchParenthesis', self._check_highlight_braces.isChecked())
 
         # central = Pireal.get_service('central')
         db = self._central.get_active_db()
@@ -97,7 +97,7 @@ class Preferences(QDialog):
                 editor.set_font(font_family, font_size)
                 editor.set_highlight_line(self._check_highlight_current_line.isChecked())
                 editor.set_match_parenthesis(self._check_highlight_braces.isChecked())
-        CONFIG.save_settings()
+        # CONFIG.save_settings()
         super().accept()
 
 # import os

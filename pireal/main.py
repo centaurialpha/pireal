@@ -31,14 +31,14 @@ from PyQt5.QtGui import QIcon
 
 from pireal import __version__
 from pireal.core import settings
-from pireal.core.settings import CONFIG
+# from pireal.core.settings import CONFIG
 from pireal.gui import main_window
 
 logger = logging.getLogger(__name__)
 
 
 def start_pireal():
-    CONFIG.load_settings()
+    # CONFIG.load_settings()
 
     # OS
     if sys.platform.startswith('linux'):
@@ -66,11 +66,11 @@ def start_pireal():
     # Set application icon
     app.setWindowIcon(QIcon(':img:/icon'))
     # Language
-    lang = CONFIG.get('language')
-    if lang != 'English':
-        translator = QTranslator()
-        translator.load(os.path.join(settings.LANGUAGE_PATH, lang + '.qm'))
-        app.installTranslator(translator)
+    # lang = CONFIG.get('language')
+    # if lang != 'English':
+    #     translator = QTranslator()
+    #     translator.load(os.path.join(settings.LANGUAGE_PATH, lang + '.qm'))
+    #     app.installTranslator(translator)
 
     # TODO: Load stylesheet
 

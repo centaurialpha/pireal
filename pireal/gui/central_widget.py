@@ -46,7 +46,8 @@ from pireal.gui.dialogs import preferences
 from pireal.gui.dialogs import new_relation_dialog
 from pireal.gui.dialogs import new_database_dialog
 
-from pireal.core.settings import CONFIG
+# from pireal.core.settings import CONFIG
+from pireal.core.settings import DATA_SETTINGS
 # Logger
 logger = logging.getLogger(__name__)
 
@@ -64,11 +65,12 @@ class CentralWidget(QWidget):
         self._main_panel = None
         # Acá cacheo la última carpeta accedida
         self._last_open_folder = None
-        if CONFIG.get("lastOpenFolder") is not None:
-            self._last_open_folder = CONFIG.get("lastOpenFolder")
-        self._recent_dbs = []
-        if CONFIG.get("recentFiles"):
-            self._recent_dbs = CONFIG.get("recentFiles")
+
+        # if CONFIG.get("lastOpenFolder") is not None:
+        #     self._last_open_folder = CONFIG.get("lastOpenFolder")
+        # self._recent_dbs = []
+        # if CONFIG.get("recentFiles"):
+        #     self._recent_dbs = CONFIG.get("recentFiles")
 
     #     esc_short = QShortcut(QKeySequence(Qt.Key_Escape), self)
     #     esc_short.activated.connect(self._hide_search)

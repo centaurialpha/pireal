@@ -34,7 +34,7 @@ from pireal.gui.query_container import (
     highlighter,
     sidebar
 )
-from pireal.core.settings import CONFIG
+# from pireal.core.settings import CONFIG
 
 
 class Editor(QPlainTextEdit):
@@ -53,16 +53,16 @@ class Editor(QPlainTextEdit):
         self.__visible_blocks = []
         self.modified = False
         # Highlight current line
-        self._highlight_line = CONFIG.get("highlightCurrentLine")
+        # self._highlight_line = CONFIG.get("highlightCurrentLine")
         # Highlight braces
-        self._match_parenthesis = CONFIG.get("matchParenthesis")
+        # self._match_parenthesis = CONFIG.get("matchParenthesis")
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
-        font_family = CONFIG.get("fontFamily")
-        size = CONFIG.get("fontSize")
-        if font_family is None:
-            font_family, size = CONFIG._get_font()
+        # font_family = CONFIG.get("fontFamily")
+        # size = CONFIG.get("fontSize")
+        # if font_family is None:
+            # font_family, size = CONFIG._get_font()
 
         self.set_font(font_family, size)
         # Sidebar
