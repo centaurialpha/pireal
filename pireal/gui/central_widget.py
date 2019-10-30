@@ -46,7 +46,6 @@ from pireal.gui.dialogs import preferences
 from pireal.gui.dialogs import new_relation_dialog
 from pireal.gui.dialogs import new_database_dialog
 
-# from pireal.core.settings import CONFIG
 from pireal.core.settings import DATA_SETTINGS
 # Logger
 logger = logging.getLogger(__name__)

@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 
 def start_pireal():
-    # CONFIG.load_settings()
+    settings.USER_SETTINGS.load()
 
     # OS
     if sys.platform.startswith('linux'):

@@ -23,11 +23,10 @@ Pireal Settings
 
 import sys
 import os
-import json
 
 from PyQt5.QtCore import QSettings, QVariant
 
-from PyQt5.QtGui import QFont
+# from PyQt5.QtGui import QFont
 
 
 # Detecting Operating System
@@ -55,9 +54,7 @@ PIREAL_DIR = os.path.join(HOME, '.pireal')
 # Here are saved by default the databases
 PIREAL_DATABASES = os.path.join(HOME, 'PirealDatabases')
 # Settings
-SETTINGS_PATH = os.path.join(PIREAL_DIR, 'data_settings.ini')
-# User settings
-USER_SETTINGS_PATH = os.path.join(PIREAL_DIR, 'user_settings.ini')
+SETTINGS_PATH = os.path.join(PIREAL_DIR, 'settings.ini')
 # Log files
 LOGS_PATH = os.path.join(PIREAL_DIR, "logs")
 LOG_FILE = os.path.join(LOGS_PATH, 'pireal.log')
@@ -78,34 +75,60 @@ SUPPORTED_FILES = (
     "Pireal Relation File (*.prf)"
 )
 
-# FIXME: si agrego algo y el archivo existe BOOOM!
 
-DEFAULT_SETTINGS = {
-    "language": ("English", str),
-    "highlightCurrentLine": (True, bool),
-    "matchParenthesis": (True, bool),
-    "recentFiles": (None, list),
-    "lastOpenFolder": (None, str),
-    "fontFamily": ('monospace', str),
-    "fontSize": (14, int),
-    "alternatingRowColors": (True, bool),
-    "darkMode": (False, bool)
-}
+class Settings:
+
+    def __init__(self):
+        self._qsettings = _QSettings(prefix='us')
+
+        self.language: str = 'english'
+        self.font_family: str = self._get_font()
+        self.font_size: int = 14
+        self.highlight_current_line: bool = False
+        self.match_parenthesis: bool = True
+        self.alternate_row_colors: bool = True
+        self.dark_mode: bool = False
+
+    def _get_font(self):
+        if LINUX:
+            return 'monospace'
+        elif WINDOWS:
+            return 'courier'
+        return 'monaco'
+
+    def save(self):
+        for key, value in self.__dict__.items():
+            if not key.startswith('_'):
+                self._qsettings.setValue(key, value)
+
+    def load(self):
+        settings_map = {}
+        keys = self._qsettings.allKeys()
+        for key in keys:
+            type_ = type(getattr(self, key.split('/')[-1]))
+            settings_map[key] = self._qsettings.value(key, type=type_)
+
+        self.language = settings_map.get('us/language', self.language)
+        self.font_family = settings_map.get('us/font_family', self.font_family)
+        self.font_size = settings_map.get('us/font_size', self.font_size)
+        self.highlight_current_line = settings_map.get(
+            'us/highlight_current_line', self.highlight_current_line)
+        self.match_parenthesis = settings_map.get('us/match_parenthesis', self.match_parenthesis)
+        self.alternate_row_colors = settings_map.get(
+            'us/alternate_row_colors', self.alternate_row_colors)
+        self.dark_mode = settings_map.get('us/dark_mode', self.dark_mode)
 
 
-class _UserSettings(QSettings):
+class _QSettings(QSettings):
 
-    def __init__(self, path):
+    def __init__(self, path=SETTINGS_PATH, prefix=''):
         super().__init__(path, QSettings.IniFormat)
-        self._load_defaults()
+        self._prefix = prefix
 
-    def _load_defaults(self):
-        for option, (value, type_) in DEFAULT_SETTINGS.items():
-            current = self.value(option, type_)
-            if current is not None:
-                option = 'user/{}'.format(option)
-                self.setValue(option, value)
+    def setValue(self, key, value):
+        key = '{}/{}'.format(self._prefix, key)
+        super().setValue(key, value)
 
 
-DATA_SETTINGS = QSettings(SETTINGS_PATH, QSettings.IniFormat)
-USER_SETTINGS = _UserSettings(USER_SETTINGS_PATH)
+USER_SETTINGS = Settings()
+DATA_SETTINGS = _QSettings(prefix='ds')
