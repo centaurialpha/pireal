@@ -24,7 +24,8 @@ import webbrowser
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QMessageBox
 
-from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import QPoint
+from PyQt5.QtCore import QSize
 
 from pireal import translations as tr
 from pireal import keymap
@@ -53,15 +54,13 @@ class Pireal(QMainWindow):
         self.setMinimumSize(880, 600)
         self.resize(1035, 760)
         # Load window geometry
-        # qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        # window_maximized = qsettings.value('window_max', True)
-        window_maximized = DATA_SETTINGS.value('window_max', True)
+        window_maximized = DATA_SETTINGS.value('general/window_max')
         if window_maximized:
             self.showMaximized()
         else:
-            size = DATA_SETTINGS.value('window_size')
+            size = DATA_SETTINGS.value('general/window_size', QSize(800, 600))
             self.resize(size)
-            position = DATA_SETTINGS.value('window_pos')
+            position = DATA_SETTINGS.value('general/window_pos', QPoint(100, 100))
             self.move(position)
         # TODO: Create toolbar
         # TODO: Notification widget
@@ -291,9 +290,7 @@ class Pireal(QMainWindow):
     def closeEvent(self, event):
         self.save_user_settings()
 
-        # Qt settings
-        # qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        # # Save window geometry
+        # Save window geometry
         if self.isMaximized():
             DATA_SETTINGS.setValue('window_max', True)
         else:

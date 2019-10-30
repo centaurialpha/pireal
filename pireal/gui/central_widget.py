@@ -439,11 +439,11 @@ class CentralWidget(QWidget):
         sp = start_page.StartPage(self)
         self.add_widget(sp)
 
-    # def show_settings(self):
-    #     """ Show settings dialog on stacked """
+    def show_settings(self):
+        """ Show settings dialog on stacked """
 
-    #     # preferences_dialog = preferences.Preferences(self)
-
+        preferences_dialog = preferences.Preferences(self)
+        preferences_dialog.show()
     #     # if isinstance(self.widget(1), preferences.Preferences):
     #     #     self.widget(1).close()
     #     # else:

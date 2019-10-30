@@ -25,7 +25,7 @@ import sys
 import os
 import json
 
-from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import QSettings, QVariant
 
 from PyQt5.QtGui import QFont
 
@@ -81,86 +81,31 @@ SUPPORTED_FILES = (
 # FIXME: si agrego algo y el archivo existe BOOOM!
 
 DEFAULT_SETTINGS = {
-    "language": "English",
-    "highlightCurrentLine": True,
-    "matchParenthesis": True,
-    "recentFiles": [],
-    "lastOpenFolder": None,
-    "fontFamily": 'monospace',
-    "fontSize": 14,
-    "alternatingRowColors": True
+    "language": ("English", str),
+    "highlightCurrentLine": (True, bool),
+    "matchParenthesis": (True, bool),
+    "recentFiles": (None, list),
+    "lastOpenFolder": (None, str),
+    "fontFamily": ('monospace', str),
+    "fontSize": (14, int),
+    "alternatingRowColors": (True, bool),
+    "darkMode": (False, bool)
 }
 
 
-# class Config(QObject):
+class _UserSettings(QSettings):
 
-#     def __init__(self, path=USER_SETTINGS_PATH):
-#         QObject.__init__(self)
-#         self._path = path
-#         self._settings = {}
+    def __init__(self, path):
+        super().__init__(path, QSettings.IniFormat)
+        self._load_defaults()
 
-#     def load_settings(self):
-#         if not os.path.exists(self._path):
-#             self._settings = DEFAULT_SETTINGS
-#             with open(self._path, mode="w") as fp:
-#                 json.dump(DEFAULT_SETTINGS, fp)
-#         else:
-#             with open(self._path) as fp:
-#                 self._settings = json.load(fp)
-
-#     def save_settings(self):
-#         with open(self._path, mode="w") as fp:
-#             json.dump(self._settings, fp)
-
-#     def get(self, option, default=None):
-#         if option not in self._settings:
-#             raise Exception("%s no es una opción de configuración" % option)
-#         value = self._settings.get(option, default)
-#         return value
-
-#     def set_value(self, option, value):
-#         self._settings[option] = value
-
-#     @staticmethod
-#     def _get_font():
-#         font = QFont("consolas", 11)
-#         if LINUX:
-#             font = QFont("monospace", 12)
-#         return font.family(), font.pointSize()
+    def _load_defaults(self):
+        for option, (value, type_) in DEFAULT_SETTINGS.items():
+            current = self.value(option, type_)
+            if current is not None:
+                option = 'user/{}'.format(option)
+                self.setValue(option, value)
 
 
-class _Settings:
-    path = ''
-    prefix = ''
-
-    def __init__(self):
-        self._settings = QSettings(self.path, QSettings.IniFormat)
-
-    def value(self, option, default=None):
-        option = '{}/{}'.format(self.prefix, option)
-
-        value = self._settings.value(option, default)
-        print('GET: {}={}'.format(option, value))
-        return value
-
-    def setValue(self, option, value):
-        option = '{}/{}'.format(self.prefix, option)
-        print('SET: {}:{}'.format(option, value))
-        self._settings.setValue(option, value)
-
-    def __repr__(self):
-        return '<{}:{}>'.format(self.prefix, self.path)
-
-
-class _UserSettings(_Settings):
-    path = USER_SETTINGS_PATH
-    prefix = 'us'
-
-
-class _DataSettings(_Settings):
-    path = SETTINGS_PATH
-    prefix = 'ds'
-
-
-DATA_SETTINGS = _DataSettings()
-USER_SETTINGS = _UserSettings()
+DATA_SETTINGS = QSettings(SETTINGS_PATH, QSettings.IniFormat)
+USER_SETTINGS = _UserSettings(USER_SETTINGS_PATH)

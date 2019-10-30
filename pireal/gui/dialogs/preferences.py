@@ -29,6 +29,7 @@ from PyQt5.QtWidgets import QDialogButtonBox
 
 from PyQt5.QtGui import QFontDatabase
 
+from pireal.core.settings import USER_SETTINGS, USER_SETTINGS_PATH
 # from pireal.core.settings import CONFIG
 # from pireal.gui.main_window import Pireal
 
@@ -49,10 +50,12 @@ class Preferences(QDialog):
         group_editor = QGroupBox('Editor:')
         grid_editor = QGridLayout(group_editor)
         self._check_highlight_current_line = QCheckBox('Highlight Current Line')
-        # self._check_highlight_current_line.setChecked(CONFIG.get('highlightCurrentLine'))
+        self._check_highlight_current_line.setChecked(
+            USER_SETTINGS.value('highlightCurrentLine', False, bool))
         grid_editor.addWidget(self._check_highlight_current_line, 0, 0)
         self._check_highlight_braces = QCheckBox('Highlight Braces')
-        # self._check_highlight_braces.setChecked(CONFIG.get('matchParenthesis'))
+        self._check_highlight_braces.setChecked(
+            USER_SETTINGS.value('matchParenthesis', False, bool))
         grid_editor.addWidget(self._check_highlight_braces, 0, 1)
 
         group_font = QGroupBox('Font:')
@@ -80,23 +83,26 @@ class Preferences(QDialog):
         vbox.addWidget(btn_box)
 
     def accept(self):
-        font_size = int(self._combo_font_size.currentText())
-        font_family = self._combo_font_family.currentText()
+        # font_size = int(self._combo_font_size.currentText())
+        # font_family = self._combo_font_family.currentText()
 
         # CONFIG.set_value('fontSize', font_size)
         # CONFIG.set_value('fontFamily', font_family)
         # CONFIG.set_value('highlightCurrentLine', self._check_highlight_current_line.isChecked())
         # CONFIG.set_value('matchParenthesis', self._check_highlight_braces.isChecked())
+        USER_SETTINGS.setValue(
+            'highlightCurrentLine', self._check_highlight_current_line.isChecked())
+        USER_SETTINGS.setValue('matchParenthesis', self._check_highlight_braces.isChecked())
 
         # central = Pireal.get_service('central')
-        db = self._central.get_active_db()
-        if db is not None:
-            qw = db.query_container.currentWidget()
-            if qw is not None:
-                editor = qw.get_editor()
-                editor.set_font(font_family, font_size)
-                editor.set_highlight_line(self._check_highlight_current_line.isChecked())
-                editor.set_match_parenthesis(self._check_highlight_braces.isChecked())
+        # db = self._central.get_active_db()
+        # if db is not None:
+        #     qw = db.query_container.currentWidget()
+        #     if qw is not None:
+        #         editor = qw.get_editor()
+        #         editor.set_font(font_family, font_size)
+        #         editor.set_highlight_line(self._check_highlight_current_line.isChecked())
+        #         editor.set_match_parenthesis(self._check_highlight_braces.isChecked())
         # CONFIG.save_settings()
         super().accept()
 
