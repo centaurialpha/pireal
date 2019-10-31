@@ -25,8 +25,9 @@ import os
 
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QApplication
 
-from PyQt5.QtQuick import QQuickView
+from PyQt5.QtQuickWidgets import QQuickWidget
 from PyQt5.QtCore import QUrl
 from PyQt5.QtCore import QTimer
 # from pireal.gui.main_window import Pireal
@@ -43,14 +44,12 @@ class StartPage(QWidget):
         self._central = parent
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
-        view = QQuickView()
-        qml = os.path.join(settings.QML_PATH, "StartPage.qml")
-        view.setSource(QUrl.fromLocalFile(qml))
-        view.setResizeMode(QQuickView.SizeRootObjectToView)
-        widget = QWidget.createWindowContainer(view)
-        vbox.addWidget(widget)
+        self._view = QQuickWidget()
+        self._set_source()
+        self._view.setResizeMode(QQuickWidget.SizeRootObjectToView)
+        vbox.addWidget(self._view)
 
-        self._root = view.rootObject()
+        self._root = self._view.rootObject()
 
         # Connections
         self._root.openRecentDatabase.connect(lambda: self._central.open_database(path))
@@ -59,6 +58,15 @@ class StartPage(QWidget):
         # self._root.openDatabase.connect(lambda path: self._central.open_database(path))
         self._root.newDatabase.connect(self._central.create_database)
         # self._root.removeCurrent.connect(self._remove_current)
+        self._central.pireal.themeChanged.connect(self._reload)
+
+    def _set_source(self):
+        qml = os.path.join(settings.QML_PATH, "StartPage.qml")
+        self._view.setSource(QUrl.fromLocalFile(qml))
+
+    def _reload(self):
+        self._view.setSource(QUrl())
+        self._set_source()
 
     def _open_example(self):
         db_filename = os.path.join(settings.EXAMPLES, 'database.pdb')

@@ -3,7 +3,9 @@ import QtQuick 2.7
 Rectangle {
     id: root
 
-    color: "#404244"
+    SystemPalette { id: darkPalette; colorGroup: SystemPalette.Active }
+
+    color: darkPalette.window
     signal itemClicked(int index)
 
     function addItem(item, cardinalidad, grado) {

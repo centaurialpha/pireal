@@ -23,18 +23,26 @@ import webbrowser
 
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QApplication
 
 from PyQt5.QtCore import QPoint
 from PyQt5.QtCore import QSize
 from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import pyqtSignal as Signal
 
 from pireal import translations as tr
 from pireal import keymap
 from pireal.core import settings
 from pireal.gui import central_widget
 from pireal.gui import menu_actions
+from pireal.gui import theme
 
-from pireal.core.settings import DATA_SETTINGS, SETTINGS_PATH
+# FIXME: más arriba se usa settings, unificar
+from pireal.core.settings import (
+    DATA_SETTINGS,
+    SETTINGS_PATH,
+    USER_SETTINGS
+)
 
 TOOLBAR_ITEMS = []  # TODO: hacer esto cuando se active toolbar
 
@@ -46,6 +54,7 @@ class Pireal(QMainWindow):
 
     This class is responsible for installing all application services.
     """
+    themeChanged = Signal()
 
     __ACTIONS = {}
 
@@ -73,6 +82,17 @@ class Pireal(QMainWindow):
         # Menu bar
         menubar = self.menuBar()
         self._load_menubar(menubar)
+
+    def switch_theme(self):
+        app = QApplication.instance()
+        if USER_SETTINGS.dark_mode:
+            USER_SETTINGS.dark_mode = False
+            theme.reset_theme(app)
+        else:
+            USER_SETTINGS.dark_mode = True
+            theme.apply_dark_mode(app)
+        USER_SETTINGS.save()
+        self.themeChanged.emit()
 
     @classmethod
     def get_action(cls, name):
@@ -112,6 +132,9 @@ class Pireal(QMainWindow):
                     qaction = menu.addAction(action)
                     if slot_name is None:
                         continue
+
+                    qaction.setCheckable(menu_item.get('checkable', False))
+
                     obj_name, connection = slot_name.split(':')
 
                     obj = self.central_widget
@@ -131,10 +154,10 @@ class Pireal(QMainWindow):
         # self.__install_toolbar(toolbar_items, rela_actions)
         # self.__install_toolbar(rela_actions)
         # Disable some actions
-        self.set_enabled_db_actions(False)
-        self.set_enabled_relation_actions(False)
-        self.set_enabled_query_actions(False)
-        self.set_enabled_editor_actions(False)
+        # self.set_enabled_db_actions(False)
+        # self.set_enabled_relation_actions(False)
+        # self.set_enabled_query_actions(False)
+        # self.set_enabled_editor_actions(False)
 
     # def __install_toolbar(self, rela_actions):
     #     menu = QMenu()
