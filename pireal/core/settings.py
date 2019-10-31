@@ -76,6 +76,17 @@ SUPPORTED_FILES = (
 )
 
 
+class _QSettings(QSettings):
+
+    def __init__(self, path=SETTINGS_PATH, prefix=''):
+        super().__init__(path, QSettings.IniFormat)
+        self._prefix = prefix
+
+    def setValue(self, key, value):
+        key = '{}/{}'.format(self._prefix, key)
+        super().setValue(key, value)
+
+
 class Settings:
 
     def __init__(self):
@@ -117,17 +128,6 @@ class Settings:
         self.alternate_row_colors = settings_map.get(
             'us/alternate_row_colors', self.alternate_row_colors)
         self.dark_mode = settings_map.get('us/dark_mode', self.dark_mode)
-
-
-class _QSettings(QSettings):
-
-    def __init__(self, path=SETTINGS_PATH, prefix=''):
-        super().__init__(path, QSettings.IniFormat)
-        self._prefix = prefix
-
-    def setValue(self, key, value):
-        key = '{}/{}'.format(self._prefix, key)
-        super().setValue(key, value)
 
 
 USER_SETTINGS = Settings()
