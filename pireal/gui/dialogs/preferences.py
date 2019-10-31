@@ -29,6 +29,7 @@ from PyQt5.QtWidgets import QDialogButtonBox
 
 from PyQt5.QtGui import QFontDatabase
 
+from PyQt5.QtCore import Qt
 from pireal.core.settings import USER_SETTINGS
 
 
@@ -40,10 +41,13 @@ class Preferences(QDialog):
         self.setWindowTitle('Preferences')
         vbox = QVBoxLayout(self)
 
-        group_language = QGroupBox('Language:')
-        grid_language = QGridLayout(group_language)
+        group_general = QGroupBox('General:')
+        grid_general = QGridLayout(group_general)
+        self._check_dark_mode = QCheckBox('Dark Mode')
+        grid_general.addWidget(self._check_dark_mode, 0, 0)
         self._combo_languages = QComboBox()
-        grid_language.addWidget(self._combo_languages, 0, 0)
+        grid_general.addWidget(QLabel('Language:'), 0, 1, Qt.AlignRight)
+        grid_general.addWidget(self._combo_languages, 0, 2)
 
         group_editor = QGroupBox('Editor:')
         grid_editor = QGridLayout(group_editor)
@@ -73,7 +77,7 @@ class Preferences(QDialog):
         btn_box.accepted.connect(self.accept)
 
         # Add widgets to layout
-        vbox.addWidget(group_language)
+        vbox.addWidget(group_general)
         vbox.addWidget(group_editor)
         vbox.addWidget(group_font)
         vbox.addWidget(btn_box)
@@ -83,6 +87,7 @@ class Preferences(QDialog):
         USER_SETTINGS.font_size = int(self._combo_font_size.currentText())
         USER_SETTINGS.match_parenthesis = self._check_highlight_braces.isChecked()
         USER_SETTINGS.highlight_current_line = self._check_highlight_current_line.isChecked()
+        USER_SETTINGS.dark_mode = self._check_dark_mode.isChecked()
         USER_SETTINGS.save()
 
         super().accept()
