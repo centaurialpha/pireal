@@ -57,6 +57,8 @@ class QueryContainer(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         vbox = QVBoxLayout(self)
+        vbox.setContentsMargins(3, 0, 3, 0)
+        vbox.setSpacing(0)
         self._editor_widget = EditorWidget(self)
         vbox.addWidget(self._editor_widget)
         self._search_widget = SearchWidget()
@@ -76,6 +78,7 @@ class EditorWidget(QWidget):
         self._opened_editors = {}
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
+        vbox.setSpacing(0)
         self._tabs_editor = QTabWidget()
         vbox.addWidget(self._tabs_editor)
 
@@ -561,8 +564,7 @@ class SearchWidget(QWidget):
         super().__init__(parent)
         self._parent = parent
         box = QHBoxLayout(self)
-        # box.setContentsMargins(0, 3, 0, 3)
-        # box.setSpacing(0)
+        box.setContentsMargins(0, 3, 1, 3)
         self._line_search = QLineEdit()
         box.addWidget(self._line_search)
         btn_find_previous = QPushButton(tr.TR_BTN_FIND_PREVIOUS)
