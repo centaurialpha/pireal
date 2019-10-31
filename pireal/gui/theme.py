@@ -1,16 +1,17 @@
 from PyQt5.QtGui import QColor
 from PyQt5.QtGui import QPalette
 
+from pireal.core.settings import USER_SETTINGS
 
 DARK = {
-    'Window': '#131217',
+    'Window': '#171a21',
     'WindowText': QColor(255, 255, 255),
     'WindowTextDisabled': QColor(127, 127, 127),
-    'Base': '#212227',
+    'Base': '#252830',
     'AlternateBase': QColor(66, 66, 66),
     'ToolTipBase': QColor(255, 255, 255),
     'ToolTipText': QColor(255, 255, 255),
-    'Text': QColor(255, 255, 255),
+    'Text': '#ffffff',
     'TextDisabled': QColor(80, 80, 80),
     'Dark': QColor(35, 35, 35),
     'Shadow': QColor(20, 20, 20),
@@ -24,6 +25,45 @@ DARK = {
     'HighlightedText': QColor(255, 255, 255),
     'HighlightedTextDisabled': QColor(127, 127, 127)
 }
+
+
+EDITOR_DARK = {
+    # Editor
+    'background': '#282a36',
+    'foreground': '#f8f8f2',
+    'sidebar_background': '#282a36',
+    'sidebar_foreground': '#6272a4',
+    'current_line': '#383b4c',
+    # Hihglighter
+    'keyword': '#7ce4fb',
+    'number': '#bd93f9',
+    'string': '#f1fa8c',
+    'comment': '#6272a4',
+    'operator': '#ffffff',
+    'variable': '#ffb86c',
+}
+
+EDITOR_LIGHT = {
+    'background': '#ffffff',
+    'foreground': '#000000',
+    'sidebar_background': '#ffffff',
+    'sidebar_foreground': '#000000',
+    'current_line': '#383b4c',
+    'keyword': '#808000',
+    'number': '#000080',
+    'string': '#008000',
+    'comment': '#008000',
+    'operator': '#000000',
+    'variable': '#800000',
+}
+
+
+# FIXME: se llama repetidas veces
+# En lugar de llamar siempre a esta funcion, guardar referencia
+def get_editor_color(key):
+    if USER_SETTINGS.dark_mode:
+        return EDITOR_DARK[key]
+    return EDITOR_LIGHT[key]
 
 
 def apply_dark_mode(app):
