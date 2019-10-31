@@ -32,7 +32,7 @@ from PyQt5.QtCore import QTimer
 # from pireal.gui.main_window import Pireal
 from pireal.core import settings
 
-from pireal.core.settings import CONFIG
+# from pireal.core.settings import CONFIG
 
 
 class StartPage(QWidget):
@@ -79,10 +79,10 @@ class StartPage(QWidget):
 
     def load_items(self):
         self._root.clear()
-        if CONFIG.get("recentFiles"):
-            for file_ in CONFIG.get("recentFiles"):
-                name = os.path.splitext(os.path.basename(file_))[0]
-                self._root.loadItem(name, file_)
+        # if CONFIG.get("recentFiles"):
+        #     for file_ in CONFIG.get("recentFiles"):
+        #         name = os.path.splitext(os.path.basename(file_))[0]
+        #         self._root.loadItem(name, file_)
 
     def showEvent(self, event):
         """ Load list view every time the start page is displayed """

@@ -24,6 +24,8 @@ import webbrowser
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QMessageBox
 
+from PyQt5.QtCore import QPoint
+from PyQt5.QtCore import QSize
 from PyQt5.QtCore import QSettings
 
 from pireal import translations as tr
@@ -32,7 +34,7 @@ from pireal.core import settings
 from pireal.gui import central_widget
 from pireal.gui import menu_actions
 
-from pireal.core.settings import CONFIG
+from pireal.core.settings import DATA_SETTINGS, SETTINGS_PATH
 
 TOOLBAR_ITEMS = []  # TODO: hacer esto cuando se active toolbar
 
@@ -53,14 +55,13 @@ class Pireal(QMainWindow):
         self.setMinimumSize(880, 600)
         self.resize(1035, 760)
         # Load window geometry
-        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        window_maximized = qsettings.value('window_max', True)
+        window_maximized = DATA_SETTINGS.value('ds/window_max')
         if window_maximized:
             self.showMaximized()
         else:
-            size = qsettings.value('window_size')
+            size = DATA_SETTINGS.value('ds/window_size', QSize(800, 600))
             self.resize(size)
-            position = qsettings.value('window_pos')
+            position = DATA_SETTINGS.value('ds/window_pos', QPoint(100, 100))
             self.move(position)
         # TODO: Create toolbar
         # TODO: Notification widget
@@ -280,24 +281,23 @@ class Pireal(QMainWindow):
         self._msg_error_widget.show()
 
     def save_user_settings(self):
-        CONFIG.set_value("lastOpenFolder", self.central_widget.last_open_folder)
-        CONFIG.set_value("recentFiles", self.central_widget.recent_databases)
+        # CONFIG.set_value("lastOpenFolder", self.central_widget.last_open_folder)
+        # CONFIG.set_value("recentFiles", self.central_widget.recent_databases)
 
-        # Write settings
-        CONFIG.save_settings()
+        # # Write settings
+        # CONFIG.save_settings()
+        pass
 
     def closeEvent(self, event):
-        self.save_user_settings()
+        # self.save_user_settings()
 
-        # Qt settings
-        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        # # Save window geometry
+        # Save window geometry
         if self.isMaximized():
-            qsettings.setValue('window_max', True)
+            DATA_SETTINGS.setValue('ds/window_max', True)
         else:
-            qsettings.setValue('window_max', False)
-            qsettings.setValue('window_pos', self.pos())
-            qsettings.setValue('window_size', self.size())
+            DATA_SETTINGS.setValue('ds/window_max', False)
+            DATA_SETTINGS.setValue('ds/window_pos', self.pos())
+            DATA_SETTINGS.setValue('ds/window_size', self.size())
 
         db = self.central_widget.get_active_db()
         if db is not None:

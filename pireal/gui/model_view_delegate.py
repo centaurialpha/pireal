@@ -37,7 +37,7 @@ from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import pyqtSignal as Signal
 
 from pireal import translations as tr
-from pireal.core.settings import CONFIG
+# from pireal.core.settings import CONFIG
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +108,7 @@ class View(QTableView):
 
     def __init__(self):
         super(View, self).__init__()
-        self.setAlternatingRowColors(CONFIG.get('alternatingRowColors'))
+        # self.setAlternatingRowColors(CONFIG.get('alternatingRowColors'))
         self.verticalHeader().hide()
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         # Scroll content per pixel

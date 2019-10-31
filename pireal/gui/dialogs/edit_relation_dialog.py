@@ -30,7 +30,7 @@ from PyQt5.QtGui import QFont
 
 from PyQt5.QtCore import pyqtSignal
 
-from pireal.core.settings import CONFIG
+# from pireal.core.settings import CONFIG
 
 
 class EditRelationDialog(QDialog):
@@ -50,9 +50,9 @@ class EditRelationDialog(QDialog):
                     "separadas por un salto de línea."))
         vbox.addWidget(desc)
         self._editor = QPlainTextEdit()
-        font, size = CONFIG.get("fontFamily"), CONFIG.get("fontSize")
-        if font is None:
-            font, size = CONFIG._get_font()
+        # font, size = CONFIG.get("fontFamily"), CONFIG.get("fontSize")
+        # if font is None:
+        #     font, size = CONFIG._get_font()
         f = QFont(font, size)
         self._editor.setFont(f)
         vbox.addWidget(self._editor)
