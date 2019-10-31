@@ -170,7 +170,7 @@ Rectangle {
                 model: listModel
                 delegate: Rectangle {
                     id: listItem
-                    color: darkPalette.window
+                    color: darkPalette.alternateBase
                     height: 60
                     radius: 3
                     anchors {

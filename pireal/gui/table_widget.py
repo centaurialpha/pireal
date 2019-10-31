@@ -48,15 +48,19 @@ class TableWidget(QSplitter):
         self._relations = {}
         vbox = QVBoxLayout(self)
         self._tab_relations = QTabWidget()
+        self._tab_relations.setAutoFillBackground(True)
         self._tab_results = QTabWidget()
+        self._tab_results.setAutoFillBackground(True)
         self.addWidget(self._tab_relations)
         self.addWidget(self._tab_results)
 
         # Relation stack
         self._relation_stack = QStackedWidget()
+        self._relation_stack.setAutoFillBackground(True)
         self._tab_relations.addTab(self._relation_stack, tr.TR_TABLE_WORKSPACE)
         # Result stack
         self._result_stack = QStackedWidget()
+        self._result_stack.setAutoFillBackground(True)
         self._tab_results.addTab(self._result_stack, tr.TR_TABLE_RESULTS)
 
         self.setSizes([1, 1])

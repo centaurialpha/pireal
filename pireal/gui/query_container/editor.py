@@ -85,6 +85,11 @@ class Editor(QPlainTextEdit):
         short_zoom_out = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Minus), self)
         short_zoom_out.activated.connect(lambda: self.zoom('out'))
 
+    def reload_highlighter(self):
+        self._highlighter.deleteLater()
+        self._highlighter = None
+        self._highlighter = highlighter.Highlighter(self.document())
+
     def zoom(self, mode):
         if mode == 'out':
             self.zoomOut(1)

@@ -5,7 +5,7 @@ Rectangle {
 
     SystemPalette { id: darkPalette; colorGroup: SystemPalette.Active }
 
-    color: darkPalette.window
+    color: darkPalette.base
     signal itemClicked(int index)
 
     function addItem(item, cardinalidad, grado) {
@@ -69,14 +69,14 @@ Rectangle {
         anchors.top: parent.top
         height: 30
         width: parent.width
-        color: "#404244"
+        color: darkPalette.button
         property alias title: lblTitle.text
         Text {
             id: lblTitle
             text: ""
             font.bold: true
             font.pointSize: 12
-            color: "#f9f9f9"
+            color: darkPalette.text
             anchors.centerIn: parent
         }
     }
@@ -105,7 +105,7 @@ Rectangle {
 
             height: 70
             property bool current: ListView.isCurrentItem
-            color: relationItem.current ? "#262829" : "transparent"
+            color: relationItem.current ? darkPalette.shadow : "transparent"
 
             Column {
                 spacing: 5

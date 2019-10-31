@@ -30,10 +30,7 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtQuickWidgets import QQuickWidget
 from PyQt5.QtCore import QUrl
 from PyQt5.QtCore import QTimer
-# from pireal.gui.main_window import Pireal
 from pireal.core import settings
-
-# from pireal.core.settings import CONFIG
 
 
 class StartPage(QWidget):
@@ -67,6 +64,8 @@ class StartPage(QWidget):
     def _reload(self):
         self._view.setSource(QUrl())
         self._set_source()
+        self._root = self._view.rootObject()
+        self.load_items()
 
     def _open_example(self):
         db_filename = os.path.join(settings.EXAMPLES, 'database.pdb')
@@ -87,6 +86,7 @@ class StartPage(QWidget):
 
     def load_items(self):
         self._root.clear()
+        # FIXME: load items from DATA_SETTINGS
         # if CONFIG.get("recentFiles"):
         #     for file_ in CONFIG.get("recentFiles"):
         #         name = os.path.splitext(os.path.basename(file_))[0]

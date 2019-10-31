@@ -64,6 +64,11 @@ class QueryContainer(QWidget):
         self._search_widget = SearchWidget()
         vbox.addWidget(self._search_widget)
 
+    def reload_editor_scheme(self):
+        for editor in self._editor_widget.editors():
+            editor.apply_scheme()
+            editor.reload_highlighter()
+
     def change_visibility(self):
         if self.isVisible():
             self._hide()
@@ -92,6 +97,9 @@ class EditorWidget(QWidget):
         self._tabs_editor = QTabWidget()
         vbox.addWidget(self._tabs_editor)
 
+    def editors(self):
+        return self._opened_editors.values()
+
     def is_open(self, filepath) -> bool:
         try:
             self._opened_editors[filepath]
@@ -105,6 +113,7 @@ class EditorWidget(QWidget):
     def create_editor(self, title=''):
         weditor = editor.Editor()
         self._tabs_editor.addTab(weditor, title)
+        self._opened_editors[title] = weditor
         return weditor
 
 # class QueryContainer(QWidget):
