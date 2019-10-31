@@ -36,7 +36,12 @@ from pireal.gui import central_widget
 from pireal.gui import menu_actions
 from pireal.gui import theme
 
-from pireal.core.settings import DATA_SETTINGS, SETTINGS_PATH
+# FIXME: más arriba se usa settings, unificar
+from pireal.core.settings import (
+    DATA_SETTINGS,
+    SETTINGS_PATH,
+    USER_SETTINGS
+)
 
 TOOLBAR_ITEMS = []  # TODO: hacer esto cuando se active toolbar
 
@@ -77,8 +82,14 @@ class Pireal(QMainWindow):
         self._load_menubar(menubar)
 
     def switch_theme(self):
-        # TODO: hacer un not segun la configuracion
         app = QApplication.instance()
+        if USER_SETTINGS.dark_mode:
+            USER_SETTINGS.dark_mode = False
+            theme.reset_theme(app)
+        else:
+            USER_SETTINGS.dark_mode = True
+            theme.apply_dark_mode(app)
+        USER_SETTINGS.save()
 
     @classmethod
     def get_action(cls, name):

@@ -31,7 +31,6 @@ from PyQt5.QtGui import QIcon
 
 from pireal import __version__
 from pireal.core import settings
-# from pireal.core.settings import CONFIG
 from pireal.gui import main_window
 from pireal.gui.theme import apply_dark_mode
 
@@ -73,8 +72,7 @@ def start_pireal():
     #     translator.load(os.path.join(settings.LANGUAGE_PATH, lang + '.qm'))
     #     app.installTranslator(translator)
 
-    dark_mode = True  # FIXME: desde configuraciones
-    if dark_mode:
+    if settings.USER_SETTINGS.dark_mode:
         apply_dark_mode(app)
 
     # TODO: Load stylesheet
