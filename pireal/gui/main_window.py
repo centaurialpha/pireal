@@ -133,7 +133,11 @@ class Pireal(QMainWindow):
                     if slot_name is None:
                         continue
 
-                    qaction.setCheckable(menu_item.get('checkable', False))
+                    if menu_item.get('checkable', False):
+                        qaction.setCheckable(True)
+                        # FIXME: solo tengo en cuenta ese qaction
+                        # Jugar un poco con Pireal.__ACTIONS
+                        qaction.setChecked(USER_SETTINGS.dark_mode)
 
                     obj_name, connection = slot_name.split(':')
 
