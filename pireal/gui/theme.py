@@ -1,6 +1,7 @@
 from PyQt5.QtGui import QColor
 from PyQt5.QtGui import QPalette
 
+from pireal.core.settings import USER_SETTINGS
 
 DARK = {
     'Window': '#131217',
@@ -24,6 +25,38 @@ DARK = {
     'HighlightedText': QColor(255, 255, 255),
     'HighlightedTextDisabled': QColor(127, 127, 127)
 }
+
+
+EDITOR_DARK = {
+    # Editor
+    'background': '#282a36',
+    'foreground': '#f8f8f2',
+    'sidebar_background': '#282a36',
+    'sidebar_foreground': '#f8f8f2',
+    'current_line': '#383b4c',
+    # Hihglighter
+    'keyword': '#7ce4fb',
+    'number': '#bd93f9',
+    'string': '#f1fa8c',
+    'comment': '#6272a4',
+    'operator': '#ffffff',
+    'variable': '#ffb86c',
+}
+
+EDITOR_LIGHT = {
+    'background': '#ffffff',
+    'foreground': '#000000',
+    'sidebar_background': '#ffffff',
+    'sidebar_foreground': '#000000'
+}
+
+
+# FIXME: se llama repetidas veces
+# En lugar de llamar siempre a esta funcion, guardar referencia
+def get_editor_color(key):
+    if USER_SETTINGS.dark_mode:
+        return EDITOR_DARK[key]
+    return EDITOR_LIGHT[key]
 
 
 def apply_dark_mode(app):

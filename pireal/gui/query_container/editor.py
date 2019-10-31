@@ -27,14 +27,17 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtGui import QColor
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtGui import QTextDocument
+from PyQt5.QtGui import QPalette
 
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QTimer
 
 from pireal.gui.query_container import (
     highlighter,
     sidebar
 )
-# from pireal.core.settings import CONFIG
+from pireal.core.settings import USER_SETTINGS
+from pireal.gui.theme import get_editor_color
 
 
 class Editor(QPlainTextEdit):
@@ -53,18 +56,15 @@ class Editor(QPlainTextEdit):
         self.__visible_blocks = []
         self.modified = False
         # Highlight current line
-        # self._highlight_line = CONFIG.get("highlightCurrentLine")
+        self._highlight_line = USER_SETTINGS.highlight_current_line
         # Highlight braces
-        # self._match_parenthesis = CONFIG.get("matchParenthesis")
+        self._match_parenthesis = USER_SETTINGS.match_parenthesis
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
-        # font_family = CONFIG.get("fontFamily")
-        # size = CONFIG.get("fontSize")
-        # if font_family is None:
-            # font_family, size = CONFIG._get_font()
-
-        self.set_font(font_family, size)
+        font_family = USER_SETTINGS.font_family
+        font_size = USER_SETTINGS.font_size
+        self.set_font(font_family, font_size)
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
         self.__message = None
@@ -73,6 +73,7 @@ class Editor(QPlainTextEdit):
         self._selections = {}
         self.__cursor_position_changed()
         # self.snippets = snippets.SnippetManager(self)
+        self.apply_scheme()
         # Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.blockCountChanged.connect(self.update)
@@ -188,7 +189,7 @@ class Editor(QPlainTextEdit):
 
         if self._highlight_line:
             _selection = QTextEdit.ExtraSelection()
-            color = QColor("#fffde1")
+            color = QColor(get_editor_color('current_line'))
             _selection.format.setBackground(color)
             _selection.format.setProperty(
                 QTextCharFormat.FullWidthSelection, True)
@@ -437,3 +438,10 @@ class Editor(QPlainTextEdit):
         if selection_name in self._selections:
             self._selections[selection_name] = []
             self.update_selections()
+
+    def apply_scheme(self):
+        pal = self.palette()
+        get = get_editor_color
+        pal.setColor(QPalette.Base, QColor(get('background')))
+        pal.setColor(QPalette.Text, QColor(get('foreground')))
+        self.setPalette(pal)

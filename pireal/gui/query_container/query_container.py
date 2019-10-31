@@ -70,6 +70,16 @@ class QueryContainer(QWidget):
         else:
             self.show()
 
+    def add_editor(self, filename):
+        if self._editor_widget.is_open(filename):
+            # set focus
+            pass
+        else:
+            with open(filename) as fp:
+                content = fp.read()
+            editor = self._editor_widget.create_editor(filename)
+            editor.setPlainText(content)
+
 
 class EditorWidget(QWidget):
 

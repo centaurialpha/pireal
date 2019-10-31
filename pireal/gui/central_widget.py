@@ -193,10 +193,11 @@ class CentralWidget(QWidget):
         if not filename:
             directory = os.path.expanduser('~')
             # FIXME: hacer un settings.get_supported_files(query) o algo así
-            filters = settings.SUPPORTED_FILES(';;')[1]
+            filters = settings.SUPPORTED_FILES.split(';;')[1]
             filename, _ = QFileDialog.getOpenFileName(self, tr.TR_OPEN_QUERY, directory, filters)
             if not filename:
                 return
+        self._main_panel.query_container.add_editor(filename)
         # TODO:
         # Tengo el filename, si ya está abierto, ir a ese tab
         # Sino, crear un nuevo editor con el contenido
