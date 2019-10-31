@@ -28,6 +28,7 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QPoint
 from PyQt5.QtCore import QSize
 from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import pyqtSignal as Signal
 
 from pireal import translations as tr
 from pireal import keymap
@@ -53,6 +54,7 @@ class Pireal(QMainWindow):
 
     This class is responsible for installing all application services.
     """
+    themeChanged = Signal()
 
     __ACTIONS = {}
 
@@ -90,6 +92,7 @@ class Pireal(QMainWindow):
             USER_SETTINGS.dark_mode = True
             theme.apply_dark_mode(app)
         USER_SETTINGS.save()
+        self.themeChanged.emit()
 
     @classmethod
     def get_action(cls, name):
