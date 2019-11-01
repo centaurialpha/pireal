@@ -48,6 +48,7 @@ class StartPage(QWidget):
 
         self._root = self._view.rootObject()
 
+        # FIXME: cuando se hace reload, esto se pierde
         # Connections
         self._root.openRecentDatabase.connect(lambda: self._central.open_database(path))
         # self._root.openPreferences.connect(self._open_preferences)

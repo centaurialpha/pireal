@@ -18,6 +18,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import os
+from collections import namedtuple
 
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QSplitter
@@ -26,40 +27,53 @@ from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtQuickWidgets import QQuickWidget
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import QAbstractListModel
 from PyQt5.QtCore import pyqtSignal as Signal
+from PyQt5.QtCore import pyqtSlot as Slot
 from PyQt5.QtCore import QUrl
 
 from pireal import translations as tr
 from pireal.core import settings
 
+RelationItem = namedtuple('Relation', 'name cardinality degree')
+
 
 class RelationModel(QAbstractListModel):
 
     NameRole = Qt.UserRole + 1
-    CardinalityRole = NameRole + 1
-    DegreeRole = CardinalityRole + 1
+    CardinalityRole = Qt.UserRole + 2
+    DegreeRole = Qt.UserRole + 3
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._data = None
+        self._relations = []
 
-    def set_data(self, data):
-        self._data = data
+    def add_relation(self, relation: RelationItem):
+        self.beginInsertRows(QModelIndex(), len(self._relations), len(self._relations))
+        self._relations.append(relation)
+        self.endInsertRows()
 
-    def rowCount(self, index):
-        return len(self._data)
+    def clear(self):
+        self._relations.clear()
+
+    def rowCount(self, index=QModelIndex()):
+        return len(self._relations)
 
     def data(self, index, role=Qt.DisplayRole):
         try:
-            data = self._data[index.row()]
+            relation = self._relations[index.row()]
         except IndexError:
             return None
-        if role == Qt.DisplayRole:
-            return data.name
+        if role == self.NameRole:
+            return relation.name
+        elif role == self.CardinalityRole:
+            return relation.cardinality
+        elif role == self.DegreeRole:
+            return relation.degree
         return None
 
-    def roles(self):
+    def roleNames(self):
         return {
             self.NameRole: b'name',
             self.CardinalityRole: b'cardinality',
@@ -85,27 +99,31 @@ class LateralWidget(QSplitter):
         super().__init__(parent)
         self.parent = parent
         self.setOrientation(Qt.Vertical)
-        # Lista de relaciones de la base de datos
-        self._relations_list = RelationListQML(self.parent)
-        self._relations_list.set_title(tr.TR_RELATIONS)
-        self.addWidget(self._relations_list)
-        # Lista de relaciones del resultado de consultas
-        self._results_list = RelationListQML(self.parent)
-        self._results_list.set_title(tr.TR_TABLE_RESULTS)
-        self.addWidget(self._results_list)
+        self._relations_model = RelationModel()
+        self._relations_view = RelationListQML(self._relations_model)
+        self._relations_view.set_title(tr.TR_RELATIONS)
+        self.addWidget(self._relations_view)
+        self._results_model = RelationModel()
+        self._results_view = RelationListQML(self._results_model)
+        self._results_view.set_title(tr.TR_TABLE_RESULTS)
+        self.addWidget(self._results_view)
 
-        self._relations_list.itemClicked.connect(
-            lambda i: self.relationClicked.emit(i))
-        self._results_list.itemClicked.connect(
-            lambda i: self.resultClicked.emit(i))
+        # self._relations_list.itemClicked.connect(
+        #     lambda i: self.relationClicked.emit(i))
+        # self._results_list.itemClicked.connect(
+        #     lambda i: self.resultClicked.emit(i))
 
-    @property
-    def relation_list(self):
-        return self._relations_list
+    def add_item_to_relations(self, name: str, cardinality: int, degree: int):
+        item = RelationItem(name, cardinality, degree)
+        self._relations_model.add_relation(item)
 
-    @property
-    def result_list(self):
-        return self._results_list
+    # @property
+    # def relation_list(self):
+    #     return self._relations_list
+
+    # @property
+    # def result_list(self):
+    #     return self._results_list
 
 
 # FIXME: corregir el tema cuando se use el modelo correctamente
@@ -113,19 +131,20 @@ class RelationListQML(QWidget):
 
     itemClicked = Signal(int)
 
-    def __init__(self, parent=None):
+    def __init__(self, model, parent=None):
         super().__init__(parent)
+        self._model = model
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         self._view = QQuickWidget()
+        self._view.rootContext().setContextProperty('relationModel', self._model)
         self._set_source()
         self._view.setResizeMode(QQuickWidget.SizeRootObjectToView)
         vbox.addWidget(self._view)
-
         self._root = self._view.rootObject()
 
         self._root.itemClicked.connect(lambda i: self.itemClicked.emit(i))
-        parent._parent.pireal.themeChanged.connect(self._reload)
+        # parent._parent.pireal.themeChanged.connect(self._reload)
 
     def _set_source(self):
         qml = os.path.join(settings.QML_PATH, "ListRelation.qml")
@@ -138,28 +157,3 @@ class RelationListQML(QWidget):
 
     def set_title(self, title):
         self._root.setTitle(title)
-
-    def add_item(self, name, card, deg):
-        self._root.addItem(name, card, deg)
-
-    def clear_items(self):
-        self._root.clear()
-
-    def current_item(self):
-        item = self._root.currentItem()
-        name, index = None, None
-        if item is not None:
-            name, index = item.toVariant().values()
-        return index, name
-
-    def has_item(self):
-        return self._root.hasItem()
-
-    def current_text(self):
-        return self._root.currentItemText()
-
-    def current_index(self):
-        return self._root.currentIndex()
-
-    def update_cardinality(self, new_cardinality):
-        self._root.setCardinality(new_cardinality)

@@ -187,6 +187,7 @@ class CentralWidget(QWidget):
                 relation_obj.insert(tuple_)
 
             self._main_panel.central_view.add_relation(relation_obj, table_name)
+            self._main_panel.lateral_widget.add_item_to_relations(table_name, relation_obj.cardinality(), relation_obj.degree())
 
     def open_query(self, filename=''):
         # TODO: se ha sacado el parámetro `remember`, debería ser una configuración
