@@ -65,6 +65,12 @@ class TableWidget(QSplitter):
 
         self.setSizes([1, 1])
 
+    def set_current_relation(self, index: int):
+        self._relation_stack.setCurrentIndex(index)
+
+    def set_current_result(self, index: int):
+        self._result_stack.setCurrentIndex(index)
+
     def add_relation(self, relation_obj, relation_name, editable=True):
         logger.debug('Creating new relation <%s>', relation_name)
         table_view = self.create_table(relation_obj, editable)

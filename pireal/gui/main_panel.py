@@ -24,7 +24,9 @@ from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QTabWidget
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QPushButton
+
 from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSlot as Slot
 
 from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.query_container.query_container import QueryContainer
@@ -60,7 +62,13 @@ class _MainPanel(QSplitter):
         self.addWidget(self._vertical_splitter)
         self.setSizes([70, 1])
 
+        # Connections
         self._parent.pireal.themeChanged.connect(self.query_container.reload_editor_scheme)
+        self._lateral_widget.relationClicked.connect(self._on_relation_clicked)
+
+    @Slot(int)
+    def _on_relation_clicked(self, index):
+        self._central_view.set_current_relation(index)
 
     @property
     def lateral_widget(self):
@@ -98,3 +106,9 @@ class CentralView(QWidget):
 
     def add_relation(self, relation_obj, relation_name):
         self._table_widget.add_relation(relation_obj, relation_name)
+
+    def set_current_relation(self, index: int):
+        self._table_widget.set_current_relation(index)
+
+    def set_current_result(self, index: int):
+        self._table_widget.set_current_result(index)

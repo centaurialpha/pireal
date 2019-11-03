@@ -63,8 +63,7 @@ class CentralWidget(QWidget):
         self._stacked = QStackedLayout(self)
         self._main_panel = None
         # Acá cacheo la última carpeta accedida
-        self._last_open_folder = None
-
+        self._last_open_folder = DATA_SETTINGS.value('ds/lastOpenFolder')
         # if CONFIG.get("lastOpenFolder") is not None:
         #     self._last_open_folder = CONFIG.get("lastOpenFolder")
         # self._recent_dbs = []
@@ -94,9 +93,9 @@ class CentralWidget(QWidget):
     #     recent_files.insert(0, database_file)
     #     self._recent_dbs = recent_files
 
-    # @property
-    # def last_open_folder(self):
-    #     return self._last_open_folder
+    @property
+    def last_open_folder(self):
+        return self._last_open_folder
 
     def has_main_panel(self):
         return self._main_panel is not None
@@ -158,6 +157,8 @@ class CentralWidget(QWidget):
             if not filename:
                 logger.debug('File not selected, bye!')
                 return
+        # Save last folder
+        self._last_open_folder = file_manager.get_path(filename)
         # If filename provide
         try:
             logger.debug('Triying to open the database file "%s"', filename)

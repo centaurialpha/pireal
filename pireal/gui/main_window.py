@@ -326,6 +326,9 @@ class Pireal(QMainWindow):
             DATA_SETTINGS.setValue('window_pos', self.pos())
             DATA_SETTINGS.setValue('window_size', self.size())
 
+        # Save last folder
+        if self.central_widget.last_open_folder is not None:
+            DATA_SETTINGS.setValue('lastOpenFolder', self.central_widget.last_open_folder)
         # db = self.central_widget.get_active_db()
         # if db is not None:
         #     # Save splitters size

@@ -88,12 +88,12 @@ class LateralWidget(QSplitter):
     """
 
     relationClicked = Signal(int)
-    relationSelectionChanged = Signal(int)
+    # relationSelectionChanged = Signal(int)
 
     resultClicked = Signal(int)
-    resultSelectionChanged = Signal(int)
+    # resultSelectionChanged = Signal(int)
 
-    newRowsRequested = Signal(list)
+    # newRowsRequested = Signal(list)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -108,10 +108,8 @@ class LateralWidget(QSplitter):
         self._results_view.set_title(tr.TR_TABLE_RESULTS)
         self.addWidget(self._results_view)
 
-        # self._relations_list.itemClicked.connect(
-        #     lambda i: self.relationClicked.emit(i))
-        # self._results_list.itemClicked.connect(
-        #     lambda i: self.resultClicked.emit(i))
+        self._relations_view.itemClicked[int].connect(self.relationClicked.emit)
+        self._results_view.itemClicked[int].connect(self.resultClicked.emit)
 
     def add_item_to_relations(self, name: str, cardinality: int, degree: int):
         item = RelationItem(name, cardinality, degree)
@@ -143,8 +141,7 @@ class RelationListQML(QWidget):
         vbox.addWidget(self._view)
         self._root = self._view.rootObject()
 
-        self._root.itemClicked.connect(lambda i: self.itemClicked.emit(i))
-        # parent._parent.pireal.themeChanged.connect(self._reload)
+        self._root.itemClicked[int].connect(self.itemClicked.emit)
 
     def _set_source(self):
         qml = os.path.join(settings.QML_PATH, "ListRelation.qml")
