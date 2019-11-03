@@ -40,7 +40,7 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtCore import pyqtSignal as Signal
 
 from pireal import translations as tr
-from pireal.core.interpreter import parser
+from pireal.core import interpreter
 from pireal.core.interpreter.exceptions import (
     InvalidSyntaxError,
     MissingQuoteError,
@@ -56,6 +56,7 @@ class QueryContainer(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._main_panel = parent
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(3, 0, 3, 0)
         vbox.setSpacing(0)
@@ -84,6 +85,25 @@ class QueryContainer(QWidget):
                 content = fp.read()
             editor = self._editor_widget.create_editor(filename)
             editor.setPlainText(content)
+
+    def execute_query(self):
+        """Get all text from editor and:
+        1. Get all relations from table widget
+        2. Clear results relations
+        3. Pass query to parser
+        4.
+        """
+        current_editor = self._editor_widget.current_editor()
+        query = current_editor.toPlainText()
+        relations = self._main_panel.central_view.all_relations()
+        result = interpreter.parse(query)
+
+        for relation_name, expression in result.items():
+            new_relation = eval(expression, {}, relations)
+            relations[relation_name] = new_relation
+            self._main_panel.central_view.add_relation_to_results(new_relation, relation_name)
+            self._main_panel.lateral_widget.add_item_to_results(
+                relation_name, new_relation.cardinality(), new_relation.degree())
 
 
 class EditorWidget(QWidget):

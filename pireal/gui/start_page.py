@@ -75,7 +75,7 @@ class StartPage(QWidget):
         query_filename = os.path.join(settings.EXAMPLES, 'queries.pqf')
         self._central.open_query(filename=query_filename)
         # Ejecuto las consultas de ejemplo luego de 1.3 segundos
-        QTimer.singleShot(1300, self._central.execute_queries)
+        QTimer.singleShot(1300, self._central.execute_query)
 
     def _remove_current(self, path):
         self._central.recent_databases.remove(path)

@@ -65,10 +65,15 @@ class _MainPanel(QSplitter):
         # Connections
         self._parent.pireal.themeChanged.connect(self.query_container.reload_editor_scheme)
         self._lateral_widget.relationClicked.connect(self._on_relation_clicked)
+        self._lateral_widget.resultClicked.connect(self._on_result_clicked)
 
     @Slot(int)
     def _on_relation_clicked(self, index):
         self._central_view.set_current_relation(index)
+
+    @Slot(int)
+    def _on_result_clicked(self, index):
+        self._central_view.set_current_result(index)
 
     @property
     def lateral_widget(self):
@@ -81,6 +86,9 @@ class _MainPanel(QSplitter):
     @property
     def query_container(self):
         return self._query_container
+
+    def execute_query(self):
+        self._query_container.execute_query()
 
 
 class CentralView(QWidget):
@@ -107,8 +115,14 @@ class CentralView(QWidget):
     def add_relation(self, relation_obj, relation_name):
         self._table_widget.add_relation(relation_obj, relation_name)
 
+    def add_relation_to_results(self, relation_obj, relation_name):
+        self._table_widget.add_relation_to_results(relation_obj, relation_name)
+
     def set_current_relation(self, index: int):
         self._table_widget.set_current_relation(index)
 
     def set_current_result(self, index: int):
         self._table_widget.set_current_result(index)
+
+    def all_relations(self) -> dict:
+        return self._table_widget.relations

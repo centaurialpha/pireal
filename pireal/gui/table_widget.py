@@ -65,19 +65,29 @@ class TableWidget(QSplitter):
 
         self.setSizes([1, 1])
 
+    @property
+    def relations(self) -> dict:
+        return self._relations
+
     def set_current_relation(self, index: int):
         self._relation_stack.setCurrentIndex(index)
 
     def set_current_result(self, index: int):
         self._result_stack.setCurrentIndex(index)
 
+    # FIXME: mejorar estos mensajes de log
     def add_relation(self, relation_obj, relation_name, editable=True):
         logger.debug('Creating new relation <%s>', relation_name)
-        table_view = self.create_table(relation_obj, editable)
+        table_view = self.create_table(relation_obj, editable=editable)
         self._relations[relation_name] = relation_obj
         self._relation_stack.addWidget(table_view)
 
-    def create_table(self, relation_obj, editable=False):
+    def add_relation_to_results(self, relation_obj, relation_name):
+        logger.debug('Creating new relation <%s> in results', relation_name)
+        table_view = self.create_table(relation_obj, editable=False)
+        self._result_stack.addWidget(table_view)
+
+    def create_table(self, relation_obj, *, editable=False):
         table_view = mvd.View()
         table_model = mvd.RelationModel(relation_obj)
         table_model.editable = editable

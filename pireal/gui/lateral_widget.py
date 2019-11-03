@@ -115,6 +115,10 @@ class LateralWidget(QSplitter):
         item = RelationItem(name, cardinality, degree)
         self._relations_model.add_relation(item)
 
+    def add_item_to_results(self, name: str, cardinality: int, degree: int):
+        item = RelationItem(name, cardinality, degree)
+        self._results_model.add_relation(item)
+
     # @property
     # def relation_list(self):
     #     return self._relations_list

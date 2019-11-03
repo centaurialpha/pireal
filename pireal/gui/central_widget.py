@@ -375,7 +375,8 @@ class CentralWidget(QWidget):
     #     # search_action = Pireal.get_action("search")
     #     # search_action.setEnabled(True)
 
-    # def execute_queries(self):
+    def execute_query(self):
+        self._main_panel.execute_query()
     #     db_container = self.get_active_db()
     #     db_container.execute_queries()
 
