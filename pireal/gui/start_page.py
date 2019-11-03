@@ -47,14 +47,13 @@ class StartPage(QWidget):
         vbox.addWidget(self._view)
 
         self._root = self._view.rootObject()
+        self._connect_signals()
 
-        # FIXME: cuando se hace reload, esto se pierde
-        # Connections
-        self._root.openRecentDatabase.connect(lambda: self._central.open_database(path))
-        # self._root.openPreferences.connect(self._open_preferences)
-        self._root.openExample.connect(self._open_example)
-        # self._root.openDatabase.connect(lambda path: self._central.open_database(path))
+    def _connect_signals(self):
         self._root.newDatabase.connect(self._central.create_database)
+        self._root.openDatabase.connect(self._central.open_database)
+        self._root.openExample.connect(self._open_example)
+        self._root.openRecentDatabase.connect(lambda: self._central.open_database(path))
         # self._root.removeCurrent.connect(self._remove_current)
         self._central.pireal.themeChanged.connect(self._reload)
 
@@ -63,10 +62,12 @@ class StartPage(QWidget):
         self._view.setSource(QUrl.fromLocalFile(qml))
 
     def _reload(self):
+        self._view.rootObject().deleteLater()
         self._view.setSource(QUrl())
         self._set_source()
         self._root = self._view.rootObject()
         self.load_items()
+        self._connect_signals()
 
     def _open_example(self):
         db_filename = os.path.join(settings.EXAMPLES, 'database.pdb')
@@ -76,14 +77,8 @@ class StartPage(QWidget):
         # Ejecuto las consultas de ejemplo luego de 1.3 segundos
         QTimer.singleShot(1300, self._central.execute_queries)
 
-    def _open_preferences(self):
-        self._central.show_settings()
-
     def _remove_current(self, path):
         self._central.recent_databases.remove(path)
-
-    def _open_database(self, path=''):
-        self._central.open_database(path)
 
     def load_items(self):
         self._root.clear()
