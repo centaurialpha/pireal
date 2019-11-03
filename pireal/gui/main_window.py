@@ -320,45 +320,45 @@ class Pireal(QMainWindow):
 
         # Save window geometry
         if self.isMaximized():
-            DATA_SETTINGS.setValue('ds/window_max', True)
+            DATA_SETTINGS.setValue('window_max', True)
         else:
-            DATA_SETTINGS.setValue('ds/window_max', False)
-            DATA_SETTINGS.setValue('ds/window_pos', self.pos())
-            DATA_SETTINGS.setValue('ds/window_size', self.size())
+            DATA_SETTINGS.setValue('window_max', False)
+            DATA_SETTINGS.setValue('window_pos', self.pos())
+            DATA_SETTINGS.setValue('window_size', self.size())
 
-        db = self.central_widget.get_active_db()
-        if db is not None:
-            # Save splitters size
-            db.save_sizes()
-            # Databases unsaved
-            if db.modified:
-                msg = QMessageBox(self)
-                msg.setIcon(QMessageBox.Question)
-                msg.setWindowTitle(tr.TR_MSG_SAVE_CHANGES)
-                msg.setText(tr.TR_MSG_SAVE_CHANGES_BODY)
-                cancel_btn = msg.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
-                msg.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
-                yes_btn = msg.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
-                msg.exec_()
-                r = msg.clickedButton()
-                if r == yes_btn:
-                    self.central_widget.save_database()
-                if r == cancel_btn:
-                    event.ignore()
-            # Query files
-            unsaved_editors = self.central_widget.get_unsaved_queries()
-            if unsaved_editors:
-                msg = QMessageBox(self)
-                msg.setIcon(QMessageBox.Question)
-                msg.setWindowTitle(tr.TR_QUERY_NOT_SAVED)
-                text = '\n'.join([editor.name for editor in unsaved_editors])
-                msg.setText(tr.TR_QUERY_NOT_SAVED_BODY.format(files=text))
-                cancel_btn = msg.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
-                msg.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
-                yes_btn = msg.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
-                msg.exec_()
-                if msg.clickedButton() == yes_btn:
-                    for editor in unsaved_editors:
-                        self.central_widget.save_query(editor)
-                if msg.clickedButton() == cancel_btn:
-                    event.ignore()
+        # db = self.central_widget.get_active_db()
+        # if db is not None:
+        #     # Save splitters size
+        #     db.save_sizes()
+        #     # Databases unsaved
+        #     if db.modified:
+        #         msg = QMessageBox(self)
+        #         msg.setIcon(QMessageBox.Question)
+        #         msg.setWindowTitle(tr.TR_MSG_SAVE_CHANGES)
+        #         msg.setText(tr.TR_MSG_SAVE_CHANGES_BODY)
+        #         cancel_btn = msg.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
+        #         msg.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
+        #         yes_btn = msg.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
+        #         msg.exec_()
+        #         r = msg.clickedButton()
+        #         if r == yes_btn:
+        #             self.central_widget.save_database()
+        #         if r == cancel_btn:
+        #             event.ignore()
+        #     # Query files
+        #     unsaved_editors = self.central_widget.get_unsaved_queries()
+        #     if unsaved_editors:
+        #         msg = QMessageBox(self)
+        #         msg.setIcon(QMessageBox.Question)
+        #         msg.setWindowTitle(tr.TR_QUERY_NOT_SAVED)
+        #         text = '\n'.join([editor.name for editor in unsaved_editors])
+        #         msg.setText(tr.TR_QUERY_NOT_SAVED_BODY.format(files=text))
+        #         cancel_btn = msg.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
+        #         msg.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
+        #         yes_btn = msg.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
+        #         msg.exec_()
+        #         if msg.clickedButton() == yes_btn:
+        #             for editor in unsaved_editors:
+        #                 self.central_widget.save_query(editor)
+        #         if msg.clickedButton() == cancel_btn:
+        #             event.ignore()

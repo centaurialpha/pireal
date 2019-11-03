@@ -116,6 +116,8 @@ class Settings:
         settings_map = {}
         keys = self._qsettings.allKeys()
         for key in keys:
+            if not key.startswith('us/'):
+                continue
             type_ = type(getattr(self, key.split('/')[-1]))
             settings_map[key] = self._qsettings.value(key, type=type_)
 

@@ -65,17 +65,17 @@ def start_pireal():
 
     # Set application icon
     app.setWindowIcon(QIcon(':img:/icon'))
-    # Language
-    # lang = CONFIG.get('language')
-    # if lang != 'English':
-    #     translator = QTranslator()
-    #     translator.load(os.path.join(settings.LANGUAGE_PATH, lang + '.qm'))
-    #     app.installTranslator(translator)
 
+    # Language
+    language = settings.USER_SETTINGS.language
+    if language != 'english':
+        translator = QTranslator()
+        translator.load(os.path.join(settings.LANGUAGE_PATH, language + '.qm'))
+        app.installTranslator(translator)
+
+    # Dark mode
     if settings.USER_SETTINGS.dark_mode:
         apply_dark_mode(app)
-
-    # TODO: Load stylesheet
 
     pireal_gui = main_window.Pireal()
     pireal_gui.show()
