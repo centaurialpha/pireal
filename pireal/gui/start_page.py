@@ -70,9 +70,9 @@ class StartPage(QWidget):
         self._connect_signals()
 
     def _open_example(self):
-        db_filename = os.path.join(settings.EXAMPLES, 'database.pdb')
+        db_filename = os.path.abspath(os.path.join(settings.EXAMPLES, 'database.pdb'))
         self._central.open_database(filename=db_filename)
-        query_filename = os.path.join(settings.EXAMPLES, 'queries.pqf')
+        query_filename = os.path.abspath(os.path.join(settings.EXAMPLES, 'queries.pqf'))
         self._central.open_query(filename=query_filename)
         # Ejecuto las consultas de ejemplo luego de 1.3 segundos
         QTimer.singleShot(1300, self._central.execute_query)

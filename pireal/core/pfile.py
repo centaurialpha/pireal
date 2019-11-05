@@ -18,60 +18,39 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import logging
 
-from PyQt5.QtCore import QObject
-from PyQt5.QtCore import pyqtSignal as Signal
-from PyQt5.QtCore import QFile
-from PyQt5.QtCore import QTextStream
-from PyQt5.QtCore import QTextCodec
-from PyQt5.QtCore import QIODevice
+from pireal.core import file_manager
+
+logger = logging.getLogger(__name__)
 
 
-class File(QObject):
+class File:
 
-    """ This class represents an object file"""
-
-    fileSaved = Signal(str)
-
-    def __init__(self, filename=''):
-        QObject.__init__(self)
-        self.is_new = True
-        if filename:
-            self.is_new = False
-        self.filename = filename
+    def __init__(self, path=None):
+        self._path = path
 
     @property
-    def display_name(self):
-        """ Returns only the file name with extension, without the path"""
+    def display_name(self) -> str:
+        return os.path.basename(self._path)
 
-        return os.path.basename(self.filename)
+    @property
+    def path(self) -> str:
+        return self._path
 
-    def save(self, data, path=None):
-        if path:
-            self.filename = path
-            self.is_new = False
-
-        _file = QFile(self.filename)
-        if not _file.open(QIODevice.WriteOnly | QIODevice.Truncate):
-            raise Exception(_file.errorString())
-
-        stream = QTextStream(_file)
-        stream.setCodec(QTextCodec.codecForLocale())
-        stream << data
-        stream.flush()
-        _file.close()
-        # Emit the signal
-        self.fileSaved.emit(self.filename)
+    def is_new(self):
+        return self._path is None
 
     def read(self):
-        """ Reads the file and returns the content """
+        try:
+            with open(self._path) as fp:
+                content = fp.read()
+            return content
+        except IOError:
+            logging.exception('Could not open file: %s', self._path)
 
-        _file = QFile(self.filename)
-        if not _file.open(QIODevice.ReadOnly | QIODevice.Text):
-            raise Exception(_file.errorString())
-
-        # Codec
-        codec = QTextCodec.codecForLocale()
-        stream = QTextStream(_file)
-        stream.setCodec(codec)
-        return stream.readAll()
+    def save(self, content, path=None):
+        with open(path, 'w') as fp:
+            fp.write(content)
+        self._path = path
+        return self

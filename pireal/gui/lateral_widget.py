@@ -100,11 +100,11 @@ class LateralWidget(QSplitter):
         self.parent = parent
         self.setOrientation(Qt.Vertical)
         self._relations_model = RelationModel()
-        self._relations_view = RelationListQML(self._relations_model)
+        self._relations_view = RelationListQML(self._relations_model, self)
         self._relations_view.set_title(tr.TR_RELATIONS)
         self.addWidget(self._relations_view)
         self._results_model = RelationModel()
-        self._results_view = RelationListQML(self._results_model)
+        self._results_view = RelationListQML(self._results_model, self)
         self._results_view.set_title(tr.TR_TABLE_RESULTS)
         self.addWidget(self._results_view)
 
@@ -135,6 +135,7 @@ class RelationListQML(QWidget):
 
     def __init__(self, model, parent=None):
         super().__init__(parent)
+        self._parent = parent
         self._model = model
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
@@ -143,18 +144,24 @@ class RelationListQML(QWidget):
         self._set_source()
         self._view.setResizeMode(QQuickWidget.SizeRootObjectToView)
         vbox.addWidget(self._view)
-        self._root = self._view.rootObject()
 
+        self._root = self._view.rootObject()
+        self._connect_signals()
+
+    def _connect_signals(self):
         self._root.itemClicked[int].connect(self.itemClicked.emit)
+        self._parent.parent._parent.pireal.themeChanged.connect(self._reload)
 
     def _set_source(self):
         qml = os.path.join(settings.QML_PATH, "ListRelation.qml")
         self._view.setSource(QUrl.fromLocalFile(qml))
 
     def _reload(self):
+        self._view.rootObject().deleteLater()
         self._view.setSource(QUrl())
         self._set_source()
         self._root = self._view.rootObject()
+        self._connect_signals()
 
     def set_title(self, title):
         self._root.setTitle(title)

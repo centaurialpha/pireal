@@ -47,6 +47,7 @@ from pireal.gui.dialogs import new_relation_dialog
 from pireal.gui.dialogs import new_database_dialog
 
 from pireal.core.settings import DATA_SETTINGS
+from pireal.core.pfile import File
 # Logger
 logger = logging.getLogger(__name__)
 
@@ -162,8 +163,8 @@ class CentralWidget(QWidget):
         # If filename provide
         try:
             logger.debug('Triying to open the database file "%s"', filename)
-            with open(filename) as fp:
-                database_content = fp.read()
+            file_obj = File(filename)
+            database_content = file_obj.read()
             if not database_content:
                 return
             database_content = file_manager.parse_database_content(database_content)
@@ -199,10 +200,13 @@ class CentralWidget(QWidget):
             filename, _ = QFileDialog.getOpenFileName(self, tr.TR_OPEN_QUERY, directory, filters)
             if not filename:
                 return
-        self._main_panel.query_container.add_editor(filename)
+        self._main_panel.query_container.open_query(filename)
         # TODO:
         # Tengo el filename, si ya está abierto, ir a ese tab
         # Sino, crear un nuevo editor con el contenido
+
+    def new_query(self):
+        self._main_panel.query_container.open_query()
 
     # def _open_database(self, filename='', remember=True):
     #     """ This function opens a database and set this on the UI """

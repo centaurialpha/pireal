@@ -61,6 +61,7 @@ class _MainPanel(QSplitter):
         self.addWidget(self._lateral_widget)
         self.addWidget(self._vertical_splitter)
         self.setSizes([70, 1])
+        self._vertical_splitter.setSizes([1, 70])
 
         # Connections
         self._parent.pireal.themeChanged.connect(self.query_container.reload_editor_scheme)

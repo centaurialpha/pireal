@@ -37,7 +37,7 @@ from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import pyqtSignal as Signal
 
 from pireal import translations as tr
-# from pireal.core.settings import CONFIG
+from pireal.core.settings import USER_SETTINGS
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +108,7 @@ class View(QTableView):
 
     def __init__(self):
         super(View, self).__init__()
-        # self.setAlternatingRowColors(CONFIG.get('alternatingRowColors'))
+        self.setAlternatingRowColors(USER_SETTINGS.alternate_row_colors)
         self.verticalHeader().hide()
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         # Scroll content per pixel
@@ -198,9 +198,9 @@ class Delegate(QItemDelegate):
         text = index.model().data(index, Qt.DisplayRole)
         editor.setText(text)
 
-    def paint(self, painter, opt, index):
-        if opt.state & QStyle.State_Selected:
-            opt.palette.setColor(QPalette.Highlight, QColor("#fffde1"))
-            painter.drawRect(opt.rect)
-        opt.palette.setColor(QPalette.HighlightedText, Qt.black)
-        super().paint(painter, opt, index)
+    # def paint(self, painter, opt, index):
+    #     if opt.state & QStyle.State_Selected:
+    #         opt.palette.setColor(QPalette.Highlight, QColor("#fffde1"))
+    #         painter.drawRect(opt.rect)
+    #     opt.palette.setColor(QPalette.HighlightedText, Qt.black)
+    #     super().paint(painter, opt, index)

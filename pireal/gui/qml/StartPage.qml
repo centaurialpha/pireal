@@ -244,7 +244,21 @@ Rectangle {
         }
     }
 
+    Text {
+        text: qsTr("In memory of my grandpa, who has taught me everything,\nexcept how to live without him. 4/10/2019")
+        font.pixelSize: 8
+        color: darkPalette.text
+        font.italic: true
+        font.kerning: true
+        anchors {
+            bottom: rrow.top
+            right: parent.right
+            margins: 10
+        }
+    }
+
     Row {
+        id: rrow
         spacing: 10
         anchors {
             bottom: parent.bottom

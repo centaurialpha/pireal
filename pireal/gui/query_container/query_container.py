@@ -18,6 +18,11 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import re
+import logging
+from typing import (
+    Tuple,
+    List
+)
 
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QVBoxLayout
@@ -38,6 +43,7 @@ from PyQt5.QtCore import QSettings
 from PyQt5.QtCore import QSize
 
 from PyQt5.QtCore import pyqtSignal as Signal
+from PyQt5.QtCore import pyqtSlot as Slot
 
 from pireal import translations as tr
 from pireal.core import interpreter
@@ -50,6 +56,9 @@ from pireal.core.interpreter.exceptions import (
 from pireal.gui.query_container import editor
 from pireal.gui.query_container import tab_widget
 from pireal.core import settings
+from pireal.core.pfile import File
+
+logger = logging.getLogger(__name__)
 
 
 class QueryContainer(QWidget):
@@ -64,6 +73,7 @@ class QueryContainer(QWidget):
         vbox.addWidget(self._editor_widget)
         self._search_widget = SearchWidget()
         vbox.addWidget(self._search_widget)
+        self._search_widget.hide()
 
     def reload_editor_scheme(self):
         for editor in self._editor_widget.editors():
@@ -76,15 +86,15 @@ class QueryContainer(QWidget):
         else:
             self.show()
 
-    def add_editor(self, filename):
-        if self._editor_widget.is_open(filename):
-            # set focus
-            pass
+    def open_query(self, query_filepath=None):
+        file_obj = File(query_filepath)
+        if self._editor_widget.is_open(query_filepath):
+            weditor = self._editor_widget.get_editor_by_filename(query_filepath)
+            self._editor_widget.set_current_editor(weditor)
         else:
-            with open(filename) as fp:
-                content = fp.read()
-            editor = self._editor_widget.create_editor(filename)
-            editor.setPlainText(content)
+            weditor = self._editor_widget.create_editor(file_obj)
+            if not file_obj.is_new():
+                weditor.setPlainText(file_obj.read())
 
     def execute_query(self):
         """Get all text from editor and:
@@ -111,137 +121,97 @@ class EditorWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._opened_editors = {}
+        self._new_queries_count = 1
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         vbox.setSpacing(0)
         self._tabs_editor = QTabWidget()
+        self._tabs_editor.setTabsClosable(True)
+        self._tabs_editor.setMovable(True)
+        # self._tabs_editor.setDocumentMode(True)
+
+        line_col_widget = QWidget()
+        hbox = QHBoxLayout(line_col_widget)
+        self._line_col_text = 'Lin: {} Col: {}'
+        self._lbl_line_col = QLabel(self._line_col_text.format(0, 0))
+        hbox.addWidget(self._lbl_line_col)
+        self._tabs_editor.setCornerWidget(line_col_widget)
         vbox.addWidget(self._tabs_editor)
 
-    def editors(self):
-        return self._opened_editors.values()
+        self._tabs_editor.tabCloseRequested[int].connect(self.remove_tab)
 
-    def is_open(self, filepath) -> bool:
+    @Slot(int)
+    def remove_tab(self, index):
+        logger.debug('Removing editor tab with index: %s', index)
+        weditor = self.get_editor_by_index(index)
+        if weditor.modified:
+            pass
+        self.remove_editor(weditor)
+        self._tabs_editor.removeTab(index)
+        weditor.deleteLater()
+        if not self._opened_editors:
+            self._new_queries_count = 1
+
+    def remove_editor(self, weditor: editor.Editor):
+        # FIXME:
+        copy_dict = self._opened_editors.copy()
+        for key in copy_dict.keys():
+            if copy_dict[key] == weditor:
+                logger.debug('Removing editor object (%s:%s)', weditor, key)
+                del self._opened_editors[key]
+                break
+
+    def editors(self) -> Tuple[editor.Editor]:
+        return tuple(self._opened_editors.values())
+
+    def is_open(self, filepath: str) -> bool:
         try:
             self._opened_editors[filepath]
         except KeyError:
             return False
         return True
 
-    def current_editor(self):
+    def has_editors(self) -> bool:
+        return len(self._opened_editors) > 0
+
+    def unsaved_editors(self) -> List[editor.Editor]:
+        unsaved_editors_list = []
+        for weditor in self.editors():
+            if weditor.modified:
+                unsaved_editors_list.append(weditor)
+        return unsaved_editors_list
+
+    def current_editor(self) -> editor.Editor:
         return self._tabs_editor.currentWidget()
 
-    def create_editor(self, title=''):
-        weditor = editor.Editor()
-        self._tabs_editor.addTab(weditor, title)
-        self._opened_editors[title] = weditor
+    def set_current_editor(self, weditor):
+        self._tabs_editor.setCurrentWidget(weditor)
+
+    def get_editor_by_index(self, index: int) -> editor.Editor:
+        return self._tabs_editor.widget(index)
+
+    def get_editor_by_filename(self, filename: str) -> editor.Editor:
+        return self._opened_editors[filename]
+
+    def create_editor(self, file_obj: File):
+        weditor = editor.Editor(file_obj=file_obj)
+        if file_obj.is_new():
+            tab_title = 'New query({})'.format(self._new_queries_count)
+            self._new_queries_count += 1
+        else:
+            tab_title = file_obj.display_name
+        index = self._tabs_editor.addTab(weditor, tab_title)
+        self._tabs_editor.setTabToolTip(index, file_obj.path)
+        self._opened_editors[tab_title] = weditor
+
+        weditor.lineColumnChanged[int, int].connect(self._update_line_column)
+
+        weditor.setFocus()
         return weditor
 
-# class QueryContainer(QWidget):
-#     saveEditor = Signal(object)
-
-#     def __init__(self, parent=None):
-#         super(QueryContainer, self).__init__(parent)
-#         self.db_container = parent
-#         box = QVBoxLayout(self)
-#         self.setObjectName("query_container")
-#         box.setContentsMargins(0, 10, 0, 0)
-#         box.setSpacing(0)
-
-#         self.__nquery = 1
-
-#         # Tab
-#         self._tabs = tab_widget.TabWidget()
-#         self._tabs.tabBar().setObjectName("tab_query")
-#         self._tabs.setAutoFillBackground(True)
-#         p = self._tabs.palette()
-#         p.setColor(p.Window, Qt.white)
-#         self._tabs.setPalette(p)
-#         box.addWidget(self._tabs)
-
-#         self.relations = {}
-
-#         # self._hide()
-
-#         # Connections
-#         # self._tabs.tabCloseRequested.connect(self.__hide)
-#         self._tabs.saveEditor.connect(self.__on_save_editor)
-
-#     def set_focus_editor_tab(self, index):
-#         self._tabs.setCurrentIndex(index)
-
-#     def current_index(self):
-#         """ This property holds the index position of the current tab page """
-
-#         return self._tabs.currentIndex()
-
-#     def tab_text(self, index):
-#         """
-#         Returns the label text for the tab on the page at position index
-#         """
-
-#         return self._tabs.tabText(index)
-
-#     def change_visibility(self):
-#         if self.isVisible():
-#             self._hide()
-#         else:
-#             self.show()
-
-#     def _hide(self):
-#         if self.count() == 0:
-#             self.hide()
-#             # Disable query actions
-#             # FIXME: mejorar esto, mover a otro lado?
-#             pireal = self.db_container.central.pireal
-#             pireal.set_enabled_query_actions(False)
-#             pireal.set_enabled_editor_actions(False)
-
-#     def _add_operator_to_editor(self):
-#         data = self.sender().data()
-#         widget = self._tabs.currentWidget()
-#         tc = widget.get_editor().textCursor()
-#         tc.insertText(data + ' ')
-
-#     def get_unsaved_queries(self):
-#         weditors = []
-#         for index in range(self.count()):
-#             weditor = self._tabs.widget(index).get_editor()
-#             if weditor.modified:
-#                 weditors.append(weditor)
-#         return weditors
-
-#     def count(self):
-#         return self._tabs.count()
-
-#     def add_tab(self, widget, title):
-#         if not self.isVisible():
-#             self.show()
-
-#         index = self._tabs.addTab(widget, title)
-#         # Focus editor
-#         weditor = widget.get_editor()
-#         weditor.setFocus()
-#         self._tabs.setCurrentIndex(index)
-#         self._tabs.setTabToolTip(index, weditor.filename)
-
-#         widget.editorModified[bool].connect(
-#             lambda value: self._tabs.tab_modified(self.sender(), value))
-
-#         return widget
-
-#     def is_open(self, id_):
-#         for index in range(self._tabs.count()):
-#             weditor = self._tabs.widget(index).get_editor()
-#             if weditor.filename == id_:
-#                 return index
-#         return -1
-
-#     def currentWidget(self):
-#         return self._tabs.currentWidget()
-
-#     def __on_save_editor(self, editor):
-#         self.saveEditor.emit(editor)
-
+    @Slot(int, int)
+    def _update_line_column(self, lineno, colno):
+        self._lbl_line_col.setText(self._line_col_text.format(lineno, colno))
 #     def execute_queries(self, query=''):
 #         """ This function executes queries """
 
@@ -300,301 +270,11 @@ class EditorWidget(QWidget):
 #             relations[relation_name] = new_relation
 #             self.__add_table(new_relation, relation_name)
 
-#     def _highlight_error_in_editor(self, line_error, col=-1):
-#         weditor = self.currentWidget().get_editor()
-#         if weditor.hasFocus():
-#             weditor.highlight_error(line_error)
-#             if line_error != -1:
-#                 cursor = weditor.textCursor()
-#                 saved_col = cursor.positionInBlock()
-#                 cursor.movePosition(cursor.Start)
-#                 cursor.movePosition(cursor.Down, n=line_error - 1)
-#                 if col != -1:
-#                     cursor.movePosition(cursor.Right, n=col)
-#                 else:
-#                     cursor.movePosition(cursor.Right, n=saved_col)
-#                 weditor.setTextCursor(cursor)
-
 #     @staticmethod
 #     def parse_error(text):
 #         """ Replaces quotes by <b></b> tag """
 
 #         return re.sub(r"\'(.*?)\'", r"<b>\1</b>", text)
-
-#     def __add_table(self, rela, rname):
-#         self.currentWidget().add_table(rela, rname)
-
-#     def undo(self):
-#         weditor = self.currentWidget().get_editor()
-#         if weditor.hasFocus():
-#             weditor.undo()
-
-#     def redo(self):
-#         weditor = self.currentWidget().get_editor()
-#         if weditor.hasFocus():
-#             weditor.redo()
-
-#     def cut(self):
-#         weditor = self.currentWidget().get_editor()
-#         if weditor.hasFocus():
-#             weditor.cut()
-
-#     def copy(self):
-#         weditor = self.currentWidget().get_editor()
-#         if weditor.hasFocus():
-#             weditor.copy()
-
-#     def paste(self):
-#         weditor = self.currentWidget().get_editor()
-#         if weditor.hasFocus():
-#             weditor.paste()
-
-#     def comment(self):
-#         weditor = self.currentWidget().get_editor()
-#         if weditor.hasFocus():
-#             weditor.comment()
-
-#     def uncomment(self):
-#         weditor = self.currentWidget().get_editor()
-#         if weditor.hasFocus():
-#             weditor.uncomment()
-
-#     def search(self):
-#         cw = self.currentWidget()
-#         cw.show_search_widget()
-
-#     def set_editor_focus(self):
-#         cw = self.currentWidget()
-#         if cw is not None:
-#             cw.hide_search_widget()
-
-# class QueryWidget(QWidget):
-#     editorModified = Signal(bool)
-#     # Editor positions
-#     TOP_POSITION = 0
-#     LEFT_POSITION = 1
-
-#     def __init__(self, parent=None):
-#         super(QueryWidget, self).__init__(parent)
-#         self.db_container = parent
-#         box = QVBoxLayout(self)
-#         box.setContentsMargins(0, 0, 0, 0)
-
-#         self._editor_splitter = QSplitter(Qt.Horizontal)
-#         self.result_splitter = QSplitter(Qt.Vertical)
-
-#         self._stack_tables = QStackedWidget()
-#         self.result_splitter.addWidget(self._stack_tables)
-
-#         self.relations = {}
-#         # Editor widget
-#         self._editor_widget = EditorWidget(self)
-#         self._editor_widget.editorModified[bool].connect(
-#             lambda modified: self.editorModified.emit(modified))
-#         self._editor_splitter.addWidget(self._editor_widget)
-
-#         box.addWidget(self._editor_splitter)
-
-#     def show_relation(self, item):
-#         # central_widget = Pireal.get_service("central")
-#         central_widget = self.db_container.central
-#         table_widget = central_widget.get_active_db().table_widget
-#         rela = self.relations[item.name]
-#         dialog = QDialog(self)
-#         dialog.resize(700, 500)
-#         dialog.setWindowTitle(item.name)
-#         box = QVBoxLayout(dialog)
-#         box.setContentsMargins(5, 5, 5, 5)
-#         table = table_widget.create_table(rela, editable=False)
-#         box.addWidget(table)
-#         hbox = QHBoxLayout()
-#         btn = QPushButton(tr.TR_MSG_OK)
-#         btn.clicked.connect(dialog.close)
-#         hbox.addStretch()
-#         hbox.addWidget(btn)
-#         box.addLayout(hbox)
-#         dialog.show()
-
-#     def save_sizes(self):
-#         """ Save sizes of Splitters """
-
-#         qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-#         qsettings.setValue('result_splitter_query_sizes',
-#                            self.result_splitter.saveState())
-#         qsettings.setValue('editor_splitter_query_sizes',
-#                            self._editor_splitter.saveState())
-
-#     def get_editor(self):
-#         return self._editor_widget.get_editor()
-
-#     def showEvent(self, event):
-#         super().showEvent(event)
-#         # self.result_splitter.setSizes([1, self._result_list.width() * 0.1])
-
-#     def clear_results(self):
-#         # FIXME:
-#         # central_widget = Pireal.get_service("central")
-#         # lateral_widget = Pireal.get_service("lateral_widget")
-#         central_widget = self.db_container.central
-#         lateral_widget = self.db_container.lateral_widget
-#         lateral_widget.result_list.clear_items()
-#         table_widget = central_widget.get_active_db().table_widget
-#         i = table_widget.stacked_result.count()
-#         # i = self._stack_tables.count()
-#         while i >= 0:
-#             # widget = self._stack_tables.widget(i)
-#             widget = table_widget.stacked_result.widget(i)
-#             # self._stack_tables.removeWidget(widget)
-#             table_widget.stacked_result.removeWidget(widget)
-#             if widget is not None:
-#                 widget.deleteLater()
-#             i -= 1
-
-#     def add_table(self, rela, rname):
-#         # FIXME:
-#         # central_widget = Pireal.get_service("central")
-#         # lateral_widget = Pireal.get_service("lateral_widget")
-#         central_widget = self.db_container.central
-#         lateral_widget = self.db_container.lateral_widget
-#         db = self.db_container
-#         _view = db.create_table(rela, rname, editable=False)
-#         table_widget = central_widget.get_active_db().table_widget
-#         index = table_widget.stacked_result.addWidget(_view)
-#         table_widget.stacked_result.setCurrentIndex(index)
-#         lateral_widget.result_list.add_item(
-#             rname, rela.cardinality(), rela.degree())
-#         # lateral_widget.result_list.select_last()
-#         table_widget._tabs.setCurrentIndex(1)
-
-#     def show_search_widget(self):
-#         self._editor_widget.show_search_widget()
-
-#     def hide_search_widget(self):
-#         self._editor_widget.hide_search_widget()
-
-
-# class EditorWidget(QWidget):
-
-#     TOOLBAR_ITEMS = [
-#         'save_query',
-#         '',
-#         'undo_action',
-#         'redo_action',
-#         'cut_action',
-#         'paste_action',
-#     ]
-
-#     editorModified = Signal(bool)
-
-#     def __init__(self, parent=None):
-#         QWidget.__init__(self, parent)
-#         self.query_widget = parent
-#         vbox = QVBoxLayout(self)
-#         vbox.setContentsMargins(0, 0, 0, 0)
-#         vbox.setSpacing(0)
-#         self.setStyleSheet("outline: none")
-#         hbox = QHBoxLayout()
-#         # Position
-#         self._column_str = "Col: {}"
-#         self._column_lbl = QLabel(self._column_str.format(0))
-#         # Toolbar
-#         self._toolbar = QToolBar(self)
-#         self._toolbar.setIconSize(QSize(16, 16))
-
-#         pireal = self.query_widget.db_container.central.pireal
-#         for action in self.TOOLBAR_ITEMS:
-#             qaction = pireal.get_action(action)
-#             if qaction is not None:
-#                 self._toolbar.addAction(qaction)
-#             else:
-#                 self._toolbar.addSeparator()
-
-#         vbox.addLayout(hbox)
-#         # Editor
-#         self._editor = editor.Editor()
-#         vbox.addWidget(self._editor)
-#         # Search widget
-#         self._search_widget = SearchWidget(self)
-#         self._search_widget.hide()
-#         vbox.addWidget(self._search_widget)
-
-#         # Editor connections
-#         self._editor.customContextMenuRequested.connect(
-#             self.__show_context_menu)
-#         self._editor.modificationChanged[bool].connect(
-#             lambda modified: self.editorModified.emit(modified))
-
-#     @property
-#     def editor(self):
-#         return self._editor
-
-#     def show_search_widget(self):
-#         self._search_widget.show()
-#         self._search_widget._line_search.setFocus()
-#         self._search_widget._execute_search(self._search_widget.search_text)
-
-#     def hide_search_widget(self):
-#         self._search_widget.hide()
-#         self._search_widget._line_search.clear()
-
-#     def _update_column_label(self):
-#         col = str(self._editor.textCursor().columnNumber() + 1)
-#         self._column_lbl.setText(self._column_str.format(col))
-
-#     def get_editor(self):
-#         return self._editor
-
-#     def __show_context_menu(self, point):
-#         popup_menu = self._editor.createStandardContextMenu()
-
-#         undock_editor = QAction(tr.TR_UNDOCK, self)
-#         popup_menu.insertAction(popup_menu.actions()[0],
-#                                 undock_editor)
-#         popup_menu.insertSeparator(popup_menu.actions()[1])
-#         undock_editor.triggered.connect(self.__undock_editor)
-
-#         popup_menu.exec_(self.mapToGlobal(point))
-
-#     def __undock_editor(self):
-#         new_editor = editor.Editor()
-#         actual_doc = self._editor.document()
-#         new_editor.setDocument(actual_doc)
-#         new_editor.resize(900, 400)
-#         # Set text cursor
-#         tc = self._editor.textCursor()
-#         new_editor.setTextCursor(tc)
-#         # Set title
-#         # db = Pireal.get_service("central").get_active_db()
-#         db = self.query_widget.db_container
-#         qc = db.query_container
-#         new_editor.setWindowTitle(qc.tab_text(qc.current_index()))
-#         new_editor.show()
-
-#     def __on_undo_available(self, value):
-#         """ Change state of undo action """
-#         # TODO:
-#         # pireal = self.query_widget.db_container.central.pireal
-#         # action = pireal.get_action("undo_action")
-#         # action.setEnabled(value)
-#         pass
-
-#     def __on_redo_available(self, value):
-#         """ Change state of redo action """
-#         # TODO:
-#         # pireal = self.query_widget.db_container.central.pireal
-#         # action = pireal.get_action("redo_action")
-#         # action.setEnabled(value)
-#         pass
-
-#     def __on_copy_available(self, value):
-#         """ Change states of cut and copy action """
-
-#         # TODO:
-#         # cut_action = Pireal.get_action("cut_action")
-#         # cut_action.setEnabled(value)
-#         # copy_action = Pireal.get_action("copy_action")
-#         # copy_action.setEnabled(value)
-#         pass
 
 
 class SearchWidget(QWidget):

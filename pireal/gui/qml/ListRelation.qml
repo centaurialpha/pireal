@@ -12,8 +12,6 @@ Rectangle {
         header.title = title;
     }
 
-    // Component.onCompleted: relationModel.clear();
-
     Rectangle {
         id: header
         anchors.top: parent.top
@@ -55,7 +53,7 @@ Rectangle {
 
             height: 70
             property bool current: ListView.isCurrentItem
-            color: relationItem.current ? darkPalette.shadow : "transparent"
+            color: relationItem.current ? darkPalette.highlight : "transparent"
 
             Column {
                 spacing: 5
@@ -72,16 +70,16 @@ Rectangle {
                     text: name
                     font.bold: true
                     font.pointSize: 12
-                    color: "#f1f1f1"
+                    color: darkPalette.text
                 }
                 Text {
                     id: relationCard
-                    color: "#a1a1a1"
+                    color: darkPalette.mid
                     text: qsTr("Cardinality: %1").arg(cardinality)
                 }
                 Text {
                     text: qsTr("Degree: %1").arg(degree)
-                    color: "#a1a1a1"
+                    color: darkPalette.mid
                 }
             }
             MouseArea {

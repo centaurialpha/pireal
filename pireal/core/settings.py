@@ -99,6 +99,7 @@ class Settings:
         self.match_parenthesis: bool = True
         self.alternate_row_colors: bool = True
         self.dark_mode: bool = False
+        self.cursor_width = 3
 
     def _get_font(self):
         if LINUX:
@@ -130,6 +131,7 @@ class Settings:
         self.alternate_row_colors = settings_map.get(
             'us/alternate_row_colors', self.alternate_row_colors)
         self.dark_mode = settings_map.get('us/dark_mode', self.dark_mode)
+        self.cursor_width = settings_map.get('us/cursor_width', self.cursor_width)
 
 
 USER_SETTINGS = Settings()

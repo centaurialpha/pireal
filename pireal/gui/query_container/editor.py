@@ -31,6 +31,7 @@ from PyQt5.QtGui import QPalette
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import pyqtSignal as Signal
 
 from pireal.gui.query_container import (
     highlighter,
@@ -42,17 +43,15 @@ from pireal.gui.theme import get_editor_color
 
 class Editor(QPlainTextEdit):
 
-    def __init__(self, pfile=None):
-        super(Editor, self).__init__()
-        pal = self.palette()
-        pal.setColor(pal.Text, QColor("#555"))
-        self.setPalette(pal)
+    lineColumnChanged = Signal(int, int)
 
+    def __init__(self, file_obj=None):
+        super(Editor, self).__init__()
+        self._file_obj = file_obj
         self.setFrameShape(QPlainTextEdit.NoFrame)
-        self.setMouseTracking(True)
+        # self.setMouseTracking(True)
         self.setLineWrapMode(QPlainTextEdit.NoWrap)
-        self.setCursorWidth(3)
-        self.pfile = pfile
+        self.setCursorWidth(USER_SETTINGS.cursor_width)
         self.__visible_blocks = []
         self.modified = False
         # Highlight current line
@@ -72,7 +71,6 @@ class Editor(QPlainTextEdit):
         # Extra selections
         self._selections = {}
         self.__cursor_position_changed()
-        # self.snippets = snippets.SnippetManager(self)
         self.apply_scheme()
         # Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -84,6 +82,10 @@ class Editor(QPlainTextEdit):
         short_zoom_in.activated.connect(lambda: self.zoom('in'))
         short_zoom_out = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Minus), self)
         short_zoom_out.activated.connect(lambda: self.zoom('out'))
+
+    @property
+    def file_obj(self):
+        return self._file_obj
 
     def reload_highlighter(self):
         self._highlighter.deleteLater()
@@ -132,23 +134,6 @@ class Editor(QPlainTextEdit):
             bottom = top + self.blockBoundingRect(block).height()
             block_number += 1
 
-    @property
-    def filename(self):
-        """This function returns the filename of RFile object
-
-        :returns: filename of PFile
-        """
-
-        return self.pfile.filename
-
-    @property
-    def name(self):
-        return self.pfile.display_name
-
-    @property
-    def is_new(self):
-        return self.pfile.is_new
-
     def resizeEvent(self, event):
         super(Editor, self).resizeEvent(event)
         self._sidebar.redimensionar()
@@ -190,6 +175,10 @@ class Editor(QPlainTextEdit):
         return cursor
 
     def __cursor_position_changed(self):
+        lineno = self.textCursor().blockNumber() + 1
+        colno = self.textCursor().columnNumber()
+        self.lineColumnChanged.emit(lineno, colno)
+
         self.clear_selections("current_line")
 
         if self._highlight_line:
@@ -412,22 +401,6 @@ class Editor(QPlainTextEdit):
             found = self.find(search, flags)
             if not found:
                 self.setTextCursor(cursor)
-
-    def highlight_error(self, linenumber):
-        if linenumber == -1:
-            # Borro la selección
-            self.clear_selections('error')
-            return
-        selection = QTextEdit.ExtraSelection()
-        selection.cursor = self.textCursor()
-        selection.cursor.movePosition(QTextCursor.Start,
-                                      QTextCursor.MoveAnchor)
-        selection.cursor.movePosition(QTextCursor.Down, QTextCursor.MoveAnchor,
-                                      linenumber - 1)
-        selection.format.setProperty(QTextCharFormat.FullWidthSelection, True)
-        selection.format.setBackground(QColor("#DD4040"))
-        selection.format.setForeground(Qt.white)
-        self.add_selection('error', [selection])
 
     def add_selection(self, selection_name, selections):
         self._selections[selection_name] = selections

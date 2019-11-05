@@ -8,24 +8,30 @@ DARK = {
     'WindowText': QColor(255, 255, 255),
     'WindowTextDisabled': QColor(127, 127, 127),
     'Base': '#252830',
-    'AlternateBase': QColor(66, 66, 66),
-    'ToolTipBase': QColor(255, 255, 255),
+    'AlternateBase': '#2e3139',
+    'ToolTipBase': '#2e3139',
     'ToolTipText': QColor(255, 255, 255),
     'Text': '#ffffff',
     'TextDisabled': QColor(80, 80, 80),
     'Dark': QColor(35, 35, 35),
-    'Shadow': QColor(20, 20, 20),
+    'Shadow': QColor(50, 50, 40),
     'Button': '#191a1f',
     'ButtonText': QColor(255, 255, 255),
     'ButtonTextDisabled': QColor(127, 127, 127),
     'BrightText': '#ff0000',
     'Link': QColor(42, 130, 218),
-    'Highlight': QColor(43, 130, 218),
+    'Highlight': '#ff42539e',
+    'Mid': '#bcbcbc',
+    'Midlight': '#ff0000',
     'HighlightDisabled': QColor(80, 80, 80),
     'HighlightedText': QColor(255, 255, 255),
     'HighlightedTextDisabled': QColor(127, 127, 127)
 }
 
+
+LIGHT = {
+    # 'Mid': '#ccc'
+}
 
 EDITOR_DARK = {
     # Editor
@@ -66,9 +72,14 @@ def get_editor_color(key):
     return EDITOR_LIGHT[key]
 
 
-def apply_dark_mode(app):
+def apply_theme(app):
+    if USER_SETTINGS.dark_mode:
+        theme = DARK
+    else:
+        theme = LIGHT
+        app.setPalette(app.style().standardPalette())
     palette = QPalette()
-    for role_name, color in DARK.items():
+    for role_name, color in theme.items():
         if role_name.endswith('Disabled'):
             role_name = role_name.split('Disabled')[0]
             color_group = QPalette.Disabled
@@ -81,7 +92,3 @@ def apply_dark_mode(app):
         color_role = getattr(palette, role_name)
         palette.setBrush(color_group, color_role, qcolor)
     app.setPalette(palette)
-
-
-def reset_theme(app):
-    app.setPalette(app.style().standardPalette())

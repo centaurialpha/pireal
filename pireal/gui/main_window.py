@@ -64,7 +64,7 @@ class Pireal(QMainWindow):
         self.setMinimumSize(880, 600)
         self.resize(1035, 760)
         # Load window geometry
-        window_maximized = DATA_SETTINGS.value('ds/window_max')
+        window_maximized = DATA_SETTINGS.value('ds/window_max', type=bool)
         if window_maximized:
             self.showMaximized()
         else:
@@ -85,12 +85,8 @@ class Pireal(QMainWindow):
 
     def switch_theme(self):
         app = QApplication.instance()
-        if USER_SETTINGS.dark_mode:
-            USER_SETTINGS.dark_mode = False
-            theme.reset_theme(app)
-        else:
-            USER_SETTINGS.dark_mode = True
-            theme.apply_dark_mode(app)
+        USER_SETTINGS.dark_mode = not USER_SETTINGS.dark_mode
+        theme.apply_theme(app)
         USER_SETTINGS.save()
         self.themeChanged.emit()
 
@@ -325,7 +321,6 @@ class Pireal(QMainWindow):
             DATA_SETTINGS.setValue('window_max', False)
             DATA_SETTINGS.setValue('window_pos', self.pos())
             DATA_SETTINGS.setValue('window_size', self.size())
-
         # Save last folder
         if self.central_widget.last_open_folder is not None:
             DATA_SETTINGS.setValue('lastOpenFolder', self.central_widget.last_open_folder)
