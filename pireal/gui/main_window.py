@@ -27,12 +27,10 @@ from PyQt5.QtWidgets import QApplication
 
 from PyQt5.QtCore import QPoint
 from PyQt5.QtCore import QSize
-from PyQt5.QtCore import QSettings
 from PyQt5.QtCore import pyqtSignal as Signal
 
 from pireal import translations as tr
 from pireal import keymap
-from pireal.core import settings
 from pireal.gui import central_widget
 from pireal.gui import menu_actions
 from pireal.gui import theme
@@ -40,7 +38,6 @@ from pireal.gui import theme
 # FIXME: más arriba se usa settings, unificar
 from pireal.core.settings import (
     DATA_SETTINGS,
-    SETTINGS_PATH,
     USER_SETTINGS
 )
 

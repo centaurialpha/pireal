@@ -30,7 +30,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import QAbstractListModel
 from PyQt5.QtCore import pyqtSignal as Signal
-from PyQt5.QtCore import pyqtSlot as Slot
+# from PyQt5.QtCore import pyqtSlot as Slot
 from PyQt5.QtCore import QUrl
 
 from pireal import translations as tr

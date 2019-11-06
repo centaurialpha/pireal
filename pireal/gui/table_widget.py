@@ -19,21 +19,21 @@
 
 import logging
 
-from collections import OrderedDict
+# from collections import OrderedDict
 
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QPushButton
+# from PyQt5.QtWidgets import QWidget
+# from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QSplitter
 from PyQt5.QtWidgets import QTabWidget
-from PyQt5.QtWidgets import QToolButton
-from PyQt5.QtWidgets import QVBoxLayout
+# from PyQt5.QtWidgets import QToolButton
+# from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QStackedWidget
-from PyQt5.QtWidgets import QMenu
+# from PyQt5.QtWidgets import QMenu
 
-from PyQt5.QtGui import QIcon
-from PyQt5.QtGui import QColor
+# from PyQt5.QtGui import QIcon
+# from PyQt5.QtGui import QColor
 
-from PyQt5.QtCore import Qt
+# from PyQt5.QtCore import Qt
 
 from pireal.gui import model_view_delegate as mvd
 from pireal import translations as tr
@@ -46,7 +46,7 @@ class TableWidget(QSplitter):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._relations = {}
-        vbox = QVBoxLayout(self)
+        # vbox = QVBoxLayout(self)
         self._tab_relations = QTabWidget()
         self._tab_relations.setAutoFillBackground(True)
         self._tab_results = QTabWidget()

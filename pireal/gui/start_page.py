@@ -25,7 +25,7 @@ import os
 
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QVBoxLayout
-from PyQt5.QtWidgets import QApplication
+# from PyQt5.QtWidgets import QApplication
 
 from PyQt5.QtQuickWidgets import QQuickWidget
 from PyQt5.QtCore import QUrl
@@ -53,7 +53,7 @@ class StartPage(QWidget):
         self._root.newDatabase.connect(self._central.create_database)
         self._root.openDatabase.connect(self._central.open_database)
         self._root.openExample.connect(self._open_example)
-        self._root.openRecentDatabase.connect(lambda: self._central.open_database(path))
+        self._root.openRecentDatabase.connect(lambda path: self._central.open_database(path))
         # self._root.removeCurrent.connect(self._remove_current)
         self._central.pireal.themeChanged.connect(self._reload)
 

@@ -24,7 +24,7 @@ Pireal Settings
 import sys
 import os
 
-from PyQt5.QtCore import QSettings, QVariant
+from PyQt5.QtCore import QSettings
 
 # from PyQt5.QtGui import QFont
 

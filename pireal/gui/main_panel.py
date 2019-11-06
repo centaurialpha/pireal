@@ -17,13 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+# import logging
 
 from PyQt5.QtWidgets import QSplitter
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QTabWidget
 from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QPushButton
+# from PyQt5.QtWidgets import QPushButton
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSlot as Slot

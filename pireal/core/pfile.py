@@ -20,8 +20,6 @@
 import os
 import logging
 
-from pireal.core import file_manager
-
 logger = logging.getLogger(__name__)
 
 

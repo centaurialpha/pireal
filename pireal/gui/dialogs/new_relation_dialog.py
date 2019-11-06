@@ -34,7 +34,7 @@ from PyQt5.QtCore import Qt
 from pireal import translations as tr
 
 from pireal.core import relation
-from pireal.gui.model_view_delegate import View
+from pireal.gui.model_view_delegate import View, Header
 # from pireal.gui.main_window import Pireal
 
 logger = logging.getLogger(__name__)

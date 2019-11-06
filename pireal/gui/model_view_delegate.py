@@ -25,16 +25,16 @@ from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QAbstractItemView
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QItemDelegate
-from PyQt5.QtWidgets import QStyle
+# from PyQt5.QtWidgets import QStyle
 
-from PyQt5.QtGui import QPalette
+# from PyQt5.QtGui import QPalette
 from PyQt5.QtGui import QColor
-from PyQt5.QtGui import QFont
+# from PyQt5.QtGui import QFont
 
 from PyQt5.QtCore import QAbstractTableModel
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QModelIndex
-from PyQt5.QtCore import pyqtSignal as Signal
+# from PyQt5.QtCore import pyqtSignal as Signal
 
 from pireal import translations as tr
 from pireal.core.settings import USER_SETTINGS

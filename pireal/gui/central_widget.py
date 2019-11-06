@@ -24,18 +24,18 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QStackedLayout
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtWidgets import QShortcut
+# from PyQt5.QtWidgets import QShortcut
 
-from PyQt5.QtGui import QKeySequence
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore import pyqtSignal as Signal
-from PyQt5.QtCore import pyqtSlot as Slot
+# from PyQt5.QtGui import QKeySequence
+# from PyQt5.QtCore import Qt
+# from PyQt5.QtCore import pyqtSignal as Signal
+# from PyQt5.QtCore import pyqtSlot as Slot
 
 
 from pireal import translations as tr
 from pireal.core import settings
 from pireal.core import file_manager
-from pireal.core import pfile
+# from pireal.core import pfile
 from pireal.core.relation import Relation
 
 from pireal.gui import start_page
@@ -43,7 +43,7 @@ from pireal.gui import start_page
 from pireal.gui.main_panel import MainPanel
 
 from pireal.gui.dialogs import preferences
-from pireal.gui.dialogs import new_relation_dialog
+# from pireal.gui.dialogs import new_relation_dialog
 from pireal.gui.dialogs import new_database_dialog
 
 from pireal.core.settings import DATA_SETTINGS
@@ -167,7 +167,7 @@ class CentralWidget(QWidget):
                     self, tr.TR_MSG_INFORMATION, tr.TR_DB_FILE_EMPTY.format(filename))
                 return
             database_content = file_manager.parse_database_content(database_content)
-        except Exception as reason:
+        except Exception:
             logger.exception('The database file could not be opened', exc_info=True)
             return
 
@@ -188,7 +188,8 @@ class CentralWidget(QWidget):
                 relation_obj.insert(tuple_)
 
             self._main_panel.central_view.add_relation(relation_obj, table_name)
-            self._main_panel.lateral_widget.add_item_to_relations(table_name, relation_obj.cardinality(), relation_obj.degree())
+            self._main_panel.lateral_widget.add_item_to_relations(
+                table_name, relation_obj.cardinality(), relation_obj.degree())
 
         self.pireal.change_title(file_obj.display_name)
 

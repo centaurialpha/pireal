@@ -24,10 +24,8 @@ from PyQt5.QtGui import (
     QTextBlockUserData,
     QColor
 )
-from PyQt5.QtCore import (
-    Qt,
-    QRegExp
-)
+from PyQt5.QtCore import QRegExp
+
 from pireal.gui.theme import get_editor_color
 
 

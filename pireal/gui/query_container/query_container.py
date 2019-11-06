@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import re
+# import re
 import logging
 from typing import (
     Tuple,
@@ -28,34 +28,34 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QTabWidget
 from PyQt5.QtWidgets import QHBoxLayout
-from PyQt5.QtWidgets import QSplitter
-from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtWidgets import QStackedWidget
+# from PyQt5.QtWidgets import QSplitter
+# from PyQt5.QtWidgets import QMessageBox
+# from PyQt5.QtWidgets import QStackedWidget
 from PyQt5.QtWidgets import QLabel
-from PyQt5.QtWidgets import QDialog
+# from PyQt5.QtWidgets import QDialog
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QLineEdit
-from PyQt5.QtWidgets import QAction
-from PyQt5.QtWidgets import QToolBar
+# from PyQt5.QtWidgets import QAction
+# from PyQt5.QtWidgets import QToolBar
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore import QSettings
-from PyQt5.QtCore import QSize
+# from PyQt5.QtCore import Qt
+# from PyQt5.QtCore import QSettings
+# from PyQt5.QtCore import QSize
 
-from PyQt5.QtCore import pyqtSignal as Signal
+# from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtCore import pyqtSlot as Slot
 
 from pireal import translations as tr
 from pireal.core import interpreter
-from pireal.core.interpreter.exceptions import (
-    InvalidSyntaxError,
-    MissingQuoteError,
-    DuplicateRelationNameError,
-    ConsumeError
-)
+# from pireal.core.interpreter.exceptions import (
+#     InvalidSyntaxError,
+#     MissingQuoteError,
+#     DuplicateRelationNameError,
+#     ConsumeError
+# )
 from pireal.gui.query_container import editor
-from pireal.gui.query_container import tab_widget
-from pireal.core import settings
+# from pireal.gui.query_container import tab_widget
+# from pireal.core import settings
 from pireal.core.pfile import File
 
 logger = logging.getLogger(__name__)
@@ -76,9 +76,9 @@ class QueryContainer(QWidget):
         self._search_widget.hide()
 
     def reload_editor_scheme(self):
-        for editor in self._editor_widget.editors():
-            editor.apply_scheme()
-            editor.reload_highlighter()
+        for weditor in self._editor_widget.editors():
+            weditor.apply_scheme()
+            weditor.reload_highlighter()
 
     def change_visibility(self):
         if self.isVisible():
