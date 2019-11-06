@@ -103,10 +103,16 @@ class QueryContainer(QWidget):
         3. Pass query to parser
         4.
         """
+        import pprint
+
         current_editor = self._editor_widget.current_editor()
         query = current_editor.toPlainText()
         relations = self._main_panel.central_view.all_relations()
+
         result = interpreter.parse(query)
+
+        # Reset model
+        self._main_panel.lateral_widget.clear_results()
 
         for relation_name, expression in result.items():
             new_relation = eval(expression, {}, relations)
@@ -114,6 +120,8 @@ class QueryContainer(QWidget):
             self._main_panel.central_view.add_relation_to_results(new_relation, relation_name)
             self._main_panel.lateral_widget.add_item_to_results(
                 relation_name, new_relation.cardinality(), new_relation.degree())
+
+        pprint.pprint(relations)
 
 
 class EditorWidget(QWidget):

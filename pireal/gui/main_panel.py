@@ -126,4 +126,5 @@ class CentralView(QWidget):
         self._table_widget.set_current_result(index)
 
     def all_relations(self) -> dict:
-        return self._table_widget.relations
+        """Return a shallow copy of relations"""
+        return {**self._table_widget.relations}

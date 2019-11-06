@@ -140,32 +140,31 @@ class CentralWidget(QWidget):
         QMessageBox.information(self, tr.TR_MSG_INFORMATION, tr.TR_MSG_ONE_DB_AT_TIME)
 
     def open_database(self, filename=''):
-        # TODO: se ha sacado el parámetro `remember`, debería ser una configuración
-        logger.debug('Triying to open a database...')
         if self.has_main_panel():
             return self._say_about_one_db_at_time()
         # If not filename provide, then open dialog to select one
         if not filename:
-            # TODO: guardar esta carpeta (QSettings)
             if self._last_open_folder is None:
                 directory = os.path.expanduser('~')
             else:
                 directory = self._last_open_folder
-            # FIXME: hacer un settings.get_supported_files(db) o algo así
             filters = settings.SUPPORTED_FILES.split(';;')[0]
             filename, _ = QFileDialog.getOpenFileName(self, tr.TR_OPEN_DATABASE, directory, filters)
             # If is canceled, return
             if not filename:
-                logger.debug('File not selected, bye!')
+                logger.info('File not selected, bye!')
                 return
         # Save last folder
         self._last_open_folder = file_manager.get_path(filename)
         # If filename provide
         try:
-            logger.debug('Triying to open the database file "%s"', filename)
+            logger.debug('Triying to open the database: "%s"', filename)
             file_obj = File(filename)
             database_content = file_obj.read()
             if not database_content:
+                logger.info('The file "%s" is empty', filename)
+                QMessageBox.information(
+                    self, tr.TR_MSG_INFORMATION, tr.TR_DB_FILE_EMPTY.format(filename))
                 return
             database_content = file_manager.parse_database_content(database_content)
         except Exception as reason:
@@ -190,6 +189,10 @@ class CentralWidget(QWidget):
 
             self._main_panel.central_view.add_relation(relation_obj, table_name)
             self._main_panel.lateral_widget.add_item_to_relations(table_name, relation_obj.cardinality(), relation_obj.degree())
+
+        self.pireal.change_title(file_obj.display_name)
+
+        logger.debug('Connected to database: "%s"', file_obj.display_name)
 
     def open_query(self, filename=''):
         # TODO: se ha sacado el parámetro `remember`, debería ser una configuración

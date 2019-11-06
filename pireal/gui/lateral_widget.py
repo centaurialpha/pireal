@@ -55,7 +55,9 @@ class RelationModel(QAbstractListModel):
         self.endInsertRows()
 
     def clear(self):
+        self.beginResetModel()
         self._relations.clear()
+        self.endResetModel()
 
     def rowCount(self, index=QModelIndex()):
         return len(self._relations)
@@ -119,16 +121,10 @@ class LateralWidget(QSplitter):
         item = RelationItem(name, cardinality, degree)
         self._results_model.add_relation(item)
 
-    # @property
-    # def relation_list(self):
-    #     return self._relations_list
-
-    # @property
-    # def result_list(self):
-    #     return self._results_list
+    def clear_results(self):
+        self._results_model.clear()
 
 
-# FIXME: corregir el tema cuando se use el modelo correctamente
 class RelationListQML(QWidget):
 
     itemClicked = Signal(int)

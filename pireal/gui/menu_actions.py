@@ -69,7 +69,7 @@ MENU['query'] = {
         'slot': "central:save_query_as",
     }, {
         'name': tr.TR_MENU_QUERY_EXECUTE,
-        'slot': "central:execute_queries"
+        'slot': "central:execute_query"
     })
 }
 # MENU['file'] = {

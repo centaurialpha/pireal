@@ -54,3 +54,9 @@ class File:
             fp.write(content)
         self._path = path
         return self
+
+    def __repr__(self):
+        return '{}::{}'.format(self.display_name, self.path)
+
+    def __str__(self):
+        return repr(self)

@@ -54,6 +54,7 @@ TR_MENU_HELP_ABOUT = tr('Pireal', 'About Pireal')
 TR_MENU_HELP_ABOUT_QT = tr('Pireal', 'About Qt')
 
 TR_MSG_INFORMATION = tr('Pireal', 'Information')
+TR_MSG_WARNING = tr('Pireal', 'Warning!')
 TR_MSG_ONE_DB_AT_TIME = tr('Pireal', 'Oops! One database at a time please')
 
 TR_OPEN_DATABASE = tr('Pireal', 'Open Database')
@@ -156,7 +157,7 @@ TR_DB_DIALOG_DB_LOCATION = tr('Pireal', 'Location:')
 TR_DB_DIALOG_DB_FILENAME = tr('Pireal', 'Filename:')
 TR_DB_DIALOG_SELECT_FOLDER = tr('Pireal', 'Select Folder')
 
-TR_DB_FILE_EMPTY = tr('Pireal', 'The file <b>{}</b> is empty, aborting.')
+TR_DB_FILE_EMPTY = tr('Pireal', 'The file <b>{}</b> is empty :/.')
 
 # Search widget
 TR_BTN_FIND_PREVIOUS = tr('Pireal', 'Find Previous')

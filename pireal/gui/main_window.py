@@ -194,10 +194,8 @@ class Pireal(QMainWindow):
             version = self._updater.version
             msg.setWindowTitle(self.tr("New version available!"))
             msg.setText(self.tr("Check the web site to "
-                                "download <b>Pireal {}</b>".format(
-                                    version)))
-            download_btn = msg.addButton(self.tr("Download!"),
-                                         QMessageBox.YesRole)
+                                "download <b>Pireal {}</b>".format(version)))
+            download_btn = msg.addButton(self.tr("Download!"), QMessageBox.YesRole)
             msg.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
             msg.exec_()
             r = msg.clickedButton()
@@ -206,12 +204,11 @@ class Pireal(QMainWindow):
         self._thread.deleteLater()
         self._updater.deleteLater()
 
-    def change_title(self, title=''):
-        if title:
-            _title = title + " - Pireal "
-        else:
-            _title = "Pireal"
-        self.setWindowTitle(_title)
+    def change_title(self, db_name=''):
+        title = ''
+        if db_name:
+            title = tr.TR_NOTIFICATION_DB_CONNECTED.format(db_name)
+        self.setWindowTitle(title + ' - Pireal')
 
     def set_enabled_actions(self, actions, value):
         for action in actions:
@@ -303,17 +300,8 @@ class Pireal(QMainWindow):
         self._msg_error_widget.show_msg(text, syntax_error)
         self._msg_error_widget.show()
 
-    def save_user_settings(self):
-        # CONFIG.set_value("lastOpenFolder", self.central_widget.last_open_folder)
-        # CONFIG.set_value("recentFiles", self.central_widget.recent_databases)
-
-        # # Write settings
-        # CONFIG.save_settings()
-        pass
-
-    def closeEvent(self, event):
-        # self.save_user_settings()
-
+    def save_settings(self):
+        """Save data settings"""
         # Save window geometry
         if self.isMaximized():
             DATA_SETTINGS.setValue('window_max', True)
@@ -324,6 +312,10 @@ class Pireal(QMainWindow):
         # Save last folder
         if self.central_widget.last_open_folder is not None:
             DATA_SETTINGS.setValue('lastOpenFolder', self.central_widget.last_open_folder)
+
+    def closeEvent(self, event):
+        self.save_settings()
+
         # db = self.central_widget.get_active_db()
         # if db is not None:
         #     # Save splitters size

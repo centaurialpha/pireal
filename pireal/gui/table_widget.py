@@ -57,11 +57,11 @@ class TableWidget(QSplitter):
         # Relation stack
         self._relation_stack = QStackedWidget()
         self._relation_stack.setAutoFillBackground(True)
-        self._tab_relations.addTab(self._relation_stack, tr.TR_TABLE_WORKSPACE)
+        self._tab_relations.addTab(self._relation_stack, tr.TR_TABLE_WORKSPACE + ' (0)')
         # Result stack
         self._result_stack = QStackedWidget()
         self._result_stack.setAutoFillBackground(True)
-        self._tab_results.addTab(self._result_stack, tr.TR_TABLE_RESULTS)
+        self._tab_results.addTab(self._result_stack, tr.TR_TABLE_RESULTS + ' (0)')
 
         self.setSizes([1, 1])
 
@@ -82,10 +82,19 @@ class TableWidget(QSplitter):
         self._relations[relation_name] = relation_obj
         self._relation_stack.addWidget(table_view)
 
+        self._update_tab_text(self._tab_relations, self._relation_stack)
+
     def add_relation_to_results(self, relation_obj, relation_name):
         logger.debug('Creating new relation <%s> in results', relation_name)
         table_view = self.create_table(relation_obj, editable=False)
         self._result_stack.addWidget(table_view)
+
+        self._update_tab_text(self._tab_results, self._result_stack)
+
+    def _update_tab_text(self, tab_widget, stack_widget):
+        current_tab_text = tab_widget.tabText(0)
+        number = current_tab_text.split('(')[1][:1]
+        tab_widget.setTabText(0, current_tab_text.replace(number, str(stack_widget.count())))
 
     def create_table(self, relation_obj, *, editable=False):
         table_view = mvd.View()

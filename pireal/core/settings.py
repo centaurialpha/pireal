@@ -68,7 +68,8 @@ STYLE_SHEET = os.path.join(ROOT_DIR, 'pireal', 'style.qss')
 EXAMPLES = os.path.join(ROOT_DIR, 'samples')
 
 
-# Supported files
+# Supported files.
+# DON'T change the order!
 SUPPORTED_FILES = (
     "Pireal Database File (*.pdb);;"
     "Pireal Query File (*.pqf);;"
