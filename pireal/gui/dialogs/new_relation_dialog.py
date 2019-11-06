@@ -34,7 +34,7 @@ from PyQt5.QtCore import Qt
 from pireal import translations as tr
 
 from pireal.core import relation
-from pireal.gui import view
+from pireal.gui.model_view_delegate import View, Header
 # from pireal.gui.main_window import Pireal
 
 logger = logging.getLogger(__name__)
@@ -66,10 +66,10 @@ class NewRelationDialog(QDialog):
         hbox.addWidget(btn_delete_column)
         box.addLayout(hbox)
         # Vista (tabla)
-        self._view = view.View()
+        self._view = View()
         box.addWidget(self._view)
         # Header personalizado para permitir ser editado
-        header = view.Header()
+        header = Header()
         self._view.setHorizontalHeader(header)
         self._view.setModel(QStandardItemModel(0, 2))
         header.model().setHeaderData(0, Qt.Horizontal, tr.TR_RELATION_DIALOG_FIELD1)

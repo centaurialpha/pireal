@@ -3,63 +3,13 @@ import QtQuick 2.7
 Rectangle {
     id: root
 
-    color: "#404244"
-    signal itemClicked(int index)
+    SystemPalette { id: darkPalette; colorGroup: SystemPalette.Active }
 
-    function addItem(item, cardinalidad, grado) {
-        relationModel.append({"name": item, "cardinalidad": cardinalidad, "grado": grado});
-    }
+    color: darkPalette.base
+    signal itemClicked(int index)
 
     function setTitle(title) {
         header.title = title;
-    }
-
-    function clear() {
-        relationModel.clear();
-    }
-
-    function hasItem() {
-        return relationModel.count > 0;
-    }
-
-    function currentItemText() {
-        var index = relationView.currentIndex;
-        var item = relationModel.get(index);
-        var text = "";
-        if ( item !== undefined)
-            text = item.name;
-        return text;
-    }
-
-    function setCardinality(value) {
-        var item = relationModel.get(relationView.currentIndex);
-        item.cardinalidad = value;
-    }
-
-    function currentIndex() {
-        return relationView.currentIndex;
-    }
-
-    function currentItem() {
-        var index = relationView.currentIndex;
-        var item = relationModel.get(index);
-        var name = "";
-        if (item !== undefined) {
-            name = relationModel.get(index).name;
-        }
-        return {"index": index, "name": name};
-    }
-
-    Component.onCompleted: clear();
-
-
-    ListModel {
-        id: relationModel
-        ListElement {
-            name: ""
-            cardinalidad: 0
-            grado: 0
-        }
     }
 
     Rectangle {
@@ -67,14 +17,14 @@ Rectangle {
         anchors.top: parent.top
         height: 30
         width: parent.width
-        color: "#404244"
+        color: darkPalette.button
         property alias title: lblTitle.text
         Text {
             id: lblTitle
             text: ""
             font.bold: true
             font.pointSize: 12
-            color: "#f9f9f9"
+            color: darkPalette.text
             anchors.centerIn: parent
         }
     }
@@ -103,7 +53,7 @@ Rectangle {
 
             height: 70
             property bool current: ListView.isCurrentItem
-            color: relationItem.current ? "#262829" : "transparent"
+            color: relationItem.current ? darkPalette.highlight : "transparent"
 
             Column {
                 spacing: 5
@@ -120,16 +70,16 @@ Rectangle {
                     text: name
                     font.bold: true
                     font.pointSize: 12
-                    color: "#f1f1f1"
+                    color: darkPalette.text
                 }
                 Text {
                     id: relationCard
-                    color: "#a1a1a1"
-                    text: qsTr("Cardinality: %1").arg(cardinalidad)
+                    color: darkPalette.mid
+                    text: qsTr("Cardinality: %1").arg(cardinality)
                 }
                 Text {
-                    text: qsTr("Degree: %1").arg(grado)
-                    color: "#a1a1a1"
+                    text: qsTr("Degree: %1").arg(degree)
+                    color: darkPalette.mid
                 }
             }
             MouseArea {

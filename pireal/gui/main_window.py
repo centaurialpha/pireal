@@ -23,16 +23,23 @@ import webbrowser
 
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QApplication
 
-from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import QPoint
+from PyQt5.QtCore import QSize
+from PyQt5.QtCore import pyqtSignal as Signal
 
 from pireal import translations as tr
 from pireal import keymap
-from pireal.core import settings
 from pireal.gui import central_widget
 from pireal.gui import menu_actions
+from pireal.gui import theme
 
-from pireal.core.settings import CONFIG
+# FIXME: más arriba se usa settings, unificar
+from pireal.core.settings import (
+    DATA_SETTINGS,
+    USER_SETTINGS
+)
 
 TOOLBAR_ITEMS = []  # TODO: hacer esto cuando se active toolbar
 
@@ -44,6 +51,7 @@ class Pireal(QMainWindow):
 
     This class is responsible for installing all application services.
     """
+    themeChanged = Signal()
 
     __ACTIONS = {}
 
@@ -53,14 +61,13 @@ class Pireal(QMainWindow):
         self.setMinimumSize(880, 600)
         self.resize(1035, 760)
         # Load window geometry
-        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        window_maximized = qsettings.value('window_max', True)
+        window_maximized = DATA_SETTINGS.value('ds/window_max', type=bool)
         if window_maximized:
             self.showMaximized()
         else:
-            size = qsettings.value('window_size')
+            size = DATA_SETTINGS.value('ds/window_size', QSize(800, 600))
             self.resize(size)
-            position = qsettings.value('window_pos')
+            position = DATA_SETTINGS.value('ds/window_pos', QPoint(100, 100))
             self.move(position)
         # TODO: Create toolbar
         # TODO: Notification widget
@@ -72,6 +79,13 @@ class Pireal(QMainWindow):
         # Menu bar
         menubar = self.menuBar()
         self._load_menubar(menubar)
+
+    def switch_theme(self):
+        app = QApplication.instance()
+        USER_SETTINGS.dark_mode = not USER_SETTINGS.dark_mode
+        theme.apply_theme(app)
+        USER_SETTINGS.save()
+        self.themeChanged.emit()
 
     @classmethod
     def get_action(cls, name):
@@ -111,6 +125,13 @@ class Pireal(QMainWindow):
                     qaction = menu.addAction(action)
                     if slot_name is None:
                         continue
+
+                    if menu_item.get('checkable', False):
+                        qaction.setCheckable(True)
+                        # FIXME: solo tengo en cuenta ese qaction
+                        # Jugar un poco con Pireal.__ACTIONS
+                        qaction.setChecked(USER_SETTINGS.dark_mode)
+
                     obj_name, connection = slot_name.split(':')
 
                     obj = self.central_widget
@@ -130,10 +151,10 @@ class Pireal(QMainWindow):
         # self.__install_toolbar(toolbar_items, rela_actions)
         # self.__install_toolbar(rela_actions)
         # Disable some actions
-        self.set_enabled_db_actions(False)
-        self.set_enabled_relation_actions(False)
-        self.set_enabled_query_actions(False)
-        self.set_enabled_editor_actions(False)
+        # self.set_enabled_db_actions(False)
+        # self.set_enabled_relation_actions(False)
+        # self.set_enabled_query_actions(False)
+        # self.set_enabled_editor_actions(False)
 
     # def __install_toolbar(self, rela_actions):
     #     menu = QMenu()
@@ -170,10 +191,8 @@ class Pireal(QMainWindow):
             version = self._updater.version
             msg.setWindowTitle(self.tr("New version available!"))
             msg.setText(self.tr("Check the web site to "
-                                "download <b>Pireal {}</b>".format(
-                                    version)))
-            download_btn = msg.addButton(self.tr("Download!"),
-                                         QMessageBox.YesRole)
+                                "download <b>Pireal {}</b>".format(version)))
+            download_btn = msg.addButton(self.tr("Download!"), QMessageBox.YesRole)
             msg.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
             msg.exec_()
             r = msg.clickedButton()
@@ -182,12 +201,11 @@ class Pireal(QMainWindow):
         self._thread.deleteLater()
         self._updater.deleteLater()
 
-    def change_title(self, title=''):
-        if title:
-            _title = title + " - Pireal "
-        else:
-            _title = "Pireal"
-        self.setWindowTitle(_title)
+    def change_title(self, db_name=''):
+        title = ''
+        if db_name:
+            title = tr.TR_NOTIFICATION_DB_CONNECTED.format(db_name)
+        self.setWindowTitle(title + ' - Pireal')
 
     def set_enabled_actions(self, actions, value):
         for action in actions:
@@ -279,59 +297,55 @@ class Pireal(QMainWindow):
         self._msg_error_widget.show_msg(text, syntax_error)
         self._msg_error_widget.show()
 
-    def save_user_settings(self):
-        CONFIG.set_value("lastOpenFolder", self.central_widget.last_open_folder)
-        CONFIG.set_value("recentFiles", self.central_widget.recent_databases)
-
-        # Write settings
-        CONFIG.save_settings()
+    def save_settings(self):
+        """Save data settings"""
+        # Save window geometry
+        if self.isMaximized():
+            DATA_SETTINGS.setValue('window_max', True)
+        else:
+            DATA_SETTINGS.setValue('window_max', False)
+            DATA_SETTINGS.setValue('window_pos', self.pos())
+            DATA_SETTINGS.setValue('window_size', self.size())
+        # Save last folder
+        if self.central_widget.last_open_folder is not None:
+            DATA_SETTINGS.setValue('lastOpenFolder', self.central_widget.last_open_folder)
 
     def closeEvent(self, event):
-        self.save_user_settings()
+        self.save_settings()
 
-        # Qt settings
-        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        # # Save window geometry
-        if self.isMaximized():
-            qsettings.setValue('window_max', True)
-        else:
-            qsettings.setValue('window_max', False)
-            qsettings.setValue('window_pos', self.pos())
-            qsettings.setValue('window_size', self.size())
-
-        db = self.central_widget.get_active_db()
-        if db is not None:
-            # Save splitters size
-            db.save_sizes()
-            # Databases unsaved
-            if db.modified:
-                msg = QMessageBox(self)
-                msg.setIcon(QMessageBox.Question)
-                msg.setWindowTitle(tr.TR_MSG_SAVE_CHANGES)
-                msg.setText(tr.TR_MSG_SAVE_CHANGES_BODY)
-                cancel_btn = msg.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
-                msg.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
-                yes_btn = msg.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
-                msg.exec_()
-                r = msg.clickedButton()
-                if r == yes_btn:
-                    self.central_widget.save_database()
-                if r == cancel_btn:
-                    event.ignore()
-            # Query files
-            unsaved_editors = self.central_widget.get_unsaved_queries()
-            if unsaved_editors:
-                msg = QMessageBox(self)
-                msg.setIcon(QMessageBox.Question)
-                msg.setWindowTitle(tr.TR_QUERY_NOT_SAVED)
-                text = '\n'.join([editor.name for editor in unsaved_editors])
-                msg.setText(tr.TR_QUERY_NOT_SAVED_BODY.format(files=text))
-                cancel_btn = msg.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
-                msg.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
-                yes_btn = msg.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
-                msg.exec_()
-                if msg.clickedButton() == yes_btn:
-                    for editor in unsaved_editors:
-                        self.central_widget.save_query(editor)
-                if msg.clickedButton() == cancel_btn:
-                    event.ignore()
+        # db = self.central_widget.get_active_db()
+        # if db is not None:
+        #     # Save splitters size
+        #     db.save_sizes()
+        #     # Databases unsaved
+        #     if db.modified:
+        #         msg = QMessageBox(self)
+        #         msg.setIcon(QMessageBox.Question)
+        #         msg.setWindowTitle(tr.TR_MSG_SAVE_CHANGES)
+        #         msg.setText(tr.TR_MSG_SAVE_CHANGES_BODY)
+        #         cancel_btn = msg.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
+        #         msg.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
+        #         yes_btn = msg.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
+        #         msg.exec_()
+        #         r = msg.clickedButton()
+        #         if r == yes_btn:
+        #             self.central_widget.save_database()
+        #         if r == cancel_btn:
+        #             event.ignore()
+        #     # Query files
+        #     unsaved_editors = self.central_widget.get_unsaved_queries()
+        #     if unsaved_editors:
+        #         msg = QMessageBox(self)
+        #         msg.setIcon(QMessageBox.Question)
+        #         msg.setWindowTitle(tr.TR_QUERY_NOT_SAVED)
+        #         text = '\n'.join([editor.name for editor in unsaved_editors])
+        #         msg.setText(tr.TR_QUERY_NOT_SAVED_BODY.format(files=text))
+        #         cancel_btn = msg.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
+        #         msg.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
+        #         yes_btn = msg.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
+        #         msg.exec_()
+        #         if msg.clickedButton() == yes_btn:
+        #             for editor in unsaved_editors:
+        #                 self.central_widget.save_query(editor)
+        #         if msg.clickedButton() == cancel_btn:
+        #             event.ignore()

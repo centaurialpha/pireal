@@ -195,8 +195,10 @@ class Relation(object):
         expr = compile(expression, "select", "eval")
 
         for tupla in self.content:
-            attrs = {attr: RelationStr(tupla[e]).cast()
-                     for e, attr in enumerate(self.header)}
+            attrs = {
+                attr: RelationStr(tupla[e]).cast()
+                for e, attr in enumerate(self.header)
+            }
             try:
                 if eval(expr, datetime_dict, attrs):
                     new_relation.insert(tupla)

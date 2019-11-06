@@ -69,7 +69,7 @@ MENU['query'] = {
         'slot': "central:save_query_as",
     }, {
         'name': tr.TR_MENU_QUERY_EXECUTE,
-        'slot': "central:execute_queries"
+        'slot': "central:execute_query"
     })
 }
 # MENU['file'] = {
@@ -171,6 +171,10 @@ MENU['tools'] = {
     'items': [{
         'name': tr.TR_MENU_TOOLS_PREFERENCES,
         'slot': "central:show_settings",
+    }, {
+        'name': tr.TR_DARK_MODE,
+        'checkable': True,
+        'slot': 'pireal:switch_theme'
     }]
 }
 

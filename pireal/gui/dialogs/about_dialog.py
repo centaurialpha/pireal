@@ -54,6 +54,15 @@ class AboutDialog(QDialog):
         lbl_version.setFont(font)
         vbox.addWidget(lbl_version)
 
+        # Code name
+        lbl_code_name = QLabel("{}".format(pireal.__code_name__))
+        lbl_code_name.setAlignment(Qt.AlignHCenter)
+        font = lbl_code_name.font()
+        font.setPointSize(9)
+        font.setItalic(True)
+        lbl_code_name.setFont(font)
+        vbox.addWidget(lbl_code_name)
+
         # Description
         description = QLabel(
             self.tr("Relational Algebra query evaluator"))
