@@ -43,7 +43,7 @@ from pireal.gui import start_page
 from pireal.gui.main_panel import MainPanel
 
 from pireal.gui.dialogs import preferences
-# from pireal.gui.dialogs import new_relation_dialog
+from pireal.gui.dialogs import new_relation_dialog
 from pireal.gui.dialogs import new_database_dialog
 
 from pireal.core.settings import DATA_SETTINGS
@@ -65,6 +65,8 @@ class CentralWidget(QWidget):
         self._main_panel = None
         # Acá cacheo la última carpeta accedida
         self._last_open_folder = DATA_SETTINGS.value('ds/lastOpenFolder')
+        self._recent_dbs = DATA_SETTINGS.value('ds/recentDbs', [])
+
         # if CONFIG.get("lastOpenFolder") is not None:
         #     self._last_open_folder = CONFIG.get("lastOpenFolder")
         # self._recent_dbs = []
@@ -82,10 +84,12 @@ class CentralWidget(QWidget):
     #     if query_container is not None:
     #         query_container.set_editor_focus()
 
-    # @property
-    # def recent_databases(self):
-    #     return self._recent_dbs
+    @property
+    def recent_databases(self) -> list:
+        return self._recent_dbs
 
+    def add_to_recents(self, display_name: str, path: str):
+        self._recent_dbs.append((display_name, path))
     # @recent_databases.setter
     # def recent_databases(self, database_file):
     #     recent_files = CONFIG.get("recentFiles")
@@ -192,6 +196,8 @@ class CentralWidget(QWidget):
                 table_name, relation_obj.cardinality(), relation_obj.degree())
 
         self.pireal.change_title(file_obj.display_name)
+
+        self.add_to_recents(file_obj.display_name, file_obj.path)
 
         logger.debug('Connected to database: "%s"', file_obj.display_name)
 
@@ -433,16 +439,16 @@ class CentralWidget(QWidget):
     #     if db.delete_relation():
     #         db.modified = True
 
-    # def create_new_relation(self):
-    #     dialog = new_relation_dialog.NewRelationDialog(self)
-    #     if dialog.exec_():
-    #         db = self.get_active_db()
-    #         relation, relation_name = dialog.get_data()
-    #         table = db.create_table(relation, relation_name)
-    #         db.table_widget.add_table(relation, relation_name, table)
-    #         db.lateral_widget.relation_list.add_item(
-    #             relation_name, relation.cardinality(), relation.degree())
-    #         db.modified = True
+    def create_new_relation(self):
+        dialog = new_relation_dialog.NewRelationDialog(self._main_panel)
+        if dialog.exec_() == dialog.Accepted:
+            relation_obj, relation_name = dialog.get_data()
+            self._main_panel.central_view.add_relation(relation_obj, relation_name)
+            rela_card = relation_obj.cardinality()
+            rela_deg = relation_obj.degree()
+            self._main_panel.lateral_widget.add_item_to_relations(
+                relation_name, rela_card, rela_deg)
+            # FIXME: database modified, signal!
 
     def add_start_page(self):
         """ This function adds the Start Page to the stacked widget """

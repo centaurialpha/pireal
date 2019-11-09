@@ -19,242 +19,255 @@
 import QtQuick 2.7
 import "widgets"
 
-
 Rectangle {
     id: root
 
-    SystemPalette { id: darkPalette; colorGroup: SystemPalette.Active }
+    SystemPalette { id: palette; colorGroup: SystemPalette.Active }
 
-    color: darkPalette.base
+    color: palette.base
 
     signal openRecentDatabase(string path)
     signal openPreferences();
     signal openExample
     signal newDatabase
     signal openDatabase
-    signal removeCurrent(string path)
+    signal removeItem(int index);
 
+    Item {
+        id: mainContainer
+        anchors.fill: parent
+        anchors.leftMargin: 250
+        anchors.rightMargin: 250
+        anchors.topMargin: 150
+        anchors.bottomMargin: 150
 
-    function loadItem(name, path) {
-        listModel.append({"name": name, "path": path})
-    }
-
-    function clear() {
-        listModel.clear();
-    }
-
-    ListModel {
-        id: listModel
-
-        ListElement {
-            name: ""
-            path: ""
-        }
-    }
-
-    Image {
-        id: logo
-        source: "pireal_logo.png"
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        anchors.topMargin: 90
-    }
-    Text {
-        id: textoWelcome
-        color: darkPalette.text
-        text: qsTr("Click in <b>New</b>, <b>Open</b> or <b>Example</b> to get started!")
-        anchors.top: logo.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 10
-        renderType: Text.NativeRendering
-    }
-
-    Row {
-        id: buttons
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: textoWelcome.bottom
-        anchors.topMargin: 10
-        spacing: -3
-
-
-        Button {
-            texto: qsTr("New")
-            textColor: darkPalette.buttonText
-            radius: 3
-            color: darkPalette.button
-            CustomBorder {
-                commonBorder: false
-                borderColor: "#c4c7ca"
-                lBorderwidth: 1
-                radius: 3
-            }
-
-            onClicked: root.newDatabase();
-        }
-        Button{
-            texto: qsTr("Open")
-            textColor: darkPalette.buttonText
-            color: darkPalette.button
-            z: 1
-            CustomBorder {
-                commonBorder: true
-                borderColor: "#c4c7ca"
-            }
-            onClicked: root.openDatabase();
-        }
-        Button {
-            texto: qsTr("Example")
-            textColor: darkPalette.buttonText
-            radius: 3
-            color: darkPalette.button
-            CustomBorder {
-                commonBorder: false
-                borderColor: "#c4c7ca"
-                rBorderwidth: 1
-                lBorderwidth: 1
-                radius: 3
-            }
-            onClicked: root.openExample()
-        }
-    }
-
-    Rectangle {
-
-        id: listContainer
-        color: darkPalette.button
-        radius: 3
-        border.color: darkPalette.shadow
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: buttons.bottom
-        anchors.topMargin: 20
-        height: 300
-        width: 600
-
-        Rectangle {
-            id: title
-
-            height: 35
-            color: darkPalette.button
-            anchors.left: parent.left
-            anchors.right: parent.right
+        Item {
+            id: topContainer
             anchors.top: parent.top
-            anchors.margins: 8
-            Text {
-                text: qsTr("Recent Databases")
-                font.bold: true
-                font.italic: true
-                color: darkPalette.text
-                font.pixelSize: 20
-                anchors.centerIn: parent
-                renderType: Text.NativeRendering
-            }
-        }
-
-        Rectangle {
-
-            color: darkPalette.button
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.top: title.bottom
-            anchors.margins: 8
+            height: parent.height / 6
+            Text {
+                id: title
+                text: "<b>π</b>real"
+                color: palette.text
+                font.pointSize: 32
+            }
+            Text {
+                id: subTitle
+                text: "free and open source Relational Algebra Interpreter"
+                color: palette.mid
+                font.pointSize: 14
+                anchors.top: title.bottom
+            }
+        }
+        Item {
+            id: leftContainer
+            anchors.top: topContainer.bottom
+            anchors.left: mainContainer.left
+            anchors.bottom: mainContainer.bottom
+            width: mainContainer.width / 2
 
-            ListView {
-                id: listView
+            Text {
+                id: txtStarted
+                text: "Get started!"
+                color: palette.text
+                font.pointSize: 18
+            }
+            Row {
+                id: boxButtons
+                anchors.top: txtStarted.bottom
+                anchors.topMargin: 10
+                spacing: -3
 
-                anchors.fill: parent
-                clip: true
-                focus: true
-                spacing: 7
 
-                model: listModel
-                delegate: Rectangle {
-                    id: listItem
-                    color: darkPalette.alternateBase
-                    height: 60
+                Button {
+                    texto: qsTr("New Database")
+                    textColor: palette.buttonText
                     radius: 3
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                    }
-                    property bool current: ListView.isCurrentItem
-                    MouseArea {
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-
-                        onClicked: root.openRecentDatabase(path);
-
-                    }
-                    SequentialAnimation {
-                        id: closeAnimation
-                        PropertyAction { target: listItem; property: "ListView.delayRemove"; value: true }
-                        NumberAnimation { target: listItem; property: "scale"; to: 0; duration: 250; easing.type: Easing.InOutQuad }
-                        PropertyAction { target: listItem; property: "ListView.delayRemove"; value: false }
+                    color: palette.alternateBase
+                    CustomBorder {
+                        commonBorder: false
+                        borderColor: palette.shadow
+                        lBorderwidth: 1
+                        radius: 3
                     }
 
-                    Column {
+                    onClicked: root.newDatabase();
+                }
+                Button{
+                    texto: qsTr("Open Database")
+                    textColor: palette.buttonText
+                    color: palette.alternateBase
+                    z: 1
+                    CustomBorder {
+                        commonBorder: true
+                        borderColor: palette.shadow
+                    }
+                    onClicked: root.openDatabase();
+                }
+                Button {
+                    texto: qsTr("Example")
+                    textColor: palette.buttonText
+                    radius: 3
+                    color: palette.alternateBase
+                    CustomBorder {
+                        commonBorder: false
+                        borderColor: palette.shadow
+                        rBorderwidth: 1
+                        lBorderwidth: 1
+                        radius: 3
+                    }
+                    onClicked: root.openExample()
+                }
+            }
+            Text {
+                id: txtLearn
+                color: palette.text
+                text: qsTr("Learn")
+                font.pointSize: 18
+                anchors.top: boxButtons.bottom
+                anchors.left: parent.left
+                anchors.topMargin: 50
+            }
+            Column {
+                id: learnItems
+                anchors.top: txtLearn.bottom
+                anchors.left: parent.left
+                anchors.topMargin: 10
+                width: leftContainer.width
+                spacing: 10
 
-                        anchors.bottom: parent.bottom
+                HelpItem {
+                    title: qsTr("Be a hacker!")
+                    description: "Learn how you can collaborate with the Pireal source code"
+                    width: parent.width - 30
+                }
+                HelpItem {
+                    title: qsTr("How was Pireal programmed?")
+                    description: "Pireal has its own interpreter that was built from scratch!"
+                    width: parent.width - 30
+                }
+                HelpItem {
+                    title: qsTr("Fun facts")
+                    description: "¿How many lines of code does Pireal have? ¿How much development time has been dedicated? You can see the answers to these questions here"
+                    width: parent.width - 30
+                }
+            }
+            Text {
+                id: txtHelp
+                text: qsTr("Help")
+                color: palette.text
+                font.pointSize: 18
+                anchors.top: learnItems.bottom
+                anchors.left: parent.left
+                anchors.topMargin: 50
+            }
+            Column {
+                spacing: 1
+                anchors.top: txtHelp.bottom
+                anchors.left: parent.left
+                anchors.topMargin: 10
+                Link {
+                    title: "Source Code"
+                    link: "http://github.com/centaurialpha/pireal"
+                }
+                Link {
+                    title: "Web Page"
+                    link: "#"
+                }
+                Link {
+                    title: "User Guide"
+                    link: "#"
+                }
+            }
+        }
+        Item {
+            id: rightContainer
+
+            width: mainContainer.width / 2
+            anchors.right: mainContainer.right
+            anchors.bottom: mainContainer.bottom
+            anchors.top: topContainer.bottom
+
+            Text {
+                id: txtRecentsDb
+                text: "Recent Databases"
+                color: palette.text
+                font.pointSize: 18
+            }
+
+            Rectangle {
+                anchors {
+                    top: txtRecentsDb.bottom
+                    bottom: parent.bottom
+                    right: parent.right
+                    left: parent.left
+                    topMargin: 20
+                }
+                color: palette.alternateBase
+
+                ListView {
+                    id: listView
+
+                    anchors.fill: parent
+                    anchors.margins: 20
+                    clip: true
+                    focus: true
+                    spacing: 10
+                    model: listModel
+
+                    delegate: Rectangle {
+                        id: listItem
+                        color: palette.highlight
+                        height: 40
+                        radius: 1
                         anchors.left: parent.left
                         anchors.right: parent.right
-                        anchors.leftMargin: 20
-                        anchors.bottomMargin: 10
-                        anchors.top: parent.top
-                        anchors.topMargin: 10
-                        Text {
-                            color: darkPalette.text
-                            font.bold: true
-                            font.pixelSize: 18
-                            text: name
-                            renderType: Text.NativeRendering
-                        }
-                        Text {
-                            color: darkPalette.windowText
-                            text: path
-                            width: parent.width
-                            elide: Text.ElideLeft
-                            renderType: Text.NativeRendering
-                        }
-                    }
 
-                    Image {
-                        source: "close.png"
-                        anchors {
-                            right: parent.right
-                            top: parent.top
-                            topMargin: 10
-                            rightMargin: 10
-                        }
-                        scale: ma.pressed ? 0.7 : 1
-                        MouseArea {
-                            id: ma
+                        Row {
+                            spacing: 10
                             anchors.fill: parent
-
-                            onClicked: {
-                                root.removeCurrent(path);
-                                listView.model.remove(index);
-                                closeAnimation.start();
+                            anchors.margins: 10
+                            Text {
+                                text: displayName
+                                color: palette.buttonText
+                                font.pointSize: 14
+                                anchors.bottom: parent.bottom
                             }
+                            Text {
+                                text: path
+                                color: palette.mid
+                                font.pointSize: 10
+                            }
+                        }
+                        Image {
+                            source: "close.png"
+                            anchors {
+                                right: parent.right
+                                top: parent.top
+                                topMargin: 10
+                                rightMargin: 10
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    root.removeItem(index)
+                                    closeAnimation.start()
+                                }
+                            }
+                        }
+                        SequentialAnimation {
+                            id: closeAnimation
+                            PropertyAction { target: listItem; property: "ListView.delayRemove"; value: true }
+                            NumberAnimation { target: listItem; property: "scale"; to: 0; duration: 250; easing.type: Easing.InOutQuad }
+                            PropertyAction { target: listItem; property: "ListView.delayRemove"; value: false }
                         }
                     }
                 }
-
             }
         }
-    }
 
-    Text {
-        text: qsTr("In memory of my grandpa, who has taught me everything,\nexcept how to live without him. 4/10/2019")
-        font.pixelSize: 8
-        color: darkPalette.text
-        font.italic: true
-        font.kerning: true
-        anchors {
-            bottom: rrow.top
-            right: parent.right
-            margins: 10
-        }
     }
 
     Row {
@@ -269,7 +282,7 @@ Rectangle {
 
         Text {
             text: "Powered by: "
-            color: darkPalette.text
+            color: palette.text
             height: logoPython.height
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 12
@@ -282,7 +295,7 @@ Rectangle {
 
     Text {
         text: "Copyright © 2015-" + new Date().getFullYear() + " Gabriel Acosta. Pireal is distributed under the terms of the GNU GPLv3+ copyleft license"
-        color: darkPalette.text
+        color: palette.text
         renderType: Text.NativeRendering
         anchors {
             bottom: parent.bottom

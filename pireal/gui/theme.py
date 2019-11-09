@@ -7,8 +7,8 @@ DARK = {
     'Window': '#171a21',
     'WindowText': QColor(255, 255, 255),
     'WindowTextDisabled': QColor(127, 127, 127),
-    'Base': '#252830',
-    'AlternateBase': '#2e3139',
+    'Base': '#282a36',
+    'AlternateBase': '#1c1e26',
     'ToolTipBase': '#2e3139',
     'ToolTipText': QColor(255, 255, 255),
     'Text': '#ffffff',
@@ -24,7 +24,7 @@ DARK = {
     'Mid': '#bcbcbc',
     'Midlight': '#ff0000',
     'HighlightDisabled': QColor(80, 80, 80),
-    'HighlightedText': QColor(255, 255, 255),
+    'HighlightedText': QColor(42, 130, 218),
     'HighlightedTextDisabled': QColor(127, 127, 127)
 }
 

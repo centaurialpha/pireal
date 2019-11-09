@@ -7,7 +7,7 @@ Rectangle {
     property alias texto: buttonText.text
     property alias textColor: buttonText.color
     width: buttonText.width + 69
-    height: buttonText.height + 10
+    height: buttonText.height + 15
 
     scale: ma.pressed ? 0.95 : 1
 

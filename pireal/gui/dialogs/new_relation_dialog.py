@@ -35,7 +35,6 @@ from pireal import translations as tr
 
 from pireal.core import relation
 from pireal.gui.model_view_delegate import View, Header
-# from pireal.gui.main_window import Pireal
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +43,7 @@ class NewRelationDialog(QDialog):
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
-        self._central = parent
+        self._main_panel = parent
         self.setWindowTitle(tr.TR_RELATION_DIALOG_TITLE)
         # self.setModal(True)
         self._data = None
@@ -139,8 +138,9 @@ class NewRelationDialog(QDialog):
                                     tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME)
             logger.debug('Relation name not specified')
             return
-        # central = Pireal.get_service("central")
-        if relation_name in self._central.get_active_db().table_widget.relations:
+
+        relations = self._main_panel.central_view.all_relations()
+        if relation_name in relations:
             QMessageBox.information(
                 self,
                 tr.TR_MSG_ERROR,

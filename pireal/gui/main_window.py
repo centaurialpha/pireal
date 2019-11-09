@@ -58,8 +58,7 @@ class Pireal(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         self.setWindowTitle('Pireal')
-        self.setMinimumSize(880, 600)
-        self.resize(1035, 760)
+        self.setMinimumSize(1615, 850)
         # Load window geometry
         window_maximized = DATA_SETTINGS.value('ds/window_max', type=bool)
         if window_maximized:
@@ -79,6 +78,10 @@ class Pireal(QMainWindow):
         # Menu bar
         menubar = self.menuBar()
         self._load_menubar(menubar)
+
+    def resizeEvent(self, e):
+        super().resizeEvent(e)
+        print("W: {}\nH: {}".format(self.width(), self.height()))
 
     def switch_theme(self):
         app = QApplication.instance()
@@ -309,6 +312,9 @@ class Pireal(QMainWindow):
         # Save last folder
         if self.central_widget.last_open_folder is not None:
             DATA_SETTINGS.setValue('lastOpenFolder', self.central_widget.last_open_folder)
+        # Save recent databases
+        if self.central_widget.recent_databases:
+            DATA_SETTINGS.setValue('recentDbs', self.central_widget.recent_databases)
 
     def closeEvent(self, event):
         self.save_settings()
