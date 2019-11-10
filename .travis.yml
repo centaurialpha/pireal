@@ -37,18 +37,7 @@ jobs:
       name: unit test
       script: make test
     - stage: Test
-      name: test gui
-      script: make test-gui
-    - stage: Integration Test
-      name: integration test
-      script: make test-integration
-    - stage: Coverage
-      name: coverage
-      script: coveralls
-
-matrix:
-  include:
-    - name: "Testing on Windows"
+      name: unit test on windows
       os: windows
       language: shell
       before_install:
@@ -57,3 +46,12 @@ matrix:
         - python -m pip install --upgrade pip
         - pip3 install --upgrade pytest
       script: pytest tests/
+    - stage: Test
+      name: test gui
+      script: make test-gui
+    - stage: Integration Test
+      name: integration test
+      script: make test-integration
+    - stage: Coverage
+      name: coverage
+      script: coveralls
