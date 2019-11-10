@@ -19,6 +19,7 @@
 
 import os
 import logging
+import codecs
 
 logger = logging.getLogger(__name__)
 
@@ -41,13 +42,14 @@ class File:
 
     def read(self):
         try:
-            with open(self._path) as fp:
+            with codecs.open(self._path, 'r', encoding='utf8') as fp:
                 content = fp.read()
             return content
         except IOError:
             logging.exception('Could not open file: %s', self._path)
 
     def save(self, content, path=None):
+        # TODO:  con codecs.open? hacer un test para esto Linux y Windows
         with open(path, 'w') as fp:
             fp.write(content)
         self._path = path
