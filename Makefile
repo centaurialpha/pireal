@@ -39,6 +39,8 @@ test:
 test-gui:
 	@$(PYTEST) -v -m gui
 
+test-integration:
+	@$(PYTEST) -v -m integration
 dist: clean
 	python setup.py sdist
 	mv dist/* ../
