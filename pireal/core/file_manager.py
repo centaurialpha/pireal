@@ -20,6 +20,8 @@
 from collections import defaultdict
 import csv
 import os
+import tokenize
+import io
 
 
 class DBParserSyntaxError(Exception):
@@ -74,6 +76,15 @@ def generate_database(relations):
 def get_files_from_folder(path):
     return [os.path.splitext(f)[0] for f in os.listdir(path)
             if os.path.isfile(os.path.join(path, f))]
+
+
+def detect_encoding(data):
+    encoding = 'ansi'
+    try:
+        encoding, _ = tokenize.detect_encoding(io.BytesIO(data).readline)
+    except SyntaxError:
+        pass
+    return encoding
 
 
 def parse_database_content(text):

@@ -19,7 +19,7 @@
 
 import os
 import logging
-import codecs
+from pireal.core.file_manager import detect_encoding
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +42,10 @@ class File:
 
     def read(self):
         try:
-            with codecs.open(self._path, 'r', encoding='utf-8-sig') as fp:
+            with open(self._path, 'rb') as fp:
                 content = fp.read()
+            encoding = detect_encoding(content)
+            content = content.decode(encoding)
             return content
         except IOError:
             logging.exception('Could not open file: %s', self._path)
