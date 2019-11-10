@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright 2015-2019 - Gabriel Acosta <acostadariogabriel@gmail.com>
+#
+# This file is part of Pireal.
+#
+# Pireal is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# any later version.
+#
+# Pireal is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Pireal; If not, see <http://www.gnu.org/licenses/>.
+
+
 import os
 
 import pytest
@@ -51,3 +71,13 @@ def test_full_cycle():
         query_count += 1
 
     assert len(relations_copy) == query_count
+
+    # Assert relations
+    q1 = relations_copy['q1']
+    qq2 = relations_copy['qq2']
+
+    assert q1.degree() == 7
+    assert q1.cardinality() == 4
+
+    assert qq2.degree() == 2
+    assert qq2.cardinality() == 5
