@@ -169,17 +169,22 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.topMargin: 10
                 Link {
-                    title: "Source Code"
-                    link: "http://github.com/centaurialpha/pireal"
-                }
-                Link {
-                    title: "Web Page"
+                    title: qsTr("Tutorial")
                     link: "#"
                 }
                 Link {
-                    title: "User Guide"
+                    title: qsTr("Issue Tracker")
+                    link: "http://github.com/centaurialpha/pireal/issues"
+                }
+                Link {
+                    title: qsTr("Web Page")
+                    link: "http://centaurialpha.github.io/pireal"
+                }
+                Link {
+                    title: qsTr("User Guide")
                     link: "#"
                 }
+
             }
         }
         Item {

@@ -79,10 +79,6 @@ class Pireal(QMainWindow):
         menubar = self.menuBar()
         self._load_menubar(menubar)
 
-    def resizeEvent(self, e):
-        super().resizeEvent(e)
-        print("W: {}\nH: {}".format(self.width(), self.height()))
-
     def switch_theme(self):
         app = QApplication.instance()
         USER_SETTINGS.dark_mode = not USER_SETTINGS.dark_mode

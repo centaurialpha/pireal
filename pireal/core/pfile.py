@@ -58,3 +58,6 @@ class File:
 
     def __str__(self):
         return repr(self)
+
+    def __eq__(self, other):
+        return self.path == other.path
