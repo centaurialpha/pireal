@@ -29,54 +29,56 @@ from pireal.core.interpreter import parse
 
 SAMPLES = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'samples')
 SAMPLE_PDB_PATH = os.path.join(SAMPLES, 'database.pdb')
+SAMPLE_PDB_WINDOWS_PATH = os.path.join(SAMPLES, 'database_windows.pdb')
 QUERY_PATH = os.path.join(SAMPLES, 'queries.pqf')
 
 
 @pytest.mark.integration
 def test_full_cycle():
-    # Prepare DB
-    db_file = File(path=SAMPLE_PDB_PATH)
-    assert not db_file.is_new()
-    db_content_parsed = parse_database_content(db_file.read())
-    assert db_content_parsed
-    tables = db_content_parsed['tables']
-    relations = {}
-    db_count = 0
-    for table in tables:
-        name = table['name']
-        header = table['header']
-        tuples = table['tuples']
+    for database_filepath in (SAMPLE_PDB_PATH, SAMPLE_PDB_WINDOWS_PATH):
+        # Prepare DB
+        db_file = File(path=database_filepath)
+        assert not db_file.is_new()
+        db_content_parsed = parse_database_content(db_file.read())
+        assert db_content_parsed
+        tables = db_content_parsed['tables']
+        relations = {}
+        db_count = 0
+        for table in tables:
+            name = table['name']
+            header = table['header']
+            tuples = table['tuples']
 
-        relation_obj = Relation()
-        relation_obj.header = header
-        for data in tuples:
-            relation_obj.insert(data)
+            relation_obj = Relation()
+            relation_obj.header = header
+            for data in tuples:
+                relation_obj.insert(data)
 
-        relations[name] = relation_obj
-        db_count += 1
+            relations[name] = relation_obj
+            db_count += 1
 
-    assert len(relations) == db_count
-    # Prepare query
-    query_file = File(path=QUERY_PATH)
-    result = parse(query_file.read())
+        assert len(relations) == db_count
+        # Prepare query
+        query_file = File(path=QUERY_PATH)
+        result = parse(query_file.read())
 
-    # FIXME: esto se hace de la misma forma en execute_queries. Unificar
-    relations_copy = dict(relations)
-    query_count = db_count
-    for query_name, query in result.items():
-        new_relation = eval(query, {}, relations_copy)
-        relations_copy[query_name] = new_relation
+        # FIXME: esto se hace de la misma forma en execute_queries. Unificar
+        relations_copy = dict(relations)
+        query_count = db_count
+        for query_name, query in result.items():
+            new_relation = eval(query, {}, relations_copy)
+            relations_copy[query_name] = new_relation
 
-        query_count += 1
+            query_count += 1
 
-    assert len(relations_copy) == query_count
+        assert len(relations_copy) == query_count
 
-    # Assert relations
-    q1 = relations_copy['q1']
-    qq2 = relations_copy['qq2']
+        # Assert relations
+        q1 = relations_copy['q1']
+        qq2 = relations_copy['qq2']
 
-    assert q1.degree() == 7
-    assert q1.cardinality() == 4
+        assert q1.degree() == 7
+        assert q1.cardinality() == 4
 
-    assert qq2.degree() == 2
-    assert qq2.cardinality() == 5
+        assert qq2.degree() == 2
+        assert qq2.cardinality() == 5

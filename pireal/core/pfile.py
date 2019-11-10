@@ -42,7 +42,7 @@ class File:
 
     def read(self):
         try:
-            with codecs.open(self._path, 'r', encoding='utf8') as fp:
+            with codecs.open(self._path, 'r', encoding='utf-8-sig') as fp:
                 content = fp.read()
             return content
         except IOError:
