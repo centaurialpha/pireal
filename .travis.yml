@@ -7,15 +7,15 @@ dist: xenial
 services:
   - xvfb
 
+installation_on_windows: &installation_on_windows
+  before_install:
+    - choco install python --version 3.7.4
+    - python --version
+    - python -m pip install --upgrade pip
+    - pip3 install --upgrade pytest
+
 before_install:
   - "export DISPLAY=:99.0"
-
-install:
-  - pip install pip --upgrade
-  - pip install -r requirements.txt
-  - pip install -r requirements-dev.txt
-
-before_script: make clean
 
 script: echo "Skip global script..."
 
@@ -29,19 +29,48 @@ jobs:
   include:
     - stage: Static Analisys
       name: pycodestyle
+      before_install:
+        - pip install pip --upgrade
+        - pip install pycodestyle
       script: make pep8
     - stage: Static Analisys
       name: flake8
+      before_install:
+        - pip install pip --upgrade
+        - pip install flake8
       script: make flake8
     - stage: Test
       name: unit test
+      before_install:
+        - pip install pip --upgrade
+        - pip install pytest pytest-cov
       script: make test
     - stage: Test
-      name: test gui
-      script: make test-gui
+      name: unit test on windows
+      os: windows
+      language: shell
+      <<: *installation_on_windows
+      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
+      script: pytest tests -m "not integration"
     - stage: Integration Test
       name: integration test
+      before_install:
+        - pip install pip --upgrade
+        - pip install pytest
+      before_script: make clean
       script: make test-integration
+    - stage: Integration Test
+      name: integration test on Windows
+      os: windows
+      language: shell
+      <<: *installation_on_windows
+      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
+      script: pytest tests -m integration
     - stage: Coverage
       name: coverage
+      before_install:
+        - pip install pip --upgrade
+        - pip install pytest
+        - pip install pytest-cov
+        - pip install coveralls
       script: coveralls
