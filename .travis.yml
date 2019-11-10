@@ -58,6 +58,8 @@ jobs:
       script: make test-integration
     - stage: Integration Test
       name: integration test on Windows
+      os: windows
+      language: shell
       before_install:
         - choco install python --version 3.7.4
         - python --version
