@@ -22,15 +22,14 @@ import os
 
 import pytest
 
-from pireal.core.settings import EXAMPLES
 from pireal.core.pfile import File
 from pireal.core.file_manager import parse_database_content
 from pireal.core.relation import Relation
 from pireal.core.interpreter import parse
 
-
-SAMPLE_PDB_PATH = os.path.join(EXAMPLES, 'database.pdb')
-QUERY_PATH = os.path.join(EXAMPLES, 'queries.pqf')
+SAMPLES = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'samples')
+SAMPLE_PDB_PATH = os.path.join(SAMPLES, 'database.pdb')
+QUERY_PATH = os.path.join(SAMPLES, 'queries.pqf')
 
 
 @pytest.mark.integration
