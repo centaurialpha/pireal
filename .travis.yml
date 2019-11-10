@@ -45,3 +45,15 @@ jobs:
     - stage: Coverage
       name: coverage
       script: coveralls
+
+  matrix:
+    include:
+      - name: "Testing on Windows"
+        os: windows
+        language: shell
+        before_install:
+          - choco install python
+          - python --version
+          - python -m pip install --upgrade pip
+          - pip3 install --upgrade pytest
+        script: pytest tests/
