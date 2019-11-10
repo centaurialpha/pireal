@@ -22,6 +22,7 @@ script: echo "Skip global script..."
 stages:
   - Static Analisys
   - Test
+  - Integration Test
   - Coverage
 
 jobs:
@@ -38,6 +39,9 @@ jobs:
     - stage: Test
       name: test gui
       script: make test-gui
+    - stage: Integration Test
+      name: integration test
+      script: make test-integration
     - stage: Coverage
       name: coverage
       script: coveralls

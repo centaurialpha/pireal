@@ -97,14 +97,6 @@ class QueryContainer(QWidget):
                 weditor.setPlainText(file_obj.read())
 
     def execute_query(self):
-        """Get all text from editor and:
-        1. Get all relations from table widget
-        2. Clear results relations
-        3. Pass query to parser
-        4.
-        """
-        import pprint
-
         current_editor = self._editor_widget.current_editor()
         query = current_editor.toPlainText()
         relations = self._main_panel.central_view.all_relations()
@@ -114,14 +106,13 @@ class QueryContainer(QWidget):
         # Reset model
         self._main_panel.lateral_widget.clear_results()
 
+        # FIXME: Mover a otro módulo (utils?). Quizás dependa del refactor del intérprete
         for relation_name, expression in result.items():
             new_relation = eval(expression, {}, relations)
             relations[relation_name] = new_relation
             self._main_panel.central_view.add_relation_to_results(new_relation, relation_name)
             self._main_panel.lateral_widget.add_item_to_results(
                 relation_name, new_relation.cardinality(), new_relation.degree())
-
-        pprint.pprint(relations)
 
 
 class EditorWidget(QWidget):
