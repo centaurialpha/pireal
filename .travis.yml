@@ -10,13 +10,6 @@ services:
 before_install:
   - "export DISPLAY=:99.0"
 
-# install:
-#   - pip install pip --upgrade
-#   - pip install -r requirements.txt
-#   - pip install -r requirements-dev.txt
-
-# before_script: make clean
-
 script: echo "Skip global script..."
 
 stages:
@@ -32,21 +25,18 @@ jobs:
       before_install:
         - pip install pip --upgrade
         - pip install pycodestyle
-      before_script: make clean
       script: make pep8
     - stage: Static Analisys
       name: flake8
       before_install:
         - pip install pip --upgrade
         - pip install flake8
-      before_script: make clean
       script: make flake8
     - stage: Test
       name: unit test
       before_install:
         - pip install pip --upgrade
-        - pip install pytest
-      before_script: make clean
+        - pip install pytest pytest-cov
       script: make test
     - stage: Test
       name: unit test on windows
@@ -59,9 +49,6 @@ jobs:
         - pip3 install --upgrade pytest
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
       script: pytest tests/
-    # - stage: Test
-    #   name: test gui
-    #   script: make test-gui
     - stage: Integration Test
       name: integration test
       before_install:
