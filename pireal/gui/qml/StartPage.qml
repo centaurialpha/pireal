@@ -140,16 +140,19 @@ Rectangle {
 
                 HelpItem {
                     title: qsTr("Be a hacker!")
+                    link: "#"
                     description: "Learn how you can collaborate with the Pireal source code"
                     width: parent.width - 30
                 }
                 HelpItem {
                     title: qsTr("How was Pireal programmed?")
+                    link: "#"
                     description: "Pireal has its own interpreter that was built from scratch!"
                     width: parent.width - 30
                 }
                 HelpItem {
                     title: qsTr("Fun facts")
+                    link: "#"
                     description: "¿How many lines of code does Pireal have? ¿How much development time has been dedicated? You can see the answers to these questions here"
                     width: parent.width - 30
                 }

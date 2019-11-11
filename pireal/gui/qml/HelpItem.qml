@@ -3,8 +3,9 @@ import QtQuick 2.9
 Item {
     id: root
 
-    property alias title: txtTitle.text
+    property alias title: txtTitle.title
     property alias description: txtDescription.text
+    property alias link: txtTitle.link
 
     implicitHeight: rec.implicitHeight
     implicitWidth: rec.implicitWidth
@@ -25,11 +26,8 @@ Item {
             anchors.margins: 5
             anchors.verticalCenter: parent.verticalCenter
             spacing: 4
-            Text {
-                id: txtTitle
-                color: palette.highlightedText
-                font.pointSize: 10
-            }
+
+            Link { id: txtTitle  }
 
             Text {
                 id: txtDescription
