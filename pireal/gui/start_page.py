@@ -35,7 +35,7 @@ from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import Qt
 
 from pireal.core import settings
-
+from pireal.core.file_manager import get_basename
 
 class RecentDBListModel(QAbstractListModel):
     NameRole = Qt.UserRole + 1
@@ -127,7 +127,8 @@ class StartPage(QWidget):
         self._central.recent_databases.remove(path)
 
     def load_items(self):
-        for name, path in self._central.recent_databases:
+        for path in self._central.recent_databases:
+            name = get_basename(path)
             self._model.add_item(name, path)
 
     def showEvent(self, event):

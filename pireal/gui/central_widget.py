@@ -64,14 +64,8 @@ class CentralWidget(QWidget):
         self._stacked = QStackedLayout(self)
         self._main_panel = None
         # Acá cacheo la última carpeta accedida
-        self._last_open_folder = DATA_SETTINGS.value('ds/lastOpenFolder')
-        self._recent_dbs = DATA_SETTINGS.value('ds/recentDbs', [])
-
-        # if CONFIG.get("lastOpenFolder") is not None:
-        #     self._last_open_folder = CONFIG.get("lastOpenFolder")
-        # self._recent_dbs = []
-        # if CONFIG.get("recentFiles"):
-        #     self._recent_dbs = CONFIG.get("recentFiles")
+        self._last_open_folder: str = DATA_SETTINGS.value('ds/lastOpenFolder')
+        self._recent_dbs: list = DATA_SETTINGS.value('ds/recentDbs', [])
 
     #     esc_short = QShortcut(QKeySequence(Qt.Key_Escape), self)
     #     esc_short.activated.connect(self._hide_search)
@@ -88,8 +82,11 @@ class CentralWidget(QWidget):
     def recent_databases(self) -> list:
         return self._recent_dbs
 
-    def add_to_recents(self, display_name: str, path: str):
-        self._recent_dbs.append((display_name, path))
+    def add_to_recents(self, path: str):
+        if path in self._recent_dbs:
+            self._recent_dbs.remove(path)
+        self._recent_dbs.insert(0, path)
+
     # @recent_databases.setter
     # def recent_databases(self, database_file):
     #     recent_files = CONFIG.get("recentFiles")
@@ -197,7 +194,7 @@ class CentralWidget(QWidget):
 
         self.pireal.change_title(file_obj.display_name)
 
-        self.add_to_recents(file_obj.display_name, file_obj.path)
+        self.add_to_recents(file_obj.path)
 
         logger.debug('Connected to database: "%s"', file_obj.display_name)
 

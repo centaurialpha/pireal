@@ -227,8 +227,6 @@ Rectangle {
                         color: palette.highlight
                         height: 40
                         radius: 1
-//                        anchors.left: parent.left
-//                        anchors.right: parent.right
                         width: parent.width
                         Row {
                             spacing: 10
