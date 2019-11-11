@@ -227,14 +227,15 @@ Rectangle {
                         color: palette.highlight
                         height: 40
                         radius: 1
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-
+//                        anchors.left: parent.left
+//                        anchors.right: parent.right
+                        width: parent.width
                         Row {
                             spacing: 10
                             anchors.fill: parent
                             anchors.margins: 10
                             Text {
+                                id: txtDisplayName
                                 text: displayName
                                 color: palette.buttonText
                                 font.pointSize: 14
@@ -244,9 +245,12 @@ Rectangle {
                                 text: path
                                 color: palette.mid
                                 font.pointSize: 10
+                                width: parent.width - txtDisplayName.width - parent.spacing - imgClose.width - 3
+                                elide: Text.ElideMiddle
                             }
                         }
                         Image {
+                            id: imgClose
                             source: "close.png"
                             anchors {
                                 right: parent.right
