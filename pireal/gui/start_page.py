@@ -33,6 +33,7 @@ from PyQt5.QtCore import QTimer
 from PyQt5.QtCore import QAbstractListModel
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSlot as Slot
 
 from pireal.core import settings
 from pireal.core.file_manager import get_basename
@@ -50,6 +51,10 @@ class RecentDBListModel(QAbstractListModel):
         self.beginResetModel()
         self._data.clear()
         self.endResetModel()
+
+    @Slot(int)
+    def get_path(self, index):
+        return self._data[index][1]
 
     def remove(self, index):
         self.beginRemoveRows(QModelIndex(), index, index)
@@ -105,7 +110,7 @@ class StartPage(QWidget):
         self._root.newDatabase.connect(self._central.create_database)
         self._root.openDatabase.connect(self._central.open_database)
         self._root.openExample.connect(self._open_example)
-        self._root.openRecentDatabase.connect(lambda path: self._central.open_database(path))
+        self._root.openRecentDatabase[str].connect(self._central.open_database)
         self._root.removeItem[int].connect(self._model.remove)
         self._central.pireal.themeChanged.connect(self._reload)
 

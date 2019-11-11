@@ -270,6 +270,14 @@ Rectangle {
                             NumberAnimation { target: listItem; property: "scale"; to: 0; duration: 250; easing.type: Easing.InOutQuad }
                             PropertyAction { target: listItem; property: "ListView.delayRemove"; value: false }
                         }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                path = listView.model.get_path(index)
+                                openRecentDatabase(path)
+                            }
+                        }
                     }
                 }
             }
