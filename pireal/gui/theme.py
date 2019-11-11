@@ -30,7 +30,11 @@ DARK = {
 
 
 LIGHT = {
-    # 'Mid': '#ccc'
+    'Text': '#767676',
+    'Mid': '#8c8c8c',
+    'Highlight': '#e5e5e5',
+    'AlternateBase': '#f5f5f5',
+    'HighlightedText': '#076eb3'
 }
 
 EDITOR_DARK = {

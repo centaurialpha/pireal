@@ -37,6 +37,7 @@ from PyQt5.QtCore import Qt
 from pireal.core import settings
 from pireal.core.file_manager import get_basename
 
+
 class RecentDBListModel(QAbstractListModel):
     NameRole = Qt.UserRole + 1
     PathRole = NameRole + 1
@@ -44,6 +45,11 @@ class RecentDBListModel(QAbstractListModel):
     def __init__(self):
         super().__init__()
         self._data = []
+
+    def clear(self):
+        self.beginResetModel()
+        self._data.clear()
+        self.endResetModel()
 
     def remove(self, index):
         self.beginRemoveRows(QModelIndex(), index, index)
@@ -112,6 +118,7 @@ class StartPage(QWidget):
         self._view.setSource(QUrl())
         self._set_source()
         self._root = self._view.rootObject()
+        self._model.clear()
         self.load_items()
         self._connect_signals()
 

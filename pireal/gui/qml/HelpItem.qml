@@ -27,7 +27,7 @@ Item {
             spacing: 4
             Text {
                 id: txtTitle
-                color: palette.highlight
+                color: palette.highlightedText
                 font.pointSize: 10
             }
 
