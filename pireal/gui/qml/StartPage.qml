@@ -276,6 +276,9 @@ Rectangle {
 
                         MouseArea {
                             anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+
                             onClicked: {
                                 path = listView.model.get_path(index)
                                 openRecentDatabase(path)
