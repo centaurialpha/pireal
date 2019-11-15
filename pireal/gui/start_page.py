@@ -111,7 +111,7 @@ class StartPage(QWidget):
         self._root.openDatabase.connect(self._central.open_database)
         self._root.openExample.connect(self._open_example)
         self._root.openRecentDatabase[str].connect(self._central.open_database)
-        self._root.removeItem[int].connect(self._model.remove)
+        self._root.removeItem[int].connect(self._remove_item)
         self._central.pireal.themeChanged.connect(self._reload)
 
     def _set_source(self):
@@ -135,8 +135,12 @@ class StartPage(QWidget):
         # Ejecuto las consultas de ejemplo luego de 1.3 segundos
         QTimer.singleShot(1300, self._central.execute_query)
 
-    def _remove_current(self, path):
-        self._central.recent_databases.remove(path)
+    def _remove_item(self, index):
+        model_index = QModelIndex()
+        model_index.siblingAtRow(index)
+        item_name = self._model.data(model_index, role=RecentDBListModel.PathRole)
+        self._model.remove(index)
+        self._central.remove_from_recents(item_name)
 
     def load_items(self):
         for path in self._central.recent_databases:

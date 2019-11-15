@@ -309,8 +309,7 @@ class Pireal(QMainWindow):
         if self.central_widget.last_open_folder is not None:
             DATA_SETTINGS.setValue('lastOpenFolder', self.central_widget.last_open_folder)
         # Save recent databases
-        if self.central_widget.recent_databases:
-            DATA_SETTINGS.setValue('recentDbs', self.central_widget.recent_databases)
+        DATA_SETTINGS.setValue('recentDbs', self.central_widget.recent_databases)
 
     def closeEvent(self, event):
         self.save_settings()

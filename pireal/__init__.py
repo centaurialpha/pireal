@@ -23,7 +23,7 @@ Metadata
 
 __author__ = "Gabriel Acosta"
 __email__ = "acostadariogabriel@gmail.com"
-__version__ = "4.0.0-alpha.1"
+__version__ = "4.0.0-alpha.2"
 __code_name__ = "Agui"
 __source_code__ = "https://github.com/centaurialpha/pireal"
 __license__ = "http://www.gnu.org/licenses/gpl-3.0"
