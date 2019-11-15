@@ -3,13 +3,21 @@ import QtQuick 2.7
 Rectangle {
     id: root
 
+    property bool closable: false
+
     SystemPalette { id: darkPalette; colorGroup: SystemPalette.Active }
 
     color: darkPalette.base
+
     signal itemClicked(int index)
+    signal itemClosed (int index)
 
     function setTitle(title) {
         header.title = title;
+    }
+
+    function setClosable(value) {
+        closable = value
     }
 
     Rectangle {
@@ -55,6 +63,21 @@ Rectangle {
             property bool current: ListView.isCurrentItem
             color: relationItem.current ? darkPalette.highlight : "transparent"
 
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    relationView.currentIndex = index
+                    root.itemClicked(index)
+                }
+            }
+
+            SequentialAnimation {
+                id: closeAnimation
+                PropertyAction { target: relationItem; property: "ListView.delayRemove"; value: true }
+                NumberAnimation { target: relationItem; property: "scale"; to: 0; duration: 250; easing.type: Easing.InOutQuad }
+                PropertyAction { target: relationItem; property: "ListView.delayRemove"; value: false }
+            }
+
             Column {
                 spacing: 5
                 anchors.fill: parent
@@ -82,11 +105,20 @@ Rectangle {
                     color: darkPalette.mid
                 }
             }
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    relationView.currentIndex = index
-                    root.itemClicked(index)
+
+            Image {
+                source: "close.png"
+                visible: closable
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: 8
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        itemClosed(index)
+//                        closeAnimation.start()
+                    }
                 }
             }
         }

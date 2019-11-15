@@ -75,17 +75,20 @@ class TableWidget(QSplitter):
     def set_current_result(self, index: int):
         self._result_stack.setCurrentIndex(index)
 
-    # FIXME: mejorar estos mensajes de log
     def add_relation(self, relation_obj, relation_name, editable=True):
-        logger.debug('Creating new relation <%s>', relation_name)
         table_view = self.create_table(relation_obj, editable=editable)
         self._relations[relation_name] = relation_obj
         self._relation_stack.addWidget(table_view)
 
         self._update_tab_text(self._tab_relations, self._relation_stack)
 
+    def remove_relation(self, index, name):
+        table_view = self._relation_stack.widget(index)
+        self._relation_stack.removeWidget(table_view)
+        table_view.deleteLater()
+        del self._relations[name]
+
     def add_relation_to_results(self, relation_obj, relation_name):
-        logger.debug('Creating new relation <%s> in results', relation_name)
         table_view = self.create_table(relation_obj, editable=False)
         self._result_stack.addWidget(table_view)
 

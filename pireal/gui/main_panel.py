@@ -23,11 +23,12 @@ from PyQt5.QtWidgets import QSplitter
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QTabWidget
 from PyQt5.QtWidgets import QWidget
-# from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QMessageBox
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSlot as Slot
 
+from pireal import translations as tr
 from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.query_container.query_container import QueryContainer
 from pireal.gui.table_widget import TableWidget
@@ -66,7 +67,12 @@ class _MainPanel(QSplitter):
         # Connections
         self._parent.pireal.themeChanged.connect(self.query_container.reload_editor_scheme)
         self._lateral_widget.relationClicked.connect(self._on_relation_clicked)
+        self._lateral_widget.relationClosed[int, str].connect(self._on_relation_closed)
         self._lateral_widget.resultClicked.connect(self._on_result_clicked)
+
+    @Slot(int, str)
+    def _on_relation_closed(self, index, name):
+        self._central_view.remove_relation(index, name)
 
     @Slot(int)
     def _on_relation_clicked(self, index):
@@ -96,6 +102,7 @@ class CentralView(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._main_panel = parent
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         self._tabs = QTabWidget()
@@ -112,6 +119,15 @@ class CentralView(QWidget):
     def add_widget(self, widget, title=''):
         """Add widget in QTabWidget"""
         self._tabs.addTab(widget, title)
+
+    def remove_relation(self, index: int, name: str):
+        reply = QMessageBox.question(
+            self, tr.TR_MSG_CONFIRMATION, tr.TR_MSG_REMOVE_RELATION.format(name),
+            QMessageBox.Yes | QMessageBox.No)
+        if reply == QMessageBox.No:
+            return
+        self._table_widget.remove_relation(index, name)
+        self._main_panel.lateral_widget.relations_view.model.remove_relation(index)
 
     def add_relation(self, relation_obj, relation_name):
         self._table_widget.add_relation(relation_obj, relation_name)

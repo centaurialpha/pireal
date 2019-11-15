@@ -230,7 +230,28 @@ Rectangle {
                         color: palette.highlight
                         height: 40
                         radius: 1
-                        width: parent.width
+//                        width: parent.width
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        property bool current: ListView.isCurrentItem
+
+                        MouseArea {
+                            anchors.fill: listItem
+                            hoverEnabled: true
+                            cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+
+                            onClicked: {
+                                path = listView.model.get_path(index)
+                                openRecentDatabase(path)
+                            }
+                        }
+                        SequentialAnimation {
+                            id: closeAnimation
+                            PropertyAction { target: listItem; property: "ListView.delayRemove"; value: true }
+                            NumberAnimation { target: listItem; property: "scale"; to: 0; duration: 250; easing.type: Easing.InOutQuad }
+                            PropertyAction { target: listItem; property: "ListView.delayRemove"; value: false }
+                        }
+
                         Row {
                             spacing: 10
                             anchors.fill: parent
@@ -260,28 +281,11 @@ Rectangle {
                                 rightMargin: 10
                             }
                             MouseArea {
-                                anchors.fill: parent
+                                anchors.fill: imgClose
                                 onClicked: {
                                     root.removeItem(index)
                                     closeAnimation.start()
                                 }
-                            }
-                        }
-                        SequentialAnimation {
-                            id: closeAnimation
-                            PropertyAction { target: listItem; property: "ListView.delayRemove"; value: true }
-                            NumberAnimation { target: listItem; property: "scale"; to: 0; duration: 250; easing.type: Easing.InOutQuad }
-                            PropertyAction { target: listItem; property: "ListView.delayRemove"; value: false }
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-
-                            onClicked: {
-                                path = listView.model.get_path(index)
-                                openRecentDatabase(path)
                             }
                         }
                     }

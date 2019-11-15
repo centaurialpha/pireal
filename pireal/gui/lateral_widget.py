@@ -30,7 +30,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import QAbstractListModel
 from PyQt5.QtCore import pyqtSignal as Signal
-# from PyQt5.QtCore import pyqtSlot as Slot
+from PyQt5.QtCore import pyqtSlot as Slot
 from PyQt5.QtCore import QUrl
 
 from pireal import translations as tr
@@ -53,6 +53,14 @@ class RelationModel(QAbstractListModel):
         self.beginInsertRows(QModelIndex(), len(self._relations), len(self._relations))
         self._relations.append(relation)
         self.endInsertRows()
+
+    def relation_by_index(self, index) -> RelationItem:
+        return self._relations[index]
+
+    def remove_relation(self, index: int):
+        self.beginRemoveRows(QModelIndex(), index, index)
+        self._relations.pop(index)
+        self.endRemoveRows()
 
     def clear(self):
         self.beginResetModel()
@@ -90,28 +98,29 @@ class LateralWidget(QSplitter):
     """
 
     relationClicked = Signal(int)
-    # relationSelectionChanged = Signal(int)
-
+    relationClosed = Signal(int, str)
     resultClicked = Signal(int)
-    # resultSelectionChanged = Signal(int)
-
-    # newRowsRequested = Signal(list)
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
         self.setOrientation(Qt.Vertical)
         self._relations_model = RelationModel()
-        self._relations_view = RelationListQML(self._relations_model, self)
+        self._relations_view = RelationListQML(self._relations_model, closable=True, parent=self)
         self._relations_view.set_title(tr.TR_RELATIONS)
         self.addWidget(self._relations_view)
         self._results_model = RelationModel()
-        self._results_view = RelationListQML(self._results_model, self)
+        self._results_view = RelationListQML(self._results_model, parent=self)
         self._results_view.set_title(tr.TR_TABLE_RESULTS)
         self.addWidget(self._results_view)
 
         self._relations_view.itemClicked[int].connect(self.relationClicked.emit)
         self._results_view.itemClicked[int].connect(self.resultClicked.emit)
+        self._relations_view.itemClosed[int, str].connect(self.relationClosed.emit)
+
+    @property
+    def relations_view(self):
+        return self._relations_view
 
     def add_item_to_relations(self, name: str, cardinality: int, degree: int):
         item = RelationItem(name, cardinality, degree)
@@ -128,8 +137,9 @@ class LateralWidget(QSplitter):
 class RelationListQML(QWidget):
 
     itemClicked = Signal(int)
+    itemClosed = Signal(int, str)
 
-    def __init__(self, model, parent=None):
+    def __init__(self, model, *, closable=False, parent=None):
         super().__init__(parent)
         self._parent = parent
         self._model = model
@@ -142,11 +152,22 @@ class RelationListQML(QWidget):
         vbox.addWidget(self._view)
 
         self._root = self._view.rootObject()
+        self._root.setClosable(closable)
         self._connect_signals()
+
+    @property
+    def model(self):
+        return self._model
 
     def _connect_signals(self):
         self._root.itemClicked[int].connect(self.itemClicked.emit)
+        self._root.itemClosed[int].connect(self._relation_closed)
         self._parent.parent._parent.pireal.themeChanged.connect(self._reload)
+
+    @Slot(int)
+    def _relation_closed(self, index):
+        relation = self._model.relation_by_index(index)
+        self.itemClosed.emit(index, relation.name)
 
     def _set_source(self):
         qml = os.path.join(settings.QML_PATH, "ListRelation.qml")

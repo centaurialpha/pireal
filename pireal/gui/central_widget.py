@@ -187,6 +187,7 @@ class CentralWidget(QWidget):
 
             for tuple_ in tuples:
                 relation_obj.insert(tuple_)
+            logger.info('Creating relation "%s"', table_name)
 
             self._main_panel.central_view.add_relation(relation_obj, table_name)
             self._main_panel.lateral_widget.add_item_to_relations(
