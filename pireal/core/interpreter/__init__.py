@@ -18,7 +18,15 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from pireal.core.interpreter.parser import parse
+from pireal.core.interpreter.exceptions import (
+    InvalidSyntaxError,
+    ConsumeError,
+    MissingQuoteError
+)
 
 __all__ = [
     'parse',
+    'InvalidSyntaxError',
+    'ConsumeError',
+    'MissingQuoteError'
 ]

@@ -28,6 +28,7 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QTabWidget
 from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QErrorMessage
 # from PyQt5.QtWidgets import QSplitter
 # from PyQt5.QtWidgets import QMessageBox
 # from PyQt5.QtWidgets import QStackedWidget
@@ -38,7 +39,7 @@ from PyQt5.QtWidgets import QLineEdit
 # from PyQt5.QtWidgets import QAction
 # from PyQt5.QtWidgets import QToolBar
 
-# from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt
 # from PyQt5.QtCore import QSettings
 # from PyQt5.QtCore import QSize
 
@@ -101,18 +102,25 @@ class QueryContainer(QWidget):
         query = current_editor.toPlainText()
         relations = self._main_panel.central_view.all_relations()
 
-        result = interpreter.parse(query)
+        try:
+            result = interpreter.parse(query)
+        except interpreter.InvalidSyntaxError as reason:
+            logger.exception('Invalid syntax error: %s', reason)
+        except interpreter.MissingQuoteError as reason:
+            logger.exception('Missing quote: %s', reason)
+        except interpreter.ConsumeError as reason:
+            logger.exception('Consume error: %s', reason)
+        else:
+            # Reset model
+            self._main_panel.lateral_widget.clear_results()
 
-        # Reset model
-        self._main_panel.lateral_widget.clear_results()
-
-        # FIXME: Mover a otro módulo (utils?). Quizás dependa del refactor del intérprete
-        for relation_name, expression in result.items():
-            new_relation = eval(expression, {}, relations)
-            relations[relation_name] = new_relation
-            self._main_panel.central_view.add_relation_to_results(new_relation, relation_name)
-            self._main_panel.lateral_widget.add_item_to_results(
-                relation_name, new_relation.cardinality(), new_relation.degree())
+            # FIXME: Mover a otro módulo (utils?). Quizás dependa del refactor del intérprete
+            for relation_name, expression in result.items():
+                new_relation = eval(expression, {}, relations)
+                relations[relation_name] = new_relation
+                self._main_panel.central_view.add_relation_to_results(new_relation, relation_name)
+                self._main_panel.lateral_widget.add_item_to_results(
+                    relation_name, new_relation.cardinality(), new_relation.degree())
 
 
 class EditorWidget(QWidget):
@@ -211,63 +219,6 @@ class EditorWidget(QWidget):
     @Slot(int, int)
     def _update_line_column(self, lineno, colno):
         self._lbl_line_col.setText(self._line_col_text.format(lineno, colno))
-#     def execute_queries(self, query=''):
-#         """ This function executes queries """
-
-#         # If text is selected, then this text is the query,
-#         # otherwise the query is all text that has the editor
-#         editor_widget = self.currentWidget().get_editor()
-#         if editor_widget.textCursor().hasSelection():
-#             query = "\n".join(
-#                 editor_widget.textCursor().selectedText().splitlines())
-#         else:
-#             query = editor_widget.toPlainText()
-#         relations = self.currentWidget().relations
-#         table_widget = self.db_container.table_widget
-#         # central = Pireal.get_service("central")
-#         # table_widget = central.get_active_db().table_widget
-
-#         # Restore
-#         relations.clear()
-#         self.currentWidget().clear_results()
-
-#         editor_widget.show_run_cursor()
-
-#         # Parse query
-#         error = True
-#         try:
-#             result = parser.parse(query)
-#         except MissingQuoteError as reason:
-#             title = tr.TR_SYNTAX_ERROR
-#             text = self.parse_error(str(reason))
-#         except InvalidSyntaxError as reason:
-#             title = tr.TR_SYNTAX_ERROR
-#             text = self.parse_error(str(reason) + "\n" + self.tr(
-#                 "El error comienza con " + reason.character))
-#         except DuplicateRelationNameError as reason:
-#             title = tr.TR_NAME_DUPLICATED
-#             text = tr.TR_RELATION_NAME_ALREADY_EXISTS.format(reason.rname)
-#         except ConsumeError as reason:
-#             title = tr.TR_SYNTAX_ERROR
-#             text = self.parse_error(str(reason))
-#         else:
-#             error = False
-#         if error:
-#             QMessageBox.critical(self, title, text)
-#             return
-#         relations.update(table_widget.relations)
-#         for relation_name, expression in result.items():
-#             try:
-#                 new_relation = eval(expression, {}, relations)
-#             except Exception as reason:
-#                 QMessageBox.critical(
-#                     self,
-#                     tr.TR_QUERY_ERROR,
-#                     self.parse_error(str(reason))
-#                 )
-#                 return
-#             relations[relation_name] = new_relation
-#             self.__add_table(new_relation, relation_name)
 
 #     @staticmethod
 #     def parse_error(text):
