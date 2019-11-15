@@ -28,7 +28,6 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QTabWidget
 from PyQt5.QtWidgets import QHBoxLayout
-from PyQt5.QtWidgets import QErrorMessage
 # from PyQt5.QtWidgets import QSplitter
 # from PyQt5.QtWidgets import QMessageBox
 # from PyQt5.QtWidgets import QStackedWidget
@@ -39,7 +38,6 @@ from PyQt5.QtWidgets import QLineEdit
 # from PyQt5.QtWidgets import QAction
 # from PyQt5.QtWidgets import QToolBar
 
-from PyQt5.QtCore import Qt
 # from PyQt5.QtCore import QSettings
 # from PyQt5.QtCore import QSize
 
