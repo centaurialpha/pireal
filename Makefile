@@ -34,7 +34,7 @@ flake8:
 lint: pep8 flake8
 
 mypy:
-	mypy pireal
+	mypy pireal --ignore-missing-imports
 
 test:
 	@$(PYTEST) -v --cov pireal.core --cov-report term-missing -m "not integration"

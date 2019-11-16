@@ -171,7 +171,7 @@ class EditorWidget(QWidget):
                 break
 
     def editors(self) -> Tuple[editor.Editor]:
-        return tuple(self._opened_editors.values())
+        return self._opened_editors.values()
 
     def is_open(self, filepath: str) -> bool:
         try:

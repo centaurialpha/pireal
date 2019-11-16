@@ -11,13 +11,13 @@ class DateFormatError(ParserError):
 
 def parse_date(date: str):
     try:
-        date = datetime.datetime.strptime(date, "%d/%m/%Y").date()
+        date_ = datetime.datetime.strptime(date, "%d/%m/%Y").date()
     except ValueError:
         try:
-            date = datetime.datetime.strptime(date, "%Y/%m/%d").date()
+            date_ = datetime.datetime.strptime(date, "%Y/%m/%d").date()
         except ValueError:
             raise DateFormatError
-    return date
+    return date_
 
 
 class AST(object):

@@ -29,7 +29,7 @@ from collections import OrderedDict
 
 from pireal import translations as tr
 
-MENU = OrderedDict()
+MENU: OrderedDict[str, dict] = OrderedDict()
 
 
 # Menu File

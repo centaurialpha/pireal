@@ -20,10 +20,12 @@
 """ Pireal Main Window """
 
 import webbrowser
+from typing import List, Dict
 
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QAction
 
 from PyQt5.QtCore import QPoint
 from PyQt5.QtCore import QSize
@@ -41,7 +43,7 @@ from pireal.core.settings import (
     USER_SETTINGS
 )
 
-TOOLBAR_ITEMS = []  # TODO: hacer esto cuando se active toolbar
+TOOLBAR_ITEMS: List[str] = []  # TODO: hacer esto cuando se active toolbar
 
 
 class Pireal(QMainWindow):
@@ -53,7 +55,7 @@ class Pireal(QMainWindow):
     """
     themeChanged = Signal()
 
-    __ACTIONS = {}
+    __ACTIONS: Dict[str, "QAction"] = {}
 
     def __init__(self):
         QMainWindow.__init__(self)
