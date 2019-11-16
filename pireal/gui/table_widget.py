@@ -22,7 +22,7 @@ import logging
 # from collections import OrderedDict
 
 # from PyQt5.QtWidgets import QWidget
-# from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QSplitter
 from PyQt5.QtWidgets import QTabWidget
 # from PyQt5.QtWidgets import QToolButton
@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import QStackedWidget
 # from PyQt5.QtGui import QIcon
 # from PyQt5.QtGui import QColor
 
-# from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt
 
 from pireal.gui import model_view_delegate as mvd
 from pireal import translations as tr
@@ -45,7 +45,7 @@ class TableWidget(QSplitter):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._relations = {}
+        self._relations = {}  # relation_name: relation_object
         # vbox = QVBoxLayout(self)
         self._tab_relations = QTabWidget()
         self._tab_relations.setAutoFillBackground(True)
@@ -57,11 +57,17 @@ class TableWidget(QSplitter):
         # Relation stack
         self._relation_stack = QStackedWidget()
         self._relation_stack.setAutoFillBackground(True)
-        self._tab_relations.addTab(self._relation_stack, tr.TR_TABLE_WORKSPACE + ' (0)')
+        self._tab_relations.addTab(self._relation_stack, tr.TR_TABLE_WORKSPACE)
+
+        self._empty_widget = QLabel('Create a new Relation')
+        self._empty_widget.setObjectName('empty_widget')
+        self._empty_widget.setAlignment(Qt.AlignCenter)
+        self._relation_stack.addWidget(self._empty_widget)
+
         # Result stack
         self._result_stack = QStackedWidget()
         self._result_stack.setAutoFillBackground(True)
-        self._tab_results.addTab(self._result_stack, tr.TR_TABLE_RESULTS + ' (0)')
+        self._tab_results.addTab(self._result_stack, tr.TR_TABLE_RESULTS)
 
         self.setSizes([1, 1])
 
@@ -78,9 +84,18 @@ class TableWidget(QSplitter):
     def add_relation(self, relation_obj, relation_name, editable=True):
         table_view = self.create_table(relation_obj, editable=editable)
         self._relations[relation_name] = relation_obj
+        self._add_or_remove_empty_widget()
         self._relation_stack.addWidget(table_view)
 
-        self._update_tab_text(self._tab_relations, self._relation_stack)
+    def _add_or_remove_empty_widget(self):
+        stack_relations_count = self._relation_stack.count()
+        if stack_relations_count > 1:
+            return
+        current_widget = self._relation_stack.currentWidget()
+        if stack_relations_count == 0:
+            self._relation_stack.addWidget(self._empty_widget)
+        elif stack_relations_count == 1 and current_widget == self._empty_widget:
+            self._relation_stack.removeWidget(self._empty_widget)
 
     def remove_relation(self, index, name):
         table_view = self._relation_stack.widget(index)
@@ -88,16 +103,11 @@ class TableWidget(QSplitter):
         table_view.deleteLater()
         del self._relations[name]
 
+        self._add_or_remove_empty_widget()
+
     def add_relation_to_results(self, relation_obj, relation_name):
         table_view = self.create_table(relation_obj, editable=False)
         self._result_stack.addWidget(table_view)
-
-        self._update_tab_text(self._tab_results, self._result_stack)
-
-    def _update_tab_text(self, tab_widget, stack_widget):
-        current_tab_text = tab_widget.tabText(0)
-        number = current_tab_text.split('(')[1][:1]
-        tab_widget.setTabText(0, current_tab_text.replace(number, str(stack_widget.count())))
 
     def create_table(self, relation_obj, *, editable=False):
         table_view = mvd.View()
