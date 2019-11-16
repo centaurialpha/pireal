@@ -25,11 +25,12 @@ slot for each item in a menu.
 """
 
 from collections import OrderedDict
-# from PyQt5.QtWidgets import QApplication
+from typing import OrderedDict as TypeOrderedDict
 
 from pireal import translations as tr
 
-MENU: OrderedDict[str, dict] = OrderedDict()
+
+MENU: TypeOrderedDict[str, dict] = OrderedDict()
 
 
 # Menu File
