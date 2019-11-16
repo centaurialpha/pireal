@@ -4,6 +4,8 @@ python: 3.7
 
 dist: xenial
 
+cache: pip
+
 services:
   - xvfb
 
@@ -54,6 +56,7 @@ jobs:
         - pip install pip --upgrade
         - pip install pytest pytest-cov
       script: make test
+
     - stage: Test
       name: unit test on windows
       os: windows
@@ -61,6 +64,7 @@ jobs:
       <<: *installation_on_windows
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
       script: pytest tests -m "not integration"
+
     - stage: Integration Test
       name: integration test
       before_install:
@@ -68,6 +72,7 @@ jobs:
         - pip install pytest
       before_script: make clean
       script: make test-integration
+
     - stage: Integration Test
       name: integration test on Windows
       os: windows
@@ -75,6 +80,7 @@ jobs:
       <<: *installation_on_windows
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
       script: pytest tests -m integration
+
     - stage: Coverage
       name: coverage
       before_install:
