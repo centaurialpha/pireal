@@ -31,7 +31,7 @@ from PyQt5.QtGui import QIcon
 
 from pireal import __version__
 from pireal.core import settings
-from pireal.gui import main_window
+from pireal.gui.main_window import Pireal
 from pireal.gui.theme import apply_theme
 
 logger = logging.getLogger(__name__)
@@ -76,7 +76,7 @@ def start_pireal():
     app.setStyle('fusion')
     apply_theme(app)
 
-    pireal_gui = main_window.Pireal()
+    pireal_gui = Pireal()
     pireal_gui.show()
 
     sys.exit(app.exec_())

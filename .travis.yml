@@ -33,12 +33,21 @@ jobs:
         - pip install pip --upgrade
         - pip install pycodestyle
       script: make pep8
+
     - stage: Static Analisys
       name: flake8
       before_install:
         - pip install pip --upgrade
         - pip install flake8
       script: make flake8
+
+    - stage: Static Analisys
+      name: mypy
+      before_install:
+        - pip install pip --upgrade
+        - pip install mypy
+      script: make mypy
+
     - stage: Test
       name: unit test
       before_install:

@@ -16,3 +16,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
+
+from typing import cast
+from pireal.gui.main_window import Pireal
+
+_pireal = None
+
+
+def get_pireal() -> "Pireal":
+    return cast("Pireal", _pireal)
+
+
+__all__ = [
+    'get_pireal'
+]

@@ -41,17 +41,11 @@ from PyQt5.QtWidgets import QLineEdit
 # from PyQt5.QtCore import QSettings
 # from PyQt5.QtCore import QSize
 
-# from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtCore import pyqtSlot as Slot
+from PyQt5.QtCore import pyqtSignal as Signal
 
 from pireal import translations as tr
 from pireal.core import interpreter
-# from pireal.core.interpreter.exceptions import (
-#     InvalidSyntaxError,
-#     MissingQuoteError,
-#     DuplicateRelationNameError,
-#     ConsumeError
-# )
 from pireal.gui.query_container import editor
 # from pireal.gui.query_container import tab_widget
 # from pireal.core import settings
@@ -64,6 +58,8 @@ class QueryContainer(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.hide()
+
         self._main_panel = parent
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(3, 0, 3, 0)
@@ -73,6 +69,8 @@ class QueryContainer(QWidget):
         self._search_widget = SearchWidget()
         vbox.addWidget(self._search_widget)
         self._search_widget.hide()
+
+        self._editor_widget.allTabsClosed.connect(self.hide)
 
     def reload_editor_scheme(self):
         for weditor in self._editor_widget.editors():
@@ -94,6 +92,9 @@ class QueryContainer(QWidget):
             weditor = self._editor_widget.create_editor(file_obj)
             if not file_obj.is_new():
                 weditor.setPlainText(file_obj.read())
+
+        if not self.isVisible():
+            self.show()
 
     def execute_query(self):
         current_editor = self._editor_widget.current_editor()
@@ -122,6 +123,8 @@ class QueryContainer(QWidget):
 
 
 class EditorWidget(QWidget):
+
+    allTabsClosed = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -156,6 +159,7 @@ class EditorWidget(QWidget):
         weditor.deleteLater()
         if not self._opened_editors:
             self._new_queries_count = 1
+            self.allTabsClosed.emit()
 
     def remove_editor(self, weditor: editor.Editor):
         # FIXME:

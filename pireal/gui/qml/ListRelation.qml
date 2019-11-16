@@ -44,6 +44,7 @@ Rectangle {
             bottom: parent.bottom
             left: parent.left
             right: parent.right
+            topMargin: 7
         }
         // TODO: hacer scrollbar sin Controls
         // ScrollBar.vertical: ScrollBar {}
@@ -57,8 +58,9 @@ Rectangle {
             anchors {
                 left: parent.left
                 right: parent.right
+                margins: 7
             }
-
+            radius: 1
             height: 70
             property bool current: ListView.isCurrentItem
             color: relationItem.current ? darkPalette.highlight : "transparent"
@@ -108,13 +110,15 @@ Rectangle {
 
             Image {
                 source: "close.png"
-                visible: closable
+                visible: closable && relationItem.current
                 anchors.right: parent.right
                 anchors.top: parent.top
                 anchors.margins: 8
 
                 MouseArea {
+                    id: ma
                     anchors.fill: parent
+                    hoverEnabled: true
                     onClicked: {
                         itemClosed(index)
 //                        closeAnimation.start()
