@@ -20,12 +20,11 @@
 """ Pireal Main Window """
 
 import webbrowser
-from typing import List, Dict
+from typing import List
 
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import QAction
 
 from PyQt5.QtCore import QPoint
 from PyQt5.QtCore import QSize
@@ -55,7 +54,7 @@ class Pireal(QMainWindow):
     """
     themeChanged = Signal()
 
-    __ACTIONS: Dict[str, "QAction"] = {}
+    __ACTIONS = {}
 
     def __init__(self):
         QMainWindow.__init__(self)

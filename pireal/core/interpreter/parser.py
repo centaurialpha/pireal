@@ -363,7 +363,7 @@ class Interpreter(ast.NodeVisitor):
 
     # key: relation_name
     # value: query
-    SCOPE: OrderedDict[str, str] = OrderedDict()
+    SCOPE = OrderedDict()
 
     def __init__(self, parser):
         self.parser = parser
