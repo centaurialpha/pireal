@@ -19,6 +19,8 @@ installation_on_windows: &installation_on_windows
 before_install:
   - "export DISPLAY=:99.0"
 
+install: pip --version  # Avoid install with pip install -r requirements.txt
+
 script: echo "Skip global script..."
 
 stages:
