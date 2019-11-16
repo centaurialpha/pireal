@@ -4,10 +4,10 @@ python: 3.7
 
 dist: xenial
 
-cache: pip
-
 services:
   - xvfb
+
+cache: pip
 
 installation_on_windows: &installation_on_windows
   before_install:
@@ -16,9 +16,6 @@ installation_on_windows: &installation_on_windows
     - python -m pip install --upgrade pip
     - pip3 install --upgrade pytest
 
-before_install:
-  - "export DISPLAY=:99.0"
-
 install: pip --version  # Avoid install with pip install -r requirements.txt
 
 script: echo "Skip global script..."
@@ -26,6 +23,7 @@ script: echo "Skip global script..."
 stages:
   - Static Analisys
   - Test
+  - Test GUI
   - Integration Test
   - Coverage
 
@@ -58,7 +56,18 @@ jobs:
       language: shell
       <<: *installation_on_windows
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
-      script: pytest tests -m "not integration"
+      script: pytest tests -m "not integration" --ignore=tests/gui
+
+    - stage: Test GUI
+      addons:
+        apt:
+          packages:
+            - x11-utils
+            - libxkbcommon-x11-0
+      name: unit test user interface
+      before_install:
+        - pip install pyqt5 pytest pytest-qt
+      script: make test-gui
 
     - stage: Integration Test
       name: integration test
@@ -74,7 +83,7 @@ jobs:
       language: shell
       <<: *installation_on_windows
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
-      script: pytest tests -m integration
+      script: pytest tests -m integration --ignore=tests/gui
 
     - stage: Coverage
       name: coverage
