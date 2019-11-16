@@ -60,7 +60,6 @@ class TableWidget(QSplitter):
         self._tab_relations.addTab(self._relation_stack, tr.TR_TABLE_WORKSPACE)
 
         self._empty_widget = QLabel('Create a new Relation')
-        self._empty_widget.setObjectName('empty_widget')
         self._empty_widget.setAlignment(Qt.AlignCenter)
         self._relation_stack.addWidget(self._empty_widget)
 
@@ -74,6 +73,12 @@ class TableWidget(QSplitter):
     @property
     def relations(self) -> dict:
         return self._relations
+
+    def count_table_relations(self):
+        return self._relation_stack.count()
+
+    def count_table_results(self):
+        return self._result_stack.count()
 
     def set_current_relation(self, index: int):
         self._relation_stack.setCurrentIndex(index)

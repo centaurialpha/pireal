@@ -25,12 +25,11 @@ slot for each item in a menu.
 """
 
 from collections import OrderedDict
-from typing import OrderedDict as TypeOrderedDict
 
 from pireal import translations as tr
 
 
-MENU: TypeOrderedDict[str, dict] = OrderedDict()
+MENU = OrderedDict()
 
 
 # Menu File

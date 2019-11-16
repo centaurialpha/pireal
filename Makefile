@@ -37,13 +37,13 @@ mypy:
 	mypy pireal --ignore-missing-imports
 
 test:
-	@$(PYTEST) -v --cov pireal.core --cov-report term-missing -m "not integration"
+	@$(PYTEST) -v --cov pireal.core --cov-report term-missing -m "not integration and not gui" --ignore=tests/gui
 
 test-gui:
 	@$(PYTEST) -v -m gui
 
 test-integration:
-	@$(PYTEST) -v -m integration
+	@$(PYTEST) -v -m integration --ignore=tests/gui
 dist: clean
 	python setup.py sdist
 	mv dist/* ../
