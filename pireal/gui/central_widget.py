@@ -172,6 +172,7 @@ class CentralWidget(QWidget):
 
         # Create main panel for table view
         self._main_panel = MainPanel(self)
+        self.remove_start_page()
         self.add_widget(self._main_panel)
 
         # XXX: quizas eso se deba mover, por ahora lo hacemos acá
@@ -318,8 +319,13 @@ class CentralWidget(QWidget):
     #     widget = self._stacked.widget(self._stacked.count() - 1)
     #     self._stacked.removeWidget(widget)
 
-    # def close_database(self):
-    #     """ Close the database and return to the main widget """
+    def close_database(self):
+        """ Close the database and return to the main widget """
+
+        if self._main_panel.close_database():
+            self._stacked.removeWidget(self._main_panel)
+            self.add_start_page()
+            self._main_panel = None
 
     #     db = self.get_active_db()
     #     query_container = db.query_container
@@ -451,6 +457,11 @@ class CentralWidget(QWidget):
 
         sp = start_page.StartPage(self)
         self.add_widget(sp)
+
+    def remove_start_page(self):
+        start_page_widget = self._stacked.widget(0)
+        if isinstance(start_page_widget, start_page.StartPage):
+            self._stacked.removeWidget(start_page_widget)
 
     def show_settings(self):
         """ Show settings dialog on stacked """

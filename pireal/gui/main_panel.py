@@ -97,6 +97,10 @@ class _MainPanel(QSplitter):
     def execute_query(self):
         self._query_container.execute_query()
 
+    def close_database(self) -> bool:
+        # TODO
+        return True
+
 
 class CentralView(QWidget):
 
