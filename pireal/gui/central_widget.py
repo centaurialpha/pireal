@@ -60,6 +60,7 @@ class CentralWidget(QWidget):
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
+        self._current_database_name = None
         self.pireal = parent
         self._stacked = QStackedLayout(self)
         self._main_panel = None
@@ -77,6 +78,10 @@ class CentralWidget(QWidget):
     #     query_container = db_container.query_container
     #     if query_container is not None:
     #         query_container.set_editor_focus()
+
+    @property
+    def current_database_name(self):
+        return self._current_database_name
 
     @property
     def recent_databases(self) -> list:
@@ -111,28 +116,6 @@ class CentralWidget(QWidget):
         if dialog.exec_() == dialog.Accepted:
             self._main_panel = MainPanel(self)
             self.add_widget(self._main_panel)
-
-    # @Slot(str, str, str)
-    # def _on_wizard_finished(self, *data):
-    #     """This slot execute when wizard to create a database is finished"""
-    #     if
-    #     if data:
-    #         _, _, fname = data
-    #         # Create a new data base container
-    #         db_container = database_container.DatabaseContainer(self)
-    #         # Associate the file name with the PFile object
-    #         pfile_object = pfile.File(fname)
-    #         # Associate PFile object with data base container
-    #         # and add widget to stacked
-    #         db_container.pfile = pfile_object
-    #         self.add_widget(db_container)
-    #         # Set window title
-    #         self.pireal.change_title(file_manager.get_basename(fname))
-    #         # Enable db actions
-    #         self.pireal.set_enabled_db_actions(True)
-    #         self.pireal.set_enabled_relation_actions(True)
-    #         self.created = True
-    #         logger.debug("La base de datos ha sido creada con éxito")
 
     def _say_about_one_db_at_time(self):
         logger.warning("Oops! One database at a time please")
@@ -192,7 +175,8 @@ class CentralWidget(QWidget):
             self._main_panel.lateral_widget.add_item_to_relations(
                 table_name, relation_obj.cardinality(), relation_obj.degree())
 
-        self.pireal.change_title(file_obj.display_name)
+        self._current_database_name = file_obj.display_name
+        self.pireal.update_title()
 
         self.remember_recent_file(file_obj.path)
 
@@ -319,62 +303,34 @@ class CentralWidget(QWidget):
     #     widget = self._stacked.widget(self._stacked.count() - 1)
     #     self._stacked.removeWidget(widget)
 
+    def remove_main_panel(self):
+        if self._main_panel is not None:
+            self._stacked.removeWidget(self._main_panel)
+        self.add_start_page()
+        self._current_database_name = None
+        self.pireal.update_title()
+
     def close_database(self):
         """ Close the database and return to the main widget """
 
-        if self._main_panel.close_database():
-            self._stacked.removeWidget(self._main_panel)
-            self.add_start_page()
-            self._main_panel = None
+        # flake8: noqa
+        if self._main_panel.database_modified:
+            reply = QMessageBox.question(
+                self, tr.TR_MSG_SAVE_CHANGES, tr.TR_MSG_SAVE_CHANGES_BODY,
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            if reply == QMessageBox.Cancel:
+                return
+            if reply == QMessageBox.Yes:
+                self.save_database()
 
-    #     db = self.get_active_db()
-    #     query_container = db.query_container
+        # if query_modified:
+        #     reply = show_message_box()
+        #     if reply == Cancel:
+        #         return
+        #     elif reply == Yes:
+        #         save()
 
-    #     if db.modified:
-    #         msgbox = QMessageBox(self)
-    #         msgbox.setIcon(QMessageBox.Question)
-    #         msgbox.setWindowTitle(tr.TR_MSG_SAVE_CHANGES)
-    #         msgbox.setText(tr.TR_MSG_SAVE_CHANGES_BODY)
-    #         cancel_btn = msgbox.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
-    #         msgbox.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
-    #         yes_btn = msgbox.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
-    #         msgbox.exec_()
-    #         r = msgbox.clickedButton()
-    #         if r == cancel_btn:
-    #             return
-    #         if r == yes_btn:
-    #             self.save_database()
-
-    #     # Check if editor is modified
-    #     query_widget = query_container.currentWidget()
-    #     if query_widget is not None:
-    #         weditor = query_widget.get_editor()
-    #         if weditor is not None:
-    #             # TODO: duplicate code, see tab widget
-    #             if weditor.modified:
-    #                 msgbox = QMessageBox(self)
-    #                 msgbox.setIcon(QMessageBox.Question)
-    #                 msgbox.setWindowTitle(tr.TR_MSG_FILE_MODIFIED)
-    #                 msgbox.setText(tr.TR_MSG_FILE_MODIFIED_BODY.format(weditor.name))
-    #                 cancel_btn = msgbox.addButton(tr.TR_MSG_CANCEL, QMessageBox.RejectRole)
-    #                 msgbox.addButton(tr.TR_MSG_NO, QMessageBox.NoRole)
-    #                 yes_btn = msgbox.addButton(tr.TR_MSG_YES, QMessageBox.YesRole)
-    #                 msgbox.exec_()
-    #                 r = msgbox.clickedButton()
-    #                 if r == cancel_btn:
-    #                     return
-    #                 if r == yes_btn:
-    #                     self.save_query(weditor)
-
-    #     self._stacked.removeWidget(db)
-
-    #     self.pireal.set_enabled_db_actions(False)
-    #     self.pireal.set_enabled_relation_actions(False)
-    #     self.pireal.set_enabled_query_actions(False)
-    #     self.pireal.set_enabled_editor_actions(False)
-    #     self.pireal.change_title()  # Título en la ventana principal 'Pireal'
-    #     self.created = False
-    #     del db
+        self.remove_main_panel()
 
     # def new_query(self, filename=''):
     #     db_container = self.get_active_db()
@@ -395,6 +351,9 @@ class CentralWidget(QWidget):
         self._main_panel.execute_query()
     #     db_container = self.get_active_db()
     #     db_container.execute_queries()
+
+    def save_database(self):
+        pass
 
     # def save_database(self):
 
@@ -450,6 +409,7 @@ class CentralWidget(QWidget):
             rela_deg = relation_obj.degree()
             self._main_panel.lateral_widget.add_item_to_relations(
                 relation_name, rela_card, rela_deg)
+            self._main_panel.database_modified = True
             # FIXME: database modified, signal!
 
     def add_start_page(self):

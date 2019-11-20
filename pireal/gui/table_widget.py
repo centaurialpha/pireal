@@ -45,6 +45,7 @@ class TableWidget(QSplitter):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.modified = False
         self._relations = {}  # relation_name: relation_object
         # vbox = QVBoxLayout(self)
         self._tab_relations = QTabWidget()

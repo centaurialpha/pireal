@@ -5,9 +5,9 @@ Rectangle {
 
     property bool closable: false
 
-    SystemPalette { id: darkPalette; colorGroup: SystemPalette.Active }
+    SystemPalette { id: palette; colorGroup: SystemPalette.Active }
 
-    color: darkPalette.base
+    color: palette.base
 
     signal itemClicked(int index)
     signal itemClosed (int index)
@@ -25,14 +25,14 @@ Rectangle {
         anchors.top: parent.top
         height: 30
         width: parent.width
-        color: darkPalette.button
+        color: palette.button
         property alias title: lblTitle.text
         Text {
             id: lblTitle
             text: ""
             font.bold: true
             font.pointSize: 12
-            color: darkPalette.text
+            color: palette.text
             anchors.centerIn: parent
         }
     }
@@ -63,7 +63,7 @@ Rectangle {
             radius: 1
             height: 70
             property bool current: ListView.isCurrentItem
-            color: relationItem.current ? darkPalette.highlight : "transparent"
+            color: relationItem.current ? palette.highlight : "transparent"
 
             MouseArea {
                 anchors.fill: parent
@@ -95,16 +95,16 @@ Rectangle {
                     text: name
                     font.bold: true
                     font.pointSize: 12
-                    color: darkPalette.text
+                    color: palette.text
                 }
                 Text {
                     id: relationCard
-                    color: darkPalette.mid
+                    color: palette.mid
                     text: qsTr("Cardinality: %1").arg(cardinality)
                 }
                 Text {
                     text: qsTr("Degree: %1").arg(degree)
-                    color: darkPalette.mid
+                    color: palette.mid
                 }
             }
 

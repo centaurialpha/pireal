@@ -76,8 +76,8 @@ class NewRelationDialog(QDialog):
         # Botones para crear/cancelar
         hhbox = QHBoxLayout()
         hhbox.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
-        btn_create = QPushButton(tr.TR_RELATION_DIALOG_CREATE)
-        hhbox.addWidget(btn_create)
+        self.btn_create = QPushButton(tr.TR_RELATION_DIALOG_CREATE)
+        hhbox.addWidget(self.btn_create)
         btn_cancel = QPushButton(tr.TR_MSG_CANCEL)
         hhbox.addWidget(btn_cancel)
         box.addLayout(hhbox)
@@ -88,7 +88,11 @@ class NewRelationDialog(QDialog):
         btn_add_column.clicked.connect(self.__add_column)
         btn_delete_column.clicked.connect(self.__delete_column)
         btn_cancel.clicked.connect(self.close)
-        btn_create.clicked.connect(self._create)
+        self.btn_create.clicked.connect(self._create)
+
+    @property
+    def relation_name(self):
+        return self._line_relation_name.text().strip()
 
     def get_data(self):
         return self._data
@@ -132,23 +136,22 @@ class NewRelationDialog(QDialog):
 
     def _create(self):
 
-        relation_name = self._line_relation_name.text().strip()
-        if not relation_name:
+        if not self.relation_name:
             QMessageBox.information(self, tr.TR_MSG_ERROR,
                                     tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME)
             logger.debug('Relation name not specified')
             return
 
         relations = self._main_panel.central_view.all_relations()
-        if relation_name in relations:
+        if self.relation_name in relations:
             QMessageBox.information(
                 self,
                 tr.TR_MSG_ERROR,
-                tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name)
+                tr.TR_RELATION_NAME_ALREADY_EXISTS.format(self.relation_name)
             )
             logger.debug('Relation already exists with this name')
             return
-        logger.debug('Creating new relation: %s', relation_name)
+        logger.debug('Creating new relation: %s', self.relation_name)
         # Table model
         model = self._view.model()
         # Row and column count
@@ -189,5 +192,5 @@ class NewRelationDialog(QDialog):
             rela.insert(tuple(tuples))
 
         # Data
-        self._data = (rela, relation_name)
+        self._data = (rela, self.relation_name)
         self.accept()

@@ -1,9 +1,44 @@
-# from unittest import mock
-# import pytest
+from unittest import mock
+import pytest
 
-# from PyQt5.QtGui import QStandardItem
+from PyQt5.QtWidgets import QMessageBox
 
-# from pireal.gui.dialogs.new_relation_dialog import NewRelationDialog
+from pireal.gui.dialogs.new_relation_dialog import NewRelationDialog
+
+
+@pytest.mark.gui
+def test_no_relation_name(qtbot, monkeypatch):
+    dialog = NewRelationDialog()
+    qtbot.addWidget(dialog)
+
+    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
+
+    with mock.patch('pireal.gui.main_panel.CentralView.all_relations') as mock_all_realtions:
+        dialog._create()
+
+        mock_all_realtions.assert_not_called()
+
+    assert dialog.get_data() is None
+
+
+@pytest.mark.gui
+def test_relation_already_exist(qtbot, monkeypatch):
+    dialog = NewRelationDialog()
+    qtbot.addWidget(dialog)
+
+    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
+
+    qtbot.keyClicks(dialog._line_relation_name, 'TestRelation')
+
+    assert dialog.relation_name == 'TestRelation'
+
+    mock_main_panel = mock.Mock()
+    mock_main_panel.central_view.all_relations.return_value = {'TestRelation': ''}
+    dialog._main_panel = mock_main_panel
+
+    dialog._create()
+    assert mock_main_panel.central_view.all_relations.called
+    assert dialog.get_data() is None
 
 
 # @pytest.fixture

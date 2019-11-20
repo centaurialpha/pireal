@@ -36,7 +36,6 @@ from pireal.gui import central_widget
 from pireal.gui import menu_actions
 from pireal.gui import theme
 
-# FIXME: más arriba se usa settings, unificar
 from pireal.core.settings import (
     DATA_SETTINGS,
     USER_SETTINGS
@@ -201,11 +200,12 @@ class Pireal(QMainWindow):
         self._thread.deleteLater()
         self._updater.deleteLater()
 
-    def change_title(self, db_name=''):
-        title = ''
-        if db_name:
-            title = tr.TR_NOTIFICATION_DB_CONNECTED.format(db_name)
-        self.setWindowTitle(title + ' - Pireal')
+    def update_title(self):
+        text = 'Pireal'
+        db_name = self.central_widget.current_database_name
+        if db_name is not None:
+            text += ' - ' + tr.TR_NOTIFICATION_DB_CONNECTED.format(db_name)
+        self.setWindowTitle(text)
 
     def set_enabled_actions(self, actions, value):
         for action in actions:

@@ -83,6 +83,15 @@ class _MainPanel(QSplitter):
         self._central_view.set_current_result(index)
 
     @property
+    def database_modified(self):
+        return self._central_view.table_widget.modified
+
+    # FIXME: FEO
+    @database_modified.setter
+    def database_modified(self, value: bool):
+        self._central_view.table_widget.modified = value
+
+    @property
     def lateral_widget(self):
         return self._lateral_widget
 
@@ -98,8 +107,13 @@ class _MainPanel(QSplitter):
         self._query_container.execute_query()
 
     def close_database(self) -> bool:
-        # TODO
-        return True
+        pass
+        # Check if are database modified
+        # if self.database_modified:
+
+        #     reply = QMessageBox(
+        #         self, tr.TR_MSG_SAVE_CHANGES, tr.TR_MSG_SAVE_CHANGES_BODY.format())
+        # check if are query modified
 
 
 class CentralView(QWidget):
