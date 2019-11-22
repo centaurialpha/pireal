@@ -41,10 +41,12 @@ def test_full_cycle():
         assert not db_file.is_new()
         db_content_parsed = parse_database_content(db_file.read())
         assert db_content_parsed
-        tables = db_content_parsed['tables']
+
         relations = {}
+
         db_count = 0
-        for table in tables:
+
+        for table in db_content_parsed:
             name = table['name']
             header = table['header']
             tuples = table['tuples']

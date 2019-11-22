@@ -158,8 +158,7 @@ class CentralWidget(QWidget):
         self.remove_start_page()
         self.add_widget(self._main_panel)
 
-        # XXX: quizas eso se deba mover, por ahora lo hacemos acá
-        for table in database_content.get('tables'):
+        for table in database_content:
             table_name = table['name']
             header = table['header']
             tuples = table['tuples']
@@ -401,15 +400,18 @@ class CentralWidget(QWidget):
     #         db.modified = True
 
     def create_new_relation(self):
-        dialog = new_relation_dialog.NewRelationDialog(self._main_panel)
-        if dialog.exec_() == dialog.Accepted:
-            relation_obj, relation_name = dialog.get_data()
-            self._main_panel.central_view.add_relation(relation_obj, relation_name)
-            rela_card = relation_obj.cardinality()
-            rela_deg = relation_obj.degree()
-            self._main_panel.lateral_widget.add_item_to_relations(
-                relation_name, rela_card, rela_deg)
-            self._main_panel.database_modified = True
+        dialog = new_relation_dialog.NewRelationDialog(self)
+        if dialog.exec_():
+            pass
+        # dialog = new_relation_dialog.NewRelationDialog(self._main_panel)
+        # if dialog.exec_() == dialog.Accepted:
+        #     relation_obj, relation_name = dialog.get_data()
+        #     self._main_panel.central_view.add_relation(relation_obj, relation_name)
+        #     rela_card = relation_obj.cardinality()
+        #     rela_deg = relation_obj.degree()
+        #     self._main_panel.lateral_widget.add_item_to_relations(
+        #         relation_name, rela_card, rela_deg)
+        #     self._main_panel.database_modified = True
             # FIXME: database modified, signal!
 
     def add_start_page(self):

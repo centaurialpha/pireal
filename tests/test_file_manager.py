@@ -1,4 +1,5 @@
 import pytest
+import unittest
 from collections import defaultdict
 
 from pireal.core import file_manager
@@ -74,20 +75,40 @@ def test_generate_database():
     # assert expected in file_manager.generate_database(relations)
 
 
-def test_parse_database_content():
-    content = "@persona:id,name\n1,Gabriel\n23,Rodrigo\n"
-    data = defaultdict(list)
-    data['tables'] = [
-        {
-            'header': ['id', 'name'],
-            'name': 'persona',
-            'tuples': {('1', 'Gabriel'), ('23', 'Rodrigo')}
-        }
-    ]
-    assert file_manager.parse_database_content(content) == data
+def test_database_text_content_simple_content():
+    text = '@persona:name,age\ngabo,28\nmechi,25'
+    expected = [{
+        'name': 'persona',
+        'header': ['name', 'age'],
+        'tuples': [('gabo', '28'), ('mechi', '25')]
+    }]
+    result = file_manager.parse_database_content(text)
+    assert result == expected
 
 
-def test_parse_database_content_raise_syntax_error():
-    content = "@persona id,name\n1,Gabriel\n23,Rodrigo\n"
-    with pytest.raises(file_manager.DBParserSyntaxError):
-        file_manager.parse_database_content(content)
+def test_data_base_text_content_with_two_relations():
+    text = """
+    @persona:name,age\ngabo,28\nrodrigo,20\n
+    @skills:name,skill\nrodrigo,games\ngabo,python"""
+    expected = [{
+        'name': 'persona',
+        'header': ['name', 'age'],
+        'tuples': [('gabo', '28'), ('rodrigo', '20')]
+    }, {
+        'name': 'skills',
+        'header': ['name', 'skill'],
+        'tuples': [('rodrigo', 'games'), ('gabo', 'python')]
+    }]
+    result = file_manager.parse_database_content(text)
+    assert result == expected
+
+
+def test_clean_parse_database_text_content():
+    text = '@persona:name,age\ngabo,28\nmechi,25\r'
+    expected = [{
+        'name': 'persona',
+        'header': ['name', 'age'],
+        'tuples': [('gabo', '28'), ('mechi', '25')]
+    }]
+    result = file_manager.parse_database_content(text)
+    assert result == expected
