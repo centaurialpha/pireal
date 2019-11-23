@@ -91,7 +91,8 @@ class TableWidget(QSplitter):
         table_view = self.create_table(relation_obj, editable=editable)
         self._relations[relation_name] = relation_obj
         self._add_or_remove_empty_widget()
-        self._relation_stack.addWidget(table_view)
+        index = self._relation_stack.addWidget(table_view)
+        self._relation_stack.setCurrentIndex(index)
 
     def _add_or_remove_empty_widget(self):
         stack_relations_count = self._relation_stack.count()

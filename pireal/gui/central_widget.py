@@ -402,17 +402,14 @@ class CentralWidget(QWidget):
     def create_new_relation(self):
         dialog = new_relation_dialog.NewRelationDialog(self)
         if dialog.exec_():
-            pass
-        # dialog = new_relation_dialog.NewRelationDialog(self._main_panel)
-        # if dialog.exec_() == dialog.Accepted:
-        #     relation_obj, relation_name = dialog.get_data()
-        #     self._main_panel.central_view.add_relation(relation_obj, relation_name)
-        #     rela_card = relation_obj.cardinality()
-        #     rela_deg = relation_obj.degree()
-        #     self._main_panel.lateral_widget.add_item_to_relations(
-        #         relation_name, rela_card, rela_deg)
-        #     self._main_panel.database_modified = True
-            # FIXME: database modified, signal!
+            relation_name, relation = dialog.get_data()
+            self._main_panel.central_view.add_relation(relation, relation_name)
+
+            rela_card = relation.cardinality()
+            rela_deg = relation.degree()
+            self._main_panel.lateral_widget.add_item_to_relations(
+                relation_name, rela_card, rela_deg)
+            self._main_panel.database_modified = True
 
     def add_start_page(self):
         """ This function adds the Start Page to the stacked widget """

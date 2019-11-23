@@ -34,44 +34,39 @@ datetime_dict = {
 # FIXME: atributo name ?
 
 
-class Error(Exception):
-    """Base exception"""
+class RelationError(Exception):
+    """Base exception for Relation"""
 
 
-class FieldError(Error):
-    def __init__(self, campo, msg=None):
-        if msg is None:
-            msg = "Error con el campo '{}'".format(campo)
-        super().__init__(msg)
-        self.campo = campo
-
-
-class InvalidFieldNameError(FieldError):
+class InvalidFieldNameError(RelationError):
     """Excepción lanzada cuando un nombre de campo no es válido"""
 
-    def __init__(self, campo, msg=None):
-        super().__init__(
-            campo, msg="El nombre de campo '{}' no es válido".format(campo))
+    def __init__(self, field_name, msg=None):
+        if msg is None:
+            msg = 'Invalid field name: {}'.format(field_name)
+        super().__init__(msg)
+        self.field_name = field_name
 
 
-class DuplicateFieldError(FieldError):
+class DuplicateFieldError(RelationError):
 
-    def __init__(self, campo, msg=None):
-        super().__init__(
-            campo, msg="Campo duplicado '{}' en la operación producto".format(
-                campo))
+    def __init__(self, field_name, msg=None):
+        if msg is None:
+            msg = 'Duplicated field name: {}'.format(field_name)
+        super().__init__(msg)
+        self.field_name = field_name
 
 
-class FieldNotInHeaderError(FieldError):
+class FieldNotInHeaderError(RelationError):
     """Excepción lanzada cuando un campo no existe en la relación"""
 
-    def __init__(self, campo, relacion, msg=None):
-        super().__init__(campo, msg="El campo '{}' no existe en '{}'".format(
-            campo, relacion))
-        self.nombre_relacion = relacion
+    def __init__(self, field_name, relation_name, msg=None):
+        if msg is None:
+            msg = 'Field name {} doesn\'t exist in {}'.format(field_name, relation_name)
+        super().__init__(msg)
 
 
-class WrongSizeError(Error):
+class WrongSizeError(RelationError):
     """Excepción lanzada cuando se trata de insertar un tamaño de
     tuplas diferente a los que acepta la relación"""
 
@@ -83,11 +78,11 @@ class WrongSizeError(Error):
         self.got = got
 
 
-class SelectionSyntaxError(Error):
+class SelectionSyntaxError(RelationError):
     pass
 
 
-class UnionCompatibleError(Error):
+class UnionCompatibleError(RelationError):
     pass
 
 
@@ -117,7 +112,7 @@ class Relation(object):
     @header.setter
     def header(self, header: list):
         for field in header:
-            if not IS_VALID_FIELD_NAME.match(field):
+            if not IS_VALID_FIELD_NAME.match(str(field)):
                 raise InvalidFieldNameError(field)
         self._header = header
 

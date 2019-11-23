@@ -86,7 +86,7 @@ def test_database_text_content_simple_content():
     assert result == expected
 
 
-def test_data_base_text_content_with_two_relations():
+def test_database_text_content_with_two_relations():
     text = """
     @persona:name,age\ngabo,28\nrodrigo,20\n
     @skills:name,skill\nrodrigo,games\ngabo,python"""
@@ -109,6 +109,17 @@ def test_clean_parse_database_text_content():
         'name': 'persona',
         'header': ['name', 'age'],
         'tuples': [('gabo', '28'), ('mechi', '25')]
+    }]
+    result = file_manager.parse_database_content(text)
+    assert result == expected
+
+
+def test_database_text_content_simple_content_ignore_lasts():
+    text = '@persona:name,age\ngabo,28,ignore\nmechi,25,ignore2,ignore3'
+    expected = [{
+        'name': 'persona',
+        'header': ['name', 'age'],
+        'tuples':  [('gabo', '28'), ('mechi', '25')]
     }]
     result = file_manager.parse_database_content(text)
     assert result == expected

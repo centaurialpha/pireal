@@ -1,130 +1,63 @@
 from unittest import mock
 import pytest
 
-from PyQt5.QtWidgets import QMessageBox
-
 from pireal.gui.dialogs.new_relation_dialog import NewRelationDialog
+from pireal.core.relation import Relation
+from pireal import translations as tr
 
 
 @pytest.mark.gui
-def test_no_relation_name(qtbot, monkeypatch):
+@pytest.mark.parametrize(
+    'header',
+    [['1', '2', '3'], ['  ', ' '], ['1ff', '-d']]
+)
+def test_create_relation_invalid_field_name(qtbot, header):
     dialog = NewRelationDialog()
+    dialog.table.setHorizontalHeaderLabels(header)
     qtbot.addWidget(dialog)
 
-    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
-
-    with mock.patch('pireal.gui.main_panel.CentralView.all_relations') as mock_all_realtions:
-        dialog._create()
-
-        mock_all_realtions.assert_not_called()
-
-    assert dialog.get_data() is None
+    with mock.patch('pireal.gui.dialogs.new_relation_dialog.QMessageBox.warning') as mock_msg_box:
+        assert dialog.create_relation() is None
+        mock_msg_box.assert_called_with(
+            None,
+            'Error',
+            'Invalid field name: {}'.format(header[0]))
 
 
 @pytest.mark.gui
-def test_relation_already_exist(qtbot, monkeypatch):
+@pytest.mark.parametrize(
+    'row, col',
+    [(0, 1), (0, 0)]
+)
+def test_create_relation_missing_data(qtbot, row, col):
     dialog = NewRelationDialog()
+    dialog.table.setHorizontalHeaderLabels(['id', 'name'])
+    item = dialog.table.item(row, col)
+    item.setText('        ')
+
     qtbot.addWidget(dialog)
 
-    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
-
-    qtbot.keyClicks(dialog._line_relation_name, 'TestRelation')
-
-    assert dialog.relation_name == 'TestRelation'
-
-    mock_main_panel = mock.Mock()
-    mock_main_panel.central_view.all_relations.return_value = {'TestRelation': ''}
-    dialog._main_panel = mock_main_panel
-
-    dialog._create()
-    assert mock_main_panel.central_view.all_relations.called
-    assert dialog.get_data() is None
+    with mock.patch('pireal.gui.dialogs.new_relation_dialog.QMessageBox.warning') as mock_msg_box:
+        assert dialog.create_relation() is None
+        mock_msg_box.assert_called_with(
+            None,
+            'Error',
+            tr.TR_RELATION_DIALOG_WHITESPACE.format(
+                row + 1, col + 1))
 
 
-# @pytest.fixture
-# def dialog():
-#     module = 'pireal.gui.view.CONFIG.get'
-#     with mock.patch(module):
-#         w = NewRelationDialog()
-#         return w
+@pytest.mark.gui
+def test_create_relation(qtbot):
+    dialog = NewRelationDialog()
+    dialog.table.setHorizontalHeaderLabels(['id', 'name'])
+    qtbot.addWidget(dialog)
 
+    relation = Relation()
+    relation.header = ['id', 'name']
+    relation.insert('Value_0 Value_1')
 
-# @pytest.mark.skip(reason='Todavía no necesito estos tests')
-# @pytest.mark.gui
-# @pytest.mark.parametrize(
-#     'row_to_insert, expected',
-#     [
-#         (1, 1),
-#         (3, 3),
-#         (44, 44)
-#     ]
-# )
-# def test_add_tuple(qtbot, dialog, row_to_insert, expected):
-#     qtbot.addWidget(dialog)
-#     for _ in range(row_to_insert):
-#         dialog._NewRelationDialog__add_tuple()
-#     assert dialog._view.model().rowCount() == expected
-
-
-# @pytest.mark.skip(reason='Todavía no necesito estos tests')
-# @pytest.mark.gui
-# @pytest.mark.parametrize(
-#     'columns_to_insert, expected',
-#     [
-#         (1, 3),  # Ya existen 2 columnas por defecto ('Field 1', 'Field 2')
-#         (3, 5),
-#         (41, 43)
-#     ]
-# )
-# def test_add_column(qtbot, dialog, columns_to_insert, expected):
-#     qtbot.addWidget(dialog)
-#     for _ in range(columns_to_insert):
-#         dialog._NewRelationDialog__add_column()
-#     assert dialog._view.model().columnCount() == expected
-
-
-# @pytest.mark.skip(reason='Todavía no necesito estos tests')
-# @pytest.mark.gui
-# @pytest.mark.parametrize(
-#     'columns_to_insert, to_delete, expected',
-#     [
-#         (0, 1, 2),
-#         (3, 1, 4),
-#         (10, 6, 6)
-#     ]
-# )
-# def test_delete_column(qtbot, dialog, columns_to_insert, to_delete, expected):
-#     qtbot.addWidget(dialog)
-#     for _ in range(columns_to_insert):
-#         dialog._NewRelationDialog__add_column()
-#     for _ in range(to_delete):
-#         dialog._NewRelationDialog__delete_column()
-
-#     assert dialog._view.model().columnCount() == expected
-
-
-# @pytest.mark.skip(reason='Todavía no necesito estos tests')
-# @pytest.mark.gui
-# @pytest.mark.parametrize(
-#     'relation_name, header, tuples',
-#     [
-#         ('prueba', ['a', 'b'], {('1', '2'), ('2', '1')}),
-#         ('persona', ['id', 'name'], {('1', 'gabo'), ('2', 'rodrigo')}),
-#     ]
-# )
-# def test_create_new(qtbot, dialog, relation_name, header, tuples):
-#     qtbot.addWidget(dialog)
-#     dialog._line_relation_name.setText(relation_name)
-#     with mock.patch('pireal.gui.main_window.Pireal.get_service'):
-#         view = dialog._view
-#         for e, i in enumerate(header):
-#             view.horizontalHeader().model().setHeaderData(e, 1, i)
-#         for row, t in enumerate(tuples):
-#             for col, a in enumerate(t):
-#                 item = QStandardItem(a)
-#                 view.model().setItem(row, col, item)
-#         dialog._create()
-#         robject, rname = dialog._data
-#         assert rname == relation_name
-#         assert robject.header == header
-#         assert robject.content == tuples
+    with mock.patch('pireal.gui.dialogs.new_relation_dialog.QMessageBox.warning') as mock_msg_box:
+        mock_msg_box.assert_not_called()
+        relation_result = dialog.create_relation()
+        assert relation.header == relation_result.header
+        assert relation.content == relation_result.content

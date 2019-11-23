@@ -98,7 +98,8 @@ def parse_database_content(text) -> list:
         data['name'] = db_name
         data['header'] = list(map(str.rstrip, header.split(',')))
 
-        data['tuples'] = [tuple(map(str.rstrip, t.split(','))) for t in content[1:]]
+        data['tuples'] = [tuple(map(str.rstrip, t.split(',')[:len(data['header'])]))
+                          for t in content[1:]]
 
         data_list.append(data)
 

@@ -126,6 +126,9 @@ TR_QUERY_ERROR = tr('Pireal', 'Query Error')
 TR_RELATIONS = tr('Pireal', 'Relations')
 
 # New Relation Dialog
+TR_RELATION_DIALOG_CHANGE_HEADER_LABEL = tr('Pireal', 'Change header label')
+TR_RELATION_DIALOG_HEADER_NAME = tr('Pireal', 'Name:')
+
 TR_RELATION_DIALOG_TITLE = tr('Pireal', 'Relation Creator')
 TR_RELATION_DIALOG_NAME = tr('Pireal', 'Relation Name')
 TR_RELATION_DIALOG_ADD_TUPLE = tr('Pireal', 'Add Tuple')
