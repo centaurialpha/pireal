@@ -60,14 +60,11 @@ class Pireal(QMainWindow):
         self.setWindowTitle('Pireal')
         self.setMinimumSize(1615, 850)
         # Load window geometry
-        window_maximized = DATA_SETTINGS.value('ds/window_max', type=bool)
-        if window_maximized:
+        geometry = DATA_SETTINGS.value('ds/window_geometry')
+        if geometry is None:
             self.showMaximized()
         else:
-            size = DATA_SETTINGS.value('ds/window_size', QSize(800, 600))
-            self.resize(size)
-            position = DATA_SETTINGS.value('ds/window_pos', QPoint(100, 100))
-            self.move(position)
+            self.restoreGeometry(geometry)
         # TODO: Create toolbar
         # TODO: Notification widget
 
@@ -300,12 +297,7 @@ class Pireal(QMainWindow):
     def save_settings(self):
         """Save data settings"""
         # Save window geometry
-        if self.isMaximized():
-            DATA_SETTINGS.setValue('window_max', True)
-        else:
-            DATA_SETTINGS.setValue('window_max', False)
-            DATA_SETTINGS.setValue('window_pos', self.pos())
-            DATA_SETTINGS.setValue('window_size', self.size())
+        DATA_SETTINGS.setValue('window_geometry', self.saveGeometry())
         # Save last folder
         if self.central_widget.last_open_folder is not None:
             DATA_SETTINGS.setValue('lastOpenFolder', self.central_widget.last_open_folder)

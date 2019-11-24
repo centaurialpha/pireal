@@ -144,15 +144,15 @@ class NewRelationDialog(QDialog):
         return relation
 
     def accept(self):
+        if not self.relation_name:
+            QMessageBox.warning(
+                None, 'Error', tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME
+            )
+            self.line_relation_name.setFocus()
+            self.line_relation_name.selectAll()
+            return
         relation = self.create_relation()
         if relation is not None:
-            if not self.relation_name:
-                QMessageBox.warning(
-                    None, 'Error', tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME
-                )
-                self.line_relation_name.setFocus()
-                self.line_relation_name.selectAll()
-                return
             self._data = self.relation_name, relation
             QDialog.accept(self)
 
