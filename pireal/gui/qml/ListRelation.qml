@@ -3,6 +3,8 @@ import QtQuick 2.7
 Rectangle {
     id: root
 
+    width: 50
+
     property bool closable: false
 
     SystemPalette { id: palette; colorGroup: SystemPalette.Active }

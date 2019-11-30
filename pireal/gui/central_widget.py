@@ -24,22 +24,13 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QStackedLayout
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMessageBox
-# from PyQt5.QtWidgets import QShortcut
-
-# from PyQt5.QtGui import QKeySequence
-# from PyQt5.QtCore import Qt
-# from PyQt5.QtCore import pyqtSignal as Signal
-# from PyQt5.QtCore import pyqtSlot as Slot
-
 
 from pireal import translations as tr
 from pireal.core import settings
 from pireal.core import file_manager
-# from pireal.core import pfile
 from pireal.core.relation import Relation
 
 from pireal.gui import start_page
-# from pireal.gui import database_container
 from pireal.gui.main_panel import MainPanel
 
 from pireal.gui.dialogs import preferences
@@ -48,6 +39,7 @@ from pireal.gui.dialogs import new_database_dialog
 
 from pireal.core.settings import DATA_SETTINGS
 from pireal.core.pfile import File
+from pireal.core.db import DB
 # Logger
 logger = logging.getLogger(__name__)
 
@@ -60,7 +52,8 @@ class CentralWidget(QWidget):
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
-        self._current_database_name = None
+        self.db = DB()
+        self._current_database_name = None  # FIXME: replace with db.display_name
         self.pireal = parent
         self._stacked = QStackedLayout(self)
         self._main_panel = None
@@ -102,14 +95,11 @@ class CentralWidget(QWidget):
     def last_open_folder(self):
         return self._last_open_folder
 
-    def has_main_panel(self):
-        return self._main_panel is not None
-
     def create_database(self):
         """Show a wizard widget to create a new empty database,
         only have one database open at time."""
 
-        if self.has_main_panel():
+        if not self.db.is_new():
             return self._say_about_one_db_at_time()
         logger.debug('Creating a new empty database')
         dialog = new_database_dialog.NewDatabaseDialog(self)
@@ -122,7 +112,7 @@ class CentralWidget(QWidget):
         QMessageBox.information(self, tr.TR_MSG_INFORMATION, tr.TR_MSG_ONE_DB_AT_TIME)
 
     def open_database(self, filename=''):
-        if self.has_main_panel():
+        if not self.db.is_new():
             return self._say_about_one_db_at_time()
         # If not filename provide, then open dialog to select one
         if not filename:
@@ -130,8 +120,9 @@ class CentralWidget(QWidget):
                 directory = os.path.expanduser('~')
             else:
                 directory = self._last_open_folder
-            filters = settings.SUPPORTED_FILES.split(';;')[0]
-            filename, _ = QFileDialog.getOpenFileName(self, tr.TR_OPEN_DATABASE, directory, filters)
+            # filters = settings.SUPPORTED_FILES.split(';;')[0]
+            filename, _ = QFileDialog.getOpenFileName(
+                self, tr.TR_OPEN_DATABASE, directory, self.db.formats())
             # If is canceled, return
             if not filename:
                 logger.info('File not selected, bye!')
@@ -141,17 +132,21 @@ class CentralWidget(QWidget):
         # If filename provide
         try:
             logger.debug('Triying to open the database: "%s"', filename)
-            file_obj = File(filename)
-            database_content = file_obj.read()
-            if not database_content:
-                logger.info('The file "%s" is empty', filename)
-                QMessageBox.information(
-                    self, tr.TR_MSG_INFORMATION, tr.TR_DB_FILE_EMPTY.format(filename))
-                return
-            database_content = file_manager.parse_database_content(database_content)
+            database_content = self.db.load(filename)
         except Exception:
             logger.exception('The database file could not be opened', exc_info=True)
             return
+        #     # file_obj = File(filename)
+        #     database_content = file_obj.read()
+        #     if not database_content:
+        #         logger.info('The file "%s" is empty', filename)
+        #         QMessageBox.information(
+        #             self, tr.TR_MSG_INFORMATION, tr.TR_DB_FILE_EMPTY.format(filename))
+        #         return
+        #     database_content = file_manager.parse_database_content(database_content)
+        # except Exception:
+        #     logger.exception('The database file could not be opened', exc_info=True)
+        #     return
 
         # Create main panel for table view
         self._main_panel = MainPanel(self)
@@ -174,12 +169,12 @@ class CentralWidget(QWidget):
             self._main_panel.lateral_widget.add_item_to_relations(
                 table_name, relation_obj.cardinality(), relation_obj.degree())
 
-        self._current_database_name = file_obj.display_name
+        # self._current_database_name = file_obj.display_name
         self.pireal.update_title()
 
-        self.remember_recent_file(file_obj.path)
+        self.remember_recent_file(self.db.file_path())
 
-        logger.debug('Connected to database: "%s"', file_obj.display_name)
+        logger.debug('Connected to database: "%s"', self.db.display_name())
 
     def open_query(self, filename=''):
         # TODO: se ha sacado el parámetro `remember`, debería ser una configuración
@@ -305,8 +300,9 @@ class CentralWidget(QWidget):
     def remove_main_panel(self):
         if self._main_panel is not None:
             self._stacked.removeWidget(self._main_panel)
-        self.add_start_page()
+        self._main_panel = None
         self._current_database_name = None
+        self.add_start_page()
         self.pireal.update_title()
 
     def close_database(self):
@@ -328,7 +324,7 @@ class CentralWidget(QWidget):
         #         return
         #     elif reply == Yes:
         #         save()
-
+        logger.debug('Closing database %s', self._current_database_name)
         self.remove_main_panel()
 
     # def new_query(self, filename=''):
@@ -347,9 +343,8 @@ class CentralWidget(QWidget):
     #     # search_action.setEnabled(True)
 
     def execute_query(self):
-        self._main_panel.execute_query()
-    #     db_container = self.get_active_db()
-    #     db_container.execute_queries()
+        if self.has_main_panel():
+            self._main_panel.execute_query()
 
     def save_database(self):
         pass

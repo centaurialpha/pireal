@@ -43,7 +43,11 @@ def get_basename(filename):
     :returns: The base name, for example: "file"
      """
 
-    return os.path.splitext(os.path.basename(filename))[0]
+    return os.path.splitext(get_basename_with_extension(filename))[0]
+
+
+def get_basename_with_extension(filename):
+    return os.path.basename(filename)
 
 
 def get_path(filename):

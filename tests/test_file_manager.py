@@ -31,6 +31,18 @@ def test_get_basename(filename, name):
 
 
 @pytest.mark.parametrize(
+    'filename, name',
+    [
+        ('/home/gabo/archivo.py', 'archivo.py'),
+        ('/path/path/blabla/file.extension', 'file.extension'),
+        ('/hola/como/estas/que_onda.qda', 'que_onda.qda')
+    ]
+)
+def test_get_basename_with_extension(filename, name):
+    assert file_manager.get_basename_with_extension(filename) == name
+
+
+@pytest.mark.parametrize(
     'filename, path',
     [
         ('/home/gabo/archivo.py', '/home/gabo'),
