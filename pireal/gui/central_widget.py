@@ -58,8 +58,8 @@ class CentralWidget(QWidget):
         self._stacked = QStackedLayout(self)
         self._main_panel = None
         # Acá cacheo la última carpeta accedida
-        self._last_open_folder: str = DATA_SETTINGS.value('ds/lastOpenFolder')
-        self._recent_dbs: list = DATA_SETTINGS.value('ds/recentDbs', [], type=list)
+        self._last_open_folder: str = DATA_SETTINGS.value('lastOpenFolder')
+        self._recent_dbs: list = DATA_SETTINGS.value('recentDbs', [], type=list)
 
     #     esc_short = QShortcut(QKeySequence(Qt.Key_Escape), self)
     #     esc_short.activated.connect(self._hide_search)
@@ -343,8 +343,7 @@ class CentralWidget(QWidget):
     #     # search_action.setEnabled(True)
 
     def execute_query(self):
-        if self.has_main_panel():
-            self._main_panel.execute_query()
+        self._main_panel.execute_query()
 
     def save_database(self):
         pass

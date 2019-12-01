@@ -32,7 +32,7 @@ from pireal import translations as tr
 from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.query_container.query_container import QueryContainer
 from pireal.gui.table_widget import TableWidget
-
+from pireal.core.settings import DATA_SETTINGS
 
 __main_panel = None
 
@@ -62,18 +62,20 @@ class _MainPanel(QSplitter):
         self.addWidget(self._lateral_widget)
         self.addWidget(self._vertical_splitter)
 
-        # self.setStretchFactor(0, 1)
-        # self.setStretchFactor(1, 2)
-        # self._vertical_splitter.setStretchFactor(0, 1)
-        # self._vertical_splitter.setStretchFactor(1, 0.5)
-        # self.setSizes([70, 1])
-        # self._vertical_splitter.setSizes([1, 70])
-
         # Connections
         self._parent.pireal.themeChanged.connect(self.query_container.reload_editor_scheme)
         self._lateral_widget.relationClicked.connect(self._on_relation_clicked)
         self._lateral_widget.relationClosed[int, str].connect(self._on_relation_closed)
         self._lateral_widget.resultClicked.connect(self._on_result_clicked)
+
+    def showEvent(self, event):
+        main_panel_state = DATA_SETTINGS.value('main_panel_state')
+        query_container_state = DATA_SETTINGS.value('query_container_state')
+        if main_panel_state is not None:
+            self.restoreState(main_panel_state)
+        if query_container_state is not None:
+            self._vertical_splitter.restoreState(query_container_state)
+        super().showEvent(event)
 
     @Slot(int, str)
     def _on_relation_closed(self, index, name):

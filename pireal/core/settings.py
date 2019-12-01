@@ -25,7 +25,7 @@ import sys
 import os
 
 from PyQt5.QtCore import QSettings
-
+from PyQt5.QtCore import QVariant
 # from PyQt5.QtGui import QFont
 
 
@@ -86,6 +86,14 @@ class _QSettings(QSettings):
     def setValue(self, key, value):
         key = '{}/{}'.format(self._prefix, key)
         super().setValue(key, value)
+
+    def value(self, key, default=QVariant(), type=None):
+        key = '{}/{}'.format(self._prefix, key)
+        if type is not None:
+            value = super().value(key, defaultValue=default, type=type)
+        else:
+            value = super().value(key, defaultValue=default)
+        return value
 
 
 class Settings:

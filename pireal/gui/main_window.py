@@ -60,7 +60,7 @@ class Pireal(QMainWindow):
         self.setWindowTitle('Pireal')
         self.setMinimumSize(1615, 850)
         # Load window geometry
-        geometry = DATA_SETTINGS.value('ds/window_geometry')
+        geometry = DATA_SETTINGS.value('window_geometry')
         if geometry is None:
             self.showMaximized()
         else:
@@ -306,7 +306,12 @@ class Pireal(QMainWindow):
 
     def closeEvent(self, event):
         self.save_settings()
-
+        if self.central_widget._main_panel is not None:
+            DATA_SETTINGS.setValue(
+                'main_panel_state', self.central_widget._main_panel.saveState())
+            DATA_SETTINGS.setValue(
+                'query_container_state',
+                self.central_widget._main_panel._vertical_splitter.saveState())
         # db = self.central_widget.get_active_db()
         # if db is not None:
         #     # Save splitters size
