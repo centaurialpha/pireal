@@ -57,3 +57,8 @@ def test_date(value, day, month, year):
     assert date_value.day == day
     assert date_value.month == month
     assert date_value.year == year
+
+
+def test_date_with_syntax_error():
+    with pytest.raises(SyntaxError):
+        RelationStr('01/20/1991').cast()

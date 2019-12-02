@@ -3,6 +3,7 @@ PYTEST = pytest tests
 help:
 	@echo "test \t\t run tests"
 	@echo "test-gui \t run tests for GUI"
+	@echo "test-integration \t run integration tests"
 	@echo "pep8 \t\t run pycodestyle"
 	@echo "flake8 \t run flake8"
 	@echo "lint \t\t run pycodestyle and flake8"

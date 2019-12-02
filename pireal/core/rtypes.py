@@ -53,9 +53,14 @@ class RelationStr(str):
             try:
                 date = datetime.datetime.strptime(
                     self.value, "%Y/%m/%d")
-            except Exception:
+                return date.date()
+            except ValueError:
+                pass
+            try:
                 date = datetime.datetime.strptime(
                     self.value, "%d/%m/%Y")
+            except ValueError:
+                raise SyntaxError('Invalid date format')
             return date.date()
         elif IS_HOUR.match(self.value):
             return datetime.time(*list(map(int, self.value.split(':'))))
