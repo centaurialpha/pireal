@@ -1,7 +1,8 @@
-import pytest
+import os
 from unittest import mock
+import pytest
 
-from pireal.core.db import DB
+from pireal.core.db import DB, DBIOError
 
 
 class MockedRelation:
@@ -37,18 +38,19 @@ def test_remove_relation():
     db.add('r3', r3)
     assert len(db) == 3
     db.remove_from_name('r2')
+    db.remove_from_name('asdasdasd')
     assert len(db) == 2
     assert 'r2' not in db
     assert db.is_dirty()
 
 
-def test_new_db():
+def test_new_db(tmpdir):
     db = DB()
     assert db.is_new()
-
-
-def test_is_no_new(tmpdir):
-    fh = tmpdir.join('db_example.pdb')
+    db = DB(path='/path/no/existe')
+    assert db.is_new()
+    fh = tmpdir.join('test')
+    fh.write('algo')
     db = DB(path=fh)
     assert not db.is_new()
 
@@ -69,9 +71,27 @@ def test_save(tmpdir):
     r1.content = {('1', 'gabox'), ('2', 'rodrigo'), ('3', 'mechi')}
     db.add('r1', r1)
     assert db.is_dirty()
-    db.save()
-    assert not db.is_dirty()
-    expected = "@r1:id,name\n1,gabox\n2,rodrigo\n3,mechi"
-    with open(fh) as fp:
-        content = fp.read()
-    assert content == expected
+    with mock.patch('pireal.core.db.generate_database') as mock_gen_db:
+        mock_gen_db.return_value = 'algo'
+        db.save()
+        assert not db.is_dirty()
+        assert os.path.exists(db.file_path())
+
+
+def test_load(tmpdir):
+    fh = tmpdir.join('db_example.pdb')
+    fh.write('algo acá')
+
+    db = DB(path=fh)
+    with mock.patch('pireal.core.db.parse_database_content') as mock_parse_db:
+        db.load()
+        mock_parse_db.assert_called_with('algo acá')
+
+
+def test_load_with_error(tmpdir):
+    fh = tmpdir.join('db_example.pdb')
+    fh.write('')
+    db = DB()
+    os.remove(fh)
+    with pytest.raises(DBIOError):
+        db.load(fh)

@@ -16,8 +16,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
+import os
 import logging
-from collections import OrderedDict
 
 from pireal.core.file_manager import (
     get_basename_with_extension,
@@ -38,7 +38,7 @@ class DB:
     def __init__(self, path=None):
         self._dirty = False
         self._path = path
-        self._relations = OrderedDict()
+        self._relations = {}
 
     @staticmethod
     def formats() -> str:
@@ -54,7 +54,11 @@ class DB:
         return self._dirty
 
     def is_new(self) -> bool:
-        return self._path is None
+        new = True
+        if self._path is not None:
+            if os.path.exists(self._path):
+                new = False
+        return new
 
     def add(self, name: str, relation):
         if name in self._relations:
