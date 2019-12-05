@@ -23,7 +23,6 @@ from collections import namedtuple
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QSplitter
 from PyQt5.QtWidgets import QVBoxLayout
-from PyQt5.QtWidgets import QSizePolicy
 
 from PyQt5.QtQuickWidgets import QQuickWidget
 
@@ -33,7 +32,6 @@ from PyQt5.QtCore import QAbstractListModel
 from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtCore import pyqtSlot as Slot
 from PyQt5.QtCore import QUrl
-from PyQt5.QtCore import QSize
 
 from pireal import translations as tr
 from pireal.core import settings

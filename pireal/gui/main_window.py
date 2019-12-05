@@ -26,8 +26,6 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QApplication
 
-from PyQt5.QtCore import QPoint
-from PyQt5.QtCore import QSize
 from PyQt5.QtCore import pyqtSignal as Signal
 
 from pireal import translations as tr
