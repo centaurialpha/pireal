@@ -112,8 +112,11 @@ class Pireal(QMainWindow):
             menu = menubar.addMenu(menu_name)
             for menu_item in items:
                 if isinstance(menu_item, str):
-                    # Is a separator
-                    menu.addSeparator()
+                    if menu_item != '-':
+                        menu.addSection(menu_item)
+                    else:
+                        # Is a separator
+                        menu.addSeparator()
                 else:
                     action = menu_item['name']
                     slot_name = menu_item['slot']

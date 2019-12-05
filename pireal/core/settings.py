@@ -26,7 +26,6 @@ import os
 
 from PyQt5.QtCore import QSettings
 from PyQt5.QtCore import QVariant
-# from PyQt5.QtGui import QFont
 
 
 # Detecting Operating System
@@ -129,18 +128,19 @@ class Settings:
             if not key.startswith('us/'):
                 continue
             type_ = type(getattr(self, key.split('/')[-1]))
+            key = key.split('/')[-1]
             settings_map[key] = self._qsettings.value(key, type=type_)
 
-        self.language = settings_map.get('us/language', self.language)
-        self.font_family = settings_map.get('us/font_family', self.font_family)
-        self.font_size = settings_map.get('us/font_size', self.font_size)
+        self.language = settings_map.get('language', self.language)
+        self.font_family = settings_map.get('font_family', self.font_family)
+        self.font_size = settings_map.get('font_size', self.font_size)
         self.highlight_current_line = settings_map.get(
-            'us/highlight_current_line', self.highlight_current_line)
-        self.match_parenthesis = settings_map.get('us/match_parenthesis', self.match_parenthesis)
+            'highlight_current_line', self.highlight_current_line)
+        self.match_parenthesis = settings_map.get('match_parenthesis', self.match_parenthesis)
         self.alternate_row_colors = settings_map.get(
-            'us/alternate_row_colors', self.alternate_row_colors)
-        self.dark_mode = settings_map.get('us/dark_mode', self.dark_mode)
-        self.cursor_width = settings_map.get('us/cursor_width', self.cursor_width)
+            'alternate_row_colors', self.alternate_row_colors)
+        self.dark_mode = settings_map.get('dark_mode', self.dark_mode)
+        self.cursor_width = settings_map.get('cursor_width', self.cursor_width)
 
 
 USER_SETTINGS = Settings()

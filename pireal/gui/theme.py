@@ -20,7 +20,7 @@ DARK = {
     'ButtonTextDisabled': QColor(127, 127, 127),
     'BrightText': '#ff0000',
     'Link': QColor(42, 130, 218),
-    'Highlight': '#ff42539e',
+    'Highlight': '#3342539e',
     'Mid': '#bcbcbc',
     'Midlight': '#ff0000',
     'HighlightDisabled': QColor(80, 80, 80),

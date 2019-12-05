@@ -29,7 +29,11 @@ from pireal.core.file_manager import (
 logger = logging.getLogger(__name__)
 
 
-class DBIOError(Exception):
+class DBError(Exception):
+    pass
+
+
+class DBIOError(DBError):
     pass
 
 
@@ -70,7 +74,8 @@ class DB:
         try:
             del self._relations[name]
         except KeyError:
-            pass
+            logger.warning('Relation not exist: %s, nothing to remove', name)
+            return
         self._dirty = True
 
     def save(self):

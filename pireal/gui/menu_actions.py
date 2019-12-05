@@ -18,89 +18,50 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 """
-This module contains an ordered dictionary, in turn this has a dictionary
+This module contains a dictionary, in turn this has a dictionary
 with the name and a list of items with properties as an icon , shortcut,
 slot for each item in a menu.
 
 """
 
-from collections import OrderedDict
-
 from pireal import translations as tr
 
 
-MENU = OrderedDict()
+MENU = {}
 
 
 # Menu File
-MENU['database'] = {
-    'name': tr.TR_MENU_DB,
-    'items': ({
+MENU['file'] = {
+    'name': tr.TR_MENU_FILE,
+    'items': ('Database', {
         'name': tr.TR_MENU_FILE_NEW_DB,
-        'slot': "central:create_database"
-    }, {
-        'name': tr.TR_MENU_FILE_OPEN_DB,
-        'slot': "central:open_database"
+        'slot': 'central:create_database'
     }, {
         'name': tr.TR_MENU_FILE_SAVE_DB,
-        'slot': "central:save_database"
+        'slot': None
     }, {
         'name': tr.TR_MENU_FILE_SAVE_AS_DB,
-        'slot': "central:save_database_as"
+        'slot': None
     }, {
         'name': tr.TR_MENU_FILE_CLOSE_DB,
-        'slot': "central:close_database"
-    })
-}
-
-MENU['query'] = {
-    'name': tr.TR_MENU_QUERY,
-    'items': ({
+        'slot': None
+    }, 'Query', {
         'name': tr.TR_MENU_QUERY_NEW_QUERY,
-        'slot': "central:new_query"
-    }, {
-        'name': tr.TR_MENU_QUERY_OPEN_QUERY,
-        'slot': "central:open_query",
+        'slot': 'central:new_query'
     }, {
         'name': tr.TR_MENU_QUERY_SAVE_QUERY,
-        'slot': "central:save_query",
+        'slot': None
     }, {
         'name': tr.TR_MENU_QUERY_SAVE_AS_QUERY,
-        'slot': "central:save_query_as",
+        'slot': None
     }, {
-        'name': tr.TR_MENU_QUERY_EXECUTE,
-        'slot': "central:execute_query"
+        'name': tr.TR_MENU_FILE_CLOSE_QUERY,
+        'slot': None
+    }, '-', {
+        'name': tr.TR_MENU_FILE_QUIT,
+        'slot': 'pireal:close'
     })
 }
-# MENU['file'] = {
-#     'name': tr.TR_MENU_FILE,
-#     'items': [{
-#         'name': tr.TR_MENU_FILE_NEW_DB,
-#         'slot': "central:create_database"
-#     }, {
-#         'name': tr.TR_MENU_FILE_OPEN_DB,
-#         'slot': "central:open_database"
-#     }, {
-#         'name': tr.TR_MENU_FILE_SAVE_DB,
-#         'slot': "central:save_database"
-#     }, {
-#         'name': tr.TR_MENU_FILE_SAVE_AS_DB,
-#         'slot': "central:save_database_as"
-#     }, {
-#         'name': tr.TR_MENU_FILE_CLOSE_DB,
-#         'slot': "central:close_database"
-#     }, "-", {
-#         'name': translate("Pireal", "Nueva Consulta"),
-#         'slot': "central:new_query"
-#     }, {
-#         'name': translate("Pireal", "Abrir Consulta"),
-#         'slot': "central:open_query"
-#     }, {
-#         'name': translate("Pireal", "Guardar Consulta"),
-#         'slot': "central:save_query"
-#     }, "-", {
-#         'name': translate("Pireal", "Salir"),
-#         'slot': "pireal:close"}]}
 
 
 # # Menu Edit

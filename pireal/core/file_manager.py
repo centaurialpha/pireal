@@ -55,22 +55,19 @@ def get_path(filename):
     return os.path.dirname(filename)
 
 
-def generate_database(relations):
+def generate_database(relations) -> str:
     """ This function generates the content of the database
 
     :param relations: Dictionary with relations (Relation Object)
     :returns: The content of the database
     """
-
-    content = ""
-    for relation_name, relation in list(relations.items()):
-        content += '@%s:' % relation_name
-        header = ','.join(relation.header)
-        content += header + '\n'
-        for i in relation.content:
-            content += ','.join(i) + '\n'
+    content = ''
+    for relation_name, relation in relations.items():
+        h = '@{rname}:{header}\n'
+        content += h.format(rname=relation_name, header=','.join(relation.header))
+        for tuples in relation.content:
+            content += ','.join(tuples) + '\n'
         content += '\n'
-    # Remove last line
     content = content[:-1]
     return content
 

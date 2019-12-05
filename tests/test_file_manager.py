@@ -1,6 +1,6 @@
 import pytest
 import unittest
-from collections import defaultdict
+from collections import OrderedDict
 
 from pireal.core import file_manager
 from pireal.core import relation
@@ -71,20 +71,35 @@ def test_get_files_from_folder(tmpdir):
 
 
 def test_generate_database():
-    # FIXME: arreglar
-    r = relation.Relation()
-    r.header = ['id', 'name']
-    data = {
-        ("1", "Gabriel"),
-        ("23", "Rodrigo")
-    }
-    for d in data:
-        r.insert(d)
+    # XXX: acerca de este test
+    # lo ideal seria assertear el resultado con lo esperado pero
+    # no como tupla sino como un string.
+    # La implementación actual de Relation.content es un set
+    # (para aprovechar las operaciones sobre conjuntos),
+    # por lo tanto no importa el órden. Considerar mejorar eso
 
-    relations = {'persona': r}
-    expected = "@persona:id,name\n1,Gabriel\n23,Rodrigo\n"
+    r1 = relation.Relation()
+    r1.header = ['id', 'name']
+    r1.content.add(('1', 'gabox'))
+    r1.content.add(('23', 'rodrigo'))
 
-    # assert expected in file_manager.generate_database(relations)
+    r2 = relation.Relation()
+    r2.header = ['id', 'skill']
+    r2.content = {('23', 'games')}
+
+    relations = OrderedDict()
+    relations['people'] = r1
+    relations['skills'] = r2
+    expected = (
+        '@people:id,name',
+        '1,gabox',
+        '23,rodrigo',
+        '@skills:id,skill',
+        '23,games'
+    )
+    result = file_manager.generate_database(relations)
+    for expec in expected:
+        assert expec in result
 
 
 def test_database_text_content_simple_content():

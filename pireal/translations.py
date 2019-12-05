@@ -22,26 +22,27 @@ from PyQt5.QtCore import QCoreApplication
 tr = QCoreApplication.translate
 
 # Menu
-TR_MENU_DB = tr('Pireal', '&Database')
-TR_MENU_QUERY = tr('Preail', '&Query')
-# TR_MENU_EDIT = tr('Pireal', '&Edit')
+TR_MENU_FILE = tr('Pireal', '&File')
 TR_MENU_RELATION = tr('Pireal', '&Relation')
 TR_MENU_TOOLS = tr('Pireal', '&Tools')
 TR_MENU_HELP = tr('Pireal', '&Help')
-# Menu Database
-TR_MENU_FILE_NEW_DB = tr('Pireal', 'New...')
-TR_MENU_FILE_OPEN_DB = tr('Pireal', 'Open...')
-TR_MENU_FILE_SAVE_DB = tr('Pireal', 'Save...')
+# Menu File
+TR_MENU_FILE_NEW_DB = tr('Pireal', 'New')
+TR_MENU_FILE_OPEN_DB = tr('Pireal', 'Open')
+TR_MENU_FILE_SAVE_DB = tr('Pireal', 'Save')
 TR_MENU_FILE_SAVE_AS_DB = tr('Pireal', 'Save As...')
 TR_MENU_FILE_CLOSE_DB = tr('Pireal', 'Close')
-# Menu Query
-TR_MENU_QUERY_NEW_QUERY = tr('Pireal', 'New...')
-TR_MENU_QUERY_OPEN_QUERY = tr('Pireal', 'Open...')
-TR_MENU_QUERY_SAVE_QUERY = tr('Pireal', 'Save...')
+
+TR_MENU_QUERY_NEW_QUERY = tr('Pireal', 'New')
+TR_MENU_QUERY_OPEN_QUERY = tr('Pireal', 'Open')
+TR_MENU_QUERY_SAVE_QUERY = tr('Pireal', 'Save')
 TR_MENU_QUERY_SAVE_AS_QUERY = tr('Pireal', 'Save As...')
+TR_MENU_FILE_CLOSE_QUERY = tr('Pireal', 'Close')
+TR_MENU_FILE_QUIT = tr('Pireal', 'Quit')
+
 TR_MENU_QUERY_EXECUTE = tr('Pireal', 'Execute')
 # Menu Relation
-TR_MENU_RELATION_NEW = tr('Pireal', 'New...')
+TR_MENU_RELATION_NEW = tr('Pireal', 'New')
 TR_MENU_RELATION_DELETE = tr('Pireal', 'Delete')
 TR_MENU_RELATION_LOAD = tr('Pireal', 'Load')
 # Menu Tools
