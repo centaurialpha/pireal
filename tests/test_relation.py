@@ -312,12 +312,46 @@ def test_difference():
     assert new.cardinality() == 5
 
 
-# def test_str(relation_fixture):
-#     _, _, r3 = relation_fixture
-#     expected = ("|     date     |\n"
-#                 "----------------\n"
-#                 "|  2012-07-09  |\n"
-#                 "|  1998-12-09  |\n"
-#                 "|  2015-12-12  |\n")
-#     # assert str(r3) == expected
-#     # FIXME: el orden
+def test_update_relation():
+    r = relation.Relation()
+    r.header = ['id', 'name']
+    r.content.add(('21', 'Rodrigo'))
+    r.content.add(('1', 'gabox'))
+
+    expected = relation.OrderedSet([
+        ('21', 'Rodrigo'),
+        ('1', 'Gabriel')
+    ])
+
+    r.update(1, 1, 'Gabriel')
+
+    assert r.content == expected
+
+
+def test_append_row():
+    r = relation.Relation()
+    r.header = ['id', 'name']
+    r.content.add(('21', 'Rodrigo'))
+    r.content.add(('1', 'gabox'))
+
+    expected = relation.OrderedSet([
+        ('21', 'Rodrigo'),
+        ('1', 'gabox'),
+        ('null (1)', 'null (2)'),
+        ('null (3)', 'null (4)')
+    ])
+
+    r.append_row()
+    r.append_row()
+
+    assert r.content == expected
+
+
+def test_str_repr():
+    r = relation.Relation()
+    r.header = ['id', 'name']
+    r.content.add(('21', 'Rodrigo'))
+
+    expected = '|      id      |     name     |\n-------------------------------\n|      21      |   Rodrigo    |\n'
+    assert r.__str__() == expected
+    assert r.__repr__() == expected

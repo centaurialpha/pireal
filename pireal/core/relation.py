@@ -23,6 +23,8 @@
 import re
 import itertools
 
+from ordered_set import OrderedSet
+
 from pireal.core.rtypes import RelationStr
 
 IS_VALID_FIELD_NAME = re.compile("^[_á-úa-zA-Z][_á-úa-zA-Z0-9]*$")
@@ -100,7 +102,7 @@ def union_compatible(operation):
 class Relation(object):
 
     def __init__(self):
-        self.content = set()
+        self.content = OrderedSet()
         self._header = []
         self.name = ""
         self._null_count = 1
@@ -138,10 +140,11 @@ class Relation(object):
     def append_row(self):
         """Agrega una fila/tupla al final"""
 
-        null_row = ["null ({})".format(self._null_count)
-                    for i in range(self.degree())]
-        self.insert(tuple(null_row))
-        self._null_count += 1
+        nulls = []
+        for _ in range(self.degree()):
+            nulls.append('null ({})'.format(self._null_count))
+            self._null_count += 1
+        self.insert(tuple(nulls))
 
     def cardinality(self):
         """Devuelve la cantidad de filas de la relación"""
@@ -331,6 +334,7 @@ class Relation(object):
 
     def __str__(self):
         """Magic method. Returns a representation of the relation"""
+        print()
 
         header = ""
         for field in self._header:
@@ -345,3 +349,6 @@ class Relation(object):
             content += "|\n"
 
         return header + content
+
+    def __repr__(self):
+        return self.__str__()

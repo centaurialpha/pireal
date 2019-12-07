@@ -14,7 +14,7 @@ installation_on_windows: &installation_on_windows
     - choco install python --version 3.7.4
     - python --version
     - python -m pip install --upgrade pip
-    - pip3 install --upgrade pytest
+    - pip3 install --upgrade pytest ordered-set
 
 install: pip --version  # Avoid install with pip install -r requirements.txt
 
@@ -47,7 +47,7 @@ jobs:
       name: unit test
       before_install:
         - pip install pip --upgrade
-        - pip install pytest pytest-cov
+        - pip install pytest pytest-cov ordered-set
       script: make test
 
     - stage: Test
@@ -66,14 +66,14 @@ jobs:
             - libxkbcommon-x11-0
       name: unit test user interface
       before_install:
-        - pip install pyqt5 pytest pytest-qt
+        - pip install pyqt5 pytest pytest-qt ordered-set
       script: make test-gui
 
     - stage: Integration Test
       name: integration test
       before_install:
         - pip install pip --upgrade
-        - pip install pytest
+        - pip install pytest ordered-set
       before_script: make clean
       script: make test-integration
 
@@ -92,4 +92,5 @@ jobs:
         - pip install pytest
         - pip install pytest-cov
         - pip install coveralls
+        - pip install ordered-set
       script: coveralls
