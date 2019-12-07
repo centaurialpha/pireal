@@ -110,6 +110,7 @@ setup(
         ]
     },
     classifiers=CLASSIFIERS,
+    install_requires=['ordered-set'],
     scripts=['bin/pireal'],
     cmdclass={'install': CustomInstall}
 )

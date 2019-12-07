@@ -71,13 +71,6 @@ def test_get_files_from_folder(tmpdir):
 
 
 def test_generate_database():
-    # XXX: acerca de este test
-    # lo ideal seria assertear el resultado con lo esperado pero
-    # no como tupla sino como un string.
-    # La implementación actual de Relation.content es un set
-    # (para aprovechar las operaciones sobre conjuntos),
-    # por lo tanto no importa el órden. Considerar mejorar eso
-
     r1 = relation.Relation()
     r1.header = ['id', 'name']
     r1.content.add(('1', 'gabox'))
@@ -87,19 +80,14 @@ def test_generate_database():
     r2.header = ['id', 'skill']
     r2.content = {('23', 'games')}
 
-    relations = OrderedDict()
+    relations = {}
     relations['people'] = r1
     relations['skills'] = r2
-    expected = (
-        '@people:id,name',
-        '1,gabox',
-        '23,rodrigo',
-        '@skills:id,skill',
-        '23,games'
-    )
+
+    expected = '@people:id,name\n1,gabox\n23,rodrigo\n\n@skills:id,skill\n23,games\n'
     result = file_manager.generate_database(relations)
-    for expec in expected:
-        assert expec in result
+
+    assert result == expected
 
 
 def test_database_text_content_simple_content():
