@@ -1,10 +1,13 @@
 import random
 import string
 
+import pytest
+
 from pireal.core.relation import Relation
 from pireal.gui.model_view_delegate import RelationModel
 
 
+@pytest.mark.gui
 def test_model(qtmodeltester):
     relation = Relation()
     relation.header = ['header_1', 'header_2']
