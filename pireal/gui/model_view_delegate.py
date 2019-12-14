@@ -49,12 +49,16 @@ class RelationModel(QAbstractTableModel):
         self.editable = True
         self._relation = relation_object
 
-    def rowCount(self, index):
+    def rowCount(self, parent=QModelIndex()):
         """Devuelve la cardinalidad de la relación"""
+        if parent.isValid():
+            return 0
         return self._relation.cardinality()
 
-    def columnCount(self, index):
+    def columnCount(self, parent=QModelIndex()):
         """Devuelve el grado de la relación"""
+        if parent.isValid():
+            return 0
         return self._relation.degree()
 
     def data(self, index, role=Qt.DisplayRole):
@@ -62,7 +66,7 @@ class RelationModel(QAbstractTableModel):
             return None
 
         row, column = index.row(), index.column()
-        data = list(self._relation.content)
+        data = self._relation.content
         if role == Qt.DisplayRole or role == Qt.EditRole:
             return data[row][column]
         elif role == Qt.TextColorRole:
