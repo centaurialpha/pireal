@@ -68,6 +68,7 @@ jobs:
       before_install:
         - pip install pyqt5 pytest pytest-qt ordered-set
       script: make test-gui
+      if: type = pull_request
 
     - stage: Integration Test
       name: integration test
@@ -76,6 +77,7 @@ jobs:
         - pip install pytest ordered-set
       before_script: make clean
       script: make test-integration
+      if: type = pull_request
 
     - stage: Integration Test
       name: integration test on Windows
@@ -84,6 +86,7 @@ jobs:
       <<: *installation_on_windows
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
       script: pytest tests -m integration --ignore=tests/gui
+      if: type = pull_request
 
     - stage: Coverage
       name: coverage
