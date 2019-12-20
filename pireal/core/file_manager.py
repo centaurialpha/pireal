@@ -63,8 +63,8 @@ def generate_database(relations) -> str:
     """
     content = ''
     for relation_name, relation in relations.items():
-        h = '@{rname}:{header}\n'
-        content += h.format(rname=relation_name, header=','.join(relation.header))
+        header = ','.join(relation.header)
+        content += f'@{relation_name}:{header}\n'
         for tuples in relation.content:
             content += ','.join(tuples) + '\n'
         content += '\n'

@@ -45,7 +45,7 @@ class InvalidFieldNameError(RelationError):
 
     def __init__(self, field_name, msg=None):
         if msg is None:
-            msg = 'Invalid field name: {}'.format(field_name)
+            msg = f'Invalid field name: {field_name}'
         super().__init__(msg)
         self.field_name = field_name
 
@@ -54,7 +54,7 @@ class DuplicateFieldError(RelationError):
 
     def __init__(self, field_name, msg=None):
         if msg is None:
-            msg = 'Duplicated field name: {}'.format(field_name)
+            msg = f'Duplicated field name: {field_name}'
         super().__init__(msg)
         self.field_name = field_name
 
@@ -64,7 +64,7 @@ class FieldNotInHeaderError(RelationError):
 
     def __init__(self, field_name, relation_name, msg=None):
         if msg is None:
-            msg = 'Field name {} doesn\'t exist in {}'.format(field_name, relation_name)
+            msg = f'Field name {field_name} doesn\'t exist in {relation_name}'
         super().__init__(msg)
 
 
@@ -74,7 +74,7 @@ class WrongSizeError(RelationError):
 
     def __init__(self, expected, got, msg=None):
         if msg is None:
-            msg = "Wrong size. Expected {}, got {}".format(expected, got)
+            msg = f'Wrong size. Expected {expected}, got {got}'
         super().__init__(msg)
         self.expected = expected
         self.got = got
@@ -94,7 +94,7 @@ def union_compatible(operation):
         header_other = args[0].header
         if len(self._header) != len(header_other):
             raise UnionCompatibleError(
-                "Union not compatible for '{}'".format(operation.__name__))
+                f'Union not compatible for \'{operation.__name__}\'')
         return operation(self, *args, **kwargs)
     return inner
 
@@ -103,8 +103,8 @@ class Relation(object):
 
     def __init__(self):
         self.content = OrderedSet()
+        self.name = None
         self._header = []
-        self.name = ""
         self._null_count = 1
 
     @property

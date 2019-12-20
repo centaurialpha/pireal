@@ -17,39 +17,39 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-# import logging
+import logging
 
 from PyQt5.QtWidgets import QSplitter
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QTabWidget
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QFileDialog
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtCore import pyqtSlot as Slot
 
 from pireal import translations as tr
 from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.query_container.query_container import QueryContainer
 from pireal.gui.table_widget import TableWidget
+from pireal.core import settings
 from pireal.core.settings import DATA_SETTINGS
+from pireal.core.db import DB, DBIOError
+from pireal.core.file_manager import get_path
 
-__main_panel = None
-
-
-def MainPanel(*args, **kwargs):
-    global __main_panel
-    if __main_panel is None:
-        mp = _MainPanel(*args, **kwargs)
-        __main_panel = mp
-    return __main_panel
+logger = logging.getLogger(__name__)
 
 
-class _MainPanel(QSplitter):
+class MainPanel(QSplitter):
+
+    dbLoaded = Signal(object)
 
     def __init__(self, parent=None, orientation=Qt.Horizontal):
         super().__init__(orientation, parent)
         self._parent = parent
+        self.db = None
         # La UI se divide en 3
         self._lateral_widget = LateralWidget(self)
         self._central_view = CentralView(self)
@@ -63,10 +63,78 @@ class _MainPanel(QSplitter):
         self.addWidget(self._vertical_splitter)
 
         # Connections
-        self._parent.pireal.themeChanged.connect(self.query_container.reload_editor_scheme)
+        if self._parent is not None:
+            self._parent.pireal.themeChanged.connect(self.query_container.reload_editor_scheme)
         self._lateral_widget.relationClicked.connect(self._on_relation_clicked)
         self._lateral_widget.relationClosed[int, str].connect(self._on_relation_closed)
         self._lateral_widget.resultClicked.connect(self._on_result_clicked)
+
+    def create_db(self, file_path):
+        self.db = DB(path=file_path)
+
+    def load_database(self, filename):
+        self.create_db(filename)
+        try:
+            logger.debug('Triying to open the database file %s', filename)
+            self.db.load()
+        except DBIOError:
+            logger.exception('The database file could not be opened', exc_info=True)
+            QMessageBox.critical(
+                self,
+                tr.TR_MSG_ERROR,
+                tr.TR_MSG_DB_NOT_OPENED
+            )
+            return
+
+        for relation_name, relation in self.db:
+            self.central_view.add_relation(relation)
+            self.lateral_widget.add_item_to_relations(relation
+                                                      )
+        logger.debug('Connected to database %s', self.db.display_name())
+        self.dbLoaded.emit(self.db)
+
+    def close_database(self):
+        if self.db is None:
+            return
+        if self.db.is_dirty():
+            reply = QMessageBox.question(
+                self, tr.TR_MSG_SAVE_CHANGES, tr.TR_MSG_SAVE_CHANGES_BODY,
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            if reply == QMessageBox.Cancel:
+                return
+            if reply == QMessageBox.Yes:
+                self.save_database()
+
+        logger.debug('Closing database %s', self.db.display_name())
+
+    def save_database(self):
+        if self.db is None:
+            return
+        if self.db.is_new():
+            self.save_database_as()
+        else:
+            self.db.save()
+
+    def save_database_as(self):
+        if self.db is None:
+            return
+        if self.db.file_path() is not None:
+            save_folder = get_path(self.db.file_path())
+        else:
+            save_folder = settings.PIREAL_DATABASES
+        filename = QFileDialog.getSaveFileName(
+            self,
+            tr.TR_MSG_SAVE_DB_AS,
+            save_folder
+        )[0]
+        if not filename:
+            return
+        self.db.save(filename)
+
+    def add_relation(self, relation):
+        self.db.add(relation)
+        self.central_view.add_relation(relation)
+        self.lateral_widget.add_item_to_relations(relation)
 
     def showEvent(self, event):
         main_panel_state = DATA_SETTINGS.value('main_panel_state')
@@ -90,15 +158,6 @@ class _MainPanel(QSplitter):
         self._central_view.set_current_result(index)
 
     @property
-    def database_modified(self):
-        return self._central_view.table_widget.modified
-
-    # FIXME: FEO
-    @database_modified.setter
-    def database_modified(self, value: bool):
-        self._central_view.table_widget.modified = value
-
-    @property
     def lateral_widget(self):
         return self._lateral_widget
 
@@ -112,15 +171,6 @@ class _MainPanel(QSplitter):
 
     def execute_query(self):
         self._query_container.execute_query()
-
-    def close_database(self) -> bool:
-        pass
-        # Check if are database modified
-        # if self.database_modified:
-
-        #     reply = QMessageBox(
-        #         self, tr.TR_MSG_SAVE_CHANGES, tr.TR_MSG_SAVE_CHANGES_BODY.format())
-        # check if are query modified
 
 
 class CentralView(QWidget):
@@ -154,8 +204,8 @@ class CentralView(QWidget):
         self._table_widget.remove_relation(index, name)
         self._main_panel.lateral_widget.relations_view.model.remove_relation(index)
 
-    def add_relation(self, relation_obj, relation_name):
-        self._table_widget.add_relation(relation_obj, relation_name)
+    def add_relation(self, relation_obj):
+        self._table_widget.add_relation(relation_obj)
 
     def add_relation_to_results(self, relation_obj, relation_name):
         self._table_widget.add_relation_to_results(relation_obj, relation_name)

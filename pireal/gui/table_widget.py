@@ -87,9 +87,9 @@ class TableWidget(QSplitter):
     def set_current_result(self, index: int):
         self._result_stack.setCurrentIndex(index)
 
-    def add_relation(self, relation_obj, relation_name, editable=True):
+    def add_relation(self, relation_obj, editable=True):
         table_view = self.create_table(relation_obj, editable=editable)
-        self._relations[relation_name] = relation_obj
+        self._relations[relation_obj.name] = relation_obj
         self._add_or_remove_empty_widget()
         index = self._relation_stack.addWidget(table_view)
         self._relation_stack.setCurrentIndex(index)
@@ -148,7 +148,7 @@ class TableWidget(QSplitter):
 #         self.setSizes([1, 1])
 #         self._other_tab.hide()
 
-#         self.relations = OrderedDict()
+#         self.relations = {}
 
 #         # Stack
 #         self.stacked = QStackedWidget()

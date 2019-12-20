@@ -25,6 +25,7 @@ from pireal.core.file_manager import (
     parse_database_content,
     detect_encoding
 )
+from pireal.core.relation import Relation
 
 logger = logging.getLogger(__name__)
 
@@ -44,14 +45,25 @@ class DB:
         self._path = path
         self._relations = {}
 
-    @staticmethod
-    def formats() -> str:
-        return 'Pireal Database File *.pdb'
+    @property
+    def relations(self) -> tuple:
+        return tuple(self._relations.values())
+
+    @property
+    def relation_names(self) -> tuple:
+        return tuple(self._relations.keys())
+
+    def give_relation(self, name: str) -> Relation:
+        if name not in self._relations:
+            raise NameError(f'Relation {name} not found')
+        return self._relations[name]
 
     def file_path(self) -> str:
         return self._path
 
     def display_name(self) -> str:
+        if self.is_new():
+            return 'new'
         return get_basename_with_extension(self._path)
 
     def is_dirty(self) -> bool:
@@ -64,21 +76,24 @@ class DB:
                 new = False
         return new
 
-    def add(self, name: str, relation):
-        if name in self._relations:
-            raise NameError('Relation %s alredy exist', name)
-        self._relations[name] = relation
+    def add(self, relation: Relation):
+        if relation.name in self._relations:
+            raise NameError(f'Relation {relation.name} alredy exist')
+        self._relations[relation.name] = relation
         self._dirty = True
 
     def remove_from_name(self, name: str):
         try:
             del self._relations[name]
         except KeyError:
-            logger.warning('Relation not exist: %s, nothing to remove', name)
+            logger.warning(f'Relation {name} not exist, nothing to remove')
             return
         self._dirty = True
 
-    def save(self):
+    def save(self, file_path=None):
+        if file_path is not None:
+            self._path = file_path
+        logger.debug('Generating database in %s', self._path)
         db_content = generate_database(self._relations)
         with open(self._path, 'w') as fp:
             fp.write(db_content)
@@ -95,11 +110,39 @@ class DB:
         except (IOError, UnicodeDecodeError) as reason:
             logger.exception('Could not open file: %s', self._path)
             raise DBIOError(reason)
+        db_content = parse_database_content(content)
+        self._load_relations_from_content(db_content)
 
-        return parse_database_content(content)
+    def _load_relations_from_content(self, content: list):
+        for table in content:
+            relation_name = table['name']
+            header = table['header']
+            tuples = table['tuples']
+
+            relation = Relation()
+            relation.name = relation_name
+            relation.header = header
+
+            for t in tuples:
+                relation.insert(t)
+
+            self.add(relation)
+
+        self._dirty = False
 
     def __iter__(self):
-        return iter(self._relations)
+        for name, relation in self._relations.items():
+            yield name, relation
+
+    def __getitem__(self, key):
+        return self._relations[key]
 
     def __len__(self):
         return len(self._relations)
+
+    def __repr__(self):
+        return (
+            f'DB(name={self.display_name()} '
+            f'path={self.file_path()} '
+            f'relations={len(self)})'
+        )

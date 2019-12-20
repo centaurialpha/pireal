@@ -50,9 +50,8 @@ class ConsumeError(InterpreterError):
 
     def __init__(self, expected, got, lineno, msg=None):
         if msg is None:
-            msg = ("It is expected to find '{}',"
-                   " but '{}' found in line: '{}'".format(
-                       expected, got, lineno))
+            msg = (f"It is expected to find '{expected}', "
+                   f"but '{got}' found in line: '{lineno}'")
         super().__init__(msg)
         self.expected = expected
         self.got = got

@@ -119,7 +119,7 @@ class NewRelationDialog(QDialog):
 
         for i in range(2):
             item = QTableWidgetItem()
-            item.setText('Value_{}'.format(i))
+            item.setText(f'Value_{i}')
             self.table.setItem(0, i, item)
 
     def create_relation(self):
@@ -153,7 +153,8 @@ class NewRelationDialog(QDialog):
             return
         relation = self.create_relation()
         if relation is not None:
-            self._data = self.relation_name, relation
+            relation.name = self.relation_name
+            self._data = relation
             QDialog.accept(self)
 
     @Slot()

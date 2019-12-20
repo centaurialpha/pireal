@@ -22,8 +22,7 @@ import os
 
 import pytest
 
-from pireal.core.pfile import File
-from pireal.core.file_manager import parse_database_content
+from pireal.core.db import DB
 from pireal.core.relation import Relation
 from pireal.core.interpreter import parse
 
@@ -37,36 +36,16 @@ QUERY_PATH = os.path.join(SAMPLES, 'queries.pqf')
 def test_full_cycle():
     for database_filepath in (SAMPLE_PDB_PATH, SAMPLE_PDB_WINDOWS_PATH):
         # Prepare DB
-        db_file = File(path=database_filepath)
-        assert not db_file.is_new()
-        db_content_parsed = parse_database_content(db_file.read())
-        assert db_content_parsed
-
-        relations = {}
-
-        db_count = 0
-
-        for table in db_content_parsed:
-            name = table['name']
-            header = table['header']
-            tuples = table['tuples']
-
-            relation_obj = Relation()
-            relation_obj.header = header
-            for data in tuples:
-                relation_obj.insert(data)
-
-            relations[name] = relation_obj
-            db_count += 1
-
-        assert len(relations) == db_count
+        db = DB(path=database_filepath)
+        assert not db.is_new()
+        db.load()
+        assert len(db) > 0
         # Prepare query
-        query_file = File(path=QUERY_PATH)
-        result = parse(query_file.read())
+        with open(QUERY_PATH) as fp:
+            result = parse(fp.read())
 
-        # FIXME: esto se hace de la misma forma en execute_queries. Unificar
-        relations_copy = dict(relations)
-        query_count = db_count
+        relations_copy = dict(db._relations)
+        query_count = len(db)
         for query_name, query in result.items():
             new_relation = eval(query, {}, relations_copy)
             relations_copy[query_name] = new_relation

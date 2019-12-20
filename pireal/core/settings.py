@@ -70,10 +70,16 @@ EXAMPLES = os.path.join(ROOT_DIR, 'samples')
 # Supported files.
 # DON'T change the order!
 SUPPORTED_FILES = (
-    "Pireal Database File (*.pdb);;"
-    "Pireal Query File (*.pqf);;"
-    "Pireal Relation File (*.prf)"
+    "Pireal Database File (*.pdb)",
+    "Pireal Query File (*.pqf)",
+    "Pireal Relation File (*.prf)",
 )
+
+
+def get_extension_filter(extension):
+    for sf in SUPPORTED_FILES:
+        if extension in sf:
+            return sf
 
 
 class _QSettings(QSettings):
@@ -83,11 +89,11 @@ class _QSettings(QSettings):
         self._prefix = prefix
 
     def setValue(self, key, value):
-        key = '{}/{}'.format(self._prefix, key)
+        key = f'{self._prefix}/{key}'
         super().setValue(key, value)
 
     def value(self, key, default=QVariant(), type=None):
-        key = '{}/{}'.format(self._prefix, key)
+        key = f'{self._prefix}/{key}'
         if type is not None:
             value = super().value(key, defaultValue=default, type=type)
         else:

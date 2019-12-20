@@ -37,14 +37,17 @@ MENU['file'] = {
         'name': tr.TR_MENU_FILE_NEW_DB,
         'slot': 'central:create_database'
     }, {
+        'name': tr.TR_MENU_FILE_OPEN_DB,
+        'slot': 'central:open_database'
+    }, {
         'name': tr.TR_MENU_FILE_SAVE_DB,
-        'slot': None
+        'slot': 'central:save_database'
     }, {
         'name': tr.TR_MENU_FILE_SAVE_AS_DB,
-        'slot': None
+        'slot': 'central:save_database_as'
     }, {
         'name': tr.TR_MENU_FILE_CLOSE_DB,
-        'slot': None
+        'slot': 'central:close_database'
     }, 'Query', {
         'name': tr.TR_MENU_QUERY_NEW_QUERY,
         'slot': 'central:new_query'
@@ -102,7 +105,7 @@ MENU['relation'] = {
     'name': tr.TR_MENU_RELATION,
     'items': ({
         'name': tr.TR_MENU_RELATION_NEW,
-        'slot': "central:create_new_relation"
+        'slot': "central:create_relation"
     }, {
         'name': tr.TR_MENU_RELATION_DELETE,
         'slot': "central:remove_relation"

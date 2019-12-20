@@ -137,4 +137,4 @@ class NodeVisitor(object):
     def _generic_visit(self, node):
         """ Called if not explicit visitor function exists for a node """
 
-        raise Exception("No visit_{} method".format(node.__class__.__name__))
+        raise Exception(f'No visit_{node.__class__.__name__} method')

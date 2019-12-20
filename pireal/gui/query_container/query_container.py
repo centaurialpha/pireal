@@ -49,7 +49,6 @@ from pireal.core import interpreter
 from pireal.gui.query_container import editor
 # from pireal.gui.query_container import tab_widget
 # from pireal.core import settings
-from pireal.core.pfile import File
 
 logger = logging.getLogger(__name__)
 
@@ -84,17 +83,19 @@ class QueryContainer(QWidget):
             self.show()
 
     def open_query(self, query_filepath=None):
-        file_obj = File(query_filepath)
-        if self._editor_widget.is_open(query_filepath):
-            weditor = self._editor_widget.get_editor_by_filename(query_filepath)
-            self._editor_widget.set_current_editor(weditor)
-        else:
-            weditor = self._editor_widget.create_editor(file_obj)
-            if not file_obj.is_new():
-                weditor.setPlainText(file_obj.read())
+        pass
+        # file_obj = File(query_filepath)
+        # with open(query_filepath)
+        # if self._editor_widget.is_open(query_filepath):
+        #     weditor = self._editor_widget.get_editor_by_filename(query_filepath)
+        #     self._editor_widget.set_current_editor(weditor)
+        # else:
+        #     weditor = self._editor_widget.create_editor(file_obj)
+        #     if not file_obj.is_new():
+        #         weditor.setPlainText(file_obj.read())
 
-        if not self.isVisible():
-            self.show()
+        # if not self.isVisible():
+        #     self.show()
 
     def execute_query(self):
         current_editor = self._editor_widget.current_editor()
@@ -202,7 +203,7 @@ class EditorWidget(QWidget):
     def get_editor_by_filename(self, filename: str) -> editor.Editor:
         return self._opened_editors[filename]
 
-    def create_editor(self, file_obj: File):
+    def create_editor(self, file_obj):
         weditor = editor.Editor(file_obj=file_obj)
         if file_obj.is_new():
             tab_title = 'New query({})'.format(self._new_queries_count)

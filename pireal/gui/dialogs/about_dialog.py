@@ -47,7 +47,7 @@ class AboutDialog(QDialog):
         vbox.addWidget(banner)
 
         # Version
-        lbl_version = QLabel("{0}".format(pireal.__version__))
+        lbl_version = QLabel(f'{pireal.__version__}')
         lbl_version.setAlignment(Qt.AlignHCenter)
         font = lbl_version.font()
         font.setPointSize(10)
@@ -55,7 +55,7 @@ class AboutDialog(QDialog):
         vbox.addWidget(lbl_version)
 
         # Code name
-        lbl_code_name = QLabel("{}".format(pireal.__code_name__))
+        lbl_code_name = QLabel(f'{pireal.__code_name__}')
         lbl_code_name.setAlignment(Qt.AlignHCenter)
         font = lbl_code_name.font()
         font.setPointSize(9)

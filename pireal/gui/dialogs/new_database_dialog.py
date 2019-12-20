@@ -18,6 +18,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import os
+
 from PyQt5.QtWidgets import QWizard
 from PyQt5.QtWidgets import QWizardPage
 from PyQt5.QtWidgets import QVBoxLayout
@@ -28,17 +29,12 @@ from PyQt5.QtWidgets import QStyle
 from PyQt5.QtWidgets import QFileDialog
 
 from PyQt5.QtCore import pyqtSlot as Slot
-from PyQt5.QtCore import pyqtSignal as Signal
 
 from pireal import translations as tr
 from pireal.core import settings
 
 
 class NewDatabaseDialog(QWizard):
-
-    # La señal se emite cuando se crea la DB, es decir
-    # cuando se clickea en el botón 'Crear' del diálogo
-    created = Signal(str, str, str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -52,13 +48,7 @@ class NewDatabaseDialog(QWizard):
 
     def done(self, result):
         if result == 1:
-            self._data['db_name'] = self.field('dbname')
-            self._data['db_location'] = self.field('dblocation')
-            self._data['db_filename'] = self.field('dbfilename')
-            # dbname = self.field("dbname")
-            # location = self.field("dblocation")
-            # filename = self.field("dbfilename")
-            # self.created.emit(dbname, location, filename)
+            self._data['file_path'] = self.field('dbfilename')
         super().done(result)
 
 

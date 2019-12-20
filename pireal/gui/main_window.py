@@ -69,7 +69,6 @@ class Pireal(QMainWindow):
         # Central widget
         self.central_widget = central_widget.CentralWidget(self)
         self.setCentralWidget(self.central_widget)
-        self.central_widget.add_start_page()
         # Menu bar
         menubar = self.menuBar()
         self._load_menubar(menubar)
@@ -200,9 +199,9 @@ class Pireal(QMainWindow):
 
     def update_title(self):
         text = 'Pireal'
-        db_name = self.central_widget.current_database_name
-        if db_name is not None:
-            text += ' - ' + tr.TR_NOTIFICATION_DB_CONNECTED.format(db_name)
+        # db_name = self.central_widget.current_database_name
+        # if db_name is not None:
+        #     text += ' - ' + tr.TR_NOTIFICATION_DB_CONNECTED.format(db_name)
         self.setWindowTitle(text)
 
     def set_enabled_actions(self, actions, value):

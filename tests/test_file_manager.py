@@ -1,6 +1,5 @@
 import pytest
 import unittest
-from collections import OrderedDict
 
 from pireal.core import file_manager
 from pireal.core import relation

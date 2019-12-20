@@ -123,11 +123,17 @@ class LateralWidget(QSplitter):
     def relations_view(self):
         return self._relations_view
 
-    def add_item_to_relations(self, name: str, cardinality: int, degree: int):
+    def add_item_to_relations(self, relation):
+        name = relation.name
+        cardinality = relation.cardinality()
+        degree = relation.degree()
         item = RelationItem(name, cardinality, degree)
         self._relations_model.add_relation(item)
 
-    def add_item_to_results(self, name: str, cardinality: int, degree: int):
+    def add_item_to_results(self, relation):
+        name = relation.name
+        cardinality = relation.cardinality()
+        degree = relation.degree()
         item = RelationItem(name, cardinality, degree)
         self._results_model.add_relation(item)
 
@@ -163,6 +169,7 @@ class RelationListQML(QWidget):
     def _connect_signals(self):
         self._root.itemClicked[int].connect(self.itemClicked.emit)
         self._root.itemClosed[int].connect(self._relation_closed)
+        # XXX: Esto está muy mal, arreglar
         self._parent.parent._parent.pireal.themeChanged.connect(self._reload)
 
     @Slot(int)
@@ -184,10 +191,3 @@ class RelationListQML(QWidget):
     def set_title(self, title):
         self._root.setTitle(title)
 
-    # def sizeHint(self):
-    #     return self._view.sizeHint()
-
-    def resizeEvent(self, event):
-        # print(self.sizeHint(), self.width())
-        print(self._view.sizeHint(), self._view.width())
-        super().resizeEvent(event)

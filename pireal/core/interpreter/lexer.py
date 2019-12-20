@@ -75,10 +75,7 @@ class Token(object):
         Token(IDENTIFIER, foo)
         """
 
-        return 'Token({type}, {value})'.format(
-            type=self.type,
-            value=self.value
-        )
+        return f'Token({self.type}, {self.value})'
 
     def __repr__(self):
         return self.__str__()

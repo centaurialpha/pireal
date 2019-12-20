@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from collections import OrderedDict
-
 from pireal.core.interpreter.tokens import (
     STRING,
     DATE,
@@ -363,7 +361,7 @@ class Interpreter(ast.NodeVisitor):
 
     # key: relation_name
     # value: query
-    SCOPE = OrderedDict()
+    SCOPE = {}
 
     def __init__(self, parser):
         self.parser = parser
@@ -385,11 +383,7 @@ class Interpreter(ast.NodeVisitor):
     def visit_BinaryOp(self, node):
         left = self.visit(node.left)
         right = self.visit(node.right)
-        return '{0}.{1}({2})'.format(
-            left,
-            node.token.value,
-            right
-        )
+        return f'{left}.{node.token.value}({right})'
 
     def visit_Number(self, node):
         return node.num
