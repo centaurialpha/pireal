@@ -17,37 +17,31 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import QStatusBar
-from pireal.gui.main_window import Pireal
+"""
+Some custom widgets
+"""
+
+from PyQt5.QtWidgets import QSplitter
+
+from PyQt5.QtCore import Qt
+
+from pireal.core.settings import DATA_SETTINGS
 
 
-class StatusBar(QStatusBar):
+class RememberingSplitter(QSplitter):
+    """
+    Splitter that remember state
+    """
 
-    def __init__(self):
-        super(StatusBar, self).__init__()
+    def __init__(self, orientation=Qt.Horizontal, parent=None):
+        super().__init__(orientation, parent)
+        self.name = self.__class__.__name__
 
-        Pireal.load_service("status", self)
+    def save_state(self):
+        DATA_SETTINGS.setValue(self.name, self.saveState())
 
-        self.messageChanged['QString'].connect(self.__message_end)
-
-    def show_message(self, msg, timeout=4000):
-        """ This function is a implementation of QStatusBar.showMessage
-
-        :param msg: Text message
-        :param timeout:
-        """
-
-        self.show()
-        self.showMessage(msg, timeout)
-
-    def __message_end(self, msg):
-        """ This function hide the Status Bar
-
-        :param msg: Text message
-        """
-
-        if not msg:
-            self.hide()
-
-
-status = StatusBar()
+    def showEvent(self, event):
+        state = DATA_SETTINGS.value(self.name)
+        if state is not None:
+            self.restoreState(state)
+        super().showEvent(event)

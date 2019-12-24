@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015-2019 Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2020 Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -29,7 +29,7 @@ def create_dirs():
     """This functions create a structure folders used by Pireal"""
 
     pireal_dir = settings.PIREAL_DIR
-    is_win = settings.WINDOWS
+    is_win = settings.IS_WINDOWS
     for path in (pireal_dir, settings.PIREAL_DATABASES, settings.LOGS_PATH):
         if not os.path.isdir(path):
             os.mkdir(path)
@@ -60,7 +60,7 @@ if args.version:
     print(__version__)
     sys.exit(0)
 
-# Creo los dirs antes de leer logs see #84
+# Creo los dirs antes de leer logs. see #84
 create_dirs()
 
 from pireal.core import logger  # noqa
@@ -69,4 +69,4 @@ from pireal import resources  # noqa
 # Set up logger
 logger.set_up(args.verbose)
 
-main.start_pireal()
+main.start_pireal(args)

@@ -80,9 +80,8 @@ class AboutDialog(QDialog):
         vbox.addWidget(web_lbl)
 
         # Copyright
-        copy = QLabel("<br>Copyright © 2015-{year} - "
-                      "Gabriel 'gabo' Acosta".format(
-                          year=datetime.today().year))
+        copy = QLabel(f"<br>Copyright © 2015-{datetime.today().year} - "
+                      "Gabriel 'gabo' Acosta")
         copy.setAlignment(Qt.AlignHCenter)
         font = copy.font()
         font.setPointSize(9)

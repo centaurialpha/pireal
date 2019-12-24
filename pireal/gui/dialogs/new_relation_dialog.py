@@ -39,7 +39,7 @@ from pireal import translations as tr
 from pireal.core.relation import Relation, InvalidFieldNameError
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('gui.dialogs.new_relation_dialog')
 
 
 class NewRelationDialog(QDialog):
@@ -76,12 +76,12 @@ class NewRelationDialog(QDialog):
         self.table.horizontalHeader().sectionDoubleClicked.connect(self._edit_header)
         self.setup_empty_table()
 
-        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
 
-        vbox.addWidget(button_box)
+        vbox.addWidget(self.button_box)
 
-        button_box.accepted.connect(self.accept)
-        button_box.rejected.connect(self.reject)
+        self.button_box.accepted.connect(self.accept)
+        self.button_box.rejected.connect(self.reject)
 
         btn_add_column.clicked.connect(self.add_column)
         btn_add_row.clicked.connect(self.add_row)
@@ -106,6 +106,10 @@ class NewRelationDialog(QDialog):
             tr.TR_RELATION_DIALOG_HEADER_NAME, QLineEdit.Normal, old_header
         )
         if ok:
+            for i in range(self.table.columnCount()):
+                text = self.table.model().headerData(i, Qt.Horizontal)
+                if text == new_header:
+                    return
             item.setText(new_header)
 
     def get_data(self):

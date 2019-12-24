@@ -99,33 +99,18 @@ class StartPage(QWidget):
         vbox.setContentsMargins(0, 0, 0, 0)
         self._view = QQuickWidget()
         self._view.rootContext().setContextProperty('listModel', self._model)
-        self._set_source()
+        qml = os.path.join(settings.QML_PATH, "StartPage.qml")
+        self._view.setSource(QUrl.fromLocalFile(qml))
         self._view.setResizeMode(QQuickWidget.SizeRootObjectToView)
         vbox.addWidget(self._view)
 
         self._root = self._view.rootObject()
-        self._connect_signals()
 
-    def _connect_signals(self):
         self._root.newDatabase.connect(self._central.create_database)
         self._root.openDatabase.connect(self._central.open_database)
         self._root.openExample.connect(self._open_example)
         self._root.openRecentDatabase[str].connect(self._central.open_database)
         self._root.removeItem[int].connect(self._remove_item)
-        self._central.pireal.themeChanged.connect(self._reload)
-
-    def _set_source(self):
-        qml = os.path.join(settings.QML_PATH, "StartPage.qml")
-        self._view.setSource(QUrl.fromLocalFile(qml))
-
-    def _reload(self):
-        self._view.rootObject().deleteLater()
-        self._view.setSource(QUrl())
-        self._set_source()
-        self._root = self._view.rootObject()
-        self._model.clear()
-        self.load_items()
-        self._connect_signals()
 
     def _open_example(self):
         db_filename = os.path.abspath(os.path.join(settings.EXAMPLES, 'database.pdb'))

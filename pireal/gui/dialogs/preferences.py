@@ -30,46 +30,55 @@ from PyQt5.QtWidgets import QDialogButtonBox
 from PyQt5.QtGui import QFontDatabase
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSignal as Signal
+
+from pireal import translations as tr
 from pireal.core.settings import USER_SETTINGS
 
 
-class Preferences(QDialog):
+class PreferencesDialog(QDialog):
+
+    settingsChanged = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._central = parent
-        self.setWindowTitle('Preferences')
+        self.setAttribute(Qt.WA_DeleteOnClose)
+        self.setWindowTitle(tr.TR_DIALOG_PREF_TITLE)
         vbox = QVBoxLayout(self)
 
-        group_general = QGroupBox('General:')
+        group_general = QGroupBox(tr.TR_DIALOG_PREF_GENERAL)
         grid_general = QGridLayout(group_general)
-        self._check_dark_mode = QCheckBox('Dark Mode')
-        grid_general.addWidget(self._check_dark_mode, 0, 0)
+        self._check_dark_mode = QCheckBox(tr.TR_DIALOG_PREF_DARK_MODE)
+        self._check_dark_mode.setChecked(USER_SETTINGS.dark_mode)
+        dark_mode_layout = QVBoxLayout()
+        dark_mode_layout.addWidget(self._check_dark_mode)
+        dark_mode_layout.addWidget(QLabel(tr.TR_DIALOG_PREF_DARK_MODE_LABEL))
+        grid_general.addLayout(dark_mode_layout, 0, 0)
         self._combo_languages = QComboBox()
-        grid_general.addWidget(QLabel('Language:'), 0, 1, Qt.AlignRight)
+        grid_general.addWidget(QLabel(tr.TR_DIALOG_PREF_LANG), 0, 1, Qt.AlignRight)
         grid_general.addWidget(self._combo_languages, 0, 2)
 
-        group_editor = QGroupBox('Editor:')
+        group_editor = QGroupBox(tr.TR_DIALOG_PREF_EDITOR)
         grid_editor = QGridLayout(group_editor)
-        self._check_highlight_current_line = QCheckBox('Highlight Current Line')
+        self._check_highlight_current_line = QCheckBox(tr.TR_DIALOG_PREF_HIGHLIGHT_CUR_LINE)
         self._check_highlight_current_line.setChecked(USER_SETTINGS.highlight_current_line)
         grid_editor.addWidget(self._check_highlight_current_line, 0, 0)
-        self._check_highlight_braces = QCheckBox('Highlight Braces')
+        self._check_highlight_braces = QCheckBox(tr.TR_DIALOG_PREF_HIGHLIGHT_BRACES)
         self._check_highlight_braces.setChecked(USER_SETTINGS.match_parenthesis)
         grid_editor.addWidget(self._check_highlight_braces, 0, 1)
 
-        group_font = QGroupBox('Font:')
+        group_font = QGroupBox(tr.TR_DIALOG_PREF_FONT)
         font_db = QFontDatabase()
         grid_font = QGridLayout(group_font)
         self._combo_font_family = QFontComboBox()
-        grid_font.addWidget(QLabel('Family:'), 0, 0)
+        grid_font.addWidget(QLabel(tr.TR_DIALOG_PREF_FONT_FAMILY), 0, 0)
         grid_font.addWidget(self._combo_font_family, 0, 1)
         self._combo_font_family.setCurrentText(USER_SETTINGS.font_family)
         self._combo_font_size = QComboBox()
         self._combo_font_size.addItems(map(str, font_db.pointSizes(USER_SETTINGS.font_family)))
         self._combo_font_size.setCurrentText(str(USER_SETTINGS.font_size))
 
-        grid_font.addWidget(QLabel('Size:'), 0, 2)
+        grid_font.addWidget(QLabel(tr.TR_DIALOG_PREF_FONT_SIZE), 0, 2)
         grid_font.addWidget(self._combo_font_size, 0, 3)
 
         btn_box = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
@@ -91,3 +100,4 @@ class Preferences(QDialog):
         USER_SETTINGS.save()
 
         super().accept()
+        self.settingsChanged.emit()

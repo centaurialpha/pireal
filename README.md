@@ -1,6 +1,5 @@
 
 [![Build Status](https://travis-ci.org/centaurialpha/pireal.svg?branch=develop)](https://travis-ci.org/centaurialpha/pireal)
-[![Workflow](https://github.com/centaurialpha/pireal/workflows/Main%20Workflow/badge.svg)](https://github.com/centaurialpha/pireal)
 [![Coverage Status](https://coveralls.io/repos/github/centaurialpha/pireal/badge.svg?branch=develop)](https://coveralls.io/github/centaurialpha/pireal?branch=develop)
 ---
 

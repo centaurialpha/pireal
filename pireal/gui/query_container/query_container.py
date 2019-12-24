@@ -17,40 +17,23 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-# import re
 import logging
-from typing import (
-    Tuple,
-    List
-)
+from typing import Iterator, Tuple
 
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QVBoxLayout
-from PyQt5.QtWidgets import QTabWidget
-from PyQt5.QtWidgets import QHBoxLayout
-# from PyQt5.QtWidgets import QSplitter
-# from PyQt5.QtWidgets import QMessageBox
-# from PyQt5.QtWidgets import QStackedWidget
-from PyQt5.QtWidgets import QLabel
-# from PyQt5.QtWidgets import QDialog
-from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtWidgets import QLineEdit
-# from PyQt5.QtWidgets import QAction
-# from PyQt5.QtWidgets import QToolBar
-
-# from PyQt5.QtCore import QSettings
-# from PyQt5.QtCore import QSize
-
-from PyQt5.QtCore import pyqtSlot as Slot
+from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSignal as Signal
+from PyQt5.QtCore import pyqtSlot as Slot
+from PyQt5.QtGui import QCursor
+from PyQt5.QtWidgets import (QHBoxLayout, QLabel, QLineEdit, QMenu,
+                             QMessageBox, QPushButton, QTabWidget, QVBoxLayout,
+                             QWidget)
 
 from pireal import translations as tr
 from pireal.core import interpreter
+from pireal.core.file_manager import File
 from pireal.gui.query_container import editor
-# from pireal.gui.query_container import tab_widget
-# from pireal.core import settings
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('gui.query_container')
 
 
 class QueryContainer(QWidget):
@@ -63,16 +46,44 @@ class QueryContainer(QWidget):
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(3, 0, 3, 0)
         vbox.setSpacing(0)
-        self._editor_widget = EditorWidget(self)
-        vbox.addWidget(self._editor_widget)
+        self.editor_widget = EditorWidget(self)
+        vbox.addWidget(self.editor_widget)
         self._search_widget = SearchWidget()
         vbox.addWidget(self._search_widget)
         self._search_widget.hide()
 
-        self._editor_widget.allTabsClosed.connect(self.hide)
+        self.editor_widget.allTabsClosed.connect(self.hide)
+        self._queries = {}
+
+    def get_or_create_query_file(self, filename=None) -> File:
+        if filename is None:
+            return File()
+        if filename not in self._queries:
+            file = File(filename)
+            self._queries[filename] = file
+        elif filename in self._queries:
+            file = self._queries[filename]
+        return file
+
+    def load_or_create_new_editor(self, filename: str = None):
+        file = self.get_or_create_query_file(filename)
+        if not file.is_new:
+            if self.editor_widget.is_open(file):
+                logger.info('Already opened: %s', file.path)
+                self.editor_widget.set_current_editor(
+                    self.editor_widget.get_editor_by_filename(file.path))
+            else:
+                weditor = self.editor_widget.create_editor(file)
+                content = file.read()
+                weditor.setPlainText(content)
+        else:
+            self.editor_widget.create_editor(file)
+
+        if not self.isVisible():
+            self.setVisible(True)
 
     def reload_editor_scheme(self):
-        for weditor in self._editor_widget.editors():
+        for weditor in self.editor_widget.editors():
             weditor.apply_scheme()
             weditor.reload_highlighter()
 
@@ -82,62 +93,88 @@ class QueryContainer(QWidget):
         else:
             self.show()
 
-    def open_query(self, query_filepath=None):
+    def get_current_editor(self) -> editor.Editor:
+        return self.editor_widget.current_editor()
+
+    def save_query(self):
         pass
-        # file_obj = File(query_filepath)
-        # with open(query_filepath)
-        # if self._editor_widget.is_open(query_filepath):
-        #     weditor = self._editor_widget.get_editor_by_filename(query_filepath)
-        #     self._editor_widget.set_current_editor(weditor)
-        # else:
-        #     weditor = self._editor_widget.create_editor(file_obj)
-        #     if not file_obj.is_new():
-        #         weditor.setPlainText(file_obj.read())
 
-        # if not self.isVisible():
-        #     self.show()
+    def save_query_as(self):
+        pass
 
-    def execute_query(self):
-        current_editor = self._editor_widget.current_editor()
-        query = current_editor.toPlainText()
-        relations = self._main_panel.central_view.all_relations()
-
-        try:
-            result = interpreter.parse(query)
-        except interpreter.InvalidSyntaxError as reason:
-            logger.exception('Invalid syntax error: %s', reason)
-        except interpreter.MissingQuoteError as reason:
-            logger.exception('Missing quote: %s', reason)
-        except interpreter.ConsumeError as reason:
-            logger.exception('Consume error: %s', reason)
+    def execute_query(self, relations: dict):
+        """
+        steps:
+        1. get current editor
+        2. get current text (selected or all text)
+        3. parse text aka query (cath all exceptions and show message box)
+        4. get current active relations in DB
+        5. clear current results (tables and list)
+        6. evaluate individual query iterating over result in step 3
+        7. get relations and send to db panel to create tables
+        """
+        current_editor = self.editor_widget.current_editor()
+        if current_editor.textCursor().hasSelection():
+            query = current_editor.textCursor().selectedText()
         else:
-            # Reset model
-            self._main_panel.lateral_widget.clear_results()
+            query = current_editor.toPlainText()
 
-            # FIXME: Mover a otro módulo (utils?). Quizás dependa del refactor del intérprete
-            for relation_name, expression in result.items():
-                new_relation = eval(expression, {}, relations)
-                relations[relation_name] = new_relation
-                self._main_panel.central_view.add_relation_to_results(new_relation, relation_name)
-                self._main_panel.lateral_widget.add_item_to_results(
-                    relation_name, new_relation.cardinality(), new_relation.degree())
+        # TODO: catch exceptions
+        result = interpreter.parse(query)
+        print(result)
+        # current_relations = relations.copy()
+
+        # for relation_name, expression in result.items():
+        #     relation = eval(expression, {}, current_relations)
+        #     print(relation)
+        # relations = self._main_panel.central_view.all_relations()
+
+        # # FIXME: use console to show stdout
+        # try:
+        #     result = interpreter.parse(query)
+        # except interpreter.InvalidSyntaxError as reason:
+        #     logger.exception('Invalid syntax error: %s', reason)
+        # except interpreter.MissingQuoteError as reason:
+        #     logger.exception('Missing quote: %s', reason)
+        # except interpreter.ConsumeError as reason:
+        #     logger.exception('Consume error: %s', reason)
+        # else:
+        #     # Reset model
+        #     self._main_panel.clear_results()
+
+        #     # Create and add new relations
+        #     for relation_name, expression in result.items():
+        #         try:
+        #             new_relation = eval(expression, {}, relations)
+        #         except Exception:
+        #             logger.exception(
+        #           'error during eval expression: %s', expression, exc_info=True)
+        #             return
+        #         new_relation.name = relation_name
+        #         relations[relation_name] = new_relation
+        #         self._main_panel.add_relation_to_results(new_relation)
+        #         self._main_panel.lateral_widget.add_result(new_relation)
+        #         logger.debug('expression: %s, result: %s', expression, repr(new_relation))
 
 
 class EditorWidget(QWidget):
-
     allTabsClosed = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._opened_editors = {}
-        self._new_queries_count = 1
+        self._parent = parent
+        self._opened_editors = []
+
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         vbox.setSpacing(0)
+
         self._tabs_editor = QTabWidget()
         self._tabs_editor.setTabsClosable(True)
         self._tabs_editor.setMovable(True)
-        # self._tabs_editor.setDocumentMode(True)
+
+        self._tabs_editor.setContextMenuPolicy(Qt.CustomContextMenu)
+        self._tabs_editor.customContextMenuRequested.connect(self._show_menu)
 
         line_col_widget = QWidget()
         hbox = QHBoxLayout(line_col_widget)
@@ -149,47 +186,77 @@ class EditorWidget(QWidget):
 
         self._tabs_editor.tabCloseRequested[int].connect(self.remove_tab)
 
+    def _show_menu(self, qpoint):
+        menu = QMenu()
+        remove_all_act = menu.addAction('Remove All')
+        remove_other_act = menu.addAction('Remove others')
+
+        remove_all_act.triggered.connect(self.remove_all_tabs)
+        remove_other_act.triggered.connect(self.remove_other)
+
+        menu.exec_(QCursor.pos())
+
     @Slot(int)
-    def remove_tab(self, index):
-        logger.debug('Removing editor tab with index: %s', index)
-        weditor = self.get_editor_by_index(index)
-        if weditor.modified:
-            pass
-        self.remove_editor(weditor)
+    def remove_tab(self, index=-1):
+        if index == -1:
+            weditor = self.current_editor()
+        else:
+            weditor = self.get_editor_by_index(index)
+        if weditor is None:
+            return
+        if weditor.is_modified:
+            reply = QMessageBox.question(
+                self,
+                tr.TR_MSG_FILE_MODIFIED,
+                tr.TR_MSG_FILE_MODIFIED_BODY.format(weditor.file.display_name),
+                QMessageBox.Cancel | QMessageBox.Yes | QMessageBox.No
+            )
+            if reply == QMessageBox.Cancel:
+                return
+            if reply == QMessageBox.Yes:
+                self._parent.save_query(weditor)
+
+        self.remove(weditor)
         self._tabs_editor.removeTab(index)
         weditor.deleteLater()
         if not self._opened_editors:
-            self._new_queries_count = 1
             self.allTabsClosed.emit()
 
-    def remove_editor(self, weditor: editor.Editor):
-        # FIXME:
-        copy_dict = self._opened_editors.copy()
-        for key in copy_dict.keys():
-            if copy_dict[key] == weditor:
-                logger.debug('Removing editor object (%s:%s)', weditor, key)
-                del self._opened_editors[key]
-                break
+    def remove_all(self):
+        logger.info('removing all tabs')
+        for _ in range(self._tabs_editor.count()):
+            self.remove_tab(0)
+
+    def remove_others(self):
+        logger.info('removing all tabs except this')
+        current_index = self._tabs_editor.currentIndex()
+        weditor = self.get_editor_by_index(current_index)
+        self._tabs_editor.insertTab(0, weditor, self._tabs_editor.tabText(current_index))
+        for _ in range(1, self._tabs_editor.count()):
+            self.remove_tab(1)
+
+    def remove(self, weditor: editor.Editor):
+        logger.debug('closing file: %s', weditor.file.display_name)
+        self._opened_editors.remove(weditor)
 
     def editors(self) -> Tuple[editor.Editor]:
-        return self._opened_editors.values()
-
-    def is_open(self, filepath: str) -> bool:
-        try:
-            self._opened_editors[filepath]
-        except KeyError:
-            return False
-        return True
+        return tuple(self._opened_editors)
 
     def has_editors(self) -> bool:
         return len(self._opened_editors) > 0
 
-    def unsaved_editors(self) -> List[editor.Editor]:
-        unsaved_editors_list = []
+    def is_open(self, file: File) -> bool:
+        found = False
+        for weditor in self._opened_editors:
+            if weditor.file == file:
+                found = True
+                break
+        return found
+
+    def unsaved_editors(self) -> Iterator[editor.Editor]:
         for weditor in self.editors():
-            if weditor.modified:
-                unsaved_editors_list.append(weditor)
-        return unsaved_editors_list
+            if weditor.is_modified:
+                yield weditor
 
     def current_editor(self) -> editor.Editor:
         return self._tabs_editor.currentWidget()
@@ -201,33 +268,40 @@ class EditorWidget(QWidget):
         return self._tabs_editor.widget(index)
 
     def get_editor_by_filename(self, filename: str) -> editor.Editor:
-        return self._opened_editors[filename]
+        found = None
+        for weditor in self._opened_editors:
+            if weditor.file.path == filename:
+                found = weditor
+                break
+        return found
 
-    def create_editor(self, file_obj):
-        weditor = editor.Editor(file_obj=file_obj)
-        if file_obj.is_new():
-            tab_title = 'New query({})'.format(self._new_queries_count)
-            self._new_queries_count += 1
-        else:
-            tab_title = file_obj.display_name
+    def create_editor(self, file: File) -> editor.Editor:
+        weditor = editor.Editor(file=file)
+        tab_title = file.display_name
         index = self._tabs_editor.addTab(weditor, tab_title)
-        self._tabs_editor.setTabToolTip(index, file_obj.path)
-        self._opened_editors[tab_title] = weditor
+        self._tabs_editor.setCurrentIndex(index)
+        self._tabs_editor.setTabToolTip(index, file.path)
+        self._opened_editors.append(weditor)
 
-        weditor.lineColumnChanged[int, int].connect(self._update_line_column)
+        weditor.lineColumnChanged.connect(self._update_line_column)
+        weditor.modificationChanged.connect(self._on_modification_changed)
 
         weditor.setFocus()
         return weditor
 
+    @Slot(bool)
+    def _on_modification_changed(self, modified):
+        weditor = self.sender()
+        if modified:
+            text = f'● {weditor.file.display_name}'
+        else:
+            text = f'{weditor.file.display_name}'
+        index = self._tabs_editor.currentIndex()
+        self._tabs_editor.setTabText(index, text)
+
     @Slot(int, int)
     def _update_line_column(self, lineno, colno):
         self._lbl_line_col.setText(self._line_col_text.format(lineno, colno))
-
-#     @staticmethod
-#     def parse_error(text):
-#         """ Replaces quotes by <b></b> tag """
-
-#         return re.sub(r"\'(.*?)\'", r"<b>\1</b>", text)
 
 
 class SearchWidget(QWidget):
@@ -239,14 +313,14 @@ class SearchWidget(QWidget):
         box.setContentsMargins(0, 3, 1, 3)
         self._line_search = QLineEdit()
         box.addWidget(self._line_search)
-        btn_find_previous = QPushButton(tr.TR_BTN_FIND_PREVIOUS)
-        box.addWidget(btn_find_previous)
-        btn_find_next = QPushButton(tr.TR_BTN_FIND_NEXT)
-        box.addWidget(btn_find_next)
+        self.btn_find_previous = QPushButton(tr.TR_BTN_FIND_PREVIOUS)
+        box.addWidget(self.btn_find_previous)
+        self.btn_find_next = QPushButton(tr.TR_BTN_FIND_NEXT)
+        box.addWidget(self.btn_find_next)
 
         self._line_search.textChanged.connect(self._execute_search)
-        btn_find_next.clicked.connect(self._find_next)
-        btn_find_previous.clicked.connect(self._find_previous)
+        self.btn_find_next.clicked.connect(self._find_next)
+        self.btn_find_previous.clicked.connect(self._find_previous)
 
     def _find_next(self):
         self._execute_search(find_next=True)

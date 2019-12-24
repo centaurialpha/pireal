@@ -16,34 +16,39 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
-import os
+
+"""A container for Relation objects"""
+
 import logging
 
 from pireal.core.file_manager import (
-    get_basename_with_extension,
     generate_database,
     parse_database_content,
-    detect_encoding
 )
 from pireal.core.relation import Relation
+from pireal.core.file_manager import File
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('core.db')
 
 
 class DBError(Exception):
-    pass
+    """Base para errores referidos a la base de datos"""
 
 
-class DBIOError(DBError):
-    pass
+class DBFileNotFoundError(DBError):
+    """Se lanza cuando no se encuentra el archivo de db"""
+
+
+class DBInvalidFormatError(DBError):
+    """Se lanza cuando el contenido de la db no cumple el formato"""
 
 
 class DB:
 
     def __init__(self, path=None):
         self._dirty = False
-        self._path = path
         self._relations = {}
+        self.file = File(path=path)
 
     @property
     def relations(self) -> tuple:
@@ -53,28 +58,53 @@ class DB:
     def relation_names(self) -> tuple:
         return tuple(self._relations.keys())
 
+    @classmethod
+    def create_from_file(cls, filename):
+        logger.debug('Creating DB from filename=%s', filename)
+        db = cls(path=filename)
+        try:
+            db_content = db.file.read()
+        except FileNotFoundError as e:
+            logger.exception('Error reading the database. The file %s does not exists', filename)
+            raise DBFileNotFoundError from e
+        else:
+            try:
+                db_content = parse_database_content(db_content)
+            except SyntaxError as reason:
+                logger.exception('Error parsing the database.')
+                raise DBInvalidFormatError(reason)
+
+        for table in db_content:
+            relation_name, header, tuples = table.values()
+            relation = Relation()
+            relation.name = relation_name
+            relation.header = header
+
+            for t in tuples:
+                relation.insert(t)
+
+            db.add(relation)
+
+        db._dirty = False
+
+        return db
+
     def give_relation(self, name: str) -> Relation:
         if name not in self._relations:
             raise NameError(f'Relation {name} not found')
         return self._relations[name]
 
-    def file_path(self) -> str:
-        return self._path
-
     def display_name(self) -> str:
-        if self.is_new():
-            return 'new'
-        return get_basename_with_extension(self._path)
+        return self.file.display_name
+
+    def file_path(self) -> str:
+        return self.file.path
+
+    def is_new(self) -> bool:
+        return self.file.is_new
 
     def is_dirty(self) -> bool:
         return self._dirty
-
-    def is_new(self) -> bool:
-        new = True
-        if self._path is not None:
-            if os.path.exists(self._path):
-                new = False
-        return new
 
     def add(self, relation: Relation):
         if relation.name in self._relations:
@@ -91,43 +121,9 @@ class DB:
         self._dirty = True
 
     def save(self, file_path=None):
-        if file_path is not None:
-            self._path = file_path
-        logger.debug('Generating database in %s', self._path)
+        logger.debug('Generating database in %s', self.file.path)
         db_content = generate_database(self._relations)
-        with open(self._path, 'w') as fp:
-            fp.write(db_content)
-        self._dirty = False
-
-    def load(self, file_path=None):
-        if file_path is not None:
-            self._path = file_path
-        try:
-            with open(self._path, 'rb') as fp:
-                content = fp.read()
-            encoding = detect_encoding(content)
-            content = content.decode(encoding)
-        except (IOError, UnicodeDecodeError) as reason:
-            logger.exception('Could not open file: %s', self._path)
-            raise DBIOError(reason)
-        db_content = parse_database_content(content)
-        self._load_relations_from_content(db_content)
-
-    def _load_relations_from_content(self, content: list):
-        for table in content:
-            relation_name = table['name']
-            header = table['header']
-            tuples = table['tuples']
-
-            relation = Relation()
-            relation.name = relation_name
-            relation.header = header
-
-            for t in tuples:
-                relation.insert(t)
-
-            self.add(relation)
-
+        self.file.save(db_content, path=file_path)
         self._dirty = False
 
     def __iter__(self):
