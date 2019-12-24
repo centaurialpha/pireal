@@ -19,96 +19,82 @@
 
 import os
 
-from PyQt5.QtWidgets import QWizard
-from PyQt5.QtWidgets import QWizardPage
-from PyQt5.QtWidgets import QVBoxLayout
-from PyQt5.QtWidgets import QHBoxLayout
-from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialogButtonBox
+from PyQt5.QtWidgets import QFormLayout
 from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QStyle
 from PyQt5.QtWidgets import QFileDialog
 
 from PyQt5.QtCore import pyqtSlot as Slot
+from PyQt5.QtCore import Qt
 
 from pireal import translations as tr
 from pireal.core import settings
 
+PIREAL_DB_EXTENSION = '.pdb'
 
-class NewDatabaseDialog(QWizard):
+
+class DBInputDialog(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle(tr.TR_DB_DIALOG_TITLE)
-        self.addPage(FirstPage())
-        self._data = {}
-
-    @property
-    def data(self):
-        return self._data
-
-    def done(self, result):
-        if result == 1:
-            self._data['file_path'] = self.field('dbfilename')
-        super().done(result)
-
-
-class FirstPage(QWizardPage):
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setTitle(tr.TR_DB_DIALOG_NEW_DB)
-        self.setSubTitle(tr.TR_DB_DIALOG_NEW_DB_SUB)
-
-        # Widgets
-        box = QVBoxLayout(self)
-        hbox = QHBoxLayout()
-        hbox.addWidget(QLabel(tr.TR_DB_DIALOG_DB_NAME))
-        self._database_name_line = QLineEdit()
-        hbox.addWidget(self._database_name_line)
-        box.addLayout(hbox)
-        hbox = QHBoxLayout()
-        hbox.addWidget(QLabel(tr.TR_DB_DIALOG_DB_LOCATION))
-        self._database_location_line = QLineEdit()
-        # Left action to change db location
-        change_location_action = self._database_location_line.addAction(
+        self.setMinimumWidth(500)
+        layout = QFormLayout(self)
+        layout.setLabelAlignment(Qt.AlignRight)
+        self._line_db_name = QLineEdit()
+        layout.addRow(tr.TR_DB_DIALOG_DB_NAME, self._line_db_name)
+        self._line_db_location = QLineEdit()
+        self._line_db_location.setText(settings.PIREAL_DATABASES)
+        self._line_db_location.setReadOnly(True)
+        choose_dir_action = self._line_db_location.addAction(
             self.style().standardIcon(QStyle.SP_DirIcon), 1)
-        self._database_location_line.setReadOnly(True)
-        hbox.addWidget(self._database_location_line)
-        box.addLayout(hbox)
-        hbox = QHBoxLayout()
-        hbox.addWidget(QLabel(tr.TR_DB_DIALOG_DB_FILENAME))
-        self._database_filename_line = QLineEdit()
-        self._database_filename_line.setReadOnly(True)
-        hbox.addWidget(self._database_filename_line)
-        box.addLayout(hbox)
+        layout.addRow(tr.TR_DB_DIALOG_DB_LOCATION, self._line_db_location)
+        self._line_db_path = QLineEdit()
+        self._line_db_path.setReadOnly(True)
+        layout.addRow(tr.TR_DB_DIALOG_DB_FILENAME, self._line_db_path)
+        self._line_db_path.setText(settings.PIREAL_DATABASES)
 
-        # Register fields
-        self.registerField("dbname*", self._database_name_line)
-        self.registerField("dblocation", self._database_location_line)
-        self.registerField("dbfilename", self._database_filename_line)
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal)
+        layout.addWidget(button_box)
+        self._button_ok = button_box.button(QDialogButtonBox.Ok)
 
-        self.__location_folder = settings.PIREAL_DATABASES
-        self._database_filename_line.setText(self.__location_folder)
-        self._database_location_line.setText(self.__location_folder)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
 
-        # Conexiones
-        self._database_name_line.textChanged.connect(self._update_filename)
-        change_location_action.triggered.connect(self.__select_location)
+        choose_dir_action.triggered.connect(self._choose_db_dir)
+        self._line_db_name.textChanged.connect(self._update_db_path)
+        self._line_db_location.textChanged.connect(self._update_db_path)
+        self._line_db_name.textChanged.connect(self._validate)
 
     @Slot()
-    def __select_location(self):
-        location = QFileDialog.getExistingDirectory(self,
-                                                    tr.TR_DB_DIALOG_SELECT_FOLDER)
-        if not location:
-            return
+    def _update_db_path(self):
+        db_name = self._line_db_name.text().strip()
+        if db_name:
+            db_name += PIREAL_DB_EXTENSION
+        db_path = os.path.join(self._line_db_location.text(), db_name)
+        self._line_db_path.setText(db_path)
 
-        self._database_location_line.setText(location)
-        self.__location_folder = os.path.join(self.__location_folder, location)
+    @property
+    def db_path(self) -> str:
+        return self._line_db_path.text()
 
-        self._database_filename_line.setText(os.path.join(
-            location, self._database_name_line.text()))
+    @Slot()
+    def _choose_db_dir(self):
+        location = QFileDialog.getExistingDirectory(self, tr.TR_DB_DIALOG_SELECT_FOLDER)
+        if location:
+            self._line_db_location.setText(location)
+            # TODO: update PIREAL_DATABASES in settings
 
-    @Slot(str)
-    def _update_filename(self, filename):
-        new_filename = os.path.join(self.__location_folder, filename)
-        self._database_filename_line.setText(new_filename + '.pdb')
+    @classmethod
+    def ask_db_name(cls, parent=None) -> str:
+        dialog = cls(parent=parent)
+        ret = dialog.exec_()
+        if ret:
+            return dialog.db_path
+        return ''
+
+    def _validate(self):
+        exist = os.path.exists(self._line_db_path.text().strip())
+        self._button_ok.setEnabled(not exist)

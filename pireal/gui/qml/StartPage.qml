@@ -89,7 +89,6 @@ Rectangle {
                     CustomBorder {
                         commonBorder: false
                         borderColor: palette.shadow
-                        lBorderwidth: 1
                         radius: 3
                     }
 
@@ -114,8 +113,6 @@ Rectangle {
                     CustomBorder {
                         commonBorder: false
                         borderColor: palette.shadow
-                        rBorderwidth: 1
-                        lBorderwidth: 1
                         radius: 3
                     }
                     onClicked: root.openExample()

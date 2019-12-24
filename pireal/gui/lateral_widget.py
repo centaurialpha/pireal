@@ -19,19 +19,13 @@
 
 import os
 from collections import namedtuple
+from enum import Enum
 
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QSplitter
-from PyQt5.QtWidgets import QVBoxLayout
-
-from PyQt5.QtQuickWidgets import QQuickWidget
-
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore import QModelIndex
-from PyQt5.QtCore import QAbstractListModel
+from PyQt5.QtCore import QAbstractListModel, QModelIndex, Qt, QUrl
 from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtCore import pyqtSlot as Slot
-from PyQt5.QtCore import QUrl
+from PyQt5.QtQuickWidgets import QQuickWidget
+from PyQt5.QtWidgets import QSplitter, QVBoxLayout, QWidget
 
 from pireal import translations as tr
 from pireal.core import settings
@@ -39,7 +33,12 @@ from pireal.core import settings
 RelationItem = namedtuple('Relation', 'name cardinality degree')
 
 
-class RelationModel(QAbstractListModel):
+class RelationItemType(Enum):
+    Normal = 'normal'
+    Result = 'result'
+
+
+class RelationListModel(QAbstractListModel):
 
     NameRole = Qt.UserRole + 1
     CardinalityRole = Qt.UserRole + 2
@@ -50,7 +49,8 @@ class RelationModel(QAbstractListModel):
         self._relations = []
 
     def add_relation(self, relation: RelationItem):
-        self.beginInsertRows(QModelIndex(), len(self._relations), len(self._relations))
+        self.beginInsertRows(
+            QModelIndex(), len(self._relations), len(self._relations))
         self._relations.append(relation)
         self.endInsertRows()
 
@@ -93,8 +93,7 @@ class RelationModel(QAbstractListModel):
 
 class LateralWidget(QSplitter):
     """
-    Widget que contiene la lista de relaciones y la lista de relaciones
-    del resultado de consultas
+    Interface between QML UI and model
     """
 
     relationClicked = Signal(int)
@@ -103,41 +102,46 @@ class LateralWidget(QSplitter):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
         self.parent = parent
         self.setOrientation(Qt.Vertical)
-        self._relations_model = RelationModel()
-        self._relations_view = RelationListQML(self._relations_model, closable=True, parent=self)
-        self._relations_view.set_title(tr.TR_RELATIONS)
-        self.addWidget(self._relations_view)
-        self._results_model = RelationModel()
-        self._results_view = RelationListQML(self._results_model, parent=self)
+        self._relations_model = RelationListModel()
+        self.relations_view = RelationListQML(
+            self._relations_model,
+            closable=True,
+            parent=self
+        )
+        self.relations_view.set_title(tr.TR_RELATIONS)
+        self.addWidget(self.relations_view)
+        self._results_model = RelationListModel()
+        self._results_view = RelationListQML(
+            self._results_model,
+            parent=self
+        )
         self._results_view.set_title(tr.TR_TABLE_RESULTS)
         self.addWidget(self._results_view)
 
-        self._relations_view.itemClicked[int].connect(self.relationClicked.emit)
+        self.relations_view.itemClicked[int].connect(self.relationClicked.emit)
         self._results_view.itemClicked[int].connect(self.resultClicked.emit)
-        self._relations_view.itemClosed[int, str].connect(self.relationClosed.emit)
+        self.relations_view.itemClosed[int, str].connect(self.relationClosed.emit)
 
-    @property
-    def relations_view(self):
-        return self._relations_view
-
-    def add_item_to_relations(self, relation):
-        name = relation.name
+    def add_item(self, relation, rtype=RelationItemType.Normal):
+        """Add relation to list of relations or results depending on rtype"""
         cardinality = relation.cardinality()
         degree = relation.degree()
-        item = RelationItem(name, cardinality, degree)
-        self._relations_model.add_relation(item)
+        item = RelationItem(relation.name, cardinality, degree)
+        models = {
+            RelationItemType.Normal: self._relations_model,
+            RelationItemType.Result: self._results_model
+        }
 
-    def add_item_to_results(self, relation):
-        name = relation.name
-        cardinality = relation.cardinality()
-        degree = relation.degree()
-        item = RelationItem(name, cardinality, degree)
-        self._results_model.add_relation(item)
+        models[rtype].add_relation(item)
+
+    def clear(self):
+        """Clear list of relations"""
+        self._relations_model.clear()
 
     def clear_results(self):
+        """Clear list of results"""
         self._results_model.clear()
 
 
@@ -169,12 +173,12 @@ class RelationListQML(QWidget):
     def _connect_signals(self):
         self._root.itemClicked[int].connect(self.itemClicked.emit)
         self._root.itemClosed[int].connect(self._relation_closed)
-        # XXX: Esto está muy mal, arreglar
-        self._parent.parent._parent.pireal.themeChanged.connect(self._reload)
 
     @Slot(int)
     def _relation_closed(self, index):
         relation = self._model.relation_by_index(index)
+        print(relation)
+        # self._model.remove_relation(index)
         self.itemClosed.emit(index, relation.name)
 
     def _set_source(self):
@@ -190,4 +194,3 @@ class RelationListQML(QWidget):
 
     def set_title(self, title):
         self._root.setTitle(title)
-

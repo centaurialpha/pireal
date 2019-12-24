@@ -25,21 +25,17 @@ from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QAbstractItemView
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QItemDelegate
-# from PyQt5.QtWidgets import QStyle
 
-# from PyQt5.QtGui import QPalette
 from PyQt5.QtGui import QColor
-# from PyQt5.QtGui import QFont
 
 from PyQt5.QtCore import QAbstractTableModel
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QModelIndex
-# from PyQt5.QtCore import pyqtSignal as Signal
 
 from pireal import translations as tr
 from pireal.core.settings import USER_SETTINGS
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('gui.model_view_delegate')
 
 
 class RelationModel(QAbstractTableModel):
@@ -47,26 +43,26 @@ class RelationModel(QAbstractTableModel):
     def __init__(self, relation_object):
         super().__init__()
         self.editable = True
-        self._relation = relation_object
+        self.relation = relation_object
 
     def rowCount(self, parent=QModelIndex()):
         """Devuelve la cardinalidad de la relación"""
         if parent.isValid():
             return 0
-        return self._relation.cardinality()
+        return self.relation.cardinality()
 
     def columnCount(self, parent=QModelIndex()):
         """Devuelve el grado de la relación"""
         if parent.isValid():
             return 0
-        return self._relation.degree()
+        return self.relation.degree()
 
     def data(self, index, role=Qt.DisplayRole):
         if not index.isValid():
             return None
 
         row, column = index.row(), index.column()
-        data = self._relation.content
+        data = self.relation.content
         if role == Qt.DisplayRole or role == Qt.EditRole:
             return data[row][column]
         elif role == Qt.TextColorRole:
@@ -78,13 +74,13 @@ class RelationModel(QAbstractTableModel):
 
     def headerData(self, section, orientation, role):
         if role == Qt.DisplayRole:
-            return self._relation.header[section]
+            return self.relation.header[section]
 
     def setHeaderData(self, section, orientation, value, role):
         if role == Qt.DisplayRole:
-            old_value = self._relation.header[section]
+            old_value = self.relation.header[section]
             if value != old_value:
-                self._relation.header[section] = value
+                self.relation.header[section] = value
                 self.headerDataChanged.emit(orientation, section, section)
                 return True
 
@@ -98,7 +94,7 @@ class RelationModel(QAbstractTableModel):
         if index.isValid() and role == Qt.EditRole:
             current_value = self.data(index)
             if current_value != value:
-                self._relation.update(index.row(), index.column(), value)
+                self.relation.update(index.row(), index.column(), value)
                 self.dataChanged.emit(index, index)
                 logger.debug('Editing %d:%d - Current: %s, New: %s',
                              index.row(), index.column(), current_value, value)
@@ -108,7 +104,7 @@ class RelationModel(QAbstractTableModel):
 
 
 class View(QTableView):
-    """ Vista """
+    """Custom view that allows resize all sections to content and user interactive"""
 
     def __init__(self):
         super(View, self).__init__()
@@ -125,8 +121,6 @@ class View(QTableView):
         self.adjust_columns()
 
     def adjust_columns(self):
-        """ Resize all sections to content and user interactive """
-
         header = self.horizontalHeader()
         for column in range(header.count()):
             header.setSectionResizeMode(column, QHeaderView.ResizeToContents)
@@ -159,8 +153,11 @@ class Header(QHeaderView):
         geo = self.line.geometry()
         geo.setWidth(self.sectionSize(index))
         geo.moveLeft(self.sectionViewportPosition(index))
-        current_text = self.model().headerData(index, Qt.Horizontal,
-                                               Qt.DisplayRole)
+        current_text = self.model().headerData(
+            index,
+            Qt.Horizontal,
+            Qt.DisplayRole
+        )
         self.line.setGeometry(geo)
         self.line.setHidden(False)
         self.line.blockSignals(False)
@@ -170,16 +167,26 @@ class Header(QHeaderView):
         self.col = index
 
     def __done_editing(self):
-        text = self.line.text()
+        text = self.line.text().strip()
+        print(self.model.headerData(0, Qt.Horizontal))
+        print(self.model.headerData(1, Qt.Horizontal))
         if not text.strip():
             # No debe ser vacío
-            QMessageBox.critical(self, tr.TR_MSG_ERROR, tr.TR_HEADER_NOT_EMPTY)
+            QMessageBox.critical(
+                self,
+                tr.TR_MSG_ERROR,
+                tr.TR_HEADER_NOT_EMPTY
+            )
             self.line.hide()
             return
         self.line.blockSignals(True)
         self.line.setHidden(False)
-        self.model().setHeaderData(self.col, Qt.Horizontal, text,
-                                   Qt.DisplayRole)
+        self.model().setHeaderData(
+            self.col,
+            Qt.Horizontal,
+            text,
+            Qt.DisplayRole
+        )
         self.line.setText("")
         self.line.hide()
         self.setCurrentIndex(QModelIndex())
@@ -208,3 +215,12 @@ class Delegate(QItemDelegate):
     #         painter.drawRect(opt.rect)
     #     opt.palette.setColor(QPalette.HighlightedText, Qt.black)
     #     super().paint(painter, opt, index)
+
+
+def create_view(relation, *, editable=False):
+    view = View()
+    model = RelationModel(relation)
+    model.editable = editable
+    view.setModel(model)
+    view.setItemDelegate(Delegate())
+    return view

@@ -17,27 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import QPlainTextEdit
-from PyQt5.QtWidgets import QTextEdit
-from PyQt5.QtWidgets import QShortcut
-
-from PyQt5.QtGui import QTextCharFormat
-from PyQt5.QtGui import QTextCursor
-from PyQt5.QtGui import QFont
-from PyQt5.QtGui import QColor
-from PyQt5.QtGui import QKeySequence
-from PyQt5.QtGui import QTextDocument
-from PyQt5.QtGui import QPalette
-
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtCore import pyqtSignal as Signal
+from PyQt5.QtGui import (QColor, QFont, QKeySequence, QPalette,
+                         QTextCharFormat, QTextCursor, QTextDocument)
+from PyQt5.QtWidgets import QPlainTextEdit, QShortcut, QTextEdit
 
-from pireal.gui.query_container import (
-    highlighter,
-    sidebar
-)
 from pireal.core.settings import USER_SETTINGS
+from pireal.gui.query_container import highlighter, sidebar
 from pireal.gui.theme import get_editor_color
 
 
@@ -45,15 +32,14 @@ class Editor(QPlainTextEdit):
 
     lineColumnChanged = Signal(int, int)
 
-    def __init__(self, file_obj=None):
+    def __init__(self, file=None):
         super(Editor, self).__init__()
-        self._file_obj = file_obj
+        self._file = file
         self.setFrameShape(QPlainTextEdit.NoFrame)
-        # self.setMouseTracking(True)
+
         self.setLineWrapMode(QPlainTextEdit.NoWrap)
         self.setCursorWidth(USER_SETTINGS.cursor_width)
         self.__visible_blocks = []
-        self.modified = False
         # Highlight current line
         self._highlight_line = USER_SETTINGS.highlight_current_line
         # Highlight braces
@@ -66,8 +52,8 @@ class Editor(QPlainTextEdit):
         self.set_font(font_family, font_size)
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
-        self.__message = None
-        self.word_separators = [")", "("]
+
+        self.word_separators = [',', '(', ')', '?']
         # Extra selections
         self._selections = {}
         self.__cursor_position_changed()
@@ -84,8 +70,12 @@ class Editor(QPlainTextEdit):
         short_zoom_out.activated.connect(lambda: self.zoom('out'))
 
     @property
-    def file_obj(self):
-        return self._file_obj
+    def file(self):
+        return self._file
+
+    @property
+    def is_modified(self):
+        return self.document().isModified()
 
     def reload_highlighter(self):
         self._highlighter.deleteLater()
@@ -337,11 +327,6 @@ class Editor(QPlainTextEdit):
         QTimer.singleShot(
             300, lambda: self.clear_selections("run_cursor"))
 
-    def saved(self):
-        self.modified = False
-        self.document().setModified(self.modified)
-        self.setFocus()
-
     def comment(self):
         """Comment one or more lines"""
 
@@ -374,6 +359,9 @@ class Editor(QPlainTextEdit):
                 tcursor.setPosition(block_start.position())
                 if block_start.text()[0] == '%':
                     tcursor.deleteChar()
+                    if block_start.text()[0].isspace():
+                        tcursor.deleteChar()
+
             block_start = block_start.next()
 
         tcursor.endEditBlock()

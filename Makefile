@@ -7,6 +7,7 @@ help:
 	@echo "pep8 \t\t run pycodestyle"
 	@echo "flake8 \t run flake8"
 	@echo "lint \t\t run pycodestyle and flake8"
+	@echo "pipeline \t run all kind of tests and lints"
 	@echo "dist \t\t run python setup.py sdist"
 	@echo "deb \t\t build a .deb package"
 	@echo "install \t run python setup.py install"
@@ -30,7 +31,7 @@ pep8:
 	pycodestyle pireal
 
 flake8:
-	flake8 pireal -v
+	flake8 pireal
 
 lint: pep8 flake8
 
@@ -45,6 +46,9 @@ test-gui:
 
 test-integration:
 	@$(PYTEST) -v -m integration --ignore=tests/gui
+
+pipeline: lint test test-gui test-integration
+
 dist: clean
 	python setup.py sdist
 	mv dist/* ../

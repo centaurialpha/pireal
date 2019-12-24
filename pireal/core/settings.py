@@ -29,13 +29,13 @@ from PyQt5.QtCore import QVariant
 
 
 # Detecting Operating System
-LINUX, WINDOWS, MAC = False, False, False
+IS_LINUX, IS_WINDOWS, MAC = False, False, False
 if sys.platform == 'darwin':
     MAC = True
 elif sys.platform == 'linux' or sys.platform == 'linux2':
-    LINUX = True
+    IS_LINUX = True
 else:
-    WINDOWS = True
+    IS_WINDOWS = True
 
 # Directories used by Pireal
 # Project path
@@ -113,12 +113,12 @@ class Settings:
         self.match_parenthesis: bool = True
         self.alternate_row_colors: bool = True
         self.dark_mode: bool = False
-        self.cursor_width = 3
+        self.cursor_width: int = 3
 
     def _get_font(self):
-        if LINUX:
+        if IS_LINUX:
             return 'monospace'
-        elif WINDOWS:
+        elif IS_WINDOWS:
             return 'courier'
         return 'monaco'
 

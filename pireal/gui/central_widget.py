@@ -17,40 +17,41 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import os
 import logging
-
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QStackedLayout
-from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtWidgets import QMessageBox
+import os
 
 from PyQt5.QtCore import pyqtSlot as Slot
+from PyQt5.QtCore import pyqtSignal as Signal
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QStackedLayout, QWidget
+
 from pireal import translations as tr
-from pireal.core import settings
-from pireal.core import file_manager
-
+from pireal.core import file_manager, settings, relation
+from pireal.core.db import DB, DBFileNotFoundError, DBInvalidFormatError
+from pireal.core.settings import DATA_SETTINGS, USER_SETTINGS
 from pireal.gui import start_page
-from pireal.gui.main_panel import MainPanel
-
-from pireal.gui.dialogs import preferences
 from pireal.gui.dialogs import new_relation_dialog
-from pireal.gui.dialogs import new_database_dialog
+# from pireal.gui.dialogs.new_database_dialog import NewDBDialog
+from pireal.gui.dialogs import DBInputDialog
+from pireal.gui.dialogs import PreferencesDialog
+# from pireal.gui.main_panel import MainPanel
+from pireal.gui.database_panel import DBPanel
 
-from pireal.core.settings import DATA_SETTINGS
 
 # Logger
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('gui.central_widget')
 
 
 class CentralWidget(QWidget):
 
+    dbOpened = Signal(str)
+
     def __init__(self, parent=None):
-        QWidget.__init__(self, parent)
+        super().__init__(parent)
         self.pireal = parent
+        self.db_panel: DBPanel = None
         self._stacked = QStackedLayout(self)
-        self._main_panel = None
-        self.add_start_page()
+        if self.pireal is not None:
+            self.add_start_page()
         self._last_open_folder: str = DATA_SETTINGS.value('lastOpenFolder')
         self._recent_dbs: list = DATA_SETTINGS.value('recentDbs', [], type=list)
 
@@ -58,55 +59,56 @@ class CentralWidget(QWidget):
     def recent_databases(self) -> list:
         return self._recent_dbs
 
-    def remember_recent_file(self, path: str):
+    def remember_recent_database(self, path: str):
         recents = self._recent_dbs
         if path in recents:
             recents.remove(path)
         recents.insert(0, path)
         self._recent_dbs = recents
 
-    def remove_from_recents(self, path: str):
+    def remove_db_from_recents(self, path: str):
         if path in self._recent_dbs:
             self._recent_dbs.remove(path)
 
     @property
-    def last_open_folder(self):
+    def last_open_folder(self) -> str:
         return self._last_open_folder
-
-    def _create_main_panel(self):
-        if self._main_panel is not None:
-            return
-        self._main_panel = MainPanel(self)
-        self._main_panel.dbLoaded.connect(self._on_db_loaded)
-        self.add_widget(self._main_panel)
 
     @Slot(object)
     def _on_db_loaded(self, db):
         self.remove_start_page()
         self.pireal.update_title()
+        self.pireal.show_status_message(f'Database {db.file_path()} loaded')
         self.remember_recent_file(db.file_path())
+
+    def has_db(self) -> bool:
+        return self.db_panel is not None
 
     def create_database(self):
         """Show a wizard widget to create a new empty database,
         only have one database open at time."""
 
-        if self.has_main_panel():
+        if self.has_db():
             return self._say_about_one_db_at_time()
-        logger.debug('Creating a new empty database')
-        dialog = new_database_dialog.NewDatabaseDialog(self)
-        if dialog.exec_() == dialog.Accepted:
-            self._create_main_panel()
-            self._main_panel.create_db(dialog.data['file_path'])
-
-    def has_main_panel(self):
-        return self._main_panel is not None
+        db_filepath = DBInputDialog.ask_db_name(parent=self)
+        if db_filepath:
+            logger.debug('Creating new DB as %s...', db_filepath)
+            db = DB(path=db_filepath)
+            self.db_panel = DBPanel(db, parent=self)
+            self.remove_start_page()
+            index = self._stacked.addWidget(self.db_panel)
+            self._stacked.setCurrentIndex(index)
 
     def _say_about_one_db_at_time(self):
-        logger.warning("Oops! One database at a time please")
-        QMessageBox.information(self, tr.TR_MSG_INFORMATION, tr.TR_MSG_ONE_DB_AT_TIME)
+        logger.info("Oops! One database at a time please")
+        QMessageBox.information(
+            self,
+            tr.TR_MSG_INFORMATION,
+            tr.TR_MSG_ONE_DB_AT_TIME
+        )
 
     def open_database(self, filename=''):
-        if self.has_main_panel():
+        if self.has_db():
             return self._say_about_one_db_at_time()
         # If not filename provide, then open dialog to select one
         if not filename:
@@ -115,87 +117,199 @@ class CentralWidget(QWidget):
             else:
                 directory = self._last_open_folder
             filename, _ = QFileDialog.getOpenFileName(
-                self, tr.TR_OPEN_DATABASE, directory, settings.get_extension_filter('.pdb'))
+                self,
+                tr.TR_OPEN_DATABASE,
+                directory,
+                settings.get_extension_filter('.pdb')
+            )
             # If is canceled, return
             if not filename:
                 logger.info('File not selected, bye!')
                 return
-        # Create main panel for table view
-        self._create_main_panel()
-        self._main_panel.load_database(filename)
+
+        try:
+            db = DB.create_from_file(filename)
+        except DBFileNotFoundError as reason:
+            QMessageBox.critical(self, tr.TR_MSG_ERROR, str(reason))
+            return
+        except DBInvalidFormatError as reason:
+            QMessageBox.warning(self, tr.TR_MSG_WARNING, str(reason))
+            return
+        except relation.InvalidFieldNameError as reason:
+            QMessageBox.critical(self, tr.TR_MSG_ERROR, str(reason))
+            return
+
+        self.db_panel = DBPanel(db, parent=self)
+
+        # First remove start page
+        # FIXME: mejorar ?
+        self.remove_start_page()
+
+        index = self._stacked.addWidget(self.db_panel)
+        self._stacked.setCurrentIndex(index)
         # Save last folder
         self._last_open_folder = file_manager.get_path(filename)
+        # FIXME: considerar emitir una señal, mas testeable
+        self.dbOpened.emit(filename)
 
-        self.add_widget(self._main_panel)
-
-    def open_query(self, filename=''):
-        if not filename:
-            directory = os.path.expanduser('~')
-            # FIXME: hacer un settings.get_supported_files(query) o algo así
-            filters = settings.SUPPORTED_FILES.split(';;')[1]
-            filename, _ = QFileDialog.getOpenFileName(self, tr.TR_OPEN_QUERY, directory, filters)
-            if not filename:
-                return
-        self._main_panel.query_container.open_query(filename)
-        # TODO:
-        # Tengo el filename, si ya está abierto, ir a ese tab
-        # Sino, crear un nuevo editor con el contenido
-
-    def new_query(self):
-        pass
-
-    def remove_main_panel(self):
-        if not isinstance(self._stacked.currentWidget(), MainPanel):
-            return
-        self._stacked.removeWidget(self._stacked.currentWidget())
-        self._main_panel = None
-        self.add_start_page()
-        self.pireal.update_title()
+        logger.debug('Connected to database: %s', db.display_name())
 
     def close_database(self):
         """ Close the database and return to the main widget """
+        if not self.has_db():
+            return
+        if self.db_panel.db.is_dirty():
+            reply = QMessageBox.question(
+                self, tr.TR_MSG_SAVE_CHANGES,
+                tr.TR_MSG_SAVE_CHANGES_BODY,
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+            )
+            actions = {
+                QMessageBox.Cancel: lambda: None,
+                QMessageBox.Yes: lambda: None,
+                QMessageBox.No: lambda: None
+            }
+            actions[reply]()
 
-        if self.has_main_panel():
-            self._main_panel.close_database()
-            self.remove_main_panel()
-
-    def execute_query(self):
-        if self.has_main_panel():
-            self._main_panel.execute_query()
+        # TODO: ask for unsaved queries
+        logger.info('Closing database %s', self.db_panel.db.display_name())
+        self._stacked.removeWidget(self.db_panel)
+        self.db_panel = None
+        self.add_start_page()
 
     def save_database(self):
-        if self.has_main_panel():
+        if self.has_db():
             self._main_panel.save_database()
 
     def save_database_as(self):
-        if self.has_main_panel():
+        if self.has_db():
             self._main_panel.save_database_as()
 
     def create_relation(self):
+        if not self.has_db():
+            return
         dialog = new_relation_dialog.NewRelationDialog(self)
         if dialog.exec_():
+            # Agregar a la tabla principal
+            # agregar a la lista
+            # ahora la DB fué modificada, notificar
             relation = dialog.get_data()
-            self._main_panel.add_relation(relation)
+            self.db_panel.add_relation(relation)
+            # self.db.add(relation)
+            # main_panel = self.get_main_panel()
+            # main_panel.load_relations()
+
+    @Slot()
+    def open_query(self, filename=''):
+        if not self.has_db():
+            logger.info('There is no active DB')
+            return
+        if not filename:
+            directory = os.path.expanduser('~')  # FIXME: remember
+            filenames, ok = QFileDialog.getOpenFileNames(
+                self, tr.TR_OPEN_QUERY, directory, settings.get_extension_filter('.pqf')
+            )
+        else:
+            filenames = [filename]
+        for filename in filenames:
+            self.db_panel.add_query(filename)
+
+    def new_query(self):
+        if not self.has_db():
+            return
+        self.db_panel.new_query()
+
+    @Slot()
+    def save_query(self, editor=None):
+        if not self.has_db():
+            return
+        main_panel = self.get_main_panel()
+        if editor is None:
+            editor = main_panel.query_container.get_current_editor()
+            if editor is None:
+                return
+        # Ok, we have an editor instance
+        if editor.is_modified:
+            if editor.file.is_new:
+                return self.save_query_as()
+            content = editor.toPlainText()
+            editor.file.save(content)
+            editor.document().setModified(False)
+
+    def save_query_as(self):
+        if not self.has_db():
+            return
+        main_panel = self.get_main_panel()
+        editor = main_panel.query_container.get_current_editor()
+        if editor is None:
+            return
+        if editor.file.path:
+            save_folder = file_manager.get_path(editor.file.path)
+        else:
+            save_folder = self._last_open_folder
+        filename, ok = QFileDialog.getSaveFileName(
+            self,
+            tr.TR_MENU_QUERY_SAVE_AS_QUERY,
+            save_folder
+        )
+        if not ok:
+            return
+        content = editor.toPlainText()
+        if not filename.endswith('.pqf'):
+            filename = f'{filename}.pqf'
+        editor.file.save(content, path=filename)
+        editor.document().setModified(False)
+
+    def close_query(self):
+        if not self.has_db():
+            return
+        main_panel = self.get_main_panel()
+        main_panel.close_query()
+
+    def execute_query(self):
+        if self.has_db():
+            relations = self.db_panel.db._relations
+            self.db_panel.query_widget.execute_query(relations)
 
     def add_start_page(self):
         """ This function adds the Start Page to the stacked widget """
-
         sp = start_page.StartPage(self)
-        self.add_widget(sp)
+        index = self._stacked.addWidget(sp)
+        self._stacked.setCurrentIndex(index)
 
     def remove_start_page(self):
         start_page_widget = self._stacked.widget(0)
         if isinstance(start_page_widget, start_page.StartPage):
             self._stacked.removeWidget(start_page_widget)
 
-    def show_settings(self):
+    def show_preferences(self):
         """ Show settings dialog on stacked """
 
-        preferences_dialog = preferences.Preferences(self)
+        preferences_dialog = PreferencesDialog(self)
+        preferences_dialog.settingsChanged.connect(self._on_settings_changed)
         preferences_dialog.show()
 
-    def add_widget(self, widget):
-        """ Appends and show the given widget to the Stacked """
+    @Slot()
+    def _on_settings_changed(self):
+        if not self.has_db():
+            return
+        editors = self._main_panel.query_container.editor_widget.editors()
+        if not editors:
+            return
+        logger.debug('updating settings in all editors')
+        for editor in editors:
+            # Update font
+            editor.set_font(
+                USER_SETTINGS.font_family,
+                USER_SETTINGS.font_size
+            )
+            editor.set_highlight_line(USER_SETTINGS.highlight_current_line)
+            editor.set_match_parenthesis(USER_SETTINGS.match_parenthesis)
 
-        index = self._stacked.addWidget(widget)
-        self._stacked.setCurrentIndex(index)
+    # def save_state(self):
+    #     """Save splitter states"""
+    #     if self.has_db():
+    #         DATA_SETTINGS.setValue(
+    #             'db_panel_state', self.db_panel.saveState())
+    #         # DATA_SETTINGS.setValue(
+    #         #     'query_container_state', main_panel._vertical_splitter.saveState())

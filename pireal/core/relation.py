@@ -351,4 +351,6 @@ class Relation(object):
         return header + content
 
     def __repr__(self):
-        return self.__str__()
+        return (f'Relation(name={self.name}, '
+                f'degree={self.degree()}, '
+                f'cardinality={self.cardinality()})')

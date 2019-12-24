@@ -349,9 +349,11 @@ def test_append_row():
 
 def test_str_repr():
     r = relation.Relation()
+    r.name = 'test_r'
     r.header = ['id', 'name']
     r.content.add(('21', 'Rodrigo'))
 
-    expected = '|      id      |     name     |\n-------------------------------\n|      21      |   Rodrigo    |\n'
-    assert r.__str__() == expected
-    assert r.__repr__() == expected
+    expected_str = '|      id      |     name     |\n-------------------------------\n|      21      |   Rodrigo    |\n'
+    expected_repr = 'Relation(name=test_r, degree=2, cardinality=1)'
+    assert r.__str__() == expected_str
+    assert r.__repr__() == expected_repr

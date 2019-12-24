@@ -1,5 +1,6 @@
 import pytest
 
+
 GROUPS = [
     "gui",
     "integration"

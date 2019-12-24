@@ -1,5 +1,4 @@
 import pytest
-import unittest
 
 from pireal.core import file_manager
 from pireal.core import relation
