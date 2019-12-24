@@ -25,58 +25,64 @@ import platform
 import logging
 
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QT_VERSION_STR
-from PyQt5.QtCore import QTranslator
+
 from PyQt5.QtGui import QIcon
 
+from PyQt5.QtCore import QT_VERSION_STR
+from PyQt5.QtCore import QTranslator
+from PyQt5.QtCore import QLocale
+from PyQt5.QtCore import QLibraryInfo
+
+
 from pireal import __version__
-from pireal.core import settings
+from pireal.core.config import AppSettings
 from pireal.gui.main_window import Pireal
 from pireal.gui.theme import apply_theme
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('main')
 
 
-def start_pireal():
-    settings.USER_SETTINGS.load()
+def start_pireal(args):
 
     # OS
-    if sys.platform.startswith('linux'):
-        system, os_name = platform.uname()[:2]
-    else:
-        system = platform.uname()[0]
-        os_name = platform.uname()[2]
-    # Python version
-    python_version = platform.python_version()
+    # if settings.IS_LINUX:
+    #     system, os_name = platform.uname()[:2]
+    # else:
+    #     system = platform.uname()[0]
+    #     os_name = platform.uname()[2]
+    # # Python version
+    # python_version = platform.python_version()
 
-    version_info = {
-        'pireal': __version__,
-        'python': python_version,
-        'system': system,
-        'os': os_name,
-        'qt': QT_VERSION_STR
-    }
-    print('Running Pireal {pireal}...\nPython {python} on {system}-{os}, Qt {qt}'.format(
-        **version_info))
-    logger.info('Running Pireal %s with Python %s on %r',
-                __version__, sys.version_info, sys.platform)
+    # print(f'Running Pireal {__version__}...\n'
+    #       f'Python {python_version} on {system}-{os_name}, Qt {QT_VERSION_STR}')
+    # logger.info('Running Pireal %s with Python %s on %r',
+    #             __version__, sys.version_info, sys.platform)
 
     app = QApplication(sys.argv)
+    AppSettings.load()
 
     # Set application icon
-    app.setWindowIcon(QIcon(':img:/icon'))
+    app.setWindowIcon(QIcon(':img/icon'))
 
-    # Language
-    language = settings.USER_SETTINGS.language
-    if language != 'english':
-        translator = QTranslator()
-        translator.load(os.path.join(settings.LANGUAGE_PATH, language + '.qm'))
-        app.installTranslator(translator)
+    # Install translators
+    # Qt translations
+    qt_languages_path = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
+    system_locale_name = QLocale.system().name()
+    qt_translator = QTranslator()
+    qt_translator.load(
+        os.path.join('qt_', system_locale_name, qt_languages_path))
+    # Application translations
+    # language = settings.USER_SETTINGS.language
+    # if language != 'english':
+    #     translator = QTranslator()
+    #     translator.load(os.path.join(settings.LANGUAGE_PATH, language + '.qm'))
+    #     app.installTranslator(translator)
 
     app.setStyle('fusion')
     apply_theme(app)
 
-    pireal_gui = Pireal()
+    check_updates = not args.no_check_updates
+    pireal_gui = Pireal(check_updates)
     pireal_gui.show()
 
     sys.exit(app.exec_())

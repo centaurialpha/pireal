@@ -48,8 +48,6 @@ Rectangle {
             right: parent.right
             topMargin: 7
         }
-        // TODO: hacer scrollbar sin Controls
-        // ScrollBar.vertical: ScrollBar {}
 
         clip: true
         spacing: 3

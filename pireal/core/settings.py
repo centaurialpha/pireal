@@ -22,49 +22,20 @@ Pireal Settings
 """
 
 import sys
-import os
 
 from PyQt5.QtCore import QSettings
 from PyQt5.QtCore import QVariant
 
+from pireal.dirs import CONFIG_FILE
 
 # Detecting Operating System
-LINUX, WINDOWS, MAC = False, False, False
+IS_LINUX, IS_WINDOWS, MAC = False, False, False
 if sys.platform == 'darwin':
     MAC = True
 elif sys.platform == 'linux' or sys.platform == 'linux2':
-    LINUX = True
+    IS_LINUX = True
 else:
-    WINDOWS = True
-
-# Directories used by Pireal
-# Project path
-if getattr(sys, 'frozen', ''):
-    ROOT_DIR = os.path.realpath(os.path.dirname(sys.argv[0]))
-else:
-    # Not frozen: regular python interpreter
-    ROOT_DIR = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), '..', '..')
-# Absolute path of the user's home directory
-HOME = os.path.expanduser('~')
-# Absolute path of the pireal home directory
-# this is used to save the settings, log file, etc.
-PIREAL_DIR = os.path.join(HOME, '.pireal')
-# Here are saved by default the databases
-PIREAL_DATABASES = os.path.join(HOME, 'PirealDatabases')
-# Settings
-SETTINGS_PATH = os.path.join(PIREAL_DIR, 'settings.ini')
-# Log files
-LOGS_PATH = os.path.join(PIREAL_DIR, "logs")
-LOG_FILE = os.path.join(LOGS_PATH, 'pireal.log')
-# Language files
-LANGUAGE_PATH = os.path.join(ROOT_DIR, 'pireal', 'lang')
-# Path for QML files
-QML_PATH = os.path.join(ROOT_DIR, 'pireal', 'gui', 'qml')
-# Style sheet
-STYLE_SHEET = os.path.join(ROOT_DIR, 'pireal', 'style.qss')
-# Carpeta de ejemplos
-EXAMPLES = os.path.join(ROOT_DIR, 'samples')
+    IS_WINDOWS = True
 
 
 # Supported files.
@@ -84,7 +55,7 @@ def get_extension_filter(extension):
 
 class _QSettings(QSettings):
 
-    def __init__(self, path=SETTINGS_PATH, prefix=''):
+    def __init__(self, path=CONFIG_FILE.stem, prefix=''):
         super().__init__(path, QSettings.IniFormat)
         self._prefix = prefix
 
@@ -113,12 +84,12 @@ class Settings:
         self.match_parenthesis: bool = True
         self.alternate_row_colors: bool = True
         self.dark_mode: bool = False
-        self.cursor_width = 3
+        self.cursor_width: int = 3
 
     def _get_font(self):
-        if LINUX:
+        if IS_LINUX:
             return 'monospace'
-        elif WINDOWS:
+        elif IS_WINDOWS:
             return 'courier'
         return 'monaco'
 

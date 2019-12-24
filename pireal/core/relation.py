@@ -23,8 +23,9 @@
 import re
 import itertools
 
-from ordered_set import OrderedSet
+# from ordered_set import OrderedSet
 
+from pireal.core.ordered_set import OrderedSet
 from pireal.core.rtypes import RelationStr
 
 IS_VALID_FIELD_NAME = re.compile("^[_á-úa-zA-Z][_á-úa-zA-Z0-9]*$")
@@ -351,4 +352,6 @@ class Relation(object):
         return header + content
 
     def __repr__(self):
-        return self.__str__()
+        return (f'Relation(name={self.name}, '
+                f'degree={self.degree()}, '
+                f'cardinality={self.cardinality()})')

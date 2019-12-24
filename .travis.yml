@@ -2,6 +2,7 @@ language: python
 
 python: 3.7
 
+os: linux
 dist: xenial
 
 services:
@@ -9,12 +10,13 @@ services:
 
 cache: pip
 
-installation_on_windows: &installation_on_windows
+installation_on_windows:
+- &installation_on_windows
   before_install:
     - choco install python --version 3.7.4
     - python --version
     - python -m pip install --upgrade pip
-    - pip3 install --upgrade pytest ordered-set
+    - pip3 install --upgrade pyqt5 pytest pytest-qt ordered-set
 
 install: pip --version  # Avoid install with pip install -r requirements.txt
 
@@ -47,7 +49,7 @@ jobs:
       name: unit test
       before_install:
         - pip install pip --upgrade
-        - pip install pytest pytest-cov ordered-set
+        - pip install pyqt5 pytest pytest-cov ordered-set
       script: make test
 
     - stage: Test
@@ -66,18 +68,22 @@ jobs:
             - libxkbcommon-x11-0
       name: unit test user interface
       before_install:
-        - pip install pyqt5 pytest pytest-qt ordered-set
+        - pip install pip --upgrade
+        - pip install pyqt5 pytest pytest-mock pytest-qt ordered-set
       script: make test-gui
-      if: type = pull_request
 
     - stage: Integration Test
+      addons:
+        apt:
+          packages:
+            - x11-utils
+            - libxkbcommon-x11-0
       name: integration test
       before_install:
         - pip install pip --upgrade
-        - pip install pytest ordered-set
+        - pip install pyqt5 pytest pytest-qt ordered-set
       before_script: make clean
       script: make test-integration
-      if: type = pull_request
 
     - stage: Integration Test
       name: integration test on Windows
@@ -86,14 +92,10 @@ jobs:
       <<: *installation_on_windows
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
       script: pytest tests -m integration --ignore=tests/gui
-      if: type = pull_request
 
     - stage: Coverage
       name: coverage
       before_install:
         - pip install pip --upgrade
-        - pip install pytest
-        - pip install pytest-cov
-        - pip install coveralls
-        - pip install ordered-set
+        - pip install pytest pytest-cov coveralls ordered-set
       script: coveralls

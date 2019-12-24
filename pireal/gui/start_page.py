@@ -35,8 +35,7 @@ from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSlot as Slot
 
-from pireal.core import settings
-from pireal.core.file_manager import get_basename
+from pireal.dirs import QML_RESOURCES, EXAMPLES_DIR
 
 
 class RecentDBListModel(QAbstractListModel):
@@ -99,38 +98,23 @@ class StartPage(QWidget):
         vbox.setContentsMargins(0, 0, 0, 0)
         self._view = QQuickWidget()
         self._view.rootContext().setContextProperty('listModel', self._model)
-        self._set_source()
+        qml = QML_RESOURCES / 'StartPage.qml'
+        self._view.setSource(QUrl.fromLocalFile(str(qml)))
         self._view.setResizeMode(QQuickWidget.SizeRootObjectToView)
         vbox.addWidget(self._view)
 
         self._root = self._view.rootObject()
-        self._connect_signals()
 
-    def _connect_signals(self):
         self._root.newDatabase.connect(self._central.create_database)
         self._root.openDatabase.connect(self._central.open_database)
         self._root.openExample.connect(self._open_example)
         self._root.openRecentDatabase[str].connect(self._central.open_database)
         self._root.removeItem[int].connect(self._remove_item)
-        self._central.pireal.themeChanged.connect(self._reload)
-
-    def _set_source(self):
-        qml = os.path.join(settings.QML_PATH, "StartPage.qml")
-        self._view.setSource(QUrl.fromLocalFile(qml))
-
-    def _reload(self):
-        self._view.rootObject().deleteLater()
-        self._view.setSource(QUrl())
-        self._set_source()
-        self._root = self._view.rootObject()
-        self._model.clear()
-        self.load_items()
-        self._connect_signals()
 
     def _open_example(self):
-        db_filename = os.path.abspath(os.path.join(settings.EXAMPLES, 'database.pdb'))
+        db_filename = os.path.abspath(os.path.join(EXAMPLES_DIR, 'database.pdb'))
         self._central.open_database(filename=db_filename)
-        query_filename = os.path.abspath(os.path.join(settings.EXAMPLES, 'queries.pqf'))
+        query_filename = os.path.abspath(os.path.join(EXAMPLES_DIR, 'queries.pqf'))
         self._central.open_query(filename=query_filename)
         # Ejecuto las consultas de ejemplo luego de 1.3 segundos
         QTimer.singleShot(1300, self._central.execute_query)
@@ -144,7 +128,7 @@ class StartPage(QWidget):
 
     def load_items(self):
         for path in self._central.recent_databases:
-            name = get_basename(path)
+            name = os.path.basename(path)
             self._model.add_item(name, path)
 
     def showEvent(self, event):

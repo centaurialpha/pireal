@@ -96,3 +96,14 @@ def apply_theme(app):
         color_role = getattr(palette, role_name)
         palette.setBrush(color_group, color_role, qcolor)
     app.setPalette(palette)
+
+
+def get_color(name: str):
+    if USER_SETTINGS.dark_mode:
+        colors = DARK
+    else:
+        colors = LIGHT
+    color = colors[name]
+    if not isinstance(color, QColor):
+        color = QColor(color)
+    return color

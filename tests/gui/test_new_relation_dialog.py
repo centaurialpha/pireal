@@ -1,6 +1,8 @@
 from unittest import mock
 import pytest
 
+from PyQt5.QtCore import Qt
+
 from pireal.gui.dialogs.new_relation_dialog import NewRelationDialog
 from pireal.core.relation import Relation
 from pireal import translations as tr
@@ -48,16 +50,26 @@ def test_create_relation_missing_data(qtbot, row, col):
 
 @pytest.mark.gui
 def test_create_relation(qtbot):
+    relation_name = 'people'
+    header = ['id', 'name']
+
     dialog = NewRelationDialog()
-    dialog.table.setHorizontalHeaderLabels(['id', 'name'])
+    dialog.table.setHorizontalHeaderLabels(header)
     qtbot.addWidget(dialog)
 
-    relation = Relation()
-    relation.header = ['id', 'name']
-    relation.insert('Value_0 Value_1')
+    qtbot.keyClicks(dialog.line_relation_name, relation_name)
+    accept_btn = dialog.button_box.button(dialog.button_box.Ok)
+    qtbot.mouseClick(accept_btn, Qt.LeftButton)
 
-    with mock.patch('pireal.gui.dialogs.new_relation_dialog.QMessageBox.warning') as mock_msg_box:
-        mock_msg_box.assert_not_called()
-        relation_result = dialog.create_relation()
-        assert relation.header == relation_result.header
-        assert relation.content == relation_result.content
+    # Expected result
+    expected_relation = Relation()
+    expected_relation.name = relation_name
+    expected_relation.header = header
+    expected_relation.insert('Value_0 Value_1')
+
+    relation = dialog.get_data()
+
+    assert relation.name == expected_relation.name
+    assert relation.degree() == expected_relation.degree()
+    assert relation.cardinality() == expected_relation.cardinality()
+    assert relation.header == header

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015-2019 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2020 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -16,133 +16,118 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
-import os
+
+"""A container for Relation objects"""
+
 import logging
 
-from pireal.core.file_manager import (
-    get_basename_with_extension,
-    generate_database,
-    parse_database_content,
-    detect_encoding
-)
+from pireal.core import db_utils
+from pireal.core.file_utils import File
 from pireal.core.relation import Relation
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('core.db')
 
 
 class DBError(Exception):
-    pass
+    """Base class for DB errors"""
 
 
-class DBIOError(DBError):
-    pass
+class RelationNotFound(DBError):
+    """Raise when relation not exist in DB"""
 
 
 class DB:
 
-    def __init__(self, path=None):
-        self._dirty = False
-        self._path = path
+    def __init__(self, file: File = None):
         self._relations = {}
+        self._dirty = False
+        self.file = file
+
+    def add(self, relation: Relation):
+        """Add a Relation to DB"""
+        rname = relation.name
+        if rname in self._relations:
+            raise NameError(f'Relation {rname} already exist')
+        self._relations[rname] = relation
+        self._dirty = True
+
+    def get(self, name: str) -> Relation:
+        """Return Relation object or fail"""
+        if name not in self._relations:
+            raise RelationNotFound(f'Relation {name} not found')
+        return self._relations[name]
+
+    def remove(self, name: str):
+        """Remove Relation from DB"""
+        if name not in self._relations:
+            raise RelationNotFound(f'Relation {name} not found')
+        del self._relations[name]
+
+    def write_to_file(self, dst_path: str):
+        """Serialize all relations to a file"""
+        db_content = db_utils.generate_database(self._relations)
+        if self.file is None:
+            self.file = File(path=dst_path)
+
+        self.file.save(content=db_content)
+        self._dirty = False
+
+    @classmethod
+    def from_file(cls, filepath):
+        """Create a DB object from a file"""
+        file = File(path=filepath)
+        db = cls(file=file)
+
+        if file.is_new:
+            return db
+
+        try:
+            text = file.read()
+        except IOError:
+            logger.exception('Error reading file')
+            raise
+
+        db_dict = db_utils.parse_database(text)
+
+        relations = db_utils.create_relations_from_parsed_db(db_dict)
+
+        for relation in relations:
+            db.add(relation)
+
+        db._dirty = False
+
+        return db
 
     @property
-    def relations(self) -> tuple:
+    def dirty(self):
+        return self._dirty
+
+    @property
+    def filename(self):
+        return self.file.filename
+
+    @property
+    def display_name(self):
+        return self.file.display_name
+
+    @property
+    def relations_dict(self):
+        return self._relations
+
+    @property
+    def relations(self):
         return tuple(self._relations.values())
 
     @property
-    def relation_names(self) -> tuple:
-        return tuple(self._relations.keys())
-
-    def give_relation(self, name: str) -> Relation:
-        if name not in self._relations:
-            raise NameError(f'Relation {name} not found')
-        return self._relations[name]
-
-    def file_path(self) -> str:
-        return self._path
-
-    def display_name(self) -> str:
-        if self.is_new():
-            return 'new'
-        return get_basename_with_extension(self._path)
-
-    def is_dirty(self) -> bool:
-        return self._dirty
-
-    def is_new(self) -> bool:
-        new = True
-        if self._path is not None:
-            if os.path.exists(self._path):
-                new = False
-        return new
-
-    def add(self, relation: Relation):
-        if relation.name in self._relations:
-            raise NameError(f'Relation {relation.name} alredy exist')
-        self._relations[relation.name] = relation
-        self._dirty = True
-
-    def remove_from_name(self, name: str):
-        try:
-            del self._relations[name]
-        except KeyError:
-            logger.warning(f'Relation {name} not exist, nothing to remove')
-            return
-        self._dirty = True
-
-    def save(self, file_path=None):
-        if file_path is not None:
-            self._path = file_path
-        logger.debug('Generating database in %s', self._path)
-        db_content = generate_database(self._relations)
-        with open(self._path, 'w') as fp:
-            fp.write(db_content)
-        self._dirty = False
-
-    def load(self, file_path=None):
-        if file_path is not None:
-            self._path = file_path
-        try:
-            with open(self._path, 'rb') as fp:
-                content = fp.read()
-            encoding = detect_encoding(content)
-            content = content.decode(encoding)
-        except (IOError, UnicodeDecodeError) as reason:
-            logger.exception('Could not open file: %s', self._path)
-            raise DBIOError(reason)
-        db_content = parse_database_content(content)
-        self._load_relations_from_content(db_content)
-
-    def _load_relations_from_content(self, content: list):
-        for table in content:
-            relation_name = table['name']
-            header = table['header']
-            tuples = table['tuples']
-
-            relation = Relation()
-            relation.name = relation_name
-            relation.header = header
-
-            for t in tuples:
-                relation.insert(t)
-
-            self.add(relation)
-
-        self._dirty = False
-
-    def __iter__(self):
-        for name, relation in self._relations.items():
-            yield name, relation
-
-    def __getitem__(self, key):
-        return self._relations[key]
+    def is_new(self):
+        return self.file.is_new
 
     def __len__(self):
         return len(self._relations)
 
     def __repr__(self):
-        return (
-            f'DB(name={self.display_name()} '
-            f'path={self.file_path()} '
-            f'relations={len(self)})'
-        )
+        return f'DB(name={self.display_name}, relations={len(self)})'
+
+    def __iter__(self):
+        for relation_name, relation in self._relations.items():
+            yield relation_name, relation

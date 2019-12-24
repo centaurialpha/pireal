@@ -17,35 +17,40 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
 from distutils.version import LooseVersion
 from urllib.request import urlopen
 from urllib.error import URLError
 
-from PyQt5.QtCore import (
-    QObject,
-    pyqtSignal
-)
+from PyQt5.QtCore import QObject
+from PyQt5.QtCore import pyqtSignal as Signal
 
-import pireal
+from pireal import __version__
 
+logger = logging.getLogger('updater')
 
-URL = "http://centaurialpha.github.io/pireal/version"
+URL = 'https://raw.githubusercontent.com/centaurialpha/pireal/master/version.txt'
 
 
 class Updater(QObject):
-    finished = pyqtSignal()
+    finished = Signal()
 
     def __init__(self):
         QObject.__init__(self)
         self.version = ""
-        self.error = False
 
     def check_updates(self):
+        logger.info('checking updates...')
         try:
-            web_version = urlopen(URL).read().decode('utf8').strip()
-            if LooseVersion(pireal.__version__) < LooseVersion(web_version):
+            web_version = urlopen(URL).read().decode().strip()
+            if LooseVersion(__version__) < LooseVersion(web_version):
                 self.version = web_version
+                logger.info('new version found: %s', web_version)
+            else:
+                logger.info('no new version found')
         except URLError:
-            self.error = True
-
+            logger.exception('error while checking updates', exc_info=True)
+        finally:
+            logger.info('updater finished')
         self.finished.emit()

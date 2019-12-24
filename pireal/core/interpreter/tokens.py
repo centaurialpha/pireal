@@ -49,6 +49,7 @@ AND = 'AND'
 OR = 'OR'
 KEYWORD = 'KEYWORD'
 EOF = 'EOF'
+
 BINARYOP = (
     NJOIN,
     LEFT_OUTER_JOIN,
