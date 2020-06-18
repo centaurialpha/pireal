@@ -2,6 +2,7 @@
 [![Workflow](https://github.com/centaurialpha/pireal/workflows/Main%20Workflow/badge.svg)](https://github.com/centaurialpha/pireal)
 [![Coverage Status](https://coveralls.io/repos/github/centaurialpha/pireal/badge.svg?branch=develop)](https://coveralls.io/github/centaurialpha/pireal?branch=develop)
 ---
+[![Invitame un café en cafecito.app](https://cdn.cafecito.app/imgs/buttons/button_5.svg)](https://cafecito.app/gabox)
 
 ## ACTUALLY WORKING ON v4.0
 <p align="center">
