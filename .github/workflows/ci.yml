@@ -21,4 +21,4 @@ jobs:
           pip install flake8
       - name: PEP8
         run: |
-          flake8 .
+          make flake8
