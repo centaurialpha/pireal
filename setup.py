@@ -17,64 +17,64 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import shutil
+# import os
+# import shutil
 from distutils.core import setup
-from distutils.command.install import install
+# from distutils.command.install import install
 from setuptools import find_packages
 
 import pireal
 
 
-class CustomInstall(install):
-
-    def run(self):
-        super().run()
-        for script in self.distribution.scripts:
-            script_path = os.path.join(self.install_scripts, os.path.basename(script))
-            with open(script_path, 'rb') as fp:
-                content = fp.read()
-            content = content.replace(b'@ BASE_DIR @', self._custom_data_dir.encode())
-            with open(script_path, 'wb') as fp:
-                fp.write(content)
-
-        source_desktop_file = self.distribution.get_name() + '.desktop'
-        if not os.path.exists(self._custom_apps_dir):
-            os.makedirs(self._custom_apps_dir)
-        dest_desktop_file = os.path.join(self._custom_apps_dir, source_desktop_file)
-        with open(source_desktop_file, 'rb') as fp:
-            content = fp.read()
-        icon = os.path.join(self._custom_data_dir, 'pireal', 'images', 'pireal_icon.png')
-
-        content = content.replace(b'@ INSTALLED_ICON @', icon.encode())
-        with open(dest_desktop_file, 'wb') as fp:
-            fp.write(content)
-
-        # Man page
-        if not os.path.exists(self._custom_man_dir):
-            os.makedirs(self._custom_man_dir)
-        shutil.copy('man/pireal.1', self._custom_man_dir)
-
-    def finalize_options(self):
-        """Cambio el path de instalación
-        Esto se ejecuta antes de run"""
-        super().finalize_options()
-
-        data_dir = os.path.join(self.prefix, 'share', self.distribution.get_name())
-        apps_dir = os.path.join(self.prefix, 'share', 'applications')
-        man_dir = os.path.join(self.prefix, 'share', 'man', 'man1')
-
-        if self.root is None:
-            build_dir = data_dir
-        else:
-            build_dir = os.path.join(self.root, data_dir[1:])
-            apps_dir = os.path.join(self.root, apps_dir[1:])
-            man_dir = os.path.join(self.root, man_dir[1:])
-
-        self.install_lib = build_dir
-        self._custom_data_dir = data_dir
-        self._custom_apps_dir = apps_dir
-        self._custom_man_dir = man_dir
+# class CustomInstall(install):
+#
+#     def run(self):
+#         super().run()
+#         for script in self.distribution.scripts:
+#             script_path = os.path.join(self.install_scripts, os.path.basename(script))
+#             with open(script_path, 'rb') as fp:
+#                 content = fp.read()
+#             content = content.replace(b'@ BASE_DIR @', self._custom_data_dir.encode())
+#             with open(script_path, 'wb') as fp:
+#                 fp.write(content)
+#
+#         source_desktop_file = self.distribution.get_name() + '.desktop'
+#         if not os.path.exists(self._custom_apps_dir):
+#             os.makedirs(self._custom_apps_dir)
+#         dest_desktop_file = os.path.join(self._custom_apps_dir, source_desktop_file)
+#         with open(source_desktop_file, 'rb') as fp:
+#             content = fp.read()
+#         icon = os.path.join(self._custom_data_dir, 'pireal', 'images', 'pireal_icon.png')
+#
+#         content = content.replace(b'@ INSTALLED_ICON @', icon.encode())
+#         with open(dest_desktop_file, 'wb') as fp:
+#             fp.write(content)
+#
+#         # Man page
+#         if not os.path.exists(self._custom_man_dir):
+#             os.makedirs(self._custom_man_dir)
+#         shutil.copy('man/pireal.1', self._custom_man_dir)
+#
+#     def finalize_options(self):
+#         """Cambio el path de instalación
+#         Esto se ejecuta antes de run"""
+#         super().finalize_options()
+#
+#         data_dir = os.path.join(self.prefix, 'share', self.distribution.get_name())
+#         apps_dir = os.path.join(self.prefix, 'share', 'applications')
+#         man_dir = os.path.join(self.prefix, 'share', 'man', 'man1')
+#
+#         if self.root is None:
+#             build_dir = data_dir
+#         else:
+#             build_dir = os.path.join(self.root, data_dir[1:])
+#             apps_dir = os.path.join(self.root, apps_dir[1:])
+#             man_dir = os.path.join(self.root, man_dir[1:])
+#
+#         self.install_lib = build_dir
+#         self._custom_data_dir = data_dir
+#         self._custom_apps_dir = apps_dir
+#         self._custom_man_dir = man_dir
 
 
 CLASSIFIERS = [
@@ -112,5 +112,4 @@ setup(
     classifiers=CLASSIFIERS,
     install_requires=['ordered-set'],
     scripts=['bin/pireal'],
-    cmdclass={'install': CustomInstall}
 )

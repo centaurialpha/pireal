@@ -20,10 +20,26 @@
 import logging
 from logging.handlers import RotatingFileHandler
 
-from pireal.core.settings import LOG_FILE
+from pireal.dirs import LOGS_DIR
+from pireal.core.settings import IS_LINUX
 
-FORMAT = "[%(asctime)s] [%(levelname)-6s]: %(name)s:%(funcName)-5s %(message)s"
-TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+TIME_FORMAT = '%H:%M:%S'
+FORMAT = '[{asctime}] [{log_color}{levelname:6}{reset}]: {cyan}{name}.{funcName}{reset}: {message}'
+
+LOG_COLORS = {
+    'DEBUG': 'blue',
+    'INFO': 'green',
+    'WARNING': 'yellow',
+    'ERROR': 'red',
+    'CRITICAL': 'red'
+}
+# For color formatter
+COLORS = ['black', 'red', 'green', 'yellow', 'blue', 'purple', 'cyan', 'white']
+COLORS_DICT = {
+    color: '\033[{}m'.format(i)
+    for i, color in enumerate(COLORS, start=30)
+}
+COLOR_RESET = '\033[0m'
 
 
 class CustomRotatingFileHandler(RotatingFileHandler):
@@ -34,14 +50,43 @@ class CustomRotatingFileHandler(RotatingFileHandler):
         self.doRollover()
 
 
-def set_up(verbose: bool):
+class ColoredFormatter(logging.Formatter):
+    """Custom formatter with colors.
+
+    NOTE: only works on Linux.
+    code based on qutebrowser log.py
+    """
+
+    def __init__(self, fmt, datefmt, style, use_colors):
+        super().__init__(fmt, datefmt, style)
+        self.use_colors = use_colors
+
+    def format(self, record):
+        if self.use_colors:
+            color_dict = dict(COLORS_DICT)
+            color_dict['reset'] = COLOR_RESET
+            log_color = LOG_COLORS[record.levelname]
+            color_dict['log_color'] = COLORS_DICT[log_color]
+        else:
+            color_dict = {color: '' for color in COLORS_DICT}
+            color_dict['reset'] = ''
+            color_dict['log_color'] = ''
+        record.__dict__.update(color_dict)
+        return super().format(record)
+
+
+def set_up(debug: bool, verbose: bool):
+    log_level = logging.DEBUG if debug else logging.INFO
     root = logging.getLogger()
-    fhandler = CustomRotatingFileHandler(LOG_FILE, maxBytes=1e6, backupCount=10)
+    log_file = LOGS_DIR / 'the_log.log'
+    fhandler = CustomRotatingFileHandler(log_file, maxBytes=1e6, backupCount=10)
     root.addHandler(fhandler)
-    formatter = logging.Formatter(FORMAT, TIME_FORMAT)
+    # Only use colors in linux
+    formatter = ColoredFormatter(FORMAT, TIME_FORMAT, '{', use_colors=IS_LINUX)
     fhandler.setFormatter(formatter)
-    root.setLevel(logging.DEBUG)
-    if verbose:
+    root.setLevel(log_level)
+    if debug or verbose:
         shandler = logging.StreamHandler()
+        shandler.setLevel(log_level)
         shandler.setFormatter(formatter)
         root.addHandler(shandler)

@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import (QHBoxLayout, QLabel, QLineEdit, QMenu,
 
 from pireal import translations as tr
 from pireal.core import interpreter
-from pireal.core.file_manager import File
+# from pireal.core.file_manager import File
 from pireal.gui.query_container import editor
 
 logger = logging.getLogger('gui.query_container')
@@ -55,29 +55,30 @@ class QueryContainer(QWidget):
         self.editor_widget.allTabsClosed.connect(self.hide)
         self._queries = {}
 
-    def get_or_create_query_file(self, filename=None) -> File:
-        if filename is None:
-            return File()
-        if filename not in self._queries:
-            file = File(filename)
-            self._queries[filename] = file
-        elif filename in self._queries:
-            file = self._queries[filename]
-        return file
+    # def get_or_create_query_file(self, filename=None):
+    #     if filename is None:
+    #         return File()
+    #     if filename not in self._queries:
+    #         file = File(filename)
+    #         self._queries[filename] = file
+    #     elif filename in self._queries:
+    #         file = self._queries[filename]
+    #     return file
 
     def load_or_create_new_editor(self, filename: str = None):
-        file = self.get_or_create_query_file(filename)
-        if not file.is_new:
-            if self.editor_widget.is_open(file):
-                logger.info('Already opened: %s', file.path)
-                self.editor_widget.set_current_editor(
-                    self.editor_widget.get_editor_by_filename(file.path))
-            else:
-                weditor = self.editor_widget.create_editor(file)
-                content = file.read()
-                weditor.setPlainText(content)
-        else:
-            self.editor_widget.create_editor(file)
+        pass
+        # file = self.get_or_create_query_file(filename)
+        # if not file.is_new:
+        #     if self.editor_widget.is_open(file):
+        #         logger.info('Already opened: %s', file.path)
+        #         self.editor_widget.set_current_editor(
+        #             self.editor_widget.get_editor_by_filename(file.path))
+        #     else:
+        #         weditor = self.editor_widget.create_editor(file)
+        #         content = file.read()
+        #         weditor.setPlainText(content)
+        # else:
+        #     self.editor_widget.create_editor(file)
 
         if not self.isVisible():
             self.setVisible(True)
@@ -245,13 +246,13 @@ class EditorWidget(QWidget):
     def has_editors(self) -> bool:
         return len(self._opened_editors) > 0
 
-    def is_open(self, file: File) -> bool:
-        found = False
-        for weditor in self._opened_editors:
-            if weditor.file == file:
-                found = True
-                break
-        return found
+    # def is_open(self, file: File) -> bool:
+    #     found = False
+    #     for weditor in self._opened_editors:
+    #         if weditor.file == file:
+    #             found = True
+    #             break
+    #     return found
 
     def unsaved_editors(self) -> Iterator[editor.Editor]:
         for weditor in self.editors():
@@ -275,19 +276,19 @@ class EditorWidget(QWidget):
                 break
         return found
 
-    def create_editor(self, file: File) -> editor.Editor:
-        weditor = editor.Editor(file=file)
-        tab_title = file.display_name
-        index = self._tabs_editor.addTab(weditor, tab_title)
-        self._tabs_editor.setCurrentIndex(index)
-        self._tabs_editor.setTabToolTip(index, file.path)
-        self._opened_editors.append(weditor)
+    # def create_editor(self, file: File) -> editor.Editor:
+    #     weditor = editor.Editor(file=file)
+    #     tab_title = file.display_name
+    #     index = self._tabs_editor.addTab(weditor, tab_title)
+    #     self._tabs_editor.setCurrentIndex(index)
+    #     self._tabs_editor.setTabToolTip(index, file.path)
+    #     self._opened_editors.append(weditor)
 
-        weditor.lineColumnChanged.connect(self._update_line_column)
-        weditor.modificationChanged.connect(self._on_modification_changed)
+    #     weditor.lineColumnChanged.connect(self._update_line_column)
+    #     weditor.modificationChanged.connect(self._on_modification_changed)
 
-        weditor.setFocus()
-        return weditor
+    #     weditor.setFocus()
+    #     return weditor
 
     @Slot(bool)
     def _on_modification_changed(self, modified):

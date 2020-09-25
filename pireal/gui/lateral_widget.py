@@ -28,7 +28,7 @@ from PyQt5.QtQuickWidgets import QQuickWidget
 from PyQt5.QtWidgets import QSplitter, QVBoxLayout, QWidget
 
 from pireal import translations as tr
-from pireal.core import settings
+from pireal.dirs import QML_RESOURCES
 
 RelationItem = namedtuple('Relation', 'name cardinality degree')
 
@@ -182,7 +182,7 @@ class RelationListQML(QWidget):
         self.itemClosed.emit(index, relation.name)
 
     def _set_source(self):
-        qml = os.path.join(settings.QML_PATH, "ListRelation.qml")
+        qml = os.path.join(QML_RESOURCES, "ListRelation.qml")
         self._view.setSource(QUrl.fromLocalFile(qml))
 
     def _reload(self):

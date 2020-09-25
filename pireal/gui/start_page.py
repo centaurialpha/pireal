@@ -35,8 +35,8 @@ from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSlot as Slot
 
-from pireal.core import settings
-from pireal.core.file_manager import get_basename
+from pireal.dirs import QML_RESOURCES, EXAMPLES_DIR
+from pireal.core.file_utils import get_basename
 
 
 class RecentDBListModel(QAbstractListModel):
@@ -99,8 +99,8 @@ class StartPage(QWidget):
         vbox.setContentsMargins(0, 0, 0, 0)
         self._view = QQuickWidget()
         self._view.rootContext().setContextProperty('listModel', self._model)
-        qml = os.path.join(settings.QML_PATH, "StartPage.qml")
-        self._view.setSource(QUrl.fromLocalFile(qml))
+        qml = QML_RESOURCES / 'StartPage.qml'
+        self._view.setSource(QUrl.fromLocalFile(str(qml)))
         self._view.setResizeMode(QQuickWidget.SizeRootObjectToView)
         vbox.addWidget(self._view)
 
@@ -113,9 +113,9 @@ class StartPage(QWidget):
         self._root.removeItem[int].connect(self._remove_item)
 
     def _open_example(self):
-        db_filename = os.path.abspath(os.path.join(settings.EXAMPLES, 'database.pdb'))
+        db_filename = os.path.abspath(os.path.join(EXAMPLES_DIR, 'database.pdb'))
         self._central.open_database(filename=db_filename)
-        query_filename = os.path.abspath(os.path.join(settings.EXAMPLES, 'queries.pqf'))
+        query_filename = os.path.abspath(os.path.join(EXAMPLES_DIR, 'queries.pqf'))
         self._central.open_query(filename=query_filename)
         # Ejecuto las consultas de ejemplo luego de 1.3 segundos
         QTimer.singleShot(1300, self._central.execute_query)

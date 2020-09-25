@@ -30,7 +30,7 @@ from PyQt5.QtCore import pyqtSlot as Slot
 from PyQt5.QtCore import Qt
 
 from pireal import translations as tr
-from pireal.core import settings
+from pireal import dirs
 
 PIREAL_DB_EXTENSION = '.pdb'
 
@@ -46,15 +46,15 @@ class DBInputDialog(QDialog):
         self._line_db_name = QLineEdit()
         layout.addRow(tr.TR_DB_DIALOG_DB_NAME, self._line_db_name)
         self._line_db_location = QLineEdit()
-        self._line_db_location.setText(settings.PIREAL_DATABASES)
+        self._line_db_location.setText(str(dirs.DATABASES_DIR))
         self._line_db_location.setReadOnly(True)
         choose_dir_action = self._line_db_location.addAction(
-            self.style().standardIcon(QStyle.SP_DirIcon), 1)
+            self.style().standardIcon(QStyle.SP_DirIcon), QLineEdit.TrailingPosition)
         layout.addRow(tr.TR_DB_DIALOG_DB_LOCATION, self._line_db_location)
         self._line_db_path = QLineEdit()
         self._line_db_path.setReadOnly(True)
         layout.addRow(tr.TR_DB_DIALOG_DB_FILENAME, self._line_db_path)
-        self._line_db_path.setText(settings.PIREAL_DATABASES)
+        self._line_db_path.setText(str(dirs.DATABASES_DIR))
 
         button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal)
         layout.addWidget(button_box)

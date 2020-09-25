@@ -25,8 +25,8 @@ from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QStackedLayout, QWidget
 
 from pireal import translations as tr
-from pireal.core import file_manager, settings, relation
-from pireal.core.db import DB, DBFileNotFoundError, DBInvalidFormatError
+from pireal.core import file_manager, settings, file_utils
+from pireal.core.db import DB
 from pireal.core.settings import DATA_SETTINGS, USER_SETTINGS
 from pireal.gui import start_page
 from pireal.gui.dialogs import new_relation_dialog
@@ -35,7 +35,7 @@ from pireal.gui.dialogs import DBInputDialog
 from pireal.gui.dialogs import PreferencesDialog
 # from pireal.gui.main_panel import MainPanel
 from pireal.gui.database_panel import DBPanel
-
+from pireal.dirs import DATABASES_DIR
 
 # Logger
 logger = logging.getLogger('gui.central_widget')
@@ -60,11 +60,9 @@ class CentralWidget(QWidget):
         return self._recent_dbs
 
     def remember_recent_database(self, path: str):
-        recents = self._recent_dbs
-        if path in recents:
-            recents.remove(path)
-        recents.insert(0, path)
-        self._recent_dbs = recents
+        if path in self._recent_dbs:
+            self._recent_dbs.remove(path)
+        self._recent_dbs.insert(0, path)
 
     def remove_db_from_recents(self, path: str):
         if path in self._recent_dbs:
@@ -93,7 +91,7 @@ class CentralWidget(QWidget):
         db_filepath = DBInputDialog.ask_db_name(parent=self)
         if db_filepath:
             logger.debug('Creating new DB as %s...', db_filepath)
-            db = DB(path=db_filepath)
+            db = DB()
             self.db_panel = DBPanel(db, parent=self)
             self.remove_start_page()
             index = self._stacked.addWidget(self.db_panel)
@@ -128,14 +126,8 @@ class CentralWidget(QWidget):
                 return
 
         try:
-            db = DB.create_from_file(filename)
-        except DBFileNotFoundError as reason:
-            QMessageBox.critical(self, tr.TR_MSG_ERROR, str(reason))
-            return
-        except DBInvalidFormatError as reason:
-            QMessageBox.warning(self, tr.TR_MSG_WARNING, str(reason))
-            return
-        except relation.InvalidFieldNameError as reason:
+            db = DB.load_from_file(filename)
+        except IOError as reason:
             QMessageBox.critical(self, tr.TR_MSG_ERROR, str(reason))
             return
 
@@ -148,7 +140,7 @@ class CentralWidget(QWidget):
         index = self._stacked.addWidget(self.db_panel)
         self._stacked.setCurrentIndex(index)
         # Save last folder
-        self._last_open_folder = file_manager.get_path(filename)
+        self._last_open_folder = file_utils.get_path(filename)
         # FIXME: considerar emitir una señal, mas testeable
         self.dbOpened.emit(filename)
 

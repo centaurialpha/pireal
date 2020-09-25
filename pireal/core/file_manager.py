@@ -36,95 +36,95 @@ class FileIOError(Exception):
     pass
 
 
-class File:
-    """File representation"""
+# class File:
+#     """File representation"""
 
-    def __init__(self, path=None):
-        self._path = path
+#     def __init__(self, path=None):
+#         self._path = path
 
-    @property
-    def path(self) -> str:
-        return self._path
+#     @property
+#     def path(self) -> str:
+#         return self._path
 
-    @property
-    def display_name(self) -> str:
-        if self._path is None:
-            return 'Untitled'
-        return get_basename_with_extension(self._path)
+#     @property
+#     def display_name(self) -> str:
+#         if self._path is None:
+#             return 'Untitled'
+#         return get_basename_with_extension(self._path)
 
-    @property
-    def filename(self) -> str:
-        return get_basename_with_extension(self._path)
+#     @property
+#     def filename(self) -> str:
+#         return get_basename_with_extension(self._path)
 
-    @property
-    def is_new(self) -> bool:
-        file_is_new = True
-        if self._exists():
-            file_is_new = False
-        return file_is_new
+#     @property
+#     def is_new(self) -> bool:
+#         file_is_new = True
+#         if self._exists():
+#             file_is_new = False
+#         return file_is_new
 
-    def save(self, content: str, *, path=None):
-        if path is not None:
-            self._path = path
-        with open(self._path, 'w') as fh:
-            fh.write(content)
+#     def save(self, content: str, *, path=None):
+#         if path is not None:
+#             self._path = path
+#         with open(self._path, 'w') as fh:
+#             fh.write(content)
 
-    def _exists(self) -> bool:
-        file_exists = False
-        if self._path is not None and os.path.exists(self._path):
-            file_exists = True
-        return file_exists
+#     def _exists(self) -> bool:
+#         file_exists = False
+#         if self._path is not None and os.path.exists(self._path):
+#             file_exists = True
+#         return file_exists
 
-    def read(self) -> str:
-        """Read the contents of _path"""
-        if not self._exists():
-            raise FileNotFoundError('You asked me to read the file but the file does not exist gg')
-        # Try to detect encoding
-        encoding = detect_encoding(self._path)
-        if encoding is None:
-            encodings = [DEFAULT_ENCODING, locale.getpreferredencoding()]
-        else:
-            encodings = [encoding]
+#     def read(self) -> str:
+#         """Read the contents of _path"""
+#         if not self._exists():
+#             raise FileNotFoundError('You asked me to read the file but the file does not exist gg')
+#         # Try to detect encoding
+#         encoding = detect_encoding(self._path)
+#         if encoding is None:
+#             encodings = [DEFAULT_ENCODING, locale.getpreferredencoding()]
+#         else:
+#             encodings = [encoding]
 
-        with open(self._path, 'rb') as fh:
-            data = fh.read()
+#         with open(self._path, 'rb') as fh:
+#             data = fh.read()
 
-        for encoding in encodings:
-            logger.info('Triying to decode with %s', encoding)
-            try:
-                content = data.decode(encoding)
-                logger.info('Decoded with %s', encoding)
-                break
-            except UnicodeDecodeError:
-                continue
-        else:
-            # So sad :/
-            raise UnicodeDecodeError('Unable to decode')
-        return content
-
-
-def get_extension(filename):
-    """ This function returns the extension of filename
-
-    :param filename: Filename path
-    :returns: The extension file
-    """
-
-    return os.path.splitext(filename)[-1]
+#         for encoding in encodings:
+#             logger.info('Triying to decode with %s', encoding)
+#             try:
+#                 content = data.decode(encoding)
+#                 logger.info('Decoded with %s', encoding)
+#                 break
+#             except UnicodeDecodeError:
+#                 continue
+#         else:
+#             # So sad :/
+#             raise UnicodeDecodeError('Unable to decode')
+#         return content
 
 
-def get_basename(filename):
-    """ This function returns the base name of filename
+# def get_extension(filename):
+#     """ This function returns the extension of filename
 
-    :param filename: Filename, for example: "/home/gabo/file.rpf"
-    :returns: The base name, for example: "file"
-    """
+#     :param filename: Filename path
+#     :returns: The extension file
+#     """
 
-    return os.path.splitext(get_basename_with_extension(filename))[0]
+#     return os.path.splitext(filename)[-1]
 
 
-def get_basename_with_extension(filename):
-    return os.path.basename(filename)
+# def get_basename(filename):
+#     """ This function returns the base name of filename
+
+#     :param filename: Filename, for example: "/home/gabo/file.rpf"
+#     :returns: The base name, for example: "file"
+#     """
+
+#     return os.path.splitext(get_basename_with_extension(filename))[0]
+
+
+# def get_basename_with_extension(filename):
+#     return os.path.basename(filename)
 
 
 def get_path(filename):

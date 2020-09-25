@@ -59,6 +59,15 @@ class DBPanel(QWidget):
 
         # self.lateral_widget.relationClicked.connect(
         #     self.central_view.relation_widget.set_current_index)
+        self._create_empty_widget()
+
+    def _create_empty_widget(self):
+        widget = QWidget()
+        hbox = QHBoxLayout(widget)
+        btn_add_relation = QPushButton('Add Relation')
+        btn_create_relation = QPushButton('Create Relation')
+        hbox.addWidget(btn_add_relation)
+        hbox.addWidget(btn_create_relation)
 
     def _load_db(self):
         for rela in self.db.relations:

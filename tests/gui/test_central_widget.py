@@ -3,7 +3,7 @@ import pytest
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMessageBox
 
-from pireal.core.db import DB, DBIOError
+from pireal.core.db import DB
 from pireal.gui.central_widget import CentralWidget
 from pireal.gui.dialogs import DBInputDialog
 
@@ -35,7 +35,7 @@ def test_open_database(central_widget_fixture, qtbot, monkeypatch, mocker):
     monkeypatch.setattr(
         QFileDialog, 'getOpenFileName', lambda *args: ('algo', None))
 
-    mocker.patch.object(DB, 'create_from_file')
+    mocker.patch.object(DB, 'load_from_file')
 
     with qtbot.waitSignal(central_widget_fixture.dbOpened) as blocker:
         central_widget_fixture.open_database()
@@ -49,7 +49,7 @@ def test_open_database(central_widget_fixture, qtbot, monkeypatch, mocker):
 @pytest.mark.gui
 def test_open_database_fail(central_widget_fixture, qtbot, monkeypatch, mocker):
     db_filename = 'not_exist.pdb'
-    mocker.patch.object(DB, 'create_from_file', side_effect=DBIOError)
+    mocker.patch.object(DB, 'load_from_file', side_effect=IOError)
     monkeypatch.setattr(QMessageBox, 'critical', lambda *args: QMessageBox.Yes)
 
     with qtbot.waitSignal(central_widget_fixture.dbOpened, raising=False) as blocker:
@@ -70,4 +70,5 @@ def test_create_database(central_widget_fixture, monkeypatch, mocker):
     central_widget_fixture.create_database()
 
     assert central_widget_fixture.has_db()
+    assert central_widget_fixture.db_panel.db._path == test_db_path
     assert central_widget_fixture._stacked.count() == 1

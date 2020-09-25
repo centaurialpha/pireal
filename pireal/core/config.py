@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015-2019 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -17,14 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import argparse
+"""The configuration"""
 
 
-def get_cli():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--debug', action='store_true', help='Debug')
-    parser.add_argument('-v', '--verbose', action='store_true', help='Verbose')
-    parser.add_argument('--database', help='Database file')
-    parser.add_argument('--version', action='store_true', help='Version')
-    parser.add_argument('--no-check-updates', action='store_true', help='Disable check updates')
-    return parser
+DATA_CONFIG = None
+USER_CONFIG = None
