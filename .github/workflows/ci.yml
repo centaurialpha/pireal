@@ -19,6 +19,7 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
