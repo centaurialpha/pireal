@@ -26,7 +26,7 @@ jobs:
           pip install -r requirements-dev.txt
 
   static_analisys:
-    needs: build
+    needs: [setup, build]
     runs-on: ubuntu-latest
     steps:
       - name: PEP8
