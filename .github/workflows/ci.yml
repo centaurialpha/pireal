@@ -1,6 +1,6 @@
 name: CI Pireal
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   build:
@@ -18,15 +18,14 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 pycodestyle pyqt5 pytest pytest-cov ordered-set
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
       - name: PEP8
         run: |
           make pep8
-
       - name: Lint
         run: |
           make flake8
-
       - name: Unittest
         run: |
           make test
