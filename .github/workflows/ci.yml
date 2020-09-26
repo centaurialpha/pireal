@@ -8,18 +8,12 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7]
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-  build:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
@@ -27,9 +21,14 @@ jobs:
           pip install -r requirements-dev.txt
 
   static_analisys:
-    needs: [setup, build]
+    needs: setup
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
       - name: PEP8
         run: |
           make pep8
