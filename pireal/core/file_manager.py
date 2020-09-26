@@ -19,7 +19,7 @@
 
 import os
 import codecs
-import locale
+# import locale
 import logging
 
 DEFAULT_ENCODING = 'utf-8'
@@ -78,7 +78,7 @@ class FileIOError(Exception):
 #     def read(self) -> str:
 #         """Read the contents of _path"""
 #         if not self._exists():
-#             raise FileNotFoundError('You asked me to read the file but the file does not exist gg')
+#        raise FileNotFoundError('You asked me to read the file but the file does not exist gg')
 #         # Try to detect encoding
 #         encoding = detect_encoding(self._path)
 #         if encoding is None:

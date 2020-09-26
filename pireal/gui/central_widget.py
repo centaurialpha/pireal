@@ -35,7 +35,7 @@ from pireal.gui.dialogs import DBInputDialog
 from pireal.gui.dialogs import PreferencesDialog
 # from pireal.gui.main_panel import MainPanel
 from pireal.gui.database_panel import DBPanel
-from pireal.dirs import DATABASES_DIR
+# from pireal.dirs import DATABASES_DIR
 
 # Logger
 logger = logging.getLogger('gui.central_widget')
