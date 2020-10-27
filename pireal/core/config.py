@@ -18,7 +18,13 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 """The configuration"""
+import configparser
 
 
-DATA_CONFIG = None
-USER_CONFIG = None
+OPTIONS = {
+
+}
+
+
+class Config:
+    pass

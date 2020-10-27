@@ -36,7 +36,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSlot as Slot
 
 from pireal.dirs import QML_RESOURCES, EXAMPLES_DIR
-from pireal.core.file_utils import get_basename
 
 
 class RecentDBListModel(QAbstractListModel):
@@ -129,7 +128,7 @@ class StartPage(QWidget):
 
     def load_items(self):
         for path in self._central.recent_databases:
-            name = get_basename(path)
+            name = os.path.basename(path)
             self._model.add_item(name, path)
 
     def showEvent(self, event):

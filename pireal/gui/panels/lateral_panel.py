@@ -91,7 +91,7 @@ class RelationListModel(QAbstractListModel):
         }
 
 
-class LateralWidget(QSplitter):
+class LateralPanel(QSplitter):
     """
     Interface between QML UI and model
     """

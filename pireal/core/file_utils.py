@@ -16,50 +16,94 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
+
 import os
 import locale
 import logging
+from pathlib import Path
 
 logger = logging.getLogger('file_utils')
 
 DEFAULT_ENCODING = 'utf-8'
 
 
-def read_file(filepath: str) -> str:
-    encoding = detect_encoding(filepath)
-    if encoding is None:
-        encodings = [DEFAULT_ENCODING, locale.getpreferredencoding()]
-    else:
-        encodings = [encoding]
-
-    with open(filepath, 'rb') as fh:
-        data = fh.read()
-    for encoding in encodings:
-        logging.info('Triying to decode with %s', encoding)
-        try:
-            content = data.decode(encoding)
-            logger.info('Decoded with %s', encoding)
-            break
-        except UnicodeDecodeError:
-            continue
-    else:
-        raise UnicodeDecodeError('Unable to decode :(')
-
-    return content
-
-
-def write_file(filepath: str, content: str):
-    with open(filepath, 'w') as fh:
-        fh.write(content)
-
-
 def detect_encoding(filepath: str):
     return None
 
 
-def get_basename(filename):
-    return os.path.basename(filename)
+class FileNameError(Exception):
+    pass
 
 
-def get_path(filename):
-    return os.path.dirname(filename)
+class File:
+    """Represent a file object with extra features"""
+
+    def __init__(self, path: str = None):
+        if path is not None:
+            self._path = Path(path)
+        else:
+            self._path = path
+        self._created = False
+        if not self._exists():
+            self._created = True
+
+    @property
+    def display_name(self) -> str:
+        name = self.filename
+        if self._path is not None and not os.access(self._path, os.W_OK):
+            name += ' (read-only)'
+        return name
+
+    @property
+    def filename(self) -> str:
+        if self._path is None:
+            return 'Untitled'
+        return self._path.name
+
+    @property
+    def is_new(self) -> bool:
+        return self._created
+
+    @property
+    def path(self) -> Path:
+        return self._path
+
+    def _exists(self) -> bool:
+        exists = False
+        if self._path is not None and self._path.exists():
+            exists = True
+        return exists
+
+    def save(self, content: str, path: str = None):
+        if path is not None:
+            if not isinstance(path, Path):
+                path = Path(path)
+            self._path = path
+
+        if self._path is None:
+            raise FileNameError('No file to save content :/')
+
+        self._path.write_text(content)
+
+    def read(self) -> str:
+        if self._path is None:
+            raise FileNameError('No file to read :/')
+        encoding = detect_encoding(self._path)
+        if encoding is None:
+            encodings = [DEFAULT_ENCODING, locale.getpreferredencoding]
+        else:
+            encodings = [encoding]
+
+        data = self._path.read_bytes()
+
+        for encoding in encodings:
+            logger.info('Trying to decode %s with %s', self._path, encoding)
+            try:
+                content = data.decode(encoding)
+                break
+            except UnicodeDecodeError:
+                continue
+        else:
+            raise UnicodeDecodeError('Unable to decode :(')
+
+        return content

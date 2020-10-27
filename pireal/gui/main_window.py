@@ -24,6 +24,8 @@ import logging
 from typing import List
 
 from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QStatusBar
+from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QMessageBox
 
 from PyQt5.QtGui import QIcon
@@ -31,7 +33,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtCore import pyqtSlot as Slot
 from PyQt5.QtCore import QThread
-# from PyQt5.QtCore import QSize
+from PyQt5.QtCore import Qt
 
 from pireal import translations as tr
 from pireal import keymap
@@ -60,6 +62,17 @@ TOOLBAR_ITEMS: List[str] = [
 ]
 
 
+class StatusBar(QStatusBar):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.messageChanged.connect(self._on_message_changed)
+
+    @Slot(str)
+    def _on_message_changed(self, msg):
+        self.setVisible(bool(msg))
+
+
 class Pireal(QMainWindow):
 
     """
@@ -67,7 +80,6 @@ class Pireal(QMainWindow):
 
     This class is responsible for installing all application services.
     """
-    __ACTIONS = {}
     goingDown = Signal()
 
     def __init__(self, check_updates=True):
@@ -84,6 +96,12 @@ class Pireal(QMainWindow):
         # Central widget
         self.central_widget = CentralWidget(self)
         self.setCentralWidget(self.central_widget)
+        # Status bar
+        self.status_bar = StatusBar(self)
+        self.status_bar.hide()
+        self.setStatusBar(self.status_bar)
+
+        self.central_widget.dbOpened.connect(self.update_title)
         # Menu bar
         self._load_menubar()
 
@@ -98,23 +116,7 @@ class Pireal(QMainWindow):
             updater_thread.start()
 
     def show_status_message(self, message, *, timeout=4000):
-        self.statusBar().showMessage(message, timeout)
-
-    def switch_theme(self):
-        USER_SETTINGS.dark_mode = not USER_SETTINGS.dark_mode
-        USER_SETTINGS.save()
-
-    @classmethod
-    def get_action(cls, name):
-        """ Return the instance of a loaded QAction """
-
-        return cls.__ACTIONS.get(name, None)
-
-    @classmethod
-    def load_action(cls, name, action):
-        """ Load a QAction """
-
-        cls.__ACTIONS[name] = action
+        self.status_bar.showMessage(message, timeout)
 
     def _load_menubar(self):
         """
@@ -191,7 +193,7 @@ class Pireal(QMainWindow):
     def update_title(self):
         text = 'Pireal'
         if self.central_widget.has_db():
-            db_name = self.central_widget.db_panel.db.display_name()
+            db_name = self.central_widget.db_panel.db.display_name
             text = f'Pireal - {tr.TR_NOTIFICATION_DB_CONNECTED} {db_name}'
         self.setWindowTitle(text)
 

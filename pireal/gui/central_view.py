@@ -17,17 +17,37 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-# from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QTabWidget
 # from PyQt5.QtWidgets import QVBoxLayout
-# from PyQt5.QtWidgets import QStackedLayout
+from PyQt5.QtWidgets import QStackedLayout
 from PyQt5.QtWidgets import QSplitter
 
-# from pireal.gui.model_view_delegate import create_view
-from pireal.gui.relation_widget import RelationWidget
+from pireal.gui.model_view_delegate import create_view
 
 
-class CentralView(QSplitter):
+class RelationWidget(QWidget):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._stack = QStackedLayout(self)
+
+    def count(self):
+        return self._stack.count()
+
+    def current_view(self):
+        return self._stack.currentWidget()
+
+    def set_current_index(self, index):
+        self._stack.setCurrentIndex(index)
+
+    def add_view(self, relation):
+        view = create_view(relation)
+        index = self._stack.addWidget(view)
+        self._stack.setCurrentIndex(index)
+
+
+class RelationPanel(QSplitter):
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -37,5 +57,9 @@ class CentralView(QSplitter):
         self.relation_widget = RelationWidget(self)
         self._tabs.addTab(self.relation_widget, 'Relations')
 
-        # self.relation_result_widget = RelationResultWidget(self)
-        # self._tabs.addTab(self.relation_result_widget, 'Results')
+        self.relation_result_widget = RelationWidget(self)
+        self._tabs.addTab(self.relation_result_widget, 'Results')
+
+    def set_current_index(self, index):
+        self._tabs.setCurrentIndex(index)
+

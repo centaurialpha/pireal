@@ -22,7 +22,7 @@
 import logging
 
 from pireal.core import db_utils
-from pireal.core import file_utils
+from pireal.core.file_utils import File
 
 from pireal.core.relation import Relation
 
@@ -39,10 +39,10 @@ class RelationNotFound(DBError):
 
 class DB(object):
 
-    def __init__(self):
+    def __init__(self, file: File = None):
         self._relations = {}
         self._dirty = False
-        self._path = None
+        self.file = file
 
     def add(self, relation: Relation):
         """Add a Relation to DB"""
@@ -66,23 +66,23 @@ class DB(object):
 
     def write_to_file(self, dst_path: str):
         """Serialize all relations to a file"""
-        self._path = dst_path
-
         db_content = db_utils.generate_database(self._relations)
-        file_utils.write_file(self._path, db_content)
+        if self.file is None:
+            self.file = File(path=dst_path)
 
+        self.file.save(content=db_content)
         self._dirty = False
 
     @classmethod
     def load_from_file(cls, filepath):
         """Create a DB object from a file"""
-        db = cls()
-        db._path = filepath
+        file = File(path=filepath)
+        db = cls(file=file)
 
         try:
-            text = file_utils.read_file(filepath)
+            text = file.read()
         except IOError:
-            logger.exception('Error reading file %s', filepath)
+            logger.exception('Error reading file')
             raise
 
         db_dict = db_utils.parse_database(text)
@@ -101,8 +101,26 @@ class DB(object):
         return self._dirty
 
     @property
+    def filename(self):
+        return self.file.filename
+
+    @property
     def display_name(self):
-        return file_utils.get_basename(self._path)
+        # FIXME: currently the same behavior as "filename" property
+        # but maybe we should take into account the file permissions
+        return self.file.display_name
+
+    @property
+    def relations_dict(self):
+        return self._relations
+
+    @property
+    def relations(self):
+        return tuple(self._relations.values())
+
+    @property
+    def is_new(self):
+        return self._path is None
 
     def __len__(self):
         return len(self._relations)

@@ -128,13 +128,13 @@ def test_write_to_file(tmpdir):
     r2.content = OrderedSet([('3', 'rocks'), ('2', 'games'), ('1', 'python')])
 
     db = DB()
-    db.add(r1)
-    db.add(r2)
+    for relation in (r1, r2):
+        db.add(relation)
     # FIXME: considerar pasar el filepath a DB, testear bien la creación!
     db.write_to_file(dst_path=dst)
 
     # verify if file exist
-    assert os.path.exists(db._path)
+    assert os.path.exists(db.file.path)
 
     expected_content = (
         '@r1:id,name\n'
@@ -147,5 +147,5 @@ def test_write_to_file(tmpdir):
         '1,python'
     )
     # verify content
-    with open(db._path) as fh:
+    with open(db.file.path) as fh:
         assert fh.read() == expected_content

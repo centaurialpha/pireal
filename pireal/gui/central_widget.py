@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2020 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -25,19 +25,19 @@ from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QStackedLayout, QWidget
 
 from pireal import translations as tr
-from pireal.core import file_manager, settings, file_utils
+from pireal.core import settings
+from pireal.core.file_utils import File
 from pireal.core.db import DB
 from pireal.core.settings import DATA_SETTINGS, USER_SETTINGS
-from pireal.gui import start_page
-from pireal.gui.dialogs import new_relation_dialog
+from pireal.gui.start_page import StartPage
 # from pireal.gui.dialogs.new_database_dialog import NewDBDialog
 from pireal.gui.dialogs import DBInputDialog
 from pireal.gui.dialogs import PreferencesDialog
+from pireal.gui.dialogs import NewRelationDialog
 # from pireal.gui.main_panel import MainPanel
 from pireal.gui.database_panel import DBPanel
 # from pireal.dirs import DATABASES_DIR
 
-# Logger
 logger = logging.getLogger('gui.central_widget')
 
 
@@ -62,10 +62,12 @@ class CentralWidget(QWidget):
     def remember_recent_database(self, path: str):
         if path in self._recent_dbs:
             self._recent_dbs.remove(path)
+        logger.debug('adding %s to recent databases', path)
         self._recent_dbs.insert(0, path)
 
     def remove_db_from_recents(self, path: str):
         if path in self._recent_dbs:
+            logger.debug('removing %s from recent databases', path)
             self._recent_dbs.remove(path)
 
     @property
@@ -89,13 +91,16 @@ class CentralWidget(QWidget):
         if self.has_db():
             return self._say_about_one_db_at_time()
         db_filepath = DBInputDialog.ask_db_name(parent=self)
+        if not db_filepath:
+            logger.debug('database name not provided')
+            return
         if db_filepath:
-            logger.debug('Creating new DB as %s...', db_filepath)
-            db = DB()
-            self.db_panel = DBPanel(db, parent=self)
+            db_file = File(path=db_filepath)
+            logger.debug('creating new database as %s', str(db_file.path))
+            self.db_panel = DBPanel(parent=self)
             self.remove_start_page()
-            index = self._stacked.addWidget(self.db_panel)
-            self._stacked.setCurrentIndex(index)
+            self.add_to_stack(self.db_panel)
+            logger.debug('database=%s created', str(db_file.path))
 
     def _say_about_one_db_at_time(self):
         logger.info("Oops! One database at a time please")
@@ -131,26 +136,26 @@ class CentralWidget(QWidget):
             QMessageBox.critical(self, tr.TR_MSG_ERROR, str(reason))
             return
 
-        self.db_panel = DBPanel(db, parent=self)
+        self.db_panel = DBPanel(db=db, parent=self)
 
         # First remove start page
         # FIXME: mejorar ?
         self.remove_start_page()
 
-        index = self._stacked.addWidget(self.db_panel)
-        self._stacked.setCurrentIndex(index)
+        self.add_to_stack(self.db_panel)
         # Save last folder
-        self._last_open_folder = file_utils.get_path(filename)
+        self._last_open_folder = str(db.file.path.parent)
         # FIXME: considerar emitir una señal, mas testeable
         self.dbOpened.emit(filename)
 
-        logger.debug('Connected to database: %s', db.display_name())
+        logger.debug('Connected to database: %s', db.display_name)
+        self.pireal.show_status_message(f'Connected to database: {db.display_name}')
 
     def close_database(self):
         """ Close the database and return to the main widget """
         if not self.has_db():
             return
-        if self.db_panel.db.is_dirty():
+        if self.db_panel.db.dirty:
             reply = QMessageBox.question(
                 self, tr.TR_MSG_SAVE_CHANGES,
                 tr.TR_MSG_SAVE_CHANGES_BODY,
@@ -164,10 +169,11 @@ class CentralWidget(QWidget):
             actions[reply]()
 
         # TODO: ask for unsaved queries
-        logger.info('Closing database %s', self.db_panel.db.display_name())
+        logger.info('Closing database %s', self.db_panel.db.display_name)
         self._stacked.removeWidget(self.db_panel)
         self.db_panel = None
         self.add_start_page()
+        self.pireal.update_title()
 
     def save_database(self):
         if self.has_db():
@@ -204,12 +210,12 @@ class CentralWidget(QWidget):
         else:
             filenames = [filename]
         for filename in filenames:
-            self.db_panel.add_query(filename)
+            self.db_panel.add_new_editor_query(filename)
 
     def new_query(self):
         if not self.has_db():
             return
-        self.db_panel.new_query()
+        self.db_panel.add_new_editor_query()
 
     @Slot()
     def save_query(self, editor=None):
@@ -236,7 +242,8 @@ class CentralWidget(QWidget):
         if editor is None:
             return
         if editor.file.path:
-            save_folder = file_manager.get_path(editor.file.path)
+            # save_folder = file_manager.get_path(editor.file.path)
+            pass
         else:
             save_folder = self._last_open_folder
         filename, ok = QFileDialog.getSaveFileName(
@@ -260,23 +267,32 @@ class CentralWidget(QWidget):
 
     def execute_query(self):
         if self.has_db():
-            relations = self.db_panel.db._relations
-            self.db_panel.query_widget.execute_query(relations)
+            relations = self.db_panel.db.relations_dict
+            self.db_panel.query_panel.execute_query(relations)
+
+    def add_to_stack(self, widget):
+        logger.debug('adding %s to stacked layout', widget.__class__.__name__)
+        index = self._stacked.addWidget(widget)
+        self._stacked.setCurrentIndex(index)
 
     def add_start_page(self):
-        """ This function adds the Start Page to the stacked widget """
-        sp = start_page.StartPage(self)
-        index = self._stacked.addWidget(sp)
-        self._stacked.setCurrentIndex(index)
+        """This function adds the Start Page to the stacked layout"""
+        first_widget = self._stacked.widget(0)
+        if isinstance(first_widget, StartPage):
+            return
+        sp = StartPage(self)
+        self.add_to_stack(sp)
 
     def remove_start_page(self):
         start_page_widget = self._stacked.widget(0)
-        if isinstance(start_page_widget, start_page.StartPage):
+        if isinstance(start_page_widget, StartPage):
+            logger.debug('removing StartPage from stacked layout')
             self._stacked.removeWidget(start_page_widget)
 
     def show_preferences(self):
         """ Show settings dialog on stacked """
 
+        logger.debug('Showing Preferences')
         preferences_dialog = PreferencesDialog(self)
         preferences_dialog.settingsChanged.connect(self._on_settings_changed)
         preferences_dialog.show()
