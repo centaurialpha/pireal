@@ -23,8 +23,9 @@
 import re
 import itertools
 
-from ordered_set import OrderedSet
+# from ordered_set import OrderedSet
 
+from pireal.core.ordered_set import OrderedSet
 from pireal.core.rtypes import RelationStr
 
 IS_VALID_FIELD_NAME = re.compile("^[_á-úa-zA-Z][_á-úa-zA-Z0-9]*$")

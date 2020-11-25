@@ -17,4 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from .query_container import *  # noqa
+"""The configuration"""
+import configparser
+
+
+OPTIONS = {
+
+}
+
+
+class Config:
+    pass

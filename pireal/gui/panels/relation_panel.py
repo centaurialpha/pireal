@@ -18,7 +18,10 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QTabWidget
+# from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QStackedLayout
+from PyQt5.QtWidgets import QSplitter
 
 from pireal.gui.model_view_delegate import create_view
 
@@ -42,3 +45,20 @@ class RelationWidget(QWidget):
         view = create_view(relation)
         index = self._stack.addWidget(view)
         self._stack.setCurrentIndex(index)
+
+
+class RelationPanel(QSplitter):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._tabs = QTabWidget()
+        self.addWidget(self._tabs)
+
+        self.relation_widget = RelationWidget(self)
+        self._tabs.addTab(self.relation_widget, 'Relations')
+
+        self.relation_result_widget = RelationWidget(self)
+        self._tabs.addTab(self.relation_result_widget, 'Results')
+
+    def set_current_index(self, index):
+        self._tabs.setCurrentIndex(index)

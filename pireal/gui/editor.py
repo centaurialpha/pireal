@@ -17,15 +17,195 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import QRegExp, QSize, Qt, QTimer
 from PyQt5.QtCore import pyqtSignal as Signal
-from PyQt5.QtGui import (QColor, QFont, QKeySequence, QPalette,
-                         QTextCharFormat, QTextCursor, QTextDocument)
-from PyQt5.QtWidgets import QPlainTextEdit, QShortcut, QTextEdit
+from PyQt5.QtGui import (
+    QColor,
+    QFont,
+    QFontMetrics,
+    QKeySequence,
+    QPainter,
+    QPalette,
+    QPen,
+    QSyntaxHighlighter,
+    QTextBlockUserData,
+    QTextCharFormat,
+    QTextCursor,
+    QTextDocument
+)
 
+from PyQt5.QtWidgets import (
+    QFrame,
+    QPlainTextEdit,
+    QShortcut,
+    QTextEdit,
+)
+
+from pireal.core.interpreter import tokens
 from pireal.core.settings import USER_SETTINGS
-from pireal.gui.query_container import highlighter, sidebar
 from pireal.gui.theme import get_editor_color
+
+
+class Highlighter(QSyntaxHighlighter):
+    """ Syntax Highlighting
+
+    This class defines rules for syntax highlighting.
+
+    A rule consists of a QRegExp pattern and a QTextCharFormat instance.
+    """
+
+    def __init__(self, editor):
+        super(Highlighter, self).__init__(editor)
+        # Keywords format
+        keyword_format = QTextCharFormat()
+        keyword_format.setForeground(QColor(get_editor_color('keyword')))
+        keyword_format.setFontWeight(QFont.Bold)
+
+        # Rules
+        self._rules = [(QRegExp("\\b" + pattern + "\\b"), keyword_format)
+                       for pattern in tokens.KEYWORDS.keys()]
+
+        # vars
+        var_format = QTextCharFormat()
+        var_pattern = QRegExp(r"\w+\s*\:\=")
+        var_format.setFontWeight(QFont.Bold)
+        var_format.setForeground(QColor(get_editor_color('variable')))
+
+        self._rules.append((var_pattern, var_format))
+
+        op_format = QTextCharFormat()
+        op_pattern = QRegExp("(\\:=|\\(|\\))|=|<|>")
+        op_format.setForeground(QColor(get_editor_color('operator')))
+        op_format.setFontWeight(QFont.Bold)
+        self._rules.append((op_pattern, op_format))
+        # Number format
+        number_format = QTextCharFormat()
+        number_pattern = QRegExp(r"\b([A-Z0-9]+)(?:[ _-](\d+))?\b")
+        number_pattern.setMinimal(True)
+        number_format.setForeground(QColor(get_editor_color('number')))
+        self._rules.append((number_pattern, number_format))
+
+        # String format
+        string_format = QTextCharFormat()
+        string_pattern = QRegExp("\'.*\'")
+        string_pattern.setMinimal(True)
+        string_format.setForeground(QColor(get_editor_color('string')))
+        self._rules.append((string_pattern, string_format))
+
+        # Comment format
+        comment_format = QTextCharFormat()
+        comment_pattern = QRegExp("%[^\n]*")
+        comment_format.setForeground(QColor(get_editor_color('comment')))
+        comment_format.setFontItalic(True)
+        self._rules.append((comment_pattern, comment_format))
+
+        # Paren
+        self.paren = QRegExp(r'\(|\)')
+
+    def highlightBlock(self, text):
+        """ Reimplementation """
+
+        block_data = TextBlockData()
+        # Paren
+        index = self.paren.indexIn(text, 0)
+        while index >= 0:
+            matched_paren = str(self.paren.capturedTexts()[0])
+            info = ParenInfo(matched_paren, index)
+            block_data.insert_paren_info(info)
+            index = self.paren.indexIn(text, index + 1)
+
+        self.setCurrentBlockUserData(block_data)
+
+        for pattern, _format in self._rules:
+            expression = QRegExp(pattern)
+            index = expression.indexIn(text)
+            while index >= 0:
+                length = expression.matchedLength()
+                self.setFormat(index, length, _format)
+                index = expression.indexIn(text, index + length)
+
+        self.setCurrentBlockState(0)
+
+
+class TextBlockData(QTextBlockUserData):
+
+    def __init__(self):
+        super(TextBlockData, self).__init__()
+        self.paren = []
+        self.__valid = False
+
+    def insert_paren_info(self, info):
+        self.__valid = True
+        self.paren.append(info)
+
+    @property
+    def isValid(self):
+        return self.__valid
+
+
+class ParenInfo(object):
+
+    def __init__(self, char, pos):
+        self.character = char
+        self.position = pos
+
+
+class Sidebar(QFrame):
+    """ Sidebar widget """
+
+    def __init__(self, editor):
+        super(Sidebar, self).__init__(editor)
+        self.editor = editor
+
+        self.editor.blockCountChanged.connect(self.update_viewport)
+        self.editor.updateRequest.connect(self.update)
+
+    def sizeHint(self):
+        return QSize(self.__calculate_width(), 0)
+
+    def redimensionar(self):
+        cr = self.editor.contentsRect()
+        current_x = cr.left()
+        top = cr.top()
+        height = cr.height()
+        width = self.sizeHint().width()
+        self.setGeometry(current_x, top, width, height)
+
+    def update_viewport(self):
+        self.editor.setViewportMargins(self.sizeHint().width(), 0, 0, 0)
+
+    def __calculate_width(self):
+        digits = len(str(max(1, self.editor.blockCount())))
+        fmetrics_width = QFontMetrics(
+            self.editor.document().defaultFont()).width("9")
+        return 5 + fmetrics_width * digits + 3
+
+    def paintEvent(self, event):
+        """This method draws a left sidebar
+
+        :param event: QEvent
+        """
+
+        painter = QPainter(self)
+        # FIXME: cuando se cambia el tema se cambia esto, en su lugar poner el color en un attr
+        # y leer de la config, la próxima vez que se inicie, cambiar
+        painter.fillRect(event.rect(), QColor(get_editor_color('sidebar_background')))
+        width = self.width() - 8
+        height = self.editor.fontMetrics().height()
+        font = self.editor.font()
+        font_bold = self.editor.font()
+        font_bold.setBold(True)
+        painter.setFont(font)
+        painter.setPen(QPen(QColor(get_editor_color('sidebar_foreground'))))
+        current_line = self.editor.textCursor().blockNumber()
+
+        for top, line, block in self.editor.visible_blocks:
+            if current_line == line:
+                painter.setFont(font_bold)
+            else:
+                painter.setFont(font)
+            painter.drawText(5, top, width, height,
+                             Qt.AlignRight, str(line + 1))
 
 
 class Editor(QPlainTextEdit):
@@ -45,13 +225,13 @@ class Editor(QPlainTextEdit):
         # Highlight braces
         self._match_parenthesis = USER_SETTINGS.match_parenthesis
         # Highlighter
-        self._highlighter = highlighter.Highlighter(self.document())
+        self._highlighter = Highlighter(self.document())
         # Set document font
         font_family = USER_SETTINGS.font_family
         font_size = USER_SETTINGS.font_size
         self.set_font(font_family, font_size)
         # Sidebar
-        self._sidebar = sidebar.Sidebar(self)
+        self._sidebar = Sidebar(self)
 
         self.word_separators = [',', '(', ')', '?']
         # Extra selections
@@ -70,8 +250,12 @@ class Editor(QPlainTextEdit):
         short_zoom_out.activated.connect(lambda: self.zoom('out'))
 
     @property
-    def file(self):
-        return self._file
+    def filename(self):
+        return self._file.filename
+
+    @property
+    def display_name(self):
+        return self._file.display_name
 
     @property
     def is_modified(self):
@@ -80,7 +264,7 @@ class Editor(QPlainTextEdit):
     def reload_highlighter(self):
         self._highlighter.deleteLater()
         self._highlighter = None
-        self._highlighter = highlighter.Highlighter(self.document())
+        self._highlighter = Highlighter(self.document())
 
     def zoom(self, mode):
         if mode == 'out':
@@ -411,3 +595,9 @@ class Editor(QPlainTextEdit):
         pal.setColor(QPalette.Base, QColor(get('background')))
         pal.setColor(QPalette.Text, QColor(get('foreground')))
         self.setPalette(pal)
+
+    def selected_text(self):
+        return self.textCursor().selectedText()
+
+    def has_selection(self) -> bool:
+        return self.textCursor().hasSelection()

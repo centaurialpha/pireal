@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2020 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -30,19 +30,19 @@ from PyQt5.QtWidgets import (QHBoxLayout, QLabel, QLineEdit, QMenu,
 
 from pireal import translations as tr
 from pireal.core import interpreter
-from pireal.core.file_manager import File
-from pireal.gui.query_container import editor
+from pireal.core.file_utils import File
+from pireal.gui.editor import Editor
 
-logger = logging.getLogger('gui.query_container')
+logger = logging.getLogger('gui.query_panel')
 
 
-class QueryContainer(QWidget):
+class QueryPanel(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.hide()
 
-        self._main_panel = parent
+        self._db_panel = parent
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(3, 0, 3, 0)
         vbox.setSpacing(0)
@@ -55,29 +55,19 @@ class QueryContainer(QWidget):
         self.editor_widget.allTabsClosed.connect(self.hide)
         self._queries = {}
 
-    def get_or_create_query_file(self, filename=None) -> File:
-        if filename is None:
-            return File()
-        if filename not in self._queries:
-            file = File(filename)
-            self._queries[filename] = file
-        elif filename in self._queries:
-            file = self._queries[filename]
-        return file
-
     def load_or_create_new_editor(self, filename: str = None):
-        file = self.get_or_create_query_file(filename)
-        if not file.is_new:
-            if self.editor_widget.is_open(file):
-                logger.info('Already opened: %s', file.path)
-                self.editor_widget.set_current_editor(
-                    self.editor_widget.get_editor_by_filename(file.path))
-            else:
-                weditor = self.editor_widget.create_editor(file)
-                content = file.read()
-                weditor.setPlainText(content)
+        # First create a File object
+        file = File(path=filename)
+
+        editor = self.editor_widget.get_editor_by_filename(file.filename)
+        if editor is None:
+            # Create new editor
+            editor = self.editor_widget.create_editor(file)
+            if not file.is_new:
+                editor.setPlainText(file.read())
         else:
-            self.editor_widget.create_editor(file)
+            logger.debug('query=%s already open', file.filename)
+            self.editor_widget.set_current_editor(editor)
 
         if not self.isVisible():
             self.setVisible(True)
@@ -93,7 +83,7 @@ class QueryContainer(QWidget):
         else:
             self.show()
 
-    def get_current_editor(self) -> editor.Editor:
+    def get_current_editor(self) -> Editor:
         return self.editor_widget.current_editor()
 
     def save_query(self):
@@ -102,59 +92,45 @@ class QueryContainer(QWidget):
     def save_query_as(self):
         pass
 
-    def execute_query(self, relations: dict):
+    def text_from_editor(self) -> str:
         """
-        steps:
-        1. get current editor
-        2. get current text (selected or all text)
-        3. parse text aka query (cath all exceptions and show message box)
-        4. get current active relations in DB
-        5. clear current results (tables and list)
-        6. evaluate individual query iterating over result in step 3
-        7. get relations and send to db panel to create tables
+        Get all text from editor. If has a selection, returns selected text
         """
         current_editor = self.editor_widget.current_editor()
-        if current_editor.textCursor().hasSelection():
-            query = current_editor.textCursor().selectedText()
+        if current_editor is None:
+            return
+        if current_editor.has_selection():
+            text = '\n'.join(current_editor.selected_text().splitlines())
         else:
-            query = current_editor.toPlainText()
+            text = current_editor.toPlainText()
+        return text
 
-        # TODO: catch exceptions
-        result = interpreter.parse(query)
-        print(result)
-        # current_relations = relations.copy()
+    def execute_query(self, relations: dict):
+        query_code = self.text_from_editor()
 
-        # for relation_name, expression in result.items():
-        #     relation = eval(expression, {}, current_relations)
-        #     print(relation)
-        # relations = self._main_panel.central_view.all_relations()
+        try:
+            result = interpreter.parse(query_code)
+        except interpreter.MissingQuoteError:
+            logger.exception('missing quote error')
+        except interpreter.InvalidSyntaxError:
+            logger.exception('invalid syntax error')
+        except interpreter.ConsumeError:
+            logger.exception('consume error')
+        else:
+            self._db_panel.clear_relations_result_list()
 
-        # # FIXME: use console to show stdout
-        # try:
-        #     result = interpreter.parse(query)
-        # except interpreter.InvalidSyntaxError as reason:
-        #     logger.exception('Invalid syntax error: %s', reason)
-        # except interpreter.MissingQuoteError as reason:
-        #     logger.exception('Missing quote: %s', reason)
-        # except interpreter.ConsumeError as reason:
-        #     logger.exception('Consume error: %s', reason)
-        # else:
-        #     # Reset model
-        #     self._main_panel.clear_results()
+            current_relations = dict(relations)
+            for relation_name, expression in result.items():
+                try:
+                    new_relation = eval(expression, {}, current_relations)
+                except Exception:
+                    logger.exception('error during eval expression=%s', expression)
+                    return
+                new_relation.name = relation_name
+                current_relations[relation_name] = new_relation
 
-        #     # Create and add new relations
-        #     for relation_name, expression in result.items():
-        #         try:
-        #             new_relation = eval(expression, {}, relations)
-        #         except Exception:
-        #             logger.exception(
-        #           'error during eval expression: %s', expression, exc_info=True)
-        #             return
-        #         new_relation.name = relation_name
-        #         relations[relation_name] = new_relation
-        #         self._main_panel.add_relation_to_results(new_relation)
-        #         self._main_panel.lateral_widget.add_result(new_relation)
-        #         logger.debug('expression: %s, result: %s', expression, repr(new_relation))
+                self._db_panel.add_relation_to_results_list(new_relation)
+                self._db_panel.add_relation_to_results(new_relation)
 
 
 class EditorWidget(QWidget):
@@ -208,7 +184,7 @@ class EditorWidget(QWidget):
             reply = QMessageBox.question(
                 self,
                 tr.TR_MSG_FILE_MODIFIED,
-                tr.TR_MSG_FILE_MODIFIED_BODY.format(weditor.file.display_name),
+                tr.TR_MSG_FILE_MODIFIED_BODY.format(weditor.display_name),
                 QMessageBox.Cancel | QMessageBox.Yes | QMessageBox.No
             )
             if reply == QMessageBox.Cancel:
@@ -235,67 +211,65 @@ class EditorWidget(QWidget):
         for _ in range(1, self._tabs_editor.count()):
             self.remove_tab(1)
 
-    def remove(self, weditor: editor.Editor):
-        logger.debug('closing file: %s', weditor.file.display_name)
+    def remove(self, weditor: Editor):
+        logger.debug('closing file: %s', weditor.display_name)
         self._opened_editors.remove(weditor)
 
-    def editors(self) -> Tuple[editor.Editor]:
+    def editors(self) -> Tuple[Editor]:
         return tuple(self._opened_editors)
 
     def has_editors(self) -> bool:
         return len(self._opened_editors) > 0
 
-    def is_open(self, file: File) -> bool:
+    def is_open(self, filename: str) -> bool:
         found = False
         for weditor in self._opened_editors:
-            if weditor.file == file:
+            if weditor.filename == filename:
                 found = True
                 break
         return found
 
-    def unsaved_editors(self) -> Iterator[editor.Editor]:
+    def unsaved_editors(self) -> Iterator[Editor]:
         for weditor in self.editors():
             if weditor.is_modified:
                 yield weditor
 
-    def current_editor(self) -> editor.Editor:
+    def current_editor(self) -> Editor:
         return self._tabs_editor.currentWidget()
 
     def set_current_editor(self, weditor):
         self._tabs_editor.setCurrentWidget(weditor)
 
-    def get_editor_by_index(self, index: int) -> editor.Editor:
+    def get_editor_by_index(self, index: int) -> Editor:
         return self._tabs_editor.widget(index)
 
-    def get_editor_by_filename(self, filename: str) -> editor.Editor:
+    def get_editor_by_filename(self, filename: str) -> Editor:
         found = None
         for weditor in self._opened_editors:
-            if weditor.file.path == filename:
+            if weditor.filename == filename:
                 found = weditor
                 break
         return found
 
-    def create_editor(self, file: File) -> editor.Editor:
-        weditor = editor.Editor(file=file)
-        tab_title = file.display_name
-        index = self._tabs_editor.addTab(weditor, tab_title)
+    def create_editor(self, file: File):
+        weditor = Editor(file=file)
+        index = self._tabs_editor.addTab(weditor, file.filename)
         self._tabs_editor.setCurrentIndex(index)
-        self._tabs_editor.setTabToolTip(index, file.path)
+        self._tabs_editor.setTabToolTip(index, file.filename)
         self._opened_editors.append(weditor)
 
-        weditor.lineColumnChanged.connect(self._update_line_column)
         weditor.modificationChanged.connect(self._on_modification_changed)
+        weditor.lineColumnChanged.connect(self._update_line_column)
 
-        weditor.setFocus()
         return weditor
 
     @Slot(bool)
     def _on_modification_changed(self, modified):
         weditor = self.sender()
         if modified:
-            text = f'● {weditor.file.display_name}'
+            text = f'● {weditor.display_name}'
         else:
-            text = f'{weditor.file.display_name}'
+            text = f'{weditor.display_name}'
         index = self._tabs_editor.currentIndex()
         self._tabs_editor.setTabText(index, text)
 

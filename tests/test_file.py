@@ -2,74 +2,93 @@ import os
 
 import pytest
 
-from pireal.core.file_manager import File
-
-
-def test_is_new(tmpdir):
-    f = File()
-    assert f.is_new
-    f = File(path='/path/no/existe')
-    assert f.is_new
-    fh = tmpdir.join('test')
-    fh.write('algún contenido')
-    f = File(path=fh)
-    assert not f.is_new
+from pireal.core.file_utils import File, FileNameError
 
 
 @pytest.mark.parametrize(
-    'filename, expected',
+    'path, expected',
     [
-        ('/path/to/file/mi_file.algo', 'mi_file.algo'),
-        ('/hola/pirel/ueu/un_nombre_de_archivo_demasiado_largo.je', 'un_nombre_de_archivo_demasiado_largo.je'),
         (None, 'Untitled'),
+        ('/home/path/to/thefile.txt', 'thefile.txt'),
+        ('thefile.pdb', 'thefile.pdb'),
     ]
 )
-def test_display_name_property(filename, expected):
-    f = File(filename)
-    assert f.display_name == expected
+def test_displayname(monkeypatch, path, expected):
+    monkeypatch.setattr(os, 'access', lambda *args: True)
+    file = File(path=path)
+    assert file.display_name == expected
+
 
 
 @pytest.mark.parametrize(
-    'filename, expected',
+    'path, expected',
     [
-        ('/path/to/file/mi_file.algo', 'mi_file.algo'),
-        ('/hola/pirel/ueu/un_nombre_de_archivo_demasiado_largo.je', 'un_nombre_de_archivo_demasiado_largo.je'),
-        ('~/algo.pdb', 'algo.pdb')
+        ('/home/gabox/thefile.pdb', 'thefile.pdb (read-only)'),
+        ('thefile.pdb', 'thefile.pdb (read-only)')
     ]
 )
-def test_filename_property(filename, expected):
-    f = File(filename)
-    assert f.filename == expected
+def test_display_name_read_only(monkeypatch, path, expected):
+    monkeypatch.setattr(os, 'access', lambda *args: False)
+    file = File(path=path)
+    assert file.display_name == expected
+
+
+def test_is_new(tmp_path):
+    basedir = tmp_path / "test_is_new"
+    basedir.mkdir()
+    path = basedir / "test.pdb"
+
+    file = File(path=path)
+    assert file.is_new
+
+    # Create file
+    path.write_text(' ')
+
+    file = File(path=path)
+    assert not file.is_new
+
+
+def test_read(tmp_path):
+    base_dir = tmp_path / "test_read"
+    base_dir.mkdir()
+    filepath = base_dir / "test.txt"
+    text = "this is\na\nexample"
+    filepath.write_text(text)
+
+    file = File(path=filepath)
+
+    assert file.read() == text
+
+
+def test_save_no_path(tmp_path):
+    base_dir = tmp_path / 'test_save'
+    base_dir.mkdir()
+    filepath = base_dir / 'test.pdb'
+    text = "this\nis\na\nexample"
+
+    assert not filepath.exists()
+
+    file = File()
+
+    file.save(content=text, path=filepath)
+
+    assert filepath.exists()
 
 
 def test_save(tmpdir):
-    fh = tmpdir.join('file_example.txt')
-    fh2 = tmpdir.join('file_example_2.txt')
-    f = File(path=fh)
-    content = 'hóolá desde Pireal!'
-    f.save(content)
-    assert os.path.exists(f.path)
-    f.save(content, path=fh2)
-    assert f.path == fh2
-    assert os.path.exists(f.path)
+    filepath = tmpdir.join('test.txt')
+    text = "this\nis\na\nexample"
 
-    with open(f.path) as fp:
-        c = fp.read()
-        assert c == content
+    file = File(path=filepath)
+    assert not filepath.exists()
+
+    file.save(content=text)
+
+    assert filepath.exists()
 
 
-def test_read(tmpdir):
-    fh = tmpdir.join('file_example.txt')
-    fh.write('gelouuuú')
-    f = File(path=fh.strpath)
-    content = f.read()
-    assert content == 'gelouuuú'
+def test_save_no_path():
+    file = File()
 
-
-def test_read_with_fileioerror(tmpdir):
-    fh = tmpdir.join('file_example.txt')
-    fh.write(' asdasd')
-    f = File(path=fh.strpath)
-    os.remove(fh)
-    with pytest.raises(FileNotFoundError):
-        f.read()
+    with pytest.raises(FileNameError):
+        file.save(content='jejeje')

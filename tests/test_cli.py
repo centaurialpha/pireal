@@ -35,11 +35,10 @@ def test_parser_help(parser):
 
 def test_parser_args_valid(parser):
     cmd = [
-        '-d file.pdb',
-        '--database lalala',
-        '-v',
-        '--verbose',
-        '--version'
+        '--database file.pdb',
+        '-vd --no-check-updates',
+        '--verbose --debug',
+        '--version',
     ]
     for line in cmd:
         cmdline = shlex.split(line)
@@ -49,7 +48,7 @@ def test_parser_args_valid(parser):
 def test_parser_args_invalid(parser):
     cmd = [
         'algo sdsdsd',
-        '-d'
+        '-v --database'
     ]
     for line in cmd:
         cmdline = shlex.split(line)
