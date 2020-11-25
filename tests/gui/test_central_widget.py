@@ -35,7 +35,7 @@ def test_open_database(central_widget_fixture, qtbot, monkeypatch, mocker):
     monkeypatch.setattr(
         QFileDialog, 'getOpenFileName', lambda *args: ('algo', None))
 
-    mocker.patch.object(DB, 'load_from_file')
+    mocker.patch.object(DB, 'from_file')
 
     with qtbot.waitSignal(central_widget_fixture.dbOpened) as blocker:
         central_widget_fixture.open_database()
@@ -49,7 +49,7 @@ def test_open_database(central_widget_fixture, qtbot, monkeypatch, mocker):
 @pytest.mark.gui
 def test_open_database_fail(central_widget_fixture, qtbot, monkeypatch, mocker):
     db_filename = 'not_exist.pdb'
-    mocker.patch.object(DB, 'load_from_file', side_effect=IOError)
+    mocker.patch.object(DB, 'from_file', side_effect=IOError)
     monkeypatch.setattr(QMessageBox, 'critical', lambda *args: QMessageBox.Yes)
 
     with qtbot.waitSignal(central_widget_fixture.dbOpened, raising=False) as blocker:

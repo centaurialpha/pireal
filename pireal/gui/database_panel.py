@@ -19,19 +19,15 @@
 
 import logging
 
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QHBoxLayout
-from PyQt5.QtWidgets import QPushButton
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSlot as Slot
+from PyQt5.QtWidgets import QHBoxLayout, QPushButton, QWidget
 
 from pireal.core.db import DB
 from pireal.gui.panels.lateral_panel import LateralPanel, RelationItemType
 from pireal.gui.panels.query_panel import QueryPanel
 from pireal.gui.panels.relation_panel import RelationPanel
 from pireal.gui.widgets import RememberingSplitter
-
 
 logger = logging.getLogger('gui.database_panel')
 
@@ -101,11 +97,9 @@ class DBPanel(QWidget):
         self.lateral_panel.add_item(rela, RelationItemType.Result)
 
     def clear_relations_list(self):
-        logger.debug('clean up list of relations')
         self.lateral_panel.clear()
 
     def clear_relations_result_list(self):
-        logger.debug('clean up list of results')
         self.lateral_panel.clear_results()
 
     def add_new_editor_query(self, filename: str = None):

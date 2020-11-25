@@ -37,7 +37,7 @@ QUERY_PATH = SAMPLES / 'queries.pqf'
 )
 def test_full_cycle(db_path):
     # Prepare DB
-    db = DB.load_from_file(db_path)
+    db = DB.from_file(db_path)
     assert not db.is_new
     assert len(db) > 0
     # Prepare query

@@ -17,34 +17,31 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtCore import (
-    Qt,
-    QTimer,
-    QSize,
-)
+from PyQt5.QtCore import QRegExp, QSize, Qt, QTimer
 from PyQt5.QtCore import pyqtSignal as Signal
-from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import (
     QColor,
     QFont,
-    QKeySequence,
-    QPalette,
-    QTextCharFormat,
-    QTextCursor,
-    QTextDocument,
     QFontMetrics,
+    QKeySequence,
     QPainter,
+    QPalette,
     QPen,
     QSyntaxHighlighter,
-    QTextBlockUserData
+    QTextBlockUserData,
+    QTextCharFormat,
+    QTextCursor,
+    QTextDocument
 )
+
 from PyQt5.QtWidgets import (
+    QFrame,
     QPlainTextEdit,
     QShortcut,
     QTextEdit,
-    QFrame,
 )
 
+from pireal.core.interpreter import tokens
 from pireal.core.settings import USER_SETTINGS
 from pireal.gui.theme import get_editor_color
 
@@ -52,26 +49,10 @@ from pireal.gui.theme import get_editor_color
 class Highlighter(QSyntaxHighlighter):
     """ Syntax Highlighting
 
-    This class defines rules, a rule consists of a QRegExp pattern and a
-    QTextCharFormat instance.
-    """
+    This class defines rules for syntax highlighting.
 
-    # Keywords
-    KEYWORDS = [
-        "select",
-        "project",
-        "rename",
-        "product",
-        "njoin",
-        "louter",
-        "router",
-        "fouter",
-        "difference",
-        "intersect",
-        "union",
-        "and",
-        "or"
-    ]
+    A rule consists of a QRegExp pattern and a QTextCharFormat instance.
+    """
 
     def __init__(self, editor):
         super(Highlighter, self).__init__(editor)
@@ -82,7 +63,7 @@ class Highlighter(QSyntaxHighlighter):
 
         # Rules
         self._rules = [(QRegExp("\\b" + pattern + "\\b"), keyword_format)
-                       for pattern in Highlighter.KEYWORDS]
+                       for pattern in tokens.KEYWORDS.keys()]
 
         # vars
         var_format = QTextCharFormat()
@@ -178,7 +159,6 @@ class Sidebar(QFrame):
 
         self.editor.blockCountChanged.connect(self.update_viewport)
         self.editor.updateRequest.connect(self.update)
-        # self.editor.blockCountChanged.connect(self.editor.update)
 
     def sizeHint(self):
         return QSize(self.__calculate_width(), 0)
@@ -207,6 +187,8 @@ class Sidebar(QFrame):
         """
 
         painter = QPainter(self)
+        # FIXME: cuando se cambia el tema se cambia esto, en su lugar poner el color en un attr
+        # y leer de la config, la próxima vez que se inicie, cambiar
         painter.fillRect(event.rect(), QColor(get_editor_color('sidebar_background')))
         width = self.width() - 8
         height = self.editor.fontMetrics().height()
@@ -214,10 +196,7 @@ class Sidebar(QFrame):
         font_bold = self.editor.font()
         font_bold.setBold(True)
         painter.setFont(font)
-        # pen = QPen(QColor(get_editor_color('sidebar_foreground')))
         painter.setPen(QPen(QColor(get_editor_color('sidebar_foreground'))))
-        # painter.drawLine(width + 7, 0, width + 7, event.rect().height())
-        # painter.setPen(pen)
         current_line = self.editor.textCursor().blockNumber()
 
         for top, line, block in self.editor.visible_blocks:
@@ -616,3 +595,9 @@ class Editor(QPlainTextEdit):
         pal.setColor(QPalette.Base, QColor(get('background')))
         pal.setColor(QPalette.Text, QColor(get('foreground')))
         self.setPalette(pal)
+
+    def selected_text(self):
+        return self.textCursor().selectedText()
+
+    def has_selection(self) -> bool:
+        return self.textCursor().hasSelection()

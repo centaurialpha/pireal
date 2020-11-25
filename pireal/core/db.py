@@ -23,7 +23,6 @@ import logging
 
 from pireal.core import db_utils
 from pireal.core.file_utils import File
-
 from pireal.core.relation import Relation
 
 logger = logging.getLogger('core.db')
@@ -37,7 +36,7 @@ class RelationNotFound(DBError):
     """Raise when relation not exist in DB"""
 
 
-class DB(object):
+class DB:
 
     def __init__(self, file: File = None):
         self._relations = {}
@@ -74,7 +73,7 @@ class DB(object):
         self._dirty = False
 
     @classmethod
-    def load_from_file(cls, filepath):
+    def from_file(cls, filepath):
         """Create a DB object from a file"""
         file = File(path=filepath)
         db = cls(file=file)
@@ -106,8 +105,6 @@ class DB(object):
 
     @property
     def display_name(self):
-        # FIXME: currently the same behavior as "filename" property
-        # but maybe we should take into account the file permissions
         return self.file.display_name
 
     @property

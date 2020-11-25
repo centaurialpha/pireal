@@ -92,26 +92,24 @@ class QueryPanel(QWidget):
     def save_query_as(self):
         pass
 
-    def execute_query(self, relations: dict):
+    def text_from_editor(self) -> str:
         """
-        steps:
-        1. get current editor
-        2. get current text (selected or all text)
-        3. parse text aka query (cath all exceptions and show message box)
-        4. get current active relations in DB
-        5. clear current results (tables and list)
-        6. evaluate individual query iterating over result in step 3
-        7. get relations and send to db panel to create tables
+        Get all text from editor. If has a selection, returns selected text
         """
         current_editor = self.editor_widget.current_editor()
-        if current_editor.textCursor().hasSelection():
-            query = '\n'.join(current_editor.textCursor().selectedText().splitlines())
+        if current_editor is None:
+            return
+        if current_editor.has_selection():
+            text = '\n'.join(current_editor.selected_text().splitlines())
         else:
-            query = current_editor.toPlainText()
+            text = current_editor.toPlainText()
+        return text
 
-        print(query)
+    def execute_query(self, relations: dict):
+        query_code = self.text_from_editor()
+
         try:
-            result = interpreter.parse(query)
+            result = interpreter.parse(query_code)
         except interpreter.MissingQuoteError:
             logger.exception('missing quote error')
         except interpreter.InvalidSyntaxError:
@@ -119,7 +117,6 @@ class QueryPanel(QWidget):
         except interpreter.ConsumeError:
             logger.exception('consume error')
         else:
-            # self._db_panel.clear_relations_list()
             self._db_panel.clear_relations_result_list()
 
             current_relations = dict(relations)
@@ -249,7 +246,7 @@ class EditorWidget(QWidget):
     def get_editor_by_filename(self, filename: str) -> Editor:
         found = None
         for weditor in self._opened_editors:
-            if weditor.filename== filename:
+            if weditor.filename == filename:
                 found = weditor
                 break
         return found

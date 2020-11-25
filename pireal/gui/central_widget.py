@@ -131,7 +131,7 @@ class CentralWidget(QWidget):
                 return
 
         try:
-            db = DB.load_from_file(filename)
+            db = DB.from_file(filename)
         except IOError as reason:
             QMessageBox.critical(self, tr.TR_MSG_ERROR, str(reason))
             return
@@ -186,7 +186,7 @@ class CentralWidget(QWidget):
     def create_relation(self):
         if not self.has_db():
             return
-        dialog = new_relation_dialog.NewRelationDialog(self)
+        dialog = NewRelationDialog(self)
         if dialog.exec_():
             # Agregar a la tabla principal
             # agregar a la lista
@@ -292,7 +292,7 @@ class CentralWidget(QWidget):
     def show_preferences(self):
         """ Show settings dialog on stacked """
 
-        logger.debug('Showing Preferences')
+        logger.info('showing preferences')
         preferences_dialog = PreferencesDialog(self)
         preferences_dialog.settingsChanged.connect(self._on_settings_changed)
         preferences_dialog.show()
@@ -301,7 +301,7 @@ class CentralWidget(QWidget):
     def _on_settings_changed(self):
         if not self.has_db():
             return
-        editors = self._main_panel.query_container.editor_widget.editors()
+        editors = self.db_panel.query_panel.editor_widget.editors()
         if not editors:
             return
         logger.debug('updating settings in all editors')

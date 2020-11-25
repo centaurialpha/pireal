@@ -74,7 +74,6 @@ class StatusBar(QStatusBar):
 
 
 class Pireal(QMainWindow):
-
     """
     Main Window class
 

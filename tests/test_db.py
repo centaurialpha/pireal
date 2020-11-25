@@ -111,7 +111,7 @@ def test_load_from_file(tmpdir):
     fh = tmpdir.join('db_example.pdb')
     fh.write(text)
 
-    db = DB.load_from_file(fh)
+    db = DB.from_file(fh)
 
     assert len(db) == 2
     assert db.display_name == 'db_example.pdb'
