@@ -21,7 +21,6 @@ import logging
 import os
 
 from PyQt5.QtCore import pyqtSlot as Slot
-from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QStackedLayout, QWidget
 
 from pireal import translations as tr
@@ -43,15 +42,14 @@ logger = logging.getLogger('gui.central_widget')
 
 class CentralWidget(QWidget):
 
-    dbOpened = Signal(str)
-
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.pireal = parent
-        self.db_panel: DBPanel = None
+        self._main_window = parent
+
         self._stacked = QStackedLayout(self)
-        if self.pireal is not None:
-            self.add_start_page()
+
+        self._db_panel: DBPanel = None
+
         self._last_open_folder: str = DATA_SETTINGS.value('lastOpenFolder')
         self._recent_dbs: list = DATA_SETTINGS.value('recentDbs', [], type=list)
 
@@ -74,15 +72,8 @@ class CentralWidget(QWidget):
     def last_open_folder(self) -> str:
         return self._last_open_folder
 
-    @Slot(object)
-    def _on_db_loaded(self, db):
-        self.remove_start_page()
-        self.pireal.update_title()
-        self.pireal.show_status_message(f'Database {db.file_path()} loaded')
-        self.remember_recent_file(db.file_path())
-
     def has_db(self) -> bool:
-        return self.db_panel is not None
+        return self._db_panel is not None
 
     def create_database(self):
         """Show a wizard widget to create a new empty database,
@@ -94,13 +85,14 @@ class CentralWidget(QWidget):
         if not db_filepath:
             logger.debug('database name not provided')
             return
-        if db_filepath:
-            db_file = File(path=db_filepath)
-            logger.debug('creating new database as %s', str(db_file.path))
-            self.db_panel = DBPanel(parent=self)
-            self.remove_start_page()
-            self.add_to_stack(self.db_panel)
-            logger.debug('database=%s created', str(db_file.path))
+
+        db = DB.from_file(db_filepath)
+
+        self.create_database_panel(db)
+
+        logger.info('database=%s has been created', db_filepath)
+
+        self._main_window.show_message(f'Database created: "{db_filepath}"', duration=7)
 
     def _say_about_one_db_at_time(self):
         logger.info("Oops! One database at a time please")
@@ -136,26 +128,22 @@ class CentralWidget(QWidget):
             QMessageBox.critical(self, tr.TR_MSG_ERROR, str(reason))
             return
 
-        self.db_panel = DBPanel(db=db, parent=self)
-
-        # First remove start page
-        # FIXME: mejorar ?
-        self.remove_start_page()
-
-        self.add_to_stack(self.db_panel)
+        self.create_database_panel(db)
         # Save last folder
         self._last_open_folder = str(db.file.path.parent)
-        # FIXME: considerar emitir una señal, mas testeable
-        self.dbOpened.emit(filename)
 
         logger.debug('Connected to database: %s', db.display_name)
-        self.pireal.show_status_message(f'Connected to database: {db.display_name}')
+
+    def create_database_panel(self, db: DB):
+        self._db_panel = DBPanel(parent=self)
+        self._db_panel.add_database(db)
+        self.add_to_stack(self._db_panel)
 
     def close_database(self):
         """ Close the database and return to the main widget """
         if not self.has_db():
             return
-        if self.db_panel.db.dirty:
+        if self._db_panel.is_dirty:
             reply = QMessageBox.question(
                 self, tr.TR_MSG_SAVE_CHANGES,
                 tr.TR_MSG_SAVE_CHANGES_BODY,
@@ -169,33 +157,30 @@ class CentralWidget(QWidget):
             actions[reply]()
 
         # TODO: ask for unsaved queries
-        logger.info('Closing database %s', self.db_panel.db.display_name)
-        self._stacked.removeWidget(self.db_panel)
-        self.db_panel = None
-        self.add_start_page()
-        self.pireal.update_title()
+        # logger.info('Closing database %s', self.db_panel.db.display_name)
+        self._stacked.removeWidget(self._db_panel)
+        self._db_panel = None
+        # self.add_start_page()
+        # self.pireal.update_title()
 
     def save_database(self):
-        if self.has_db():
-            self._main_panel.save_database()
+        if not self.has_db():
+            return
+        if self._db_panel.is_new():
+            self.save_database_as()
+        else:
+            pass
 
     def save_database_as(self):
-        if self.has_db():
-            self._main_panel.save_database_as()
+        filename = QFileDialog.getSaveFileName(self, 'Save As', '~')
+        print(filename)
 
     def create_relation(self):
         if not self.has_db():
             return
         dialog = NewRelationDialog(self)
         if dialog.exec_():
-            # Agregar a la tabla principal
-            # agregar a la lista
-            # ahora la DB fué modificada, notificar
-            relation = dialog.get_data()
-            self.db_panel.add_relation(relation)
-            # self.db.add(relation)
-            # main_panel = self.get_main_panel()
-            # main_panel.load_relations()
+            self._db_panel.add_relation(dialog.relation)
 
     @Slot()
     def open_query(self, filename=''):

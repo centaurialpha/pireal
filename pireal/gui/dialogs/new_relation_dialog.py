@@ -26,20 +26,30 @@ from PyQt5.QtWidgets import QDialog
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QLineEdit
-from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtWidgets import QTableWidget
-from PyQt5.QtWidgets import QTableWidgetItem
-from PyQt5.QtWidgets import QInputDialog
+from PyQt5.QtWidgets import QPlainTextEdit
+
+from PyQt5.QtGui import QFont
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtCore import pyqtSlot as Slot
 
 from pireal import translations as tr
+from pireal.core.config import AppSettings
 
-from pireal.core.relation import Relation, InvalidFieldNameError
+from pireal.core.relation import Relation, InvalidFieldNameError, WrongSizeError
 
 
 logger = logging.getLogger('gui.dialogs.new_relation_dialog')
+
+
+class RelationCreatorEditor(QPlainTextEdit):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.set_font(AppSettings.font_family, AppSettings.font_size)
+
+    def set_font(self, family: str, size: float):
+        font = QFont(family, size)
+        super().setFont(font)
 
 
 class NewRelationDialog(QDialog):
@@ -50,31 +60,19 @@ class NewRelationDialog(QDialog):
         self.setWindowTitle(tr.TR_RELATION_DIALOG_TITLE)
         self.setSizeGripEnabled(True)
         self.resize(650, 350)
-        self._data = None
+
+        self._relation = None
 
         vbox = QVBoxLayout(self)
         hbox = QHBoxLayout()
         hbox.addWidget(QLabel('Relation name:'))
 
-        buttons_hbox = QHBoxLayout()
-        btn_add_column = QPushButton('Add column')
-        buttons_hbox.addWidget(btn_add_column)
-        btn_delete_column = QPushButton('Delete column')
-        buttons_hbox.addWidget(btn_delete_column)
-        btn_add_row = QPushButton('Add row')
-        buttons_hbox.addWidget(btn_add_row)
-        btn_delete_row = QPushButton('Delete row')
-        buttons_hbox.addWidget(btn_delete_row)
-
         self.line_relation_name = QLineEdit()
         hbox.addWidget(self.line_relation_name)
         vbox.addLayout(hbox)
-        vbox.addLayout(buttons_hbox)
 
-        self.table = QTableWidget()
-        vbox.addWidget(self.table)
-        self.table.horizontalHeader().sectionDoubleClicked.connect(self._edit_header)
-        self.setup_empty_table()
+        self.relation_creator = RelationCreatorEditor()
+        vbox.addWidget(self.relation_creator)
 
         self.button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
 
@@ -83,69 +81,17 @@ class NewRelationDialog(QDialog):
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
 
-        btn_add_column.clicked.connect(self.add_column)
-        btn_add_row.clicked.connect(self.add_row)
-        btn_delete_column.clicked.connect(self.delete_column)
-        btn_delete_row.clicked.connect(self.delete_row)
-
     @property
     def relation_name(self) -> str:
         return self.line_relation_name.text().strip()
 
-    @Slot(int)
-    def _edit_header(self, index):
-        item = self.table.horizontalHeaderItem(index)
-        if item is None:
-            value = self.table.model().headerData(index, Qt.Horizontal)
-            item = QTableWidgetItem(str(value))
-            self.table.setHorizontalHeaderItem(index, item)
-        old_header = item.text()
+    @property
+    def relation(self) -> Relation:
+        return self._relation
 
-        new_header, ok = QInputDialog.getText(
-            self, tr.TR_RELATION_DIALOG_CHANGE_HEADER_LABEL,
-            tr.TR_RELATION_DIALOG_HEADER_NAME, QLineEdit.Normal, old_header
-        )
-        if ok:
-            for i in range(self.table.columnCount()):
-                text = self.table.model().headerData(i, Qt.Horizontal)
-                if text == new_header:
-                    return
-            item.setText(new_header)
-
-    def get_data(self):
-        return self._data
-
-    def setup_empty_table(self):
-        self.table.insertColumn(0)
-        self.table.insertColumn(0)
-
-        self.table.insertRow(0)
-
-        for i in range(2):
-            item = QTableWidgetItem()
-            item.setText(f'Value_{i}')
-            self.table.setItem(0, i, item)
-
-    def create_relation(self):
-        header = [self.table.model().headerData(i, Qt.Horizontal)
-                  for i in range(self.table.columnCount())]
-        relation = Relation()
-        try:
-            relation.header = header
-        except InvalidFieldNameError as ex:
-            QMessageBox.warning(None, 'Error', str(ex))
-            return None
-        for i in range(self.table.rowCount()):
-            row_data = []
-            for j in range(self.table.columnCount()):
-                item_text = self.table.item(i, j).text().strip()
-                if not item_text:
-                    QMessageBox.warning(
-                        None, 'Error', tr.TR_RELATION_DIALOG_WHITESPACE.format(i + 1, j + 1))
-                    return None
-                row_data.append(item_text)
-            relation.insert(tuple(row_data))
-        return relation
+    @property
+    def text(self) -> str:
+        return self.relation_creator.toPlainText()
 
     def accept(self):
         if not self.relation_name:
@@ -155,36 +101,30 @@ class NewRelationDialog(QDialog):
             self.line_relation_name.setFocus()
             self.line_relation_name.selectAll()
             return
-        relation = self.create_relation()
-        if relation is not None:
-            relation.name = self.relation_name
-            self._data = relation
-            QDialog.accept(self)
+        if not self.text:
+            QMessageBox.warning(None, 'Error', "No text")
+            return
 
-    @Slot()
-    def add_column(self):
-        self.table.insertColumn(self.table.columnCount())
-        self._select_last_column()
+        text_lines = self.text.splitlines()
+        header = [field.strip()
+                  for field in text_lines[0].split(',')]
 
-    @Slot()
-    def add_row(self):
-        self.table.insertRow(self.table.rowCount())
-        self._select_last_row()
+        relation = Relation()
+        relation.name = self.relation_name
+        try:
+            relation.header = header
+        except InvalidFieldNameError as exc:
+            QMessageBox.warning(None, 'Error', str(exc))
+            return
 
-    def _select_last_row(self):
-        self.table.selectRow(self.table.rowCount() - 1)
+        try:
+            for line in text_lines[1:]:
+                row = line.split(',')
+                relation.insert(tuple(row))
+        except WrongSizeError as exc:
+            QMessageBox.warning(None, 'Error', str(exc))
+            return
 
-    def _select_last_column(self):
-        self.table.selectColumn(self.table.columnCount() - 1)
+        self._relation = relation
 
-    @Slot()
-    def delete_column(self):
-        if self.table.columnCount() > 1:
-            self.table.removeColumn(self.table.currentColumn())
-            self._select_last_column()
-
-    @Slot()
-    def delete_row(self):
-        if self.table.rowCount() > 1:
-            self.table.removeRow(self.table.currentRow())
-            self._select_last_row()
+        QDialog.accept(self)

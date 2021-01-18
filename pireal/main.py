@@ -35,7 +35,7 @@ from PyQt5.QtCore import QLibraryInfo
 
 
 from pireal import __version__
-from pireal.core import settings
+from pireal.core.config import AppSettings
 from pireal.gui.main_window import Pireal
 from pireal.gui.theme import apply_theme
 
@@ -43,23 +43,23 @@ logger = logging.getLogger('main')
 
 
 def start_pireal(args):
-    settings.USER_SETTINGS.load()
 
     # OS
-    if settings.IS_LINUX:
-        system, os_name = platform.uname()[:2]
-    else:
-        system = platform.uname()[0]
-        os_name = platform.uname()[2]
-    # Python version
-    python_version = platform.python_version()
+    # if settings.IS_LINUX:
+    #     system, os_name = platform.uname()[:2]
+    # else:
+    #     system = platform.uname()[0]
+    #     os_name = platform.uname()[2]
+    # # Python version
+    # python_version = platform.python_version()
 
-    print(f'Running Pireal {__version__}...\n'
-          f'Python {python_version} on {system}-{os_name}, Qt {QT_VERSION_STR}')
-    logger.info('Running Pireal %s with Python %s on %r',
-                __version__, sys.version_info, sys.platform)
+    # print(f'Running Pireal {__version__}...\n'
+    #       f'Python {python_version} on {system}-{os_name}, Qt {QT_VERSION_STR}')
+    # logger.info('Running Pireal %s with Python %s on %r',
+    #             __version__, sys.version_info, sys.platform)
 
     app = QApplication(sys.argv)
+    AppSettings.load()
 
     # Set application icon
     app.setWindowIcon(QIcon(':img/icon'))
@@ -72,11 +72,11 @@ def start_pireal(args):
     qt_translator.load(
         os.path.join('qt_', system_locale_name, qt_languages_path))
     # Application translations
-    language = settings.USER_SETTINGS.language
-    if language != 'english':
-        translator = QTranslator()
-        translator.load(os.path.join(settings.LANGUAGE_PATH, language + '.qm'))
-        app.installTranslator(translator)
+    # language = settings.USER_SETTINGS.language
+    # if language != 'english':
+    #     translator = QTranslator()
+    #     translator.load(os.path.join(settings.LANGUAGE_PATH, language + '.qm'))
+    #     app.installTranslator(translator)
 
     app.setStyle('fusion')
     apply_theme(app)

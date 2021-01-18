@@ -78,6 +78,9 @@ class DB:
         file = File(path=filepath)
         db = cls(file=file)
 
+        if file.is_new:
+            return db
+
         try:
             text = file.read()
         except IOError:
@@ -117,15 +120,13 @@ class DB:
 
     @property
     def is_new(self):
-        return self._path is None
+        return self.file.is_new
 
     def __len__(self):
         return len(self._relations)
 
     def __repr__(self):
-        return (
-            f'DB(name={self.display_name()} '
-        )
+        return f'DB(name={self.display_name}, relations={len(self)})'
 
     def __iter__(self):
         for relation_name, relation in self._relations.items():

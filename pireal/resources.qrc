@@ -13,5 +13,9 @@
         <file alias="new_query">images/page_add.png</file>
         <file alias="save_query">images/page_save.png</file>
         <file alias="execute_query">images/execute.png</file>
+        <file alias="fullscreen-light">images/fullscreen-light.svg</file>
+        <file alias="fullscreen-dark">images/fullscreen-dark.svg</file>
+        <file alias="configure-dark">images/configure-dark.svg</file>
+        <file alias="play">images/play.svg</file>
     </qresource>
 </RCC>

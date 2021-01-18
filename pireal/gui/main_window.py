@@ -21,18 +21,21 @@
 
 import webbrowser
 import logging
-from typing import List
 
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtWidgets import QStatusBar
-from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QFrame
+from PyQt5.QtWidgets import QGridLayout
+from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QLabel
 
 from PyQt5.QtGui import QIcon
 
 from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtCore import pyqtSlot as Slot
 from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QTimer
 from PyQt5.QtCore import Qt
 
 from pireal import translations as tr
@@ -46,31 +49,58 @@ from pireal.core.settings import (
     USER_SETTINGS
 )
 
+
 logger = logging.getLogger('gui.main_window')
 
-TOOLBAR_ITEMS: List[str] = [
-    'create_database',
-    'save_database',
-    'new_query',
-    'save_query',
-    '',  # separator
-    'create_relation',
-    'remove_relation',
-    '',
-    'execute_query'
 
-]
+class _StatusBar(QFrame):
+    """Status bar divide in three areas"""
 
-
-class StatusBar(QStatusBar):
-
-    def __init__(self, parent=None):
+    def __init__(self, main_window: QMainWindow, parent=None):
         super().__init__(parent)
-        self.messageChanged.connect(self._on_message_changed)
+        self._main_window = main_window
 
-    @Slot(str)
-    def _on_message_changed(self, msg):
-        self.setVisible(bool(msg))
+        layout = QGridLayout(self)
+
+        left_widget = QFrame(self)
+        mid_widget = QFrame(self)
+        right_widget = QFrame(self)
+
+        left_layout = QHBoxLayout(left_widget)
+        left_layout.setContentsMargins(0, 0, 0, 0)
+        mid_layout = QHBoxLayout(mid_widget)
+        mid_layout.setContentsMargins(0, 0, 0, 0)
+        right_layout = QHBoxLayout(right_widget)
+        right_layout.setContentsMargins(0, 0, 0, 0)
+
+        # Left widgets
+        self._messages_label = QLabel()
+        left_layout.addWidget(self._messages_label)
+        # Mid widgets
+        play = QPushButton()
+        play.setIcon(QIcon(':/img/play'))
+        right_layout.addWidget(play)
+        # Right widgets
+        settings_button = QPushButton()
+        settings_button.setIcon(QIcon(':/img/configure-dark'))
+        right_layout.addWidget(settings_button)
+
+        fullscreen_button = QPushButton()
+        fullscreen_button.setIcon(QIcon(':/img/fullscreen-dark'))
+        fullscreen_button.setCheckable(True)
+        right_layout.addWidget(fullscreen_button)
+
+
+        layout.addWidget(left_widget, 0, 0, 0, 1, Qt.AlignLeft)
+        layout.addWidget(mid_widget, 0, 1, 0, 1, Qt.AlignCenter)
+        layout.addWidget(right_widget, 0, 2, 0, 1, Qt.AlignRight)
+
+        layout.setContentsMargins(2, 0, 2, 0)
+
+    def show_message(self, msg: str, timeout=0):
+        self._messages_label.setText(msg)
+        if timeout > 0:
+            QTimer.singleShot(timeout, self._messages_label.clear)
 
 
 class Pireal(QMainWindow):
@@ -90,19 +120,18 @@ class Pireal(QMainWindow):
             self.showMaximized()
         else:
             self.restoreGeometry(geometry)
-        self.toolbar = self.addToolBar('')
 
         # Central widget
         self.central_widget = CentralWidget(self)
         self.setCentralWidget(self.central_widget)
-        # Status bar
-        self.status_bar = StatusBar(self)
-        self.status_bar.hide()
-        self.setStatusBar(self.status_bar)
 
-        self.central_widget.dbOpened.connect(self.update_title)
         # Menu bar
         self._load_menubar()
+        # Status bar
+        self.status_bar = _StatusBar(self, parent=self.statusBar())
+        self.statusBar().addWidget(self.status_bar, 1)
+        self.statusBar().layout().setContentsMargins(0, 0, 0, 0)
+        self.statusBar().show()
 
         if check_updates:
             updater_thread = QThread(self)
@@ -114,17 +143,24 @@ class Pireal(QMainWindow):
             self.updater.finished.connect(self._on_thread_updater_finished)
             updater_thread.start()
 
-    def show_status_message(self, message, *, timeout=4000):
-        self.status_bar.showMessage(message, timeout)
+    def toggle_full_screen(self, value: bool):
+        if value:
+            self.showFullScreen()
+        else:
+            self.showNormal()
+
+    def show_message(self, message: str, duration: float = 5.0):
+        """Show message in status bar"""
+        duration = duration * 1000
+        self.status_bar.show_message(message, timeout=duration)
 
     def _load_menubar(self):
         """
-        This method installs the menubar and toolbar, menus and QAction's,
+        This method installs the menubar, menus and QAction's,
         also connects to a slot each QAction.
         """
 
         logger.debug('loading menu bar')
-        toolbar_actions = {}
         menu_bar = self.menuBar()
 
         for menu in menu_actions.MENU:
@@ -151,9 +187,6 @@ class Pireal(QMainWindow):
 
                     obj_name, slot = action.slot.split(':')
 
-                    if slot in TOOLBAR_ITEMS:
-                        toolbar_actions[slot] = qaction
-
                     shortcut = keymap.KEYMAP.get(slot)
                     if shortcut is not None:
                         qaction.setShortcut(shortcut)
@@ -165,14 +198,6 @@ class Pireal(QMainWindow):
                     func = getattr(obj, slot, None)
                     if callable(func):
                         qaction.triggered.connect(func)
-
-        for toolbar_item in TOOLBAR_ITEMS:
-            if toolbar_item:
-                qaction = toolbar_actions[toolbar_item]
-                qaction.setIcon(QIcon(f':img/{toolbar_item}'))
-                self.toolbar.addAction(qaction)
-            else:
-                self.toolbar.addSeparator()
 
     @Slot()
     def _on_thread_updater_finished(self):

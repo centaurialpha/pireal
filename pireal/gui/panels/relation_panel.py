@@ -43,8 +43,7 @@ class RelationWidget(QWidget):
 
     def add_view(self, relation):
         view = create_view(relation)
-        index = self._stack.addWidget(view)
-        self._stack.setCurrentIndex(index)
+        self._stack.addWidget(view)
 
 
 class RelationPanel(QSplitter):
@@ -59,6 +58,15 @@ class RelationPanel(QSplitter):
 
         self.relation_result_widget = RelationWidget(self)
         self._tabs.addTab(self.relation_result_widget, 'Results')
+
+    def add_relation(self, relation):
+        self.relation_widget.add_view(relation)
+
+    def set_current_relation_index(self, index: int):
+        self.relation_widget.set_current_index(index)
+
+    def set_current_result_index(self, index: int):
+        self.relation_result_widget.set_current_index(index)
 
     def set_current_index(self, index):
         self._tabs.setCurrentIndex(index)
