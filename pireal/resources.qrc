@@ -1,21 +1,9 @@
 <RCC>
     <qresource prefix="/img">
-        <file alias="create_database">images/database_add.png</file>
-        <file alias="save_database">images/database_save.png</file>
-        <file>images/database.png</file>
-        <file alias="create_relation">images/table_add.png</file>
-        <file alias="remove_relation">images/table_delete.png</file>
-        <file>images/table_edit.png</file>
-        <file>images/table_row_delete.png</file>
-        <file>images/table_row_insert.png</file>
-        <file>images/table_save.png</file>
-        <file>images/table.png</file>
-        <file alias="new_query">images/page_add.png</file>
-        <file alias="save_query">images/page_save.png</file>
-        <file alias="execute_query">images/execute.png</file>
         <file alias="fullscreen-light">images/fullscreen-light.svg</file>
         <file alias="fullscreen-dark">images/fullscreen-dark.svg</file>
         <file alias="configure-dark">images/configure-dark.svg</file>
         <file alias="play">images/play.svg</file>
+        <file alias="icon">images/pireal_icon.png</file>
     </qresource>
 </RCC>

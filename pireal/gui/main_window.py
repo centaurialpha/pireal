@@ -29,6 +29,7 @@ from PyQt5.QtWidgets import QGridLayout
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QSystemTrayIcon
 
 from PyQt5.QtGui import QIcon
 
@@ -90,7 +91,6 @@ class _StatusBar(QFrame):
         fullscreen_button.setCheckable(True)
         right_layout.addWidget(fullscreen_button)
 
-
         layout.addWidget(left_widget, 0, 0, 0, 1, Qt.AlignLeft)
         layout.addWidget(mid_widget, 0, 1, 0, 1, Qt.AlignCenter)
         layout.addWidget(right_widget, 0, 2, 0, 1, Qt.AlignRight)
@@ -133,7 +133,13 @@ class Pireal(QMainWindow):
         self.statusBar().layout().setContentsMargins(0, 0, 0, 0)
         self.statusBar().show()
 
+        # Updates
         if check_updates:
+            self.tray = QSystemTrayIcon(QIcon(':img/icon'))
+            self.tray.setToolTip('New version available')
+            self.tray.activated.connect(self._on_system_tray_clicked)
+            self.tray.messageClicked.connect(self._on_system_tray_message_clicked)
+
             updater_thread = QThread(self)
             self.updater = Updater()
             self.updater.moveToThread(updater_thread)
@@ -142,6 +148,20 @@ class Pireal(QMainWindow):
             updater_thread.finished.connect(updater_thread.deleteLater)
             self.updater.finished.connect(self._on_thread_updater_finished)
             updater_thread.start()
+
+    @Slot(QSystemTrayIcon.ActivationReason)
+    def _on_system_tray_clicked(self, reason):
+        if reason == QSystemTrayIcon.Trigger:
+            self.open_download_release()
+            self.tray.hide()
+
+    @Slot()
+    def _on_system_tray_message_clicked(self):
+        self.open_download_release()
+        self.tray.hide()
+
+    def open_download_release(self):
+        webbrowser.open_new('https://github.com/centaurialpha/pireal/releases/latest')
 
     def toggle_full_screen(self, value: bool):
         if value:
@@ -202,15 +222,13 @@ class Pireal(QMainWindow):
     @Slot()
     def _on_thread_updater_finished(self):
         if self.updater.version:
-            reply = QMessageBox.information(
-                self,
-                'New Version!',
-                'Visit?',
-                QMessageBox.Yes | QMessageBox.No
+            self.tray.show()
+            self.tray.showMessage(
+                'Pireal Updates',
+                f'New version of Pireal available: {self.updater.version}\n\n'
+                'Click on this message or System Tray icon to download!',
+                QSystemTrayIcon.Information, 10000
             )
-            if reply == QMessageBox.Yes:
-                from pireal import __url__
-                webbrowser.open(__url__)
 
         self.updater.deleteLater()
 

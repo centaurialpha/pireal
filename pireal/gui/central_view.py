@@ -62,4 +62,3 @@ class RelationPanel(QSplitter):
 
     def set_current_index(self, index):
         self._tabs.setCurrentIndex(index)
-

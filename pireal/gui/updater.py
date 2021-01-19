@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2021 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -19,7 +19,7 @@
 
 import logging
 
-from distutils.version import LooseVersion
+from distutils.version import StrictVersion
 from urllib.request import urlopen
 from urllib.error import URLError
 
@@ -30,7 +30,7 @@ from pireal import __version__
 
 logger = logging.getLogger('updater')
 
-URL = 'https://raw.githubusercontent.com/centaurialpha/pireal/master/version.txt'
+URL_VERSION = 'https://raw.githubusercontent.com/centaurialpha/pireal/main/version.txt'
 
 
 class Updater(QObject):
@@ -43,8 +43,8 @@ class Updater(QObject):
     def check_updates(self):
         logger.info('checking updates...')
         try:
-            web_version = urlopen(URL).read().decode().strip()
-            if LooseVersion(__version__) < LooseVersion(web_version):
+            web_version = urlopen(URL_VERSION).read().decode().strip()
+            if StrictVersion(__version__) < StrictVersion(web_version):
                 self.version = web_version
                 logger.info('new version found: %s', web_version)
             else:
