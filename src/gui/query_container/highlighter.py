@@ -67,7 +67,7 @@ class Highlighter(QSyntaxHighlighter):
 
         # vars
         var_format = QTextCharFormat()
-        var_pattern = QRegExp("\w+\s*\:\=")
+        var_pattern = QRegExp(r"\w+\s*\:\=")
         var_format.setFontWeight(QFont.Bold)
         var_format.setForeground(QColor("#dd1144"))
 
@@ -100,7 +100,7 @@ class Highlighter(QSyntaxHighlighter):
         self._rules.append((comment_pattern, comment_format))
 
         # Paren
-        self.paren = QRegExp('\(|\)')
+        self.paren = QRegExp(r'\(|\)')
 
     def highlightBlock(self, text):
         """ Reimplementation """

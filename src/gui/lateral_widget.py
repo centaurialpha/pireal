@@ -29,15 +29,12 @@ from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtQuickWidgets import QQuickWidget
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtCore import QObject
 from PyQt5.QtCore import QAbstractListModel
-from PyQt5.QtCore import pyqtProperty
 from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtCore import QUrl
 
 from src.gui.main_window import Pireal
 from src.core import settings
-
 
 
 class RelationModel(QAbstractListModel):

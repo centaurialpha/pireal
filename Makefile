@@ -26,10 +26,10 @@ clean:
 	rm -rf build/
 
 pep8:
-	pycodestyle pireal
+	pycodestyle src
 
 flake8:
-	flake8 pireal
+	flake8 src
 
 lint: pep8 flake8
 

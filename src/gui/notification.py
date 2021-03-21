@@ -21,7 +21,6 @@ from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QLabel,
-    QSizePolicy
 )
 from PyQt5.QtCore import QTimer
 

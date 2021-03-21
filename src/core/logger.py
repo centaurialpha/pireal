@@ -67,4 +67,3 @@ def set_up(verbose: bool):
         handler = logging.StreamHandler()
         handler.setFormatter(formatter)
         root.addHandler(handler)
-

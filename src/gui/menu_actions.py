@@ -155,23 +155,6 @@ MENU['relation'] = {
         'name': tr.TR_MENU_RELATION_LOAD,
         'slot': "central:load_relation"
     })}
-    # }, "-", {
-    #     'name': translate("Pireal", "Agregar Tupla"),
-    #     'slot': "central:add_tuple"
-    # }, {
-    #     'name': translate("Pireal", "Eliminar Tupla"),
-    #     'slot': "central:delete_tuple"
-
-    #     'name': translate("Pireal", "Agregar Columna"),
-    #     'slot': "central:add_column"
-    # }, {
-    #     'name': translate("Pireal", "Eliminar Columna"),
-    #     'slot': "central:delete_column"
-    # }, "-", {
-    #     'name': translate("Pireal", "Ejecutar Consultas"),
-    #     'slot': "central:execute_queries"}]}
-
-
 
 # # Menu Help
 MENU['help'] = {

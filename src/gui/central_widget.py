@@ -277,8 +277,8 @@ class CentralWidget(QWidget):
                 table_dict["tuples"] = set()
             else:
                 # Tuplas de la relación
-                for l in csv.reader([line]):
-                    tupla = tuple(map(str.strip, l))
+                for lline in csv.reader([line]):
+                    tupla = tuple(map(str.strip, lline))
                     table_dict["tuples"].add(tupla)
             if not table_dict["tuples"]:
                 data_dict["tables"].append(table_dict)
@@ -300,9 +300,10 @@ class CentralWidget(QWidget):
             msgbox = QMessageBox(self)
             msgbox.setIcon(QMessageBox.Question)
             msgbox.setWindowTitle(self.tr("Guardar cambios?"))
-            msgbox.setText(self.tr("La base de datos <b>{}</b> ha sido "
-                                    "modificada.<br>Quiere guardar los "
-                                    "cambios?".format(db.dbname())))
+            msgbox.setText(
+                self.tr(
+                    "La base de datos <b>{}</b> ha sido modificada."
+                    "<br>Quiere guardar los cambios?".format(db.dbname())))
             cancel_btn = msgbox.addButton(self.tr("Cancelar"),
                                           QMessageBox.RejectRole)
             msgbox.addButton(self.tr("No"),

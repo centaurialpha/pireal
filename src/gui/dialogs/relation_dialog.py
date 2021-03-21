@@ -21,8 +21,6 @@ from PyQt5.QtWidgets import (
     QDialog,
     QVBoxLayout,
     QHBoxLayout,
-    QTableView,
-    QAbstractItemView,
     QPushButton,
     QSpacerItem,
     QSizePolicy,

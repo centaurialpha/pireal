@@ -45,7 +45,7 @@ class Updater(QObject):
             web_version = urlopen(URL).read().decode('utf8').strip()
             if LooseVersion(gui.__version__) < LooseVersion(web_version):
                 self.version = web_version
-        except URLError as reason:
+        except URLError:
             self.error = True
 
         self.finished.emit()

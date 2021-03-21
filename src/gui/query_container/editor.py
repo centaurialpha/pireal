@@ -26,7 +26,6 @@ from PyQt5.QtGui import (
     QTextCursor,
     QFont,
     QColor,
-    QTextOption,
     QTextDocument
 )
 from PyQt5.QtCore import Qt, QTimer

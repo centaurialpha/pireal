@@ -76,7 +76,7 @@ class DatabaseContainer(QSplitter):
         # FIXME
         self.lateral_widget.relationClicked.connect(self._on_relation_clicked)
 
-            # lambda i: self.table_widget.stacked.setCurrentIndex(i))
+        # lambda i: self.table_widget.stacked.setCurrentIndex(i))
         # For change table widget item when up/down
         # see issue #39
         self.lateral_widget.relationSelectionChanged.connect(
