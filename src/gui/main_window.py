@@ -21,16 +21,24 @@
 
 import webbrowser
 
-from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import (
+    QMainWindow,
+    QMessageBox,
+    QSystemTrayIcon,
+)
+from PyQt5.QtGui import QIcon
 
-from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import (
+    QSettings,
+    QThread,
+    pyqtSlot as Slot,
+)
 
 from src import keymap
 from src.core import settings
+from src.gui.updater import Updater
 from src.gui import (
     menu_actions,
-    # message_error
 )
 
 from src.core.settings import CONFIG
@@ -70,7 +78,7 @@ class Pireal(QMainWindow):
         'execute_queries'
     ]
 
-    def __init__(self):
+    def __init__(self, check_updates=True):
         QMainWindow.__init__(self)
         self.setWindowTitle(self.tr("Pireal"))
         self.setMinimumSize(880, 600)
@@ -109,6 +117,35 @@ class Pireal(QMainWindow):
 
         # Install service
         Pireal.load_service("pireal", self)
+
+        if check_updates:
+            self.tray = QSystemTrayIcon(QIcon(':img/icon'))
+            self.tray.setToolTip('New version available!')
+            self.tray.activated.connect(self._on_system_tray_clicked)
+            self.tray.messageClicked.connect(self._on_system_tray_message_clicked)
+
+            updater_thread = QThread(self)
+            self._updater = Updater()
+            self._updater.moveToThread(updater_thread)
+            updater_thread.started.connect(self._updater.check_updates)
+            self._updater.finished.connect(updater_thread.quit)
+            updater_thread.finished.connect(updater_thread.deleteLater)
+            self._updater.finished.connect(self._on_updater_finished)
+            updater_thread.start()
+
+    @Slot(QSystemTrayIcon.ActivationReason)
+    def _on_system_tray_clicked(self, reason):
+        if reason == QSystemTrayIcon.Trigger:
+            self.open_download_release()
+            self.tray.hide()
+
+    @Slot()
+    def _on_system_tray_message_clicked(self):
+        self.open_download_release()
+        self.tray.hide()
+
+    def open_download_release(self):
+        webbrowser.open_new('https://github.com/centaurialpha/pireal/releases/latest')
 
     @classmethod
     def get_service(cls, service):
@@ -213,28 +250,17 @@ class Pireal(QMainWindow):
         status = Pireal.get_service("status")
         status.show_message(msg)
 
-    def __on_thread_update_finished(self):
-        self._thread.quit()
-        # Clear notificator
-        notification_widget = Pireal.get_service("notification")
-        notification_widget.clear()
+    @Slot()
+    def _on_updater_finished(self):
+        if self._updater.version:
+            self.tray.show()
+            self.tray.showMessage(
+                'Pireal Updates',
+                f'New version of Pireal available: {self._updater.version}\n\n'
+                'Click on this message or System Tray icon to download!',
+                QSystemTrayIcon.Information, 10000
+            )
 
-        msg = QMessageBox(self)
-        if not self._updater.error and self._updater.version:
-            version = self._updater.version
-            msg.setWindowTitle(self.tr("New version available!"))
-            msg.setText(self.tr("Check the web site to "
-                                "download <b>Pireal {}</b>".format(
-                                    version)))
-            download_btn = msg.addButton(self.tr("Download!"),
-                                         QMessageBox.YesRole)
-            msg.addButton(self.tr("Cancel"),
-                          QMessageBox.RejectRole)
-            msg.exec_()
-            r = msg.clickedButton()
-            if r == download_btn:
-                webbrowser.open_new("http://centaurialpha.github.io/pireal")
-        self._thread.deleteLater()
         self._updater.deleteLater()
 
     def change_title(self, title=''):

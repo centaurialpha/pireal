@@ -135,7 +135,7 @@ if __name__ == "__main__":
     # with open(settings.STYLE_SHEET) as f:
     #     qapp.setStyleSheet(f.read())
 
-    gui = Pireal()
+    gui = Pireal(check_updates=not args.no_check_updates)
     gui.show()
 
     sys.exit(qapp.exec_())
