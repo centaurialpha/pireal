@@ -27,5 +27,7 @@
         <file alias="delete_column">images/delete-column.png</file>
         <file alias="split">images/split.png</file>
         <file alias="report_issue">images/bug.png</file>
+        <file alias="bwqt">images/bwqt.png</file>
+        <file alias="python">images/python-logo.png</file>
     </qresource>
 </RCC>
