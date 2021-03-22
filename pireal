@@ -106,8 +106,8 @@ if __name__ == "__main__":
     # Import resources
     from src import resources  # noqa
 
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     qapp = QApplication(sys.argv)
-    qapp.setAttribute(Qt.AA_EnableHighDpiScaling)
     palette = QPalette()
     palette.setColor(QPalette.ToolTipBase, QColor(225, 225, 225))
     palette.setColor(QPalette.Highlight, QColor("#5294e2"))
