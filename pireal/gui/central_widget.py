@@ -50,7 +50,7 @@ from pireal.gui import (
     database_container
 )
 from pireal.gui.dialogs import (
-    # preferences,
+    preferences,
     new_relation_dialog,
     new_database_dialog
 )
@@ -477,8 +477,8 @@ class CentralWidget(QWidget):
     def show_settings(self):
         """ Show settings dialog on stacked """
 
-        # preferences_dialog = preferences.Preferences(self)
-
+        settings_dialog = preferences.SettingsDialog(self)
+        settings_dialog.exec_()
         # if isinstance(self.widget(1), preferences.Preferences):
         #     self.widget(1).close()
         # else:
@@ -488,7 +488,6 @@ class CentralWidget(QWidget):
         # # Connect the closed signal
         # preferences_dialog.settingsClosed.connect(self._settings_closed)
         # TODO: para la próxima versión
-        pass
 
     def widget(self, index):
         """ Returns the widget at the given index """

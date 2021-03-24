@@ -141,6 +141,13 @@ MENU['query'] = {
 #     #     'name': translate("Pireal", "Preferencias"),
 #     #     'slot': "central:show_settings"}]}
 
+MENU['tools'] = {
+    'name': 'Tools',
+    'items': ({
+        'name': 'Settings',
+        'slot': 'central:show_settings'
+    },)
+}
 
 # Menu Relation
 MENU['relation'] = {

@@ -50,7 +50,7 @@ class SettingManager:
         self._match_parenthesis: bool = self._qs.value(
             'match_parenthesis', defaultValue=True, type=bool)
         self._font_family: str = self._qs.value('font_family')
-        self._font_size: float = self._qs.value('font_size', defaultValue=12, type=bool)
+        self._font_size: int = self._qs.value('font_size', defaultValue=12, type=int)
 
     @property
     def language(self) -> str:
@@ -96,7 +96,7 @@ class SettingManager:
             self._qs.setValue('font_family', font)
 
     @property
-    def font_size(self) -> float:
+    def font_size(self) -> int:
         return self._font_size
 
     @font_size.setter
