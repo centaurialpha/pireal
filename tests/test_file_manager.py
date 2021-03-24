@@ -1,7 +1,7 @@
 import pytest
 
-from src.core import file_manager
-from src.core import relation
+from pireal.core import file_manager
+from pireal.core import relation
 
 
 @pytest.mark.parametrize(

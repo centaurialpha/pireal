@@ -100,7 +100,7 @@ setup(
     author_email="acostadariogabriel@gmail.com",
     url="http://centaurialpha.github.io/pireal",
     license='GPLv3+',
-    long_description=open('README.rst').read(),
+    long_description=open('README.md').read(),
     package_data={
         "src": [
             "gui/qml/*",
@@ -108,13 +108,14 @@ setup(
             "lang/*.qm"]
     },
     packages=[
-        "src",
-        "src.core",
-        "src.gui",
-        "src.gui.dialogs",
-        "src.gui.query_container"
+        "pireal",
+        "pireal.core",
+        "pireal.core.interpreter",
+        "pireal.gui",
+        "pireal.gui.dialogs",
+        "pireal.gui.query_container"
     ],
-    scripts=['pireal'],
+    scripts=['bin/pireal'],
     classifiers=classifiers,
-    cmdclass={'install': CustomInstall},
+    # cmdclass={'install': CustomInstall},
 )
