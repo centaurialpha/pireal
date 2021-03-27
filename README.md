@@ -1,5 +1,5 @@
-
-[![Build Status](https://travis-ci.org/centaurialpha/pireal.svg?branch=master)](https://travis-ci.org/centaurialpha/pireal)
+[![Linux Tests](https://github.com/centaurialpha/pireal/actions/workflows/test-linux.yml/badge.svg)](https://github.com/centaurialpha/pireal/actions/workflows/test-linux.yml)
+[![Windows Tests](https://github.com/centaurialpha/pireal/actions/workflows/test-windows.yml/badge.svg)](https://github.com/centaurialpha/pireal/actions/workflows/test-windows.yml)
 [![Coverage Status](https://coveralls.io/repos/github/centaurialpha/pireal/badge.svg)](https://coveralls.io/github/centaurialpha/pireal)
 ---
 
