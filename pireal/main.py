@@ -26,7 +26,7 @@ import logging
 
 from PyQt5.QtWidgets import QApplication
 
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont, QFontDatabase
 
 # from PyQt5.QtCore import QT_VERSION_STR
 from PyQt5.QtCore import QTranslator
@@ -81,6 +81,13 @@ def start_pireal(args):
 
     app.setStyle('fusion')
     apply_theme(app)
+
+    # Add Font Awesome
+    family = QFontDatabase.applicationFontFamilies(
+        QFontDatabase.addApplicationFont(':font/awesome'))[0]
+    font = QFont(family)
+    font.setStyleName('Solid')
+    app.setFont(font)
     # Load services
     from pireal.gui import central_widget  # noqa
     from pireal.gui import notification  # noqa

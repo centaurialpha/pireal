@@ -22,12 +22,14 @@
         <file alias="show_settings">images/preferences.png</file>
         <file alias="icon">images/pireal_icon.png</file>
         <file alias="edit_relation">images/table_edit.png</file>
-        <file alias="logo">gui/qml/pireal_logo.png</file>
         <file alias="add_column">images/add-column.png</file>
         <file alias="delete_column">images/delete-column.png</file>
         <file alias="split">images/split.png</file>
         <file alias="report_issue">images/bug.png</file>
         <file alias="bwqt">images/bwqt.png</file>
         <file alias="python">images/python-logo.png</file>
+    </qresource>
+    <qresource prefix="/font">
+        <file alias="awesome">images/fa-solid-900.ttf</file>
     </qresource>
 </RCC>
