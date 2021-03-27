@@ -81,8 +81,8 @@ class CentralWidget(QWidget):
 
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
         # Acá cacheo la última carpeta accedida
-        self._last_open_folder = qsettings.value('last_open_folder')
-        self._recent_dbs = qsettings.value('recent_databases')
+        self._last_open_folder = qsettings.value('last_open_folder', type=str)
+        self._recent_dbs = qsettings.value('recent_databases', type=list)
 
         Pireal.load_service("central", self)
 
