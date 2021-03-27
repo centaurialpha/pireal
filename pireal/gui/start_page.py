@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import os
 from datetime import datetime
 
 from PyQt5.QtWidgets import (
@@ -40,11 +41,12 @@ from PyQt5.QtCore import (
     Qt,
     QRect,
     QModelIndex,
+    QSettings,
     pyqtSlot as Slot
 )
 
+from pireal.dirs import DATA_SETTINGS
 from pireal.gui.main_window import Pireal
-# from pireal.core.settings import CONFIG
 
 
 class RecentDBModel(QAbstractListModel):
@@ -113,6 +115,8 @@ class StartPage(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
+
         main_layout = QVBoxLayout(self)
         title_lbl = QLabel('<b>π</b>real')
         font = title_lbl.font()
@@ -146,12 +150,11 @@ class StartPage(QWidget):
         self._recent_dbs_list = QListView()
         self._recent_dbs_list.setMinimumWidth(550)
         vbox_recent_dbs.addWidget(self._recent_dbs_list, alignment=Qt.AlignHCenter)
-        data = []
-        # if CONFIG.get('recentFiles'):
-        #     for f in CONFIG.get('recentFiles'):
-        #         name = os.path.splitext(os.path.basename(f))[0]
-        #         data.append((name, f))
-        self._model = RecentDBModel(data)
+        model_data = []
+        for recent_db in qsettings.value('recent_databases', type=list):
+            name = os.path.splitext(os.path.basename(recent_db))[0]
+            model_data.append((name, recent_db))
+        self._model = RecentDBModel(model_data)
         self._recent_dbs_list.setModel(self._model)
         self._recent_dbs_list.setItemDelegate(RecentDBDelegate())
 

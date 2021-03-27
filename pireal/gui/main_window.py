@@ -294,19 +294,15 @@ class Pireal(QMainWindow):
         self._msg_error_widget.show_msg(text, syntax_error)
         self._msg_error_widget.show()
 
-    def save_user_settings(self):
-        central_widget = Pireal.get_service("central")
-        # CONFIG.set_value("lastOpenFolder", central_widget.last_open_folder)
-        # CONFIG.set_value("recentFiles", central_widget.recent_databases)
-
-        # Write settings
-        # CONFIG.save_settings()
-
     def closeEvent(self, event):
-        self.save_user_settings()
+        central_widget = Pireal.get_service("central")
 
         # Qt settings
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
+
+        qsettings.setValue('last_open_folder', central_widget.last_open_folder)
+        qsettings.setValue('recent_databases', central_widget.recent_databases)
+
         # Save window geometry
         if self.isMaximized():
             qsettings.setValue('window_max', True)

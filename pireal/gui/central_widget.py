@@ -36,6 +36,7 @@ from PyQt5.QtWidgets import QShortcut
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSignal as Signal
+from PyQt5.QtCore import QSettings
 
 
 from pireal.core import (
@@ -54,6 +55,7 @@ from pireal.gui.dialogs import (
     new_relation_dialog,
     new_database_dialog
 )
+from pireal.dirs import DATA_SETTINGS
 # from pireal.core.settings import CONFIG
 # Logger
 logger = logging.getLogger(__name__)
@@ -76,13 +78,11 @@ class CentralWidget(QWidget):
         box.addWidget(self.stacked)
 
         self.created = False
+
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
         # Acá cacheo la última carpeta accedida
-        self.__last_open_folder = None
-        # if CONFIG.get("lastOpenFolder") is not None:
-        #     self.__last_open_folder = CONFIG.get("lastOpenFolder")
-        self.__recent_dbs = []
-        # if CONFIG.get("recentFiles"):
-        #     self.__recent_dbs = CONFIG.get("recentFiles")
+        self._last_open_folder = qsettings.value('last_open_folder')
+        self._recent_dbs = qsettings.value('recent_databases')
 
         Pireal.load_service("central", self)
 
@@ -98,21 +98,23 @@ class CentralWidget(QWidget):
             query_container.set_editor_focus()
 
     @property
-    def recent_databases(self):
-        return self.__recent_dbs
+    def recent_databases(self) -> list:
+        return self._recent_dbs
 
-    @recent_databases.setter
-    def recent_databases(self, database_file):
-        pass
-        # recent_files = CONFIG.get("recentFiles")
-        # if database_file in recent_files:
-        #     recent_files.remove(database_file)
-        # recent_files.insert(0, database_file)
-        # self.__recent_dbs = recent_files
+    def remember_recent_database(self, path: str):
+        if path in self._recent_dbs:
+            self._recent_dbs.remove(path)
+        logger.debug('adding %s to recent databases', path)
+        self._recent_dbs.insert(0, path)
+
+    def remove_db_from_recents(self, path: str):
+        if path in self._recent_dbs:
+            logger.debug('removing %s from recent databases', path)
+            self._recent_dbs.remove(path)
 
     @property
     def last_open_folder(self):
-        return self.__last_open_folder
+        return self._last_open_folder
 
     def rdb_to_pdb(self):
         from src.gui import rdb_pdb_tool
@@ -145,9 +147,6 @@ class CentralWidget(QWidget):
             self.add_widget(db_container)
             # Set window title
             pireal.change_title(file_manager.get_basename(fname))
-            # Enable db actions
-            pireal.set_enabled_db_actions(True)
-            pireal.set_enabled_relation_actions(True)
             self.created = True
             logger.debug("La base de datos ha sido creada con éxito")
 
@@ -166,10 +165,10 @@ class CentralWidget(QWidget):
         # If not filename provide, then open dialog to select
         if not filename:
             logger.debug('Filename not provided')
-            if self.__last_open_folder is None:
+            if self._last_open_folder is None:
                 directory = os.path.expanduser("~")
             else:
-                directory = self.__last_open_folder
+                directory = self._last_open_folder
             # filter_ = settings.SUPPORTED_FILES.split(';;')[0]
             filter_ = settings.get_extension_filter('.pdb')
             filename, _ = QFileDialog.getOpenFileName(
@@ -211,23 +210,20 @@ class CentralWidget(QWidget):
         # Database name
         db_name = file_manager.get_basename(filename)
         # Update title with the new database name, and enable some actions
-        pireal = Pireal.get_service("pireal")
         self.databaseConected.emit(self.tr("Connected to: {}".format(db_name)))
-        pireal.set_enabled_db_actions(True)
-        pireal.set_enabled_relation_actions(True)
         if remember:
             # Add to recent databases
-            self.recent_databases = filename
+            self.remember_recent_database(filename)
             # Remember the folder
-            self.__last_open_folder = file_manager.get_path(filename)
+            self._last_open_folder = file_manager.get_path(filename)
         self.created = True
 
     def open_query(self, filename='', remember=True):
         if not filename:
-            if self.__last_open_folder is None:
+            if self._last_open_folder is None:
                 directory = os.path.expanduser("~")
             else:
-                directory = self.__last_open_folder
+                directory = self._last_open_folder
             filter_ = settings.SUPPORTED_FILES.split(';;')[1]
             filename, _ = QFileDialog.getOpenFileName(self,
                                                       self.tr(
@@ -239,7 +235,7 @@ class CentralWidget(QWidget):
         # Si @filename no es False
         # Cacheo la carpeta accedida
         if remember:
-            self.__last_open_folder = file_manager.get_path(filename)
+            self._last_open_folder = file_manager.get_path(filename)
         # FIXME: mejorar éste y new_query
         self.new_query(filename)
 
@@ -349,33 +345,15 @@ class CentralWidget(QWidget):
         self.stacked.removeWidget(db)
 
         pireal = Pireal.get_service("pireal")
-        pireal.set_enabled_db_actions(False)
-        pireal.set_enabled_relation_actions(False)
-        pireal.set_enabled_query_actions(False)
-        pireal.set_enabled_editor_actions(False)
         pireal.change_title()  # Título en la ventana principal 'Pireal'
         self.created = False
         del db
 
     def new_query(self, filename=''):
-        pireal = Pireal.get_service("pireal")
         db_container = self.get_active_db()
         db_container.new_query(filename)
         # Enable editor actions
         # FIXME: refactoring
-        pireal.set_enabled_query_actions(True)
-        # zoom_in_action = Pireal.get_action("zoom_in")
-        # zoom_in_action.setEnabled(True)
-        # zoom_out_action = Pireal.get_action("zoom_out")
-        # zoom_out_action.setEnabled(True)
-        # paste_action = Pireal.get_action("paste_action")
-        # paste_action.setEnabled(True)
-        # comment_action = Pireal.get_action("comment")
-        # comment_action.setEnabled(True)
-        # uncomment_action = Pireal.get_action("uncomment")
-        # uncomment_action.setEnabled(True)
-        # search_action = Pireal.get_action("search")
-        # search_action.setEnabled(True)
 
     def execute_queries(self):
         db_container = self.get_active_db()
@@ -449,10 +427,10 @@ class CentralWidget(QWidget):
         """ Load Relation file """
 
         if not filename:
-            if self.__last_open_folder is None:
+            if self._last_open_folder is None:
                 directory = os.path.expanduser("~")
             else:
-                directory = self.__last_open_folder
+                directory = self._last_open_folder
 
             msg = self.tr("Abrir Relación")
             filter_ = settings.SUPPORTED_FILES.split(';;')[-1]
@@ -463,7 +441,7 @@ class CentralWidget(QWidget):
                 return
 
         # Save folder
-        self.__last_open_folder = file_manager.get_path(filenames[0])
+        self._last_open_folder = file_manager.get_path(filenames[0])
         db_container = self.get_active_db()
         if db_container.load_relation(filenames):
             db_container.modified = True
