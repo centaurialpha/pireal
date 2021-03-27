@@ -17,161 +17,74 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-"""
+'''
 This module contains an ordered dictionary, in turn this has a dictionary
 with the name and a list of items with properties as an icon , shortcut,
 slot for each item in a menu.
 
-"""
-
-from collections import OrderedDict
-# from PyQt5.QtWidgets import QApplication
+'''
+from collections import namedtuple
 
 from pireal import translations as tr
 
-MENU = OrderedDict()
+Action = namedtuple(
+    'Action',
+    ['name', 'slot', 'is_checkable'],
+    defaults=(False,)
+)
 
-
-# Menu File
-MENU['database'] = {
-    'name': tr.TR_MENU_DB,
-    'items': ({
-        'name': tr.TR_MENU_FILE_NEW_DB,
-        'slot': "central:create_database"
-    }, {
-        'name': tr.TR_MENU_FILE_OPEN_DB,
-        'slot': "central:open_database"
-    }, {
-        'name': tr.TR_MENU_FILE_SAVE_DB,
-        'slot': "central:save_database"
-    }, {
-        'name': tr.TR_MENU_FILE_SAVE_AS_DB,
-        'slot': "central:save_database_as"
-    }, {
-        'name': tr.TR_MENU_FILE_CLOSE_DB,
-        'slot': "central:close_database"
-    })
+m_file = {
+    'name': tr.TR_MENU_FILE,
+    'actions': (
+        'Database',
+        Action(tr.TR_MENU_FILE_NEW_DB, 'central:create_database'),
+        Action(tr.TR_MENU_FILE_OPEN_DB, 'central:open_database'),
+        Action(tr.TR_MENU_FILE_SAVE_DB, 'central:save_database'),
+        Action(tr.TR_MENU_FILE_SAVE_AS_DB, 'central:save_database_as'),
+        Action(tr.TR_MENU_FILE_CLOSE_DB, 'central:close_database'),
+        'Query',
+        Action(tr.TR_MENU_QUERY_NEW_QUERY, 'central:new_query'),
+        Action(tr.TR_MENU_QUERY_OPEN_QUERY, 'central:open_query'),
+        Action(tr.TR_MENU_QUERY_SAVE_QUERY, 'central:save_query'),
+        Action(tr.TR_MENU_QUERY_SAVE_AS_QUERY, 'central:save_query_as'),
+        Action(tr.TR_MENU_FILE_CLOSE_QUERY, 'central:close_query'),
+        {},  # This is a separator
+        Action(tr.TR_MENU_FILE_QUIT, 'pireal:close')
+    )
 }
 
-MENU['query'] = {
-    'name': tr.TR_MENU_QUERY,
-    'items': ({
-        'name': tr.TR_MENU_QUERY_NEW_QUERY,
-        'slot': "central:new_query"
-    }, {
-        'name': tr.TR_MENU_QUERY_OPEN_QUERY,
-        'slot': None,
-    }, {
-        'name': tr.TR_MENU_QUERY_SAVE_QUERY,
-        'slot': None,
-    }, {
-        'name': tr.TR_MENU_QUERY_SAVE_AS_QUERY,
-        'slot': None,
-    }, {
-        'name': tr.TR_MENU_QUERY_EXECUTE,
-        'slot': None
-    })
-}
-# MENU['file'] = {
-#     'name': tr.TR_MENU_FILE,
-#     'items': [{
-#         'name': tr.TR_MENU_FILE_NEW_DB,
-#         'slot': "central:create_database"
-#     }, {
-#         'name': tr.TR_MENU_FILE_OPEN_DB,
-#         'slot': "central:open_database"
-#     }, {
-#         'name': tr.TR_MENU_FILE_SAVE_DB,
-#         'slot': "central:save_database"
-#     }, {
-#         'name': tr.TR_MENU_FILE_SAVE_AS_DB,
-#         'slot': "central:save_database_as"
-#     }, {
-#         'name': tr.TR_MENU_FILE_CLOSE_DB,
-#         'slot': "central:close_database"
-#     }, "-", {
-#         'name': translate("Pireal", "Nueva Consulta"),
-#         'slot': "central:new_query"
-#     }, {
-#         'name': translate("Pireal", "Abrir Consulta"),
-#         'slot': "central:open_query"
-#     }, {
-#         'name': translate("Pireal", "Guardar Consulta"),
-#         'slot': "central:save_query"
-#     }, "-", {
-#         'name': translate("Pireal", "Salir"),
-#         'slot': "pireal:close"}]}
-
-
-# # Menu Edit
-# MENU['edit'] = {
-#     'name': translate("Pireal", "&Editar"),
-#     'items': [{
-#         'name': translate("Pireal", "Deshacer"),
-#         'slot': "central:undo_action"
-#     }, {
-#         'name': translate("Pireal", "Rehacer"),
-#         'slot': "central:redo_action"
-#     }, "-", {
-#         'name': translate("Pireal", "Cortar"),
-#         'slot': "central:cut_action"
-#     }, {
-#         'name': translate("Pireal", "Copiar"),
-#         'slot': "central:copy_action"
-#     }, {
-#         'name': translate("Pireal", "Pegar"),
-#         'slot': "central:paste_action"
-#     }, {
-#         'name': translate("Pireal", "Comentar"),
-#         'slot': "central:comment"
-#     }, {
-#         'name': translate("Pireal", "Descomentar"),
-#         'slot': "central:uncomment"
-#     }, "-", {
-#         'name': translate("Pireal", "Acercar"),
-#         'slot': "central:zoom_in"
-#     }, {
-#         'name': translate("Pireal", "Alejar"),
-#         'slot': "central:zoom_out"
-#     }, "-", {
-#         'name': translate("Pireal", "Buscar..."),
-#         'slot': "central:search"
-#     }]}
-#     # }, "-", {
-#     #     'name': translate("Pireal", "Preferencias"),
-#     #     'slot': "central:show_settings"}]}
-
-MENU['tools'] = {
-    'name': 'Tools',
-    'items': ({
-        'name': 'Settings',
-        'slot': 'central:show_settings'
-    },)
+m_schema = {
+    'name': '&Schema',
+    'actions': (
+        Action(tr.TR_MENU_RELATION_NEW, 'central:create_relation'),
+        Action(tr.TR_MENU_RELATION_LOAD, 'central:load_relation'),
+        Action(tr.TR_MENU_RELATION_DELETE, 'central:remove_relation'),
+        {},
+        Action(tr.TR_MENU_QUERY_EXECUTE, 'central:execute_query')
+    )
 }
 
-# Menu Relation
-MENU['relation'] = {
-    'name': tr.TR_MENU_RELATION,
-    'items': ({
-        'name': tr.TR_MENU_RELATION_NEW,
-        'slot': "central:create_new_relation"
-    }, {
-        'name': tr.TR_MENU_RELATION_DELETE,
-        'slot': "central:remove_relation"
-    }, {
-        'name': tr.TR_MENU_RELATION_LOAD,
-        'slot': "central:load_relation"
-    })}
+m_tools = {
+    'name': tr.TR_MENU_TOOLS,
+    'actions': (
+        Action(tr.TR_MENU_TOOLS_PREFERENCES, 'central:show_settings'),
+        # Action(tr.TR_DARK_MODE, 'pireal:switch_theme', is_checkable=True)
+    )
+}
 
-# # Menu Help
-MENU['help'] = {
+m_help = {
     'name': tr.TR_MENU_HELP,
-    'items': [{
-        'name': tr.TR_MENU_HELP_REPORT_ISSUE,
-        'slot': "pireal:report_issue"
-    }, "-", {
-        'name': tr.TR_MENU_HELP_ABOUT,
-        'slot': "pireal:about_pireal"
-    }, {
-        'name': tr.TR_MENU_HELP_ABOUT_QT,
-        'slot': "pireal:about_qt"}]}
+    'actions': (
+        Action(tr.TR_MENU_HELP_REPORT_ISSUE, 'pireal:report_issue'),
+        {},
+        Action(tr.TR_MENU_HELP_ABOUT, 'pireal:about_pireal'),
+        Action(tr.TR_MENU_HELP_ABOUT_QT, 'pireal:about_qt')
+    )
+}
+
+MENU = (
+    m_file,
+    m_schema,
+    m_tools,
+    m_help
+)

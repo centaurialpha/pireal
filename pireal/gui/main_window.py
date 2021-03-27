@@ -176,58 +176,45 @@ class Pireal(QMainWindow):
         This method installs the menubar and toolbar, menus and QAction's,
         also connects to a slot each QAction.
         """
-
-        # Keymap
-        kmap = keymap.KEYMAP
-
         central = Pireal.get_service("central")
+        menu_bar = self.menuBar()
 
-        # Load menu bar
-        for item in menu_actions.MENU:
-            menubar_item = menu_actions.MENU[item]
-            menu_name = menubar_item['name']
-            items = menubar_item['items']
-            menu = menubar.addMenu(menu_name)
-            for menu_item in items:
-                if isinstance(menu_item, str):
-                    # Is a separator
-                    menu.addSeparator()
+        for menu in menu_actions.MENU:
+            menu_name, actions = menu.values()
+
+            qmenu = menu_bar.addMenu(menu_name)
+            for action in actions:
+                if isinstance(action, str):
+                    qmenu.addSection(action)
+                elif not action:
+                    qmenu.addSeparator()
                 else:
-                    action = menu_item['name']
-                    slot_name = menu_item['slot']
+                    qaction = qmenu.addAction(action.name)
+                    # FIXME: qaction checkable
+                    # if action.is_checkable:
+                    #     qaction.setCheckable(True)
+                    #     attr = qaction.text().lower().replace(' ', '_')
+                    #     try:
+                    #         attr_value = getattr(USER_SETTINGS, attr)
+                    #     except AttributeError as reason:
+                    #         # ok, not big deal
+                    #         logger.warning(reason)
+                    #     else:
+                    #         qaction.setChecked(attr_value)
 
-                    qaction = menu.addAction(action)
-                    if slot_name is None:
-                        continue
-                    obj_name, connection = slot_name.split(':')
-                    # icon = QIcon(':img/%s' % connection)
-                    # qaction.setIcon(icon)
+                    obj_name, slot = action.slot.split(':')
 
-                    obj = central
-                    if obj_name.startswith('pireal'):
-                        obj = self
-                    # Install shortcuts
-                    shortcut = kmap.get(connection, None)
+                    shortcut = keymap.KEYMAP.get(slot)
                     if shortcut is not None:
                         qaction.setShortcut(shortcut)
 
-                    # The name of QAction is the connection
-                    # if item == "relation":
-                    #     if connection != "execute_queries":
-                    #         rela_actions.append(qaction)
-                    Pireal.load_action(connection, qaction)
-                    slot = getattr(obj, connection, None)
-                    if callable(slot):
-                        qaction.triggered.connect(slot)
+                    obj = central
+                    if obj_name == 'pireal':
+                        obj = self
 
-        # Install toolbar
-        # self.__install_toolbar(toolbar_items, rela_actions)
-        # self.__install_toolbar(rela_actions)
-        # Disable some actions
-        self.set_enabled_db_actions(False)
-        self.set_enabled_relation_actions(False)
-        self.set_enabled_query_actions(False)
-        self.set_enabled_editor_actions(False)
+                    func = getattr(obj, slot, None)
+                    if callable(func):
+                        qaction.triggered.connect(func)
 
     # def __install_toolbar(self, rela_actions):
     #     menu = QMenu()
@@ -269,64 +256,6 @@ class Pireal(QMainWindow):
         else:
             _title = "Pireal"
         self.setWindowTitle(_title)
-
-    def set_enabled_actions(self, actions, value):
-        for action in actions:
-            qaction = Pireal.get_action(action)
-            if qaction is not None:
-                qaction.setEnabled(value)
-
-    def set_enabled_db_actions(self, value):
-        """ Public method. Enables or disables db QAction """
-
-        actions = [
-            'new_query',
-            'open_query',
-            'close_database',
-            'save_database',
-            'save_database_as',
-            'load_relation'
-        ]
-        self.set_enabled_actions(actions, value)
-
-    def set_enabled_relation_actions(self, value):
-        """ Public method. Enables or disables relation's QAction """
-
-        actions = (
-            'create_new_relation',
-            'remove_relation',
-            'add_tuple',
-            'delete_tuple',
-            # 'add_column',
-            # 'delete_column'
-        )
-        self.set_enabled_actions(actions, value)
-
-    def set_enabled_query_actions(self, value):
-        """ Public method. Enables or disables queries QAction """
-
-        actions = (
-            'execute_queries',
-            'save_query'
-        )
-        self.set_enabled_actions(actions, value)
-
-    def set_enabled_editor_actions(self, value):
-        """ Public slot. Enables or disables editor actions """
-
-        actions = (
-            'undo_action',
-            'redo_action',
-            'copy_action',
-            'cut_action',
-            'paste_action',
-            'zoom_in',
-            'zoom_out',
-            'comment',
-            'uncomment',
-            'search'
-        )
-        self.set_enabled_actions(actions, value)
 
     def about_qt(self):
         """ Show about qt dialog """
