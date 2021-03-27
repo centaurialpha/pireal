@@ -41,7 +41,8 @@ from pireal.gui import (
     menu_actions,
 )
 
-from pireal.core.settings import CONFIG
+from pireal.dirs import DATA_SETTINGS
+# from pireal.core.settings import CONFIG
 
 
 class Pireal(QMainWindow):
@@ -83,7 +84,7 @@ class Pireal(QMainWindow):
         self.setWindowTitle(self.tr("Pireal"))
         self.setMinimumSize(880, 600)
         # Load window geometry
-        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
         window_maximized = qsettings.value('window_max', True)
         if window_maximized:
             self.showMaximized()
@@ -367,18 +368,18 @@ class Pireal(QMainWindow):
 
     def save_user_settings(self):
         central_widget = Pireal.get_service("central")
-        CONFIG.set_value("lastOpenFolder", central_widget.last_open_folder)
-        CONFIG.set_value("recentFiles", central_widget.recent_databases)
+        # CONFIG.set_value("lastOpenFolder", central_widget.last_open_folder)
+        # CONFIG.set_value("recentFiles", central_widget.recent_databases)
 
         # Write settings
-        CONFIG.save_settings()
+        # CONFIG.save_settings()
 
     def closeEvent(self, event):
         self.save_user_settings()
 
         # Qt settings
-        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        # # Save window geometry
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
+        # Save window geometry
         if self.isMaximized():
             qsettings.setValue('window_max', True)
         else:

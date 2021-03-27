@@ -43,9 +43,9 @@ from pireal.gui.query_container import query_container
 from pireal.core import (
     relation,
     pfile,
-    file_manager,
-    settings
+    file_manager
 )
+from pireal.dirs import DATA_SETTINGS
 # from src.core.logger import Logger
 
 # logger = Logger(__name__)
@@ -288,7 +288,7 @@ class DatabaseContainer(QSplitter):
 
     def showEvent(self, event):
         QSplitter.showEvent(self, event)
-        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
         vsizes = qsettings.value('vsplitter_sizes', None)
         if vsizes is not None:
             self._vsplitter.restoreState(vsizes)
@@ -303,7 +303,7 @@ class DatabaseContainer(QSplitter):
     def save_sizes(self):
         """ Save sizes of Splitters """
 
-        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
         qsettings.setValue('vsplitter_sizes',
                            self._vsplitter.saveState())
         qsettings.setValue('hsplitter_sizes',

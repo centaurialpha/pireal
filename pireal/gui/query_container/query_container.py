@@ -48,7 +48,7 @@ from pireal.gui.main_window import Pireal
 from pireal.gui.query_container import editor
 from pireal.gui.query_container import tab_widget
 
-from pireal.core import settings
+from pireal.dirs import DATA_SETTINGS
 
 
 class QueryContainer(QWidget):
@@ -338,7 +338,7 @@ class QueryWidget(QWidget):
     def save_sizes(self):
         """ Save sizes of Splitters """
 
-        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
         qsettings.setValue('result_splitter_query_sizes',
                            self.result_splitter.saveState())
         qsettings.setValue('editor_splitter_query_sizes',
@@ -436,14 +436,14 @@ class EditorWidget(QWidget):
             self.__show_context_menu)
         self._editor.modificationChanged[bool].connect(
             lambda modified: self.editorModified.emit(modified))
-        self._editor.undoAvailable[bool].connect(
-            self.__on_undo_available)
-        self._editor.redoAvailable[bool].connect(
-            self.__on_redo_available)
-        self._editor.copyAvailable[bool].connect(
-            self.__on_copy_available)
-        self._editor.cursorPositionChanged.connect(
-            self._update_column_label)
+        # self._editor.undoAvailable[bool].connect(
+        #     self.__on_undo_available)
+        # self._editor.redoAvailable[bool].connect(
+        #     self.__on_redo_available)
+        # self._editor.copyAvailable[bool].connect(
+        #     self.__on_copy_available)
+        # self._editor.cursorPositionChanged.connect(
+        #     self._update_column_label)
 
     def show_search_widget(self):
         self._search_widget.show()
@@ -486,27 +486,27 @@ class EditorWidget(QWidget):
         new_editor.setWindowTitle(qc.tab_text(qc.current_index()))
         new_editor.show()
 
-    def __on_undo_available(self, value):
-        """ Change state of undo action """
+    # def __on_undo_available(self, value):
+    #     """ Change state of undo action """
 
-        pireal = Pireal.get_service("pireal")
-        action = pireal.get_action("undo_action")
-        action.setEnabled(value)
+    #     pireal = Pireal.get_service("pireal")
+    #     action = pireal.get_action("undo_action")
+    #     action.setEnabled(value)
 
-    def __on_redo_available(self, value):
-        """ Change state of redo action """
+    # def __on_redo_available(self, value):
+    #     """ Change state of redo action """
 
-        pireal = Pireal.get_service("pireal")
-        action = pireal.get_action("redo_action")
-        action.setEnabled(value)
+    #     pireal = Pireal.get_service("pireal")
+    #     action = pireal.get_action("redo_action")
+    #     action.setEnabled(value)
 
-    def __on_copy_available(self, value):
-        """ Change states of cut and copy action """
+    # def __on_copy_available(self, value):
+    #     """ Change states of cut and copy action """
 
-        cut_action = Pireal.get_action("cut_action")
-        cut_action.setEnabled(value)
-        copy_action = Pireal.get_action("copy_action")
-        copy_action.setEnabled(value)
+    #     cut_action = Pireal.get_action("cut_action")
+    #     cut_action.setEnabled(value)
+    #     copy_action = Pireal.get_action("copy_action")
+    #     copy_action.setEnabled(value)
 
 
 class SearchWidget(QWidget):

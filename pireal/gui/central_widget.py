@@ -54,7 +54,7 @@ from pireal.gui.dialogs import (
     new_relation_dialog,
     new_database_dialog
 )
-from pireal.core.settings import CONFIG
+# from pireal.core.settings import CONFIG
 # Logger
 logger = logging.getLogger(__name__)
 
@@ -78,11 +78,11 @@ class CentralWidget(QWidget):
         self.created = False
         # Acá cacheo la última carpeta accedida
         self.__last_open_folder = None
-        if CONFIG.get("lastOpenFolder") is not None:
-            self.__last_open_folder = CONFIG.get("lastOpenFolder")
+        # if CONFIG.get("lastOpenFolder") is not None:
+        #     self.__last_open_folder = CONFIG.get("lastOpenFolder")
         self.__recent_dbs = []
-        if CONFIG.get("recentFiles"):
-            self.__recent_dbs = CONFIG.get("recentFiles")
+        # if CONFIG.get("recentFiles"):
+        #     self.__recent_dbs = CONFIG.get("recentFiles")
 
         Pireal.load_service("central", self)
 
@@ -103,11 +103,12 @@ class CentralWidget(QWidget):
 
     @recent_databases.setter
     def recent_databases(self, database_file):
-        recent_files = CONFIG.get("recentFiles")
-        if database_file in recent_files:
-            recent_files.remove(database_file)
-        recent_files.insert(0, database_file)
-        self.__recent_dbs = recent_files
+        pass
+        # recent_files = CONFIG.get("recentFiles")
+        # if database_file in recent_files:
+        #     recent_files.remove(database_file)
+        # recent_files.insert(0, database_file)
+        # self.__recent_dbs = recent_files
 
     @property
     def last_open_folder(self):
@@ -169,7 +170,8 @@ class CentralWidget(QWidget):
                 directory = os.path.expanduser("~")
             else:
                 directory = self.__last_open_folder
-            filter_ = settings.SUPPORTED_FILES.split(';;')[0]
+            # filter_ = settings.SUPPORTED_FILES.split(';;')[0]
+            filter_ = settings.get_extension_filter('.pdb')
             filename, _ = QFileDialog.getOpenFileName(
                 self, self.tr("Open Database"), directory, filter_)
             # If is canceled, return

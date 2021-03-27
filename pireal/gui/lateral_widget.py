@@ -35,6 +35,7 @@ from PyQt5.QtCore import QUrl
 
 from pireal.gui.main_window import Pireal
 from pireal.core import settings
+from pireal.dirs import QML_RESOURCES
 
 
 class RelationModel(QAbstractListModel):
@@ -129,7 +130,7 @@ class RelationListQML(QWidget):
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         view = QQuickWidget()
-        qml = os.path.join(settings.QML_PATH, "ListRelation.qml")
+        qml = os.path.join(QML_RESOURCES, "ListRelation.qml")
         view.setSource(QUrl.fromLocalFile(qml))
         view.setResizeMode(QQuickWidget.SizeRootObjectToView)
         vbox.addWidget(view)

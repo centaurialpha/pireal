@@ -17,111 +17,93 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Pireal Settings
-"""
+from PyQt5.QtCore import QSettings
 
-import sys
-import os
-import json
+from pireal.dirs import CONFIG_FILE
 
-from PyQt5.QtCore import QObject
-
-from PyQt5.QtGui import QFont
-
-
-# Detecting Operating System
-LINUX, WINDOWS, MAC = False, False, False
-if sys.platform == 'darwin':
-    MAC = True
-elif sys.platform == 'linux' or sys.platform == 'linux2':
-    LINUX = True
-else:
-    WINDOWS = True
-
-# Directories used by Pireal
-# Project path
-if getattr(sys, 'frozen', ''):
-    ROOT_DIR = os.path.realpath(os.path.dirname(sys.argv[0]))
-else:
-    # Not frozen: regular python interpreter
-    ROOT_DIR = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), '..', '..')
-# Absolute path of the user's home directory
-HOME = os.path.expanduser('~')
-# Absolute path of the pireal home directory
-# this is used to save the settings, log file, etc.
-PIREAL_DIR = os.path.join(HOME, '.pireal')
-# Here are saved by default the databases
-PIREAL_DATABASES = os.path.join(HOME, 'PirealDatabases')
-# Settings
-SETTINGS_PATH = os.path.join(PIREAL_DIR, 'settings.ini')
-# User settings
-USER_SETTINGS_PATH = os.path.join(PIREAL_DIR, "config.json")
-# Log file
-LOG_PATH = os.path.join(PIREAL_DIR, 'pireal_log.log')
-# Language files
-LANGUAGE_PATH = os.path.join(ROOT_DIR, 'pireal', 'lang')
-# Path for QML files
-QML_PATH = os.path.join(ROOT_DIR, 'pireal', 'gui', 'qml')
-# Style sheet
-STYLE_SHEET = os.path.join(ROOT_DIR, 'pireal', 'style.qss')
-# Carpeta de ejemplos
-EXAMPLES = os.path.join(ROOT_DIR, 'samples')
+# Supported files.
+# DON'T change the order!
+SUPPORTED_FILES = (
+    "Pireal Database File (*.pdb)",
+    "Pireal Query File (*.pqf)",
+    "Pireal Relation File (*.prf)",
+)
 
 
-# Supported files
-SUPPORTED_FILES = ("Pireal Database File (*.pdb);;"
-                   "Pireal Query File (*.pqf);;"
-                   "Pireal Relation File (*.prf)")
-
-# FIXME: si agrego algo y el archivo existe BOOOM!
-DEFAULT_SETTINGS = {
-    "language": "English",
-    "highlightCurrentLine": True,
-    "matchParenthesis": True,
-    "recentFiles": [],
-    "lastOpenFolder": None,
-    "fontFamily": None,
-    "fontSize": 14,
-    "alternatingRowColors": True
-}
+def get_extension_filter(extension):
+    for sf in SUPPORTED_FILES:
+        if extension in sf:
+            return sf
 
 
-class Config(QObject):
+class SettingManager:
+    """Wrapper around QSettings to manage user settings"""
 
-    def __init__(self, path=USER_SETTINGS_PATH):
-        QObject.__init__(self)
-        self._path = path
-        self._settings = {}
+    def __init__(self):
+        self._qs = QSettings(str(CONFIG_FILE), QSettings.IniFormat)
 
-    def load_settings(self):
-        if not os.path.exists(self._path):
-            self._settings = DEFAULT_SETTINGS
-            with open(self._path, mode="w") as fp:
-                json.dump(DEFAULT_SETTINGS, fp)
-        else:
-            with open(self._path) as fp:
-                self._settings = json.load(fp)
+    def load(self):
+        self._language: str = self._qs.value(
+            'language', defaultValue='english')
+        self._highlight_current_line: bool = self._qs.value(
+            'highlight_current_line', defaultValue=False, type=bool)
+        self._match_parenthesis: bool = self._qs.value(
+            'match_parenthesis', defaultValue=True, type=bool)
+        self._font_family: str = self._qs.value('font_family')
+        self._font_size: float = self._qs.value('font_size', defaultValue=12, type=bool)
 
-    def save_settings(self):
-        with open(self._path, mode="w") as fp:
-            json.dump(self._settings, fp)
+    @property
+    def language(self) -> str:
+        return self._language
 
-    def get(self, option, default=None):
-        if option not in self._settings:
-            raise Exception("%s no es una opción de configuración" % option)
-        value = self._settings.get(option, default)
-        return value
+    @language.setter
+    def language(self, lang):
+        if lang != self._language:
+            self._language = lang
+            self._qs.setValue('language', lang)
 
-    def set_value(self, option, value):
-        self._settings[option] = value
+    @property
+    def highlight_current_line(self) -> bool:
+        return self._highlight_current_line
 
-    def _get_font(self):
-        font = QFont("consolas", 11)
-        if LINUX:
-            font = QFont("monospace", 12)
-        return font.family(), font.pointSize()
+    @highlight_current_line.setter
+    def highlight_current_line(self, value):
+        if value != self._highlight_current_line:
+            self._highlight_current_line = value
+            self._qs.setValue('highlight_current_line', value)
+
+    @property
+    def match_parenthesis(self) -> bool:
+        return self._match_parenthesis
+
+    @match_parenthesis.setter
+    def match_parenthesis(self, value):
+        if value != self._match_parenthesis:
+            self._match_parenthesis = value
+            self._qs.setValue('match_parenthesis', value)
+
+    @property
+    def font_family(self) -> str:
+        ff = self._font_family
+        if ff is None:
+            ff = 'Hermit'
+        return ff
+
+    @font_family.setter
+    def font_family(self, font):
+        if font != self._font_family:
+            self._font = font
+            self._qs.setValue('font_family', font)
+
+    @property
+    def font_size(self) -> float:
+        return self._font_size
+
+    @font_size.setter
+    def font_size(self, size):
+        if size != self._font_size:
+            self._font_size = size
+            self._qs.setValue('font_size', size)
 
 
-CONFIG = Config()
+SETTINGS = SettingManager()

@@ -31,7 +31,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import pyqtSlot as Slot
 from PyQt5.QtCore import pyqtSignal as Signal
 
-from pireal.core import settings
+from pireal.dirs import DATABASES_DIR
 
 
 class NewDatabaseDialog(QWizard):
@@ -89,7 +89,7 @@ class FirstPage(QWizardPage):
         self.registerField("dblocation", self._database_location_line)
         self.registerField("dbfilename", self._database_filename_line)
 
-        self.__location_folder = settings.PIREAL_DATABASES
+        self.__location_folder = DATABASES_DIR.stem
         self._database_filename_line.setText(self.__location_folder)
         self._database_location_line.setText(self.__location_folder)
 

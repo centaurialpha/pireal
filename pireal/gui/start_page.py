@@ -45,7 +45,7 @@ from PyQt5.QtCore import (
 )
 
 from pireal.gui.main_window import Pireal
-from pireal.core.settings import CONFIG
+# from pireal.core.settings import CONFIG
 
 
 class RecentDBModel(QAbstractListModel):
@@ -148,10 +148,10 @@ class StartPage(QWidget):
         self._recent_dbs_list.setMinimumWidth(550)
         vbox_recent_dbs.addWidget(self._recent_dbs_list, alignment=Qt.AlignHCenter)
         data = []
-        if CONFIG.get('recentFiles'):
-            for f in CONFIG.get('recentFiles'):
-                name = os.path.splitext(os.path.basename(f))[0]
-                data.append((name, f))
+        # if CONFIG.get('recentFiles'):
+        #     for f in CONFIG.get('recentFiles'):
+        #         name = os.path.splitext(os.path.basename(f))[0]
+        #         data.append((name, f))
         self._model = RecentDBModel(data)
         self._recent_dbs_list.setModel(self._model)
         self._recent_dbs_list.setItemDelegate(RecentDBDelegate())

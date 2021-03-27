@@ -34,8 +34,7 @@ from pireal.gui.query_container import (
     highlighter,
     sidebar
 )
-from pireal.core.settings import CONFIG
-# from src.gui.query_container import snippets
+from pireal.core.settings import SETTINGS
 
 
 class Editor(QPlainTextEdit):
@@ -54,16 +53,11 @@ class Editor(QPlainTextEdit):
         self.__visible_blocks = []
         self.modified = False
         # Highlight current line
-        self._highlight_line = CONFIG.get("highlightCurrentLine")
+        self._highlight_line = SETTINGS.match_parenthesis
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
-        font_family = CONFIG.get("fontFamily")
-        size = CONFIG.get("fontSize")
-        if font_family is None:
-            font_family, size = CONFIG._get_font()
-
-        self.set_font(font_family, size)
+        self.set_font(SETTINGS.font_family, SETTINGS.font_size)
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
         self.__message = None
@@ -71,7 +65,6 @@ class Editor(QPlainTextEdit):
         # Extra selections
         self._selections = {}
         self.__cursor_position_changed()
-        # self.snippets = snippets.SnippetManager(self)
         # Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.blockCountChanged.connect(self.update)
@@ -125,16 +118,6 @@ class Editor(QPlainTextEdit):
         self._sidebar.redimensionar()
         self._sidebar.update_viewport()
 
-    def keyPressEvent(self, event):
-        # key = event.key()
-        # if key == Qt.Key_Tab:
-        #     if self.snippets._current_snippet is not None:
-        #         self.snippets.select_next()
-        #     else:
-        #         self.snippets.insert_snippet()
-        # else:
-        super().keyPressEvent(event)
-
     def paintEvent(self, event):
         self._update_visible_blocks()
         super().paintEvent(event)
@@ -173,7 +156,7 @@ class Editor(QPlainTextEdit):
     def __cursor_position_changed(self):
         self.clear_selections("current_line")
 
-        if self._highlight_line:
+        if SETTINGS.match_parenthesis:
             _selection = QTextEdit.ExtraSelection()
             color = QColor("#fffde1")
             _selection.format.setBackground(color)
@@ -184,7 +167,7 @@ class Editor(QPlainTextEdit):
             self.add_selection("current_line", [_selection])
 
         # Paren matching
-        if CONFIG.get("matchParenthesis"):
+        if SETTINGS.match_parenthesis:
             self.clear_selections("parenthesis")
             extras = self.__check_brackets()
             if extras is not None:

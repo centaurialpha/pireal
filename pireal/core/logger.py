@@ -19,7 +19,7 @@
 
 import logging
 
-from pireal.core.settings import LOG_PATH
+from pireal.dirs import LOGS_DIR
 
 FORMAT = "[%(asctime)s] [%(levelname)-6s]: %(name)-22s:%(funcName)-5s %(message)s"
 TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
@@ -58,7 +58,7 @@ TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 def set_up(verbose: bool):
     root = logging.getLogger()
-    handler = logging.FileHandler(LOG_PATH)
+    handler = logging.FileHandler(LOGS_DIR / 'the_log.log')
     root.addHandler(handler)
     formatter = logging.Formatter(FORMAT, TIME_FORMAT)
     handler.setFormatter(formatter)

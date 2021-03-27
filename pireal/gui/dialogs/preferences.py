@@ -34,14 +34,15 @@ from PyQt5.QtCore import (
     pyqtSignal,
     QThread
 )
-from pireal.core import (
-    settings,
-    file_manager
-)
+from pireal.core import file_manager
 from pireal.gui import updater
 from pireal.gui.main_window import Pireal
-from pireal.core.settings import CONFIG
-
+from pireal.dirs import (
+    QML_RESOURCES,
+    LANGUAGES_DIR,
+    DATA_SETTINGS,
+)
+from pireal.core.settings import SETTINGS
 # TODO: verificar el estado de los checkboxes si son distintos al cambiar
 
 
@@ -55,29 +56,23 @@ class Preferences(QDialog):
         box.setContentsMargins(0, 0, 0, 0)
         view = QQuickWidget()
         view.setResizeMode(QQuickWidget.SizeRootObjectToView)
-        qml = os.path.join(settings.QML_PATH, "Preferences.qml")
+        qml = os.path.join(QML_RESOURCES.stem, "Preferences.qml")
         view.setSource(QUrl.fromLocalFile(qml))
         box.addWidget(view)
 
         self.__root = view.rootObject()
         # Lista de idiomas para el Combo qml
-        available_langs = file_manager.get_files_from_folder(
-            settings.LANGUAGE_PATH)
+        available_langs = file_manager.get_files_from_folder(LANGUAGES_DIR)
         langs = ["English"] + available_langs
         self.__root.addLangsToCombo(langs)
 
-        self.__root.setCurrentLanguage(CONFIG.get("language"))
+        self.__root.setCurrentLanguage(SETTINGS.language)
 
-        font = CONFIG.get("fontFamily")
-        size = CONFIG.get("fontSize")
-        if font is None:
-            font, size = CONFIG._get_font()
-
+        font = SETTINGS.font_family
+        size = SETTINGS.font_size
         self.__root.setFontFamily(font, size)
 
-        self.__root.setInitialStates(
-            CONFIG.get("highlightCurrentLine"),
-            CONFIG.get("matchParenthesis"))
+        self.__root.setInitialStates(SETTINGS.highlight_current_line, SETTINGS.match_parenthesis)
 
         # Conexiones
         self.__root.close.connect(lambda: self.settingsClosed.emit())
@@ -92,14 +87,12 @@ class Preferences(QDialog):
 
     @pyqtSlot()
     def __change_font(self):
-        font = CONFIG.get("fontFamily")
-        size = CONFIG.get("fontSize")
-        if font is None:
-            font, size = CONFIG._get_font()
+        font = SETTINGS.font_family
+        size = SETTINGS.font_size
         font, ok = QFontDialog.getFont(QFont(font, size), self)
         if ok:
-            CONFIG.set_value("fontFamily", font.family())
-            CONFIG.set_value("fontSize", font.pointSize())
+            SETTINGS.font_family = font.family()
+            SETTINGS.font_size = font.pointSize()
             central = Pireal.get_service("central")
             mcontainer = central.get_active_db()
             if mcontainer is not None:
@@ -113,19 +106,16 @@ class Preferences(QDialog):
 
     @pyqtSlot(bool)
     def __on_state_current_line_changed(self, state):
-        CONFIG.set_value("highlightCurrentLine", state)
+        SETTINGS.highlight_current_line = state
 
     @pyqtSlot(bool)
     def __on_state_matching_parenthesis_changed(self, state):
-        CONFIG.set_value("matchParenthesis", state)
+        SETTINGS.match_parenthesis = state
 
     @pyqtSlot('QString')
     def __change_language(self, lang):
-        qsettings = QSettings(settings.SETTINGS_PATH, QSettings.IniFormat)
-        current_lang = qsettings.value('language', 'English')
-        if current_lang != lang:
-            qsettings.setValue('language', lang)
-            self.__need_restart = True
+        SETTINGS.language = lang
+        self.__need_restart = True
 
     @pyqtSlot()
     def __check_for_updates(self):
@@ -188,5 +178,5 @@ class Preferences(QDialog):
         msg.exec_()
         r = msg.clickedButton()
         if r == yes_btn:
-            QSettings(settings.SETTINGS_PATH, QSettings.IniFormat).clear()
+            QSettings(str(DATA_SETTINGS), QSettings.IniFormat).clear()
             # self.close()

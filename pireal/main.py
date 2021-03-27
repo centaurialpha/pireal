@@ -34,11 +34,10 @@ from PyQt5.QtCore import QLocale
 from PyQt5.QtCore import QLibraryInfo
 
 
-from pireal.core.settings import CONFIG
 # from pireal import __version__
-# from pireal.core.config import AppSettings
 # from pireal.gui.main_window import Pireal
 # from pireal.gui.theme import apply_theme
+from pireal.core.settings import SETTINGS
 
 logger = logging.getLogger('main')
 
@@ -60,8 +59,8 @@ def start_pireal(args):
     #             __version__, sys.version_info, sys.platform)
 
     app = QApplication(sys.argv)
-    CONFIG.load_settings()
-    # AppSettings.load()
+
+    SETTINGS.load()
 
     # Set application icon
     app.setWindowIcon(QIcon(':img/icon'))
