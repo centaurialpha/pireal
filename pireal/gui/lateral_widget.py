@@ -21,10 +21,14 @@ import enum
 from collections import namedtuple
 
 from PyQt5.QtWidgets import QListView
+from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QFrame
+from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QSplitter
 from PyQt5.QtWidgets import QStyledItemDelegate
 from PyQt5.QtWidgets import QStyleOptionViewItem
 from PyQt5.QtWidgets import QStyle
+from PyQt5.QtWidgets import QSizePolicy
 
 from PyQt5.QtCore import (
     Qt,
@@ -147,6 +151,24 @@ class RelationDelegate(QStyledItemDelegate):
         return size
 
 
+class RelationListView(QFrame):
+
+    def __init__(self, header_text='', parent=None):
+        super().__init__(parent)
+        self.setFrameShape(QFrame.StyledPanel)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(3, 3, 3, 3)
+        header_lbl = QLabel(header_text)
+        font = header_lbl.font()
+        font.setPointSize(12)
+        header_lbl.setFont(font)
+        layout.addWidget(header_lbl, alignment=Qt.AlignHCenter | Qt.AlignVCenter)
+        self.view = QListView()
+        layout.addWidget(self.view)
+
+
 class LateralWidget(QSplitter):
     """
     Widget que contiene la lista de relaciones y la lista de relaciones
@@ -165,16 +187,16 @@ class LateralWidget(QSplitter):
         super().__init__(parent)
         self.setOrientation(Qt.Vertical)
         # Lista de relaciones de la base de datos
-        self._relations_list = QListView()
+        self._relations_list = RelationListView('Relations')
         self._relations_model = RelationModel()
-        self._relations_list.setModel(self._relations_model)
-        self._relations_list.setItemDelegate(RelationDelegate())
+        self._relations_list.view.setModel(self._relations_model)
+        self._relations_list.view.setItemDelegate(RelationDelegate())
         self.addWidget(self._relations_list)
         # Lista de relaciones del resultado de consultas
-        self._results_list = QListView()
+        self._results_list = RelationListView('Results')
         self._results_model = RelationModel()
-        self._results_list.setModel(self._results_model)
-        self._results_list.setItemDelegate(RelationDelegate())
+        self._results_list.view.setModel(self._results_model)
+        self._results_list.view.setItemDelegate(RelationDelegate())
         self.addWidget(self._results_list)
 
         self._models = {
@@ -182,8 +204,8 @@ class LateralWidget(QSplitter):
             RelationItemType.Result: self._results_model
         }
 
-        self._relations_list.clicked.connect(lambda i: self.relationClicked.emit(i.row()))
-        self._results_list.clicked.connect(lambda i: self.resultClicked.emit(i.row()))
+        self._relations_list.view.clicked.connect(lambda i: self.relationClicked.emit(i.row()))
+        self._results_list.view.clicked.connect(lambda i: self.resultClicked.emit(i.row()))
 
         Pireal.load_service("lateral_widget", self)
 
