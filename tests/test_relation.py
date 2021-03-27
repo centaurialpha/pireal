@@ -280,7 +280,7 @@ def test_fouther(relation_fixture):
     assert r.content == expected
 
 
-def test_difference(qtbot):
+def test_difference():
     r = relation.Relation()
     r.header = ["patente"]
     data = {
