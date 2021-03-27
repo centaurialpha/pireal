@@ -34,6 +34,7 @@ from pireal.gui.query_container import (
     highlighter,
     sidebar
 )
+from pireal.gui.theme import get_editor_color
 from pireal.core.settings import SETTINGS
 
 
@@ -42,7 +43,8 @@ class Editor(QPlainTextEdit):
     def __init__(self, pfile=None):
         super(Editor, self).__init__()
         pal = self.palette()
-        pal.setColor(pal.Text, QColor("#555"))
+        pal.setColor(pal.Text, QColor(get_editor_color('foreground')))
+        pal.setColor(pal.Window, QColor(get_editor_color('background')))
         self.setPalette(pal)
 
         self.setFrameShape(QPlainTextEdit.NoFrame)
@@ -54,6 +56,7 @@ class Editor(QPlainTextEdit):
         self.modified = False
         # Highlight current line
         self._highlight_line = SETTINGS.match_parenthesis
+        self._highlight_line_color = QColor(get_editor_color('current_line'))
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
@@ -158,8 +161,7 @@ class Editor(QPlainTextEdit):
 
         if SETTINGS.match_parenthesis:
             _selection = QTextEdit.ExtraSelection()
-            color = QColor("#fffde1")
-            _selection.format.setBackground(color)
+            _selection.format.setBackground(self._highlight_line_color)
             _selection.format.setProperty(
                 QTextCharFormat.FullWidthSelection, True)
             _selection.cursor = self.textCursor()

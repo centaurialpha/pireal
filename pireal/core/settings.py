@@ -53,6 +53,7 @@ class SettingManager:
             'match_parenthesis', defaultValue=True, type=bool)
         self._font_family: str = self._qs.value('font_family')
         self._font_size: int = self._qs.value('font_size', defaultValue=12, type=int)
+        self._dark_mode: bool = self._qs.value('dark_mode', defaultValue=True, type=bool)
 
     @property
     def language(self) -> str:
@@ -109,6 +110,16 @@ class SettingManager:
         if size != self._font_size:
             self._font_size = size
             self._qs.setValue('font_size', size)
+
+    @property
+    def dark_mode(self):
+        return self._dark_mode
+
+    @dark_mode.setter
+    def dark_mode(self, use_dark_mode):
+        if use_dark_mode != self._dark_mode:
+            self._dark_mode = use_dark_mode
+            self._qs.setValue('dark_mode', use_dark_mode)
 
 
 SETTINGS = SettingManager()

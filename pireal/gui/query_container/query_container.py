@@ -70,10 +70,10 @@ class QueryContainer(QWidget):
         # Tab
         self._tabs = tab_widget.TabWidget()
         self._tabs.tabBar().setObjectName("tab_query")
-        self._tabs.setAutoFillBackground(True)
-        p = self._tabs.palette()
-        p.setColor(p.Window, Qt.white)
-        self._tabs.setPalette(p)
+        # self._tabs.setAutoFillBackground(True)
+        # p = self._tabs.palette()
+        # p.setColor(p.Window, Qt.white)
+        # self._tabs.setPalette(p)
         box.addWidget(self._tabs)
 
         self.relations = {}
@@ -398,7 +398,7 @@ class EditorWidget(QWidget):
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         vbox.setSpacing(0)
-        self.setStyleSheet("outline: none")
+        # self.setStyleSheet("outline: none")
         hbox = QHBoxLayout()
         # Position
         self._column_str = "Col: {}"

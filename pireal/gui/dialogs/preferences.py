@@ -52,6 +52,8 @@ class SettingsDialog(QDialog):
         layout_font = QGridLayout(group_font)
 
         self._check_dark_mode = QCheckBox(self.tr('Dark Mode'))
+        self._check_dark_mode.setChecked(SETTINGS.dark_mode)
+
         self._combo_languages = QComboBox()
 
         self._check_highlight_line = QCheckBox(self.tr('Highlight Current Line'))
@@ -89,6 +91,7 @@ class SettingsDialog(QDialog):
 
     def accept(self):
         # TODO: refresh editor font
+        SETTINGS.dark_mode = self._check_dark_mode.isChecked()
         SETTINGS.highlight_current_line = self._check_highlight_line.isChecked()
         SETTINGS.match_parenthesis = self._check_highlight_braces.isChecked()
         SETTINGS.font_family = self._combo_font_family.currentText()

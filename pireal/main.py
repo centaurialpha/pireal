@@ -36,7 +36,7 @@ from PyQt5.QtCore import QLibraryInfo
 
 # from pireal import __version__
 # from pireal.gui.main_window import Pireal
-# from pireal.gui.theme import apply_theme
+from pireal.gui.theme import apply_theme
 from pireal.core.settings import SETTINGS
 
 logger = logging.getLogger('main')
@@ -80,7 +80,7 @@ def start_pireal(args):
     #     app.installTranslator(translator)
 
     app.setStyle('fusion')
-    # apply_theme(app)
+    apply_theme(app)
     # Load services
     from pireal.gui import central_widget  # noqa
     from pireal.gui import notification  # noqa

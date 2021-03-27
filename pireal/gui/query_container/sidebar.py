@@ -34,6 +34,8 @@ from PyQt5.QtGui import (
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QSize
 
+from pireal.gui.theme import get_editor_color
+
 
 class Sidebar(QFrame):
     """ Sidebar widget """
@@ -73,16 +75,16 @@ class Sidebar(QFrame):
         """
 
         painter = QPainter(self)
-        painter.fillRect(event.rect(), Qt.white)
+        painter.fillRect(event.rect(), QColor(get_editor_color('sidebar_background')))
         width = self.width() - 8
         height = self.editor.fontMetrics().height()
         font = self.editor.font()
         font_bold = self.editor.font()
         font_bold.setBold(True)
         painter.setFont(font)
-        pen = QPen(Qt.gray)
-        painter.setPen(QPen(QColor("#e9e9e9")))
-        painter.drawLine(width + 7, 0, width + 7, event.rect().height())
+        pen = QPen(QColor(get_editor_color('sidebar_foreground')))
+        # painter.setPen(QPen(QColor('red')))
+        # painter.drawLine(width + 7, 0, width + 7, event.rect().height())
         painter.setPen(pen)
         current_line = self.editor.textCursor().blockNumber()
 
