@@ -38,6 +38,7 @@ from pireal.gui import (
     model,
     delegate
 )
+from pireal.gui.lateral_widget import RelationItemType
 
 from pireal.gui.query_container import query_container
 from pireal.core import (
@@ -122,8 +123,9 @@ class DatabaseContainer(QSplitter):
             # Add table to stacked
             self.table_widget.stacked.addWidget(_view)
             # Add table name to list widget
-            self.lateral_widget.relation_list.add_item(
-                table_name, rela.cardinality(), rela.degree())
+            # FIXME: feooo
+            rela.name = table_name
+            self.lateral_widget.add_item(rela, RelationItemType.Normal)
         # Select first item
         # self.lateral_widget.relation_list.select_first()
 

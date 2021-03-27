@@ -47,6 +47,7 @@ from pireal.core.interpreter.exceptions import (
 from pireal.gui.main_window import Pireal
 from pireal.gui.query_container import editor
 from pireal.gui.query_container import tab_widget
+from pireal.gui.lateral_widget import RelationItemType
 
 from pireal.dirs import DATA_SETTINGS
 
@@ -354,14 +355,11 @@ class QueryWidget(QWidget):
     def clear_results(self):
         central_widget = Pireal.get_service("central")
         lateral_widget = Pireal.get_service("lateral_widget")
-        lateral_widget.result_list.clear_items()
+        lateral_widget.clear_results()
         table_widget = central_widget.get_active_db().table_widget
         i = table_widget.stacked_result.count()
-        # i = self._stack_tables.count()
         while i >= 0:
-            # widget = self._stack_tables.widget(i)
             widget = table_widget.stacked_result.widget(i)
-            # self._stack_tables.removeWidget(widget)
             table_widget.stacked_result.removeWidget(widget)
             if widget is not None:
                 widget.deleteLater()
@@ -375,9 +373,8 @@ class QueryWidget(QWidget):
         table_widget = central_widget.get_active_db().table_widget
         index = table_widget.stacked_result.addWidget(_view)
         table_widget.stacked_result.setCurrentIndex(index)
-        lateral_widget.result_list.add_item(
-            rname, rela.cardinality(), rela.degree())
-        # lateral_widget.result_list.select_last()
+        rela.name = rname
+        lateral_widget.add_item(rela, RelationItemType.Result)
         table_widget._tabs.setCurrentIndex(1)
 
     def show_search_widget(self):

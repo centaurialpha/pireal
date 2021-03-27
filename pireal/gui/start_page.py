@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import os
 from datetime import datetime
 
 from PyQt5.QtWidgets import (

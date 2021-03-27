@@ -35,7 +35,6 @@ from PyQt5.QtCore import (
 )
 
 from pireal import keymap
-from pireal.core import settings
 from pireal.gui.updater import Updater
 from pireal.gui import (
     menu_actions,

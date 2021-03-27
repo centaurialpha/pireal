@@ -17,25 +17,32 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import os
+import enum
+from collections import namedtuple
 
-# from PyQt5.QtWidgets import QTreeWidget
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QListView
 from PyQt5.QtWidgets import QSplitter
-# from PyQt5.QtWidgets import QTreeWidgetItem
-# from PyQt5.QtWidgets import QAbstractItemView
-from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QStyledItemDelegate
+from PyQt5.QtWidgets import QStyleOptionViewItem
+from PyQt5.QtWidgets import QStyle
 
-from PyQt5.QtQuickWidgets import QQuickWidget
-
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import (
+    Qt,
+    QRect,
+    QModelIndex
+)
 from PyQt5.QtCore import QAbstractListModel
 from PyQt5.QtCore import pyqtSignal as Signal
-from PyQt5.QtCore import QUrl
 
 from pireal.gui.main_window import Pireal
-from pireal.core import settings
-from pireal.dirs import QML_RESOURCES
+
+
+RelationItem = namedtuple('RelationItem', 'name cardinality degree')
+
+
+class RelationItemType(enum.Enum):
+    Normal = 'normal'
+    Result = 'result'
 
 
 class RelationModel(QAbstractListModel):
@@ -46,21 +53,44 @@ class RelationModel(QAbstractListModel):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._data = None
+        self._relations = []
 
-    def set_data(self, data):
-        self._data = data
+    def add_relation(self, relation: RelationItem):
+        relations_len = len(self._relations)
+
+        self.beginInsertRows(QModelIndex(), relations_len, relations_len)
+        self._relations.append(relation)
+        self.endInsertRows()
+
+    def relation_by_index(self, index) -> RelationItem:
+        return self._relations[index]
+
+    def remove_relation(self, index: int):
+        self.beginRemoveRows(QModelIndex(), index, index)
+        self._relations.pop(index)
+        self.endRemoveRows()
+
+    def clear(self):
+        self.beginResetModel()
+        self._relations.clear()
+        self.endResetModel()
 
     def rowCount(self, index):
-        return len(self._data)
+        return len(self._relations)
 
     def data(self, index, role=Qt.DisplayRole):
         try:
-            data = self._data[index.row()]
+            relation_item = self._relations[index.row()]
         except IndexError:
             return None
-        if role == Qt.DisplayRole:
-            return data.name
+
+        if role == self.NameRole:
+            return relation_item.name
+        elif role == self.CardinalityRole:
+            return relation_item.cardinality
+        elif role == self.DegreeRole:
+            return relation_item.degree
+
         return None
 
     def roles(self):
@@ -69,6 +99,52 @@ class RelationModel(QAbstractListModel):
             self.CardinalityRole: b'cardinality',
             self.DegreeRole: b'degree'
         }
+
+
+class RelationDelegate(QStyledItemDelegate):
+
+    def paint(self, painter, option, index):
+        opt = QStyleOptionViewItem(option)
+        self.initStyleOption(opt, index)
+
+        model = index.model()
+        relation_name = model.data(index, model.NameRole)
+        cardinality = model.data(index, model.CardinalityRole)
+        degree = model.data(index, model.DegreeRole)
+
+        opt.text = ''
+        opt.widget.style().drawControl(QStyle.CE_ItemViewItem, opt, painter, opt.widget)
+
+        rect = opt.rect
+
+        rect = rect.adjusted(5, 3, 5, -3)
+        painter.save()
+
+        font = painter.font()
+        font.setBold(True)
+        font.setPointSize(12)
+        painter.setFont(font)
+        painter.drawText(
+            QRect(rect.left(), rect.top(), rect.width(), rect.height() / 3),
+            opt.displayAlignment, relation_name
+        )
+
+        painter.restore()
+
+        painter.drawText(
+            QRect(rect.left(), rect.top(), rect.width(), rect.height()),
+            opt.displayAlignment, 'cardinality: ' + str(cardinality)
+        )
+
+        painter.drawText(
+            QRect(rect.left(), rect.top() + rect.height() / 2, rect.width(), rect.height() / 1.5),
+            opt.displayAlignment, 'degree: ' + str(degree)
+        )
+
+    def sizeHint(self, option, index):
+        size = super().sizeHint(option, index)
+        size.setHeight(size.height() * 4.5)
+        return size
 
 
 class LateralWidget(QSplitter):
@@ -89,164 +165,41 @@ class LateralWidget(QSplitter):
         super().__init__(parent)
         self.setOrientation(Qt.Vertical)
         # Lista de relaciones de la base de datos
-        self._relations_list = RelationListQML()
-        self._relations_list.set_title(self.tr("Relations"))
+        self._relations_list = QListView()
+        self._relations_model = RelationModel()
+        self._relations_list.setModel(self._relations_model)
+        self._relations_list.setItemDelegate(RelationDelegate())
         self.addWidget(self._relations_list)
         # Lista de relaciones del resultado de consultas
-        self._results_list = RelationListQML()
-        self._results_list.set_title(self.tr("Results"))
+        self._results_list = QListView()
+        self._results_model = RelationModel()
+        self._results_list.setModel(self._results_model)
+        self._results_list.setItemDelegate(RelationDelegate())
         self.addWidget(self._results_list)
+
+        self._models = {
+            RelationItemType.Normal: self._relations_model,
+            RelationItemType.Result: self._results_model
+        }
+
+        self._relations_list.clicked.connect(lambda i: self.relationClicked.emit(i.row()))
+        self._results_list.clicked.connect(lambda i: self.resultClicked.emit(i.row()))
 
         Pireal.load_service("lateral_widget", self)
 
-        self._relations_list.itemClicked.connect(
-            lambda i: self.relationClicked.emit(i))
-        #         self._relations_list.row()))
-        # self._relations_list.itemSelectionChanged.connect(
-        #     lambda: self.relationSelectionChanged.emit(
-        #         self._relations_list.row()))
-        self._results_list.itemClicked.connect(
-            lambda i: self.resultClicked.emit(i))
-        #         self._results_list.row()))
-        # self._results_list.itemSelectionChanged.connect(
-        #     lambda: self.resultSelectionChanged.emit(
-        #         self._results_list.row()))
+    def add_item(self, relation, rtype: RelationItemType.Normal):
+        """Add relation to list of relations or results depending on rtype"""
+        item = RelationItem(
+            relation.name,
+            relation.cardinality(),
+            relation.degree())
 
-    @property
-    def relation_list(self):
-        return self._relations_list
+        self._models[rtype].add_relation(item)
 
-    @property
-    def result_list(self):
-        return self._results_list
+    def clear(self):
+        """Clear list of relations"""
+        self._relations_model.clear()
 
-
-class RelationListQML(QWidget):
-
-    itemClicked = Signal(int)
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        vbox = QVBoxLayout(self)
-        vbox.setContentsMargins(0, 0, 0, 0)
-        view = QQuickWidget()
-        qml = os.path.join(QML_RESOURCES, "ListRelation.qml")
-        view.setSource(QUrl.fromLocalFile(qml))
-        view.setResizeMode(QQuickWidget.SizeRootObjectToView)
-        vbox.addWidget(view)
-
-        self._root = view.rootObject()
-
-        self._root.itemClicked.connect(
-            lambda i: self.itemClicked.emit(i))
-
-    def set_title(self, title):
-        self._root.setTitle(title)
-
-    def add_item(self, name, card, deg):
-        self._root.addItem(name, card, deg)
-
-    def clear_items(self):
-        self._root.clear()
-
-    def current_item(self):
-        item = self._root.currentItem()
-        name, index = None, None
-        if item is not None:
-            name, index = item.toVariant().values()
-        return index, name
-
-    def has_item(self):
-        return self._root.hasItem()
-
-    def current_text(self):
-        return self._root.currentItemText()
-
-    def current_index(self):
-        return self._root.currentIndex()
-
-    def update_cardinality(self, new_cardinality):
-        self._root.setCardinality(new_cardinality)
-
-
-# class RelationList(QTreeWidget):
-
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#         self.header().setObjectName("lateral")
-#         self.setRootIsDecorated(False)
-#         self.header().setDefaultAlignment(Qt.AlignHCenter)
-#         self.setSelectionMode(QAbstractItemView.SingleSelection)
-#         self.setFrameShape(QTreeWidget.NoFrame)
-#         self.setFrameShadow(QTreeWidget.Plain)
-#         self.setAnimated(True)
-
-#     def select(self, fila):
-#         item = self.topLevelItem(fila)
-#         item.setSelected(True)
-
-#     def select_last(self):
-#         for i in range(self.topLevelItemCount()):
-#             item = self.topLevelItem(i)
-#             item.setSelected(False)
-#         self.select(self.topLevelItemCount() - 1)
-
-#     def select_first(self):
-#         self.select(0)
-
-#     def set_title(self, title):
-#         self.setHeaderLabel(title)
-
-#     def row(self):
-#         return self.indexOfTopLevelItem(self.currentItem())
-
-#     def add_item(self, text, numero_tuplas):
-#         """Agrega un item"""
-#         item = Item(text, str(numero_tuplas))
-#         item.setText(0, item.display_name)
-#         item.setToolTip(0, item.display_name)
-#         self.addTopLevelItem(item)
-
-#     def item_text(self, index):
-#         """Retorna el texto del item en el indice pasado"""
-#         item = self.topLevelItem(index)
-#         if item is None:
-#             item = self.topLevelItem(self.selectedIndexes()[0].row())
-#         text = item.text(0)
-#         return text.split()[0].strip()
-
-#     def remove_item(self, index):
-#         if index == -1:
-#             index = 0  # primer elemento
-#         self.takeTopLevelItem(index)
-
-#     def clear_items(self):
-#         """Elimina todos los items"""
-
-#         self.clear()
-
-#     def update_item(self, tuplas_count):
-#         item = self.current_item()
-#         item.ntuples = str(tuplas_count)
-#         item.setText(0, item.display_name)
-
-#     def current_item(self):
-#         """ Returns the current item in the tree. If item is None
-#         returns item in the index 0 """
-
-#         item = self.currentItem()
-#         if item is None:
-#             item = self.topLevelItem(0)
-#         return item
-
-
-# class Item(QTreeWidgetItem):
-
-#     def __init__(self, text, ntuplas):
-#         super(Item, self).__init__()
-#         self.name = text
-#         self.ntuples = ntuplas
-
-#     @property
-#     def display_name(self):
-#         return self.name + " [" + self.ntuples + "]"
+    def clear_results(self):
+        """Clear list of results"""
+        self._results_model.clear()
