@@ -32,7 +32,6 @@ _ROOT_DIR = Path(__file__).resolve().parent.parent
 _HOME_DIR = Path.home()
 
 EXAMPLES_DIR = _ROOT_DIR / 'samples'
-QML_RESOURCES = _ROOT_DIR / 'pireal' / 'gui' / 'qml'
 
 
 def _data_dir() -> Path:

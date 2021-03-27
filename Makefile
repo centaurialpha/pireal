@@ -13,7 +13,6 @@ help:
 clean:
 	rm -rf `find -name "*pyc"`
 	rm -rf `find -name "*pyo"`
-	rm -rf `find -name "*qmlc"`
 	rm -rf .pybuild/
 	rm -rf debian/debhelper-build-stamp
 	rm -rf debian/.debhelper

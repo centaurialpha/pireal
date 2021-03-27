@@ -40,8 +40,6 @@ opt = {
             'PyQt5.QtWidgets',
             'PyQt5.QtNetwork',
             'PyQt5.QtOpenGL',
-            'PyQt5.QtQml',
-            'PyQt5.QtQuick'
          ],
         'include_msvcr': True,
         'include_files': include_files}}

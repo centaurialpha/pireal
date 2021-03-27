@@ -103,7 +103,6 @@ setup(
     long_description=open('README.md').read(),
     package_data={
         "src": [
-            "gui/qml/*",
             "images/pireal_icon.png",
             "lang/*.qm"]
     },
