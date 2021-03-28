@@ -24,6 +24,7 @@ import re
 import itertools
 
 from pireal.core.rtypes import RelationStr
+from pireal.core.ordered_set import OrderedSet
 
 IS_VALID_FIELD_NAME = re.compile("^[_á-úa-zA-Z][_á-úa-zA-Z0-9]*$")
 
@@ -105,7 +106,7 @@ def union_compatible(operation):
 class Relation(object):
 
     def __init__(self):
-        self.content = set()
+        self.content = OrderedSet()
         self._header = []
         self.name = ""
         self._null_count = 1
