@@ -117,10 +117,10 @@ class Parser(object):
              | STRING
         """
 
-        node = self._compound()
+        node = self.compound()
         return node
 
-    def _compound(self):
+    def compound(self):
         """
         Compound : Assignment
                  | Assignment; Compound
@@ -129,14 +129,14 @@ class Parser(object):
         nodes = []
 
         while self.token.type != EOF:
-            nodes.append(self._assignment())
+            nodes.append(self.assignment())
 
         compound = ast.Compound()
         compound.children = nodes
 
         return compound
 
-    def _assignment(self):
+    def assignment(self):
         """
         Assignment : RNAME := Expression;
         """
@@ -144,7 +144,7 @@ class Parser(object):
         rname = ast.Variable(self.token)
         self.consume(ID)
         self.consume(ASSIGNMENT)
-        q = self._expression()
+        q = self.expression()
         node = ast.Assignment(rname, q)
         self.consume(SEMICOLON)
 
@@ -157,7 +157,7 @@ class Parser(object):
 
         operator = self.token
         self.consume(KEYWORDS.get(operator.value))
-        right_node = self._expression()
+        right_node = self.expression()
         return ast.BinaryOp(left_node, operator, right_node)
 
     def _variable(self):
@@ -165,25 +165,25 @@ class Parser(object):
         self.consume(ID)
         return node
 
-    def _project_expression(self):
+    def project_expression(self):
         """
         ProjectExpression : PROJECT AttrList (Expression)
         """
 
         self.consume(PROJECT)
-        attributes = self._attributes()
+        attributes = self.attributes()
         self.consume(LPAREN)
-        expression = self._expression()
+        expression = self.expression()
         self.consume(RPAREN)
         return ast.ProjectExpr(attributes, expression)
 
-    def _select_expression(self):
+    def select_expression(self):
         """
         SelectExpression : SELECT Condition (Expression)
         """
 
         self.consume(SELECT)
-        condition = self._condition()
+        condition = self.condition()
         # Bool operation
         bool_op = None
         if self.token.type in (AND, OR):
@@ -194,17 +194,17 @@ class Parser(object):
                 op = self.token.value
                 self.consume(KEYWORDS.get(op))
                 bool_op.ops.append(op)
-                bool_op.conditions.append(self._condition())
+                bool_op.conditions.append(self.condition())
 
         if bool_op is not None:
             condition = bool_op
         # FIXME: puede venir otra CONDITION
         self.consume(LPAREN)
-        expression = self._expression()
+        expression = self.expression()
         self.consume(RPAREN)
         return ast.SelectExpr(condition, expression)
 
-    def _expression(self):
+    def expression(self):
         """
         Expression : SelectExpression
                    | ProjectExpression
@@ -215,16 +215,16 @@ class Parser(object):
 
         # Select
         if self.token.type == SELECT:
-            node = self._select_expression()
+            node = self.select_expression()
 
         # Project
         elif self.token.type == PROJECT:
-            node = self._project_expression()
+            node = self.project_expression()
 
         # (Expression) or (Expression) BinaryOp (Expression)
         elif self.token.type == LPAREN:
             self.consume(LPAREN)
-            node = self._expression()
+            node = self.expression()
             self.consume(RPAREN)
             # If next token is binary operator, them create BinaryOp node
             if self.token.type in BINARYOP:
@@ -241,7 +241,7 @@ class Parser(object):
             self.consume("EXPRESSION")
         return node
 
-    def _condition(self):
+    def condition(self):
         """
         Condition : Compared Comp Compared
                   | (Condition)
@@ -249,7 +249,7 @@ class Parser(object):
 
         if self.token.type == LPAREN:
             self.consume(LPAREN)
-            node = self._condition()
+            node = self.condition()
             self.consume(RPAREN)
         elif self.token.type == ID:
             compared = self._compared()
@@ -333,7 +333,7 @@ class Parser(object):
 
         return node
 
-    def _attributes(self):
+    def attributes(self):
         """
         AttrList : NAME
                  | NAME, AttrsList

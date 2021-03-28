@@ -144,10 +144,11 @@ class Relation(object):
     def append_row(self):
         """Agrega una fila/tupla al final"""
 
-        null_row = ["null ({})".format(self._null_count)
-                    for i in range(self.degree())]
-        self.insert(tuple(null_row))
-        self._null_count += 1
+        nulls = []
+        for _ in range(self.degree()):
+            nulls.append('null ({})'.format(self._null_count))
+            self._null_count += 1
+        self.insert(tuple(nulls))
 
     def cardinality(self):
         """Devuelve la cantidad de filas de la relación"""
@@ -349,3 +350,8 @@ class Relation(object):
             content += "|\n"
 
         return header + content
+
+    def __repr__(self):
+        return (f'Relation(name={self.name}, '
+                f'degree={self.degree()}, '
+                f'cardinality={self.cardinality()})')
