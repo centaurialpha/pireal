@@ -19,7 +19,7 @@
 
 from collections import OrderedDict
 
-from pireal.core.interpreter.tokens import (
+from pireal.interpreter.tokens import (
     STRING,
     DATE,
     TIME,
@@ -45,12 +45,12 @@ from pireal.core.interpreter.tokens import (
     ASSIGNMENT,
     EOF
 )
-from pireal.core.interpreter.exceptions import ConsumeError
-from pireal.core.interpreter.exceptions import DuplicateRelationNameError
+from pireal.interpreter.exceptions import ConsumeError
+from pireal.interpreter.exceptions import DuplicateRelationNameError
 
-from pireal.core.interpreter import scanner
-from pireal.core.interpreter import lexer
-from pireal.core.interpreter import rast as ast
+from pireal.interpreter import scanner
+from pireal.interpreter import lexer
+from pireal.interpreter import rast as ast
 
 
 class Parser(object):

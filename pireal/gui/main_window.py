@@ -41,7 +41,6 @@ from pireal.gui import (
 )
 
 from pireal.dirs import DATA_SETTINGS
-# from pireal.core.settings import CONFIG
 
 
 class Pireal(QMainWindow):

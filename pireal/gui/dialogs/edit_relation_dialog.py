@@ -31,7 +31,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtCore import pyqtSignal
 
 from pireal.gui.main_window import Pireal
-from pireal.core.settings import CONFIG
+from pireal.settings import CONFIG
 
 
 class EditRelationDialog(QDialog):

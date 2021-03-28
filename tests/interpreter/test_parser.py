@@ -1,9 +1,9 @@
 import pytest
 
-from pireal.core.interpreter import scanner
-from pireal.core.interpreter import lexer
-from pireal.core.interpreter import parser
-from pireal.core.interpreter import rast as ast
+from pireal.interpreter import scanner
+from pireal.interpreter import lexer
+from pireal.interpreter import parser
+from pireal.interpreter import rast as ast
 
 
 @pytest.fixture

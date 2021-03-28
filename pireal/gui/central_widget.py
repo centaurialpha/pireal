@@ -39,12 +39,11 @@ from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtCore import QSettings
 
 
+from pireal import settings
 from pireal.core import (
-    settings,
     file_manager,
     pfile,
 )
-# from src.core.logger import Logger
 from pireal.gui.main_window import Pireal
 from pireal.gui import (
     start_page,
@@ -56,7 +55,7 @@ from pireal.gui.dialogs import (
     new_database_dialog
 )
 from pireal.dirs import DATA_SETTINGS
-# from pireal.core.settings import CONFIG
+
 # Logger
 logger = logging.getLogger(__name__)
 

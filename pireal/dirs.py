@@ -31,7 +31,7 @@ _ROOT_DIR = Path(__file__).resolve().parent.parent
 
 _HOME_DIR = Path.home()
 
-EXAMPLES_DIR = _ROOT_DIR / 'samples'
+EXAMPLES_DIR = _ROOT_DIR / 'pireal' / 'resources' / 'samples'
 
 
 def _data_dir() -> Path:

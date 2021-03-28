@@ -33,7 +33,7 @@ flake8:
 lint: pep8 flake8
 
 test:
-	@$(PYTEST) -v --cov pireal.core --cov-report term-missing -m "not integration and not gui" --ignore=tests/gui
+	@$(PYTEST) -v --cov pireal.core --cov pireal.interpreter --cov-report term-missing -m "not integration and not gui" --ignore=tests/gui
 
 test-gui:
 	@$(PYTEST) -v -m gui

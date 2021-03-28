@@ -37,8 +37,8 @@ from PyQt5.QtCore import QSettings
 from PyQt5.QtCore import QSize
 
 from PyQt5.QtCore import pyqtSignal as Signal
-from pireal.core.interpreter import parser
-from pireal.core.interpreter.exceptions import (
+from pireal.interpreter import parser
+from pireal.interpreter.exceptions import (
     InvalidSyntaxError,
     MissingQuoteError,
     DuplicateRelationNameError,

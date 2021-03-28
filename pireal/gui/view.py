@@ -27,8 +27,6 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QModelIndex
 
-# from pireal.core.settings import CONFIG
-
 
 class View(QTableView):
     """ Vista """

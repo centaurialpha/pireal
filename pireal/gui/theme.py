@@ -1,7 +1,7 @@
 from PyQt5.QtGui import QColor
 from PyQt5.QtGui import QPalette
 
-from pireal.core.settings import SETTINGS
+from pireal.settings import SETTINGS
 
 DARK = {
     'Window': '#171a21',

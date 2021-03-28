@@ -21,7 +21,7 @@
 # each of these tokens has a meaning in language
 
 import re
-from pireal.core.interpreter.tokens import (
+from pireal.interpreter.tokens import (
     ID,
     ASSIGNMENT,
     LPAREN,
@@ -42,7 +42,7 @@ from pireal.core.interpreter.tokens import (
     KEYWORDS,
     EOF
 )
-from pireal.core.interpreter.exceptions import (
+from pireal.interpreter.exceptions import (
     MissingQuoteError,
     InvalidSyntaxError
 )

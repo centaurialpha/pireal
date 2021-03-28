@@ -37,7 +37,7 @@ from PyQt5.QtCore import QLibraryInfo
 # from pireal import __version__
 # from pireal.gui.main_window import Pireal
 from pireal.gui.theme import apply_theme
-from pireal.core.settings import SETTINGS
+from pireal.settings import SETTINGS
 
 logger = logging.getLogger('main')
 

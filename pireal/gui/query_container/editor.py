@@ -35,7 +35,7 @@ from pireal.gui.query_container import (
     sidebar
 )
 from pireal.gui.theme import get_editor_color
-from pireal.core.settings import SETTINGS
+from pireal.settings import SETTINGS
 
 
 class Editor(QPlainTextEdit):

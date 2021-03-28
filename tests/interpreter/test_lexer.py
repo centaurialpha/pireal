@@ -1,9 +1,9 @@
 import pytest
 from unittest import mock
 
-from pireal.core.interpreter import scanner
-from pireal.core.interpreter import lexer
-from pireal.core.interpreter import exceptions
+from pireal.interpreter import scanner
+from pireal.interpreter import lexer
+from pireal.interpreter import exceptions
 
 
 @pytest.fixture

@@ -31,7 +31,7 @@ from PyQt5.QtGui import QFontDatabase
 
 from PyQt5.QtCore import Qt
 
-from pireal.core.settings import SETTINGS
+from pireal.settings import SETTINGS
 
 
 class SettingsDialog(QDialog):
