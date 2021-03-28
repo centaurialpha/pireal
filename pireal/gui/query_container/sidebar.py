@@ -46,7 +46,8 @@ class Sidebar(QFrame):
 
         self.editor.blockCountChanged.connect(self.update_viewport)
         self.editor.updateRequest.connect(self.update)
-        # self.editor.blockCountChanged.connect(self.editor.update)
+        self._background_color = QColor(get_editor_color('sidebar_background'))
+        self._foreground_color = QColor(get_editor_color('sidebar_foreground'))
 
     def sizeHint(self):
         return QSize(self.__calculate_width(), 0)
@@ -75,16 +76,14 @@ class Sidebar(QFrame):
         """
 
         painter = QPainter(self)
-        painter.fillRect(event.rect(), QColor(get_editor_color('sidebar_background')))
+        painter.fillRect(event.rect(), self._background_color)
         width = self.width() - 8
         height = self.editor.fontMetrics().height()
         font = self.editor.font()
         font_bold = self.editor.font()
         font_bold.setBold(True)
         painter.setFont(font)
-        pen = QPen(QColor(get_editor_color('sidebar_foreground')))
-        # painter.setPen(QPen(QColor('red')))
-        # painter.drawLine(width + 7, 0, width + 7, event.rect().height())
+        pen = QPen(self._foreground_color)
         painter.setPen(pen)
         current_line = self.editor.textCursor().blockNumber()
 

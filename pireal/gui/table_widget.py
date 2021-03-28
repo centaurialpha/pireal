@@ -42,18 +42,8 @@ class TableWidget(QSplitter):
 
     def __init__(self):
         super(TableWidget, self).__init__()
-
-        # vbox = QVBoxLayout(self)
-        # vbox.setContentsMargins(0, 0, 0, 0)
-
         self._tabs = QTabWidget()
-        # self._tabs.setAutoFillBackground(True)
-        # p = self._tabs.palette()
-        # p.setColor(p.Window, QColor("white"))
-        # self._tabs.setPalette(p)
         self._other_tab = QTabWidget()
-        # self._other_tab.setAutoFillBackground(True)
-        # self._other_tab.setPalette(p)
         self.addWidget(self._tabs)
         self.addWidget(self._other_tab)
         self.setSizes([1, 1])
@@ -68,25 +58,22 @@ class TableWidget(QSplitter):
         self._tabs.addTab(self.stacked_result, self.tr("Resultados"))
 
         btn_split = QToolButton()
+        btn_split.setText("\uf04c")
         btn_split.setToolTip(self.tr("Click para dividir la pantalla"))
         btn_split.setAutoRaise(True)
-        btn_split.setIcon(QIcon(":img/split"))
         self._tabs.setCornerWidget(btn_split)
         btn_split.clicked.connect(self._split)
         btn_split = QToolButton()
+        btn_split.setText("\uf0c8")
         btn_split.setToolTip(self.tr("Click para juntar las pantallas"))
         btn_split.setAutoRaise(True)
-        btn_split.setIcon(QIcon(":img/split"))
         btn_split.clicked.connect(self._unsplit)
         self._other_tab.setCornerWidget(btn_split)
-        # self.setContextMenuPolicy(Qt.CustomContextMenu)
-        # self.customContextMenuRequested.connect(self._show_menu)
 
         lateral_widget = Pireal.get_service("lateral_widget")
         lateral_widget.resultClicked.connect(self._on_result_list_clicked)
         lateral_widget.resultSelectionChanged.connect(
             lambda index: self.stacked_result.setCurrentIndex(index))
-        # lateral_widget.newRowsRequested.connect(self._insert_rows)
 
     def insert_rows(self, tuplas):
         current_view = self.current_table()
@@ -215,8 +202,6 @@ class TableWidget(QSplitter):
 
         _view = view.View()
         _model = model.RelationModel(rela)
-        # if not editable:
-        #     _model.editable = False
         _view.setModel(_model)
         _view.setItemDelegate(delegate.Delegate())
         _view.setHorizontalHeader(view.Header())

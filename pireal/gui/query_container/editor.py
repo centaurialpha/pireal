@@ -178,7 +178,6 @@ class Editor(QPlainTextEdit):
 
     def set_font(self, font_family, size):
         font = QFont(font_family, size)
-        # self.setFont(font)
         super().setFont(font)
 
     def __check_brackets(self):
