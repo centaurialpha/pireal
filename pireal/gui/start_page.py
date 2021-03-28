@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import os
 from datetime import datetime
 
@@ -42,11 +43,17 @@ from PyQt5.QtCore import (
     QRect,
     QModelIndex,
     QSettings,
+    QTimer,
     pyqtSlot as Slot
 )
 
-from pireal.dirs import DATA_SETTINGS
+from pireal.dirs import (
+    DATA_SETTINGS,
+    EXAMPLES_DIR,
+)
 from pireal.gui.main_window import Pireal
+
+logger = logging.getLogger(__name__)
 
 
 class RecentDBModel(QAbstractListModel):
@@ -118,9 +125,9 @@ class StartPage(QWidget):
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
 
         main_layout = QVBoxLayout(self)
-        title_lbl = QLabel('<b>π</b>real')
+        title_lbl = QLabel('<b><font color="#1565c0">π</font></b>real')
         font = title_lbl.font()
-        font.setPointSize(32)
+        font.setPointSize(42)
         title_lbl.setFont(font)
 
         subtitle_lbl = QLabel('free and open source Relational Algebra Interpreter')
@@ -131,14 +138,19 @@ class StartPage(QWidget):
         # Buttons
         hbox_btn = QHBoxLayout()
         btn_open_db = QPushButton('Open Database')
-        btn_open_db.setMinimumSize(200, 0)
+        btn_open_db.setMinimumSize(150, 0)
         btn_open_db.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         btn_new_db = QPushButton('New Database')
-        btn_new_db.setMinimumSize(200, 0)
+        btn_new_db.setMinimumSize(150, 0)
         btn_new_db.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        btn_example = QPushButton('Example')
+        btn_example.setMinimumSize(150, 0)
+        btn_example.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+
         hbox_btn.addStretch()
         hbox_btn.addWidget(btn_open_db)
         hbox_btn.addWidget(btn_new_db)
+        hbox_btn.addWidget(btn_example)
         hbox_btn.addStretch()
 
         # List
@@ -158,6 +170,7 @@ class StartPage(QWidget):
         self._recent_dbs_list.setModel(self._model)
         self._recent_dbs_list.setItemDelegate(RecentDBDelegate())
 
+        # Footer
         hbox_footer = QHBoxLayout()
         powered_by_lbl = QLabel('Powered by: ')
         hbox_footer.addWidget(powered_by_lbl)
@@ -189,6 +202,7 @@ class StartPage(QWidget):
         self._recent_dbs_list.doubleClicked.connect(self._on_listview_item_double_clicked)
         btn_open_db.clicked.connect(self._open_database)
         btn_new_db.clicked.connect(self._new_database)
+        btn_example.clicked.connect(self._open_example)
 
     def _new_database(self):
         central_widget = Pireal.get_service('central')
@@ -197,6 +211,14 @@ class StartPage(QWidget):
     def _open_database(self, path=None):
         central_widget = Pireal.get_service('central')
         central_widget.open_database(path)
+
+    def _open_example(self):
+        central_widget = Pireal.get_service('central')
+        logger.info("DATABASE: %s", str(EXAMPLES_DIR / 'database.pdb'))
+        central_widget.open_database(str(EXAMPLES_DIR / 'database.pdb'))
+        central_widget.open_query(str(EXAMPLES_DIR / 'queries.pqf'))
+
+        QTimer.singleShot(1300, central_widget.execute_queries)
 
     @Slot(QModelIndex)
     def _on_listview_item_double_clicked(self, index):
