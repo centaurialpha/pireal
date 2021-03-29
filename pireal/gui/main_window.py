@@ -25,13 +25,23 @@ from PyQt5.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QSystemTrayIcon,
+    QFrame,
+    QWidget,
+    QGridLayout,
+    QLabel,
+    QToolButton,
+    QHBoxLayout,
+    QApplication,
 )
 from PyQt5.QtGui import QIcon
 
 from PyQt5.QtCore import (
     QSettings,
     QThread,
+    Qt,
+    QTimer,
     pyqtSlot as Slot,
+    pyqtSignal as Signal,
 )
 
 from pireal import keymap
@@ -40,7 +50,87 @@ from pireal.gui import (
     menu_actions,
 )
 
+from pireal.settings import SETTINGS
+from pireal.gui.theme import apply_theme
+from pireal.gui import __version__
 from pireal.dirs import DATA_SETTINGS
+
+
+class _StatusBar(QFrame):
+    """Status bar divide in three areas"""
+
+    playClicked = Signal()
+    gearClicked = Signal()
+    moonClicked = Signal(bool)
+    expandClicked = Signal(bool)
+
+    def __init__(self, main_window: QMainWindow, parent=None):
+        super().__init__(parent)
+        self._main_window = main_window
+
+        layout = QGridLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        left_widget = QFrame(parent)
+        mid_widget = QFrame(parent)
+        right_widget = QFrame(parent)
+
+        left_layout = QHBoxLayout(left_widget)
+        left_widget.setLayout(left_layout)
+        left_layout.setContentsMargins(0, 0, 0, 0)
+        mid_layout = QHBoxLayout(mid_widget)
+        mid_widget.setLayout(mid_layout)
+        mid_layout.setContentsMargins(0, 0, 0, 0)
+        right_layout = QHBoxLayout(right_widget)
+        right_widget.setLayout(right_layout)
+        right_layout.setContentsMargins(0, 0, 0, 0)
+
+        # Left widgets
+        self._messages_label = QLabel()
+        self._messages_label.setText(f'Pireal v{__version__}')
+        left_layout.addWidget(self._messages_label)
+        # Mid widgets
+        execute_button = QToolButton()
+        execute_button.setAutoRaise(True)
+        execute_button.setFocusPolicy(Qt.NoFocus)
+        execute_button.setText('\uf04b')
+        execute_button.clicked.connect(lambda: self.playClicked.emit())
+        right_layout.addWidget(execute_button)
+        # Right widgets
+        dark_mode_button = QToolButton()
+        dark_mode_button.setAutoRaise(True)
+        dark_mode_button.setFocusPolicy(Qt.NoFocus)
+        dark_mode_button.setCheckable(True)
+        dark_mode_button.setChecked(SETTINGS.dark_mode)
+        dark_mode_button.setText('\uf186')
+        dark_mode_button.toggled.connect(lambda v: self.moonClicked.emit(v))
+        right_layout.addWidget(dark_mode_button)
+        settings_button = QToolButton()
+        settings_button.setAutoRaise(True)
+        settings_button.setFocusPolicy(Qt.NoFocus)
+        settings_button.setText('\uf013')
+        settings_button.clicked.connect(lambda: self.gearClicked.emit())
+        right_layout.addWidget(settings_button)
+
+        fullscreen_button = QToolButton()
+        fullscreen_button.setAutoRaise(True)
+        fullscreen_button.setFocusPolicy(Qt.NoFocus)
+        fullscreen_button.setText('\uf065')
+        fullscreen_button.setCheckable(True)
+        fullscreen_button.setChecked(self._main_window.isFullScreen())
+        fullscreen_button.toggled.connect(lambda v: self.expandClicked.emit(v))
+        right_layout.addWidget(fullscreen_button)
+
+        layout.addWidget(left_widget, 0, 0, 0, 1, Qt.AlignLeft)
+        layout.addWidget(mid_widget, 0, 1, 0, 1, Qt.AlignCenter)
+        layout.addWidget(right_widget, 0, 2, 0, 1, Qt.AlignRight)
+
+        layout.setContentsMargins(2, 0, 2, 0)
+
+    def show_message(self, msg: str, timeout=4000):
+        self._messages_label.setText(msg)
+        if timeout > 0:
+            QTimer.singleShot(timeout, self._messages_label.clear)
 
 
 class Pireal(QMainWindow):
@@ -53,29 +143,6 @@ class Pireal(QMainWindow):
 
     __SERVICES = {}
     __ACTIONS = {}
-
-    # The name of items is the connection text
-    TOOLBAR_ITEMS = [
-        'create_database',
-        'open_database',
-        'save_database',
-        '',  # Is a separator!
-        'new_query',
-        'open_query',
-        'save_query',
-        '',
-        'relation_menu',
-        '',
-        # 'create_new_relation',
-        # 'remove_relation',
-        # '',
-        # 'add_tuple',
-        # 'delete_tuple',
-        # 'add_column',
-        # 'delete_column',
-        # '',
-        'execute_queries'
-    ]
 
     def __init__(self, check_updates=True):
         QMainWindow.__init__(self)
@@ -91,21 +158,12 @@ class Pireal(QMainWindow):
             self.resize(size)
             position = qsettings.value('window_pos')
             self.move(position)
-        # Toolbar
-        # self.toolbar = QToolBar(self)
-        # self.toolbar.setFixedWidth(38)
-        # self.toolbar.setIconSize(QSize(38, 38))
-        # self.toolbar.setMovable(False)
-        # self.addToolBar(Qt.RightToolBarArea, self.toolbar)
 
         # Menu bar
         menubar = self.menuBar()
         self.__load_menubar(menubar)
         # Load notification widget after toolbar actions
         notification_widget = Pireal.get_service("notification")
-        # self.toolbar.addWidget(notification_widget)
-        # Message error
-        # self._msg_error_widget = message_error.MessageError(self)
         # Central widget
         central_widget = Pireal.get_service("central")
         central_widget.databaseSaved.connect(notification_widget.show_text)
@@ -113,6 +171,17 @@ class Pireal(QMainWindow):
         central_widget.databaseConected.connect(self.change_title)
         self.setCentralWidget(central_widget)
         central_widget.add_start_page()
+
+        # Status bar
+        self.status_bar = _StatusBar(self, parent=self.statusBar())
+        self.statusBar().addWidget(self.status_bar, 1)
+        self.statusBar().setStyleSheet('QStatusBar { margin: 0; padding: 0; border-top: 1px solid palette(dark); }')
+        self.statusBar().setSizeGripEnabled(False)
+        self.statusBar().show()
+        self.status_bar.gearClicked.connect(central_widget.show_settings)
+        self.status_bar.moonClicked.connect(self.toggle_theme)
+        self.status_bar.playClicked.connect(central_widget.execute_queries)
+        self.status_bar.expandClicked.connect(self.toggle_maximized)
 
         # Install service
         Pireal.load_service("pireal", self)
@@ -138,10 +207,32 @@ class Pireal(QMainWindow):
             self.open_download_release()
             self.tray.hide()
 
+    @Slot(bool)
+    def toggle_theme(self, value: bool):
+        qapp = QApplication.instance()
+        SETTINGS.dark_mode = value
+        apply_theme(qapp)
+        self.statusBar().setStyleSheet('QStatusBar { margin: 0; padding: 0; border-top: 1px solid palette(dark); }')
+        central = Pireal.get_service('central')
+        if central is None:
+            return
+        active_db = central.get_active_db()
+        if active_db is not None:
+            editor = active_db.query_container.currentWidget().get_editor()
+            if editor is not None:
+                editor.re_paint()
+
     @Slot()
     def _on_system_tray_message_clicked(self):
         self.open_download_release()
         self.tray.hide()
+
+    @Slot(bool)
+    def toggle_maximized(self, value):
+        if value:
+            self.showFullScreen()
+        else:
+            self.showNormal()
 
     def open_download_release(self):
         webbrowser.open_new('https://github.com/centaurialpha/pireal/releases/latest')
