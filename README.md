@@ -17,7 +17,6 @@
 ### Requirements to run/install from source
 - [Python 3](http://python.org/)
 - [PyQt5](http://www.riverbankcomputing.co.uk/software/pyqt/intro)
-- PyQt5 Qt Quick Module (package `python3-pyqt5.qtquick` in Debian)
 
 ### Implemented Operators
 The operations are implemented in [relation.py](https://github.com/centaurialpha/pireal/blob/master/src/core/relation.py).
@@ -35,7 +34,7 @@ The operations are implemented in [relation.py](https://github.com/centaurialpha
 | Left Outer Join | :heavy_check_mark: |
 | Right Outer Join | :heavy_check_mark: |
 | Full Outer Join | :heavy_check_mark: |
-| Division | :x: |
+| Division | :x: (Can be expressed using relational operators)|
 
 ### Donate
 
@@ -43,8 +42,4 @@ I have developed Pireal with a lot of :heart:, I hope it is useful.
 
 You can donate any amount that you think Pireal deserves.
 
-[![donar](https://www.paypalobjects.com/es_XC/AR/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=29STPF8BWWUTY)
-
-|  Author |
-|---|
-| [Gabriel Acosta](https://centaurialpha.github.io)  |
+[![Invitame un café en cafecito.app](https://cdn.cafecito.app/imgs/buttons/button_5.svg)](https://cafecito.app/gabox)
