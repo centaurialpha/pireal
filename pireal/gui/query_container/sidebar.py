@@ -49,6 +49,10 @@ class Sidebar(QFrame):
         self._background_color = QColor(get_editor_color('sidebar_background'))
         self._foreground_color = QColor(get_editor_color('sidebar_foreground'))
 
+    def re_paint(self):
+        self._background_color = QColor(get_editor_color('sidebar_background'))
+        self._foreground_color = QColor(get_editor_color('sidebar_foreground'))
+
     def sizeHint(self):
         return QSize(self.__calculate_width(), 0)
 

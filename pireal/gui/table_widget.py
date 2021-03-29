@@ -28,7 +28,6 @@ from PyQt5.QtWidgets import QStackedWidget
 # from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QMenu
 
-from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from pireal.gui import view
 from pireal.gui import model

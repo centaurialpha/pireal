@@ -31,6 +31,7 @@ DARK = {
 
 LIGHT = {
     'Highlight': '#7742539e',
+    'Dark': '#dddddd'
 }
 
 EDITOR_DARK = {

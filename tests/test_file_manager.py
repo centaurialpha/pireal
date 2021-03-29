@@ -49,7 +49,6 @@ def test_get_files_from_folder(tmpdir):
     assert len(tmpdir.listdir()) == 0
     for f in files:
         path = tmpdir.join(f)
-        # print(path)
         path.write("Some content")
     assert len(tmpdir.listdir()) == len(files)
     _files = file_manager.get_files_from_folder(tmpdir.strpath)

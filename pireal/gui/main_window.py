@@ -218,7 +218,10 @@ class Pireal(QMainWindow):
             return
         active_db = central.get_active_db()
         if active_db is not None:
-            editor = active_db.query_container.currentWidget().get_editor()
+            editor_widget = active_db.query_container.currentWidget()
+            if editor_widget is None:
+                return
+            editor = editor_widget.get_editor()
             if editor is not None:
                 editor.re_paint()
 

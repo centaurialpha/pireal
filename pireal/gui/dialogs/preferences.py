@@ -32,6 +32,7 @@ from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtCore import Qt
 
 from pireal.settings import SETTINGS
+from pireal.gui.main_window import Pireal
 
 
 class SettingsDialog(QDialog):
@@ -90,10 +91,17 @@ class SettingsDialog(QDialog):
         vbox.addWidget(button_box)
 
     def accept(self):
-        # TODO: refresh editor font
         SETTINGS.dark_mode = self._check_dark_mode.isChecked()
         SETTINGS.highlight_current_line = self._check_highlight_line.isChecked()
         SETTINGS.match_parenthesis = self._check_highlight_braces.isChecked()
         SETTINGS.font_family = self._combo_font_family.currentText()
         SETTINGS.font_size = int(self._combo_font_size.currentText())
+
+        central = Pireal.get_service('central')
+        db_container = central.get_active_db()
+        if db_container is not None:
+            editor = db_container.query_container.currentWidget().get_editor()
+            if editor is not None:
+                editor.set_font(SETTINGS.font_family, SETTINGS.font_size)
+
         super().accept()

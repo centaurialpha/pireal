@@ -202,6 +202,9 @@ class CentralWidget(QWidget):
             QMessageBox.information(self, self.tr("Error"), str(reason))
             return
 
+        pireal = Pireal.get_service('pireal')
+        pireal.status_bar.show_message(f'Database loaded: {filename}')
+
         # Set the PFile object to the new database
         db_container.pfile = pfile_object
         # Add data base container to stacked

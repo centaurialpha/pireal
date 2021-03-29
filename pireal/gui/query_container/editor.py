@@ -422,3 +422,14 @@ class Editor(QPlainTextEdit):
         if selection_name in self._selections:
             self._selections[selection_name] = []
             self.update_selections()
+
+    def re_paint(self):
+        self.set_font(SETTINGS.font_family, SETTINGS.font_size)
+        self._highlight_line_color = QColor(get_editor_color('current_line'))
+        self._sidebar.re_paint()
+        pal = self.palette()
+        pal.setColor(pal.Text, QColor(get_editor_color('foreground')))
+        pal.setColor(pal.Window, QColor(get_editor_color('background')))
+        self.setPalette(pal)
+        self._highlighter = None
+        self._highlighter = highlighter.Highlighter(self.document())

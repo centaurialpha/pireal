@@ -346,7 +346,6 @@ class QueryWidget(QWidget):
 
     def showEvent(self, event):
         super().showEvent(event)
-        # self.result_splitter.setSizes([1, self._result_list.width() * 0.1])
 
     def clear_results(self):
         central_widget = Pireal.get_service("central")
