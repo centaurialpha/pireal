@@ -5,10 +5,7 @@
 
 **πireal** is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.
 
-| Pireal running on Linux |
-|:--------:|
-| ![](https://github.com/centaurialpha/pireal/blob/gh-pages/pireal.png)
-| Click image to enlarge |
+![pireal-screenshot](https://user-images.githubusercontent.com/5894606/112835882-4008fd80-9070-11eb-97ca-d3bf0381efa3.png)
 
 #### Platforms
 - GNU/Linux
