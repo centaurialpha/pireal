@@ -7,7 +7,7 @@
 
 | Home Page | In action |
 |:--------:|:----------:|
-| ![pireal-screenshot](https://user-images.githubusercontent.com/5894606/112837217-fb7e6180-9071-11eb-8903-1ffa7a4f57a9.png) | ![pireal-in-action](https://user-images.githubusercontent.com/5894606/112837234-020cd900-9072-11eb-9955-51422030458b.png) |
+| ![pireal-screenshot](https://user-images.githubusercontent.com/5894606/112898694-8b92ca00-90b7-11eb-8515-cf04649f11f9.png) | ![pireal-in-action](https://user-images.githubusercontent.com/5894606/112898688-89c90680-90b7-11eb-8ae1-372d406b33fd.png) |
 
 #### Platforms
 - GNU/Linux
