@@ -26,7 +26,6 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QSystemTrayIcon,
     QFrame,
-    QWidget,
     QGridLayout,
     QLabel,
     QToolButton,
@@ -175,7 +174,8 @@ class Pireal(QMainWindow):
         # Status bar
         self.status_bar = _StatusBar(self, parent=self.statusBar())
         self.statusBar().addWidget(self.status_bar, 1)
-        self.statusBar().setStyleSheet('QStatusBar { margin: 0; padding: 0; border-top: 1px solid palette(dark); }')
+        self.statusBar().setStyleSheet(
+            'QStatusBar { margin: 0; padding: 0; border-top: 1px solid palette(dark); }')
         self.statusBar().setSizeGripEnabled(False)
         self.statusBar().show()
         self.status_bar.gearClicked.connect(central_widget.show_settings)
@@ -212,7 +212,8 @@ class Pireal(QMainWindow):
         qapp = QApplication.instance()
         SETTINGS.dark_mode = value
         apply_theme(qapp)
-        self.statusBar().setStyleSheet('QStatusBar { margin: 0; padding: 0; border-top: 1px solid palette(dark); }')
+        self.statusBar().setStyleSheet(
+            'QStatusBar { margin: 0; padding: 0; border-top: 1px solid palette(dark); }')
         central = Pireal.get_service('central')
         if central is None:
             return
