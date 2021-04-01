@@ -54,6 +54,7 @@ from pireal.gui.dialogs import (
     new_relation_dialog,
     new_database_dialog
 )
+from pireal.gui.lateral_widget import RelationItemType
 from pireal.dirs import DATA_SETTINGS
 
 # Logger
@@ -411,18 +412,18 @@ class CentralWidget(QWidget):
         if db.delete_relation():
             db.modified = True
 
-    def create_new_relation(self):
-        def create_relation(relation, relation_name):
+    def create_relation(self):
+        def _create_relation(relation, relation_name):
             db = self.get_active_db()
             lateral = Pireal.get_service("lateral_widget")
             table = db.create_table(relation, relation_name)
             db.table_widget.add_table(relation, relation_name, table)
-            lateral.relation_list.add_item(
-                relation_name, relation.cardinality(), relation.degree())
+            relation.name = relation_name
+            lateral.add_item(relation, rtype=RelationItemType.Normal)
             db.modified = True
 
         dialog = new_relation_dialog.NewRelationDialog(self)
-        dialog.created.connect(create_relation)
+        dialog.created.connect(_create_relation)
         dialog.show()
 
     def load_relation(self, filename=''):

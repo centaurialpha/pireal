@@ -187,3 +187,6 @@ TR_RELATION_DIALOG_EMPTY_RELATION_NAME = tr('Pireal', 'Relation name not specifi
 TR_RELATION_DIALOG_WHITESPACE = tr(
     'Pireal',
     'The blanks are so boring :(.<br><br>Please enter data in <b>{}:{}</b>')
+
+TR_INPUT_DIALOG_HEADER_TITLE = QCoreApplication.translate('Pireal', 'Header Name')
+TR_INPUT_DIALOG_HEADER_BODY = QCoreApplication.translate('Pireal', 'Name:')

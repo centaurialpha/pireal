@@ -20,12 +20,14 @@
 from PyQt5.QtWidgets import (
     QTableView,
     QHeaderView,
-    QLineEdit,
     QAbstractItemView,
-    QMessageBox
+    QInputDialog,
 )
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore import QModelIndex
+from PyQt5.QtCore import (
+    Qt,
+    pyqtSlot as Slot,
+)
+from pireal import translations as tr
 
 
 class View(QTableView):
@@ -64,44 +66,18 @@ class Header(QHeaderView):
         self.editable = True
         self.setSectionsClickable(True)
         self.setSectionResizeMode(QHeaderView.ResizeToContents)
-        self.line = QLineEdit(parent=self.viewport())
-        self.line.setAlignment(Qt.AlignTop)
-        self.line.setHidden(True)
-        self.line.blockSignals(True)
-        self.col = 0
 
         # Connections
-        self.sectionDoubleClicked[int].connect(self.__edit)
-        self.line.editingFinished.connect(self.__done_editing)
+        self.sectionDoubleClicked[int].connect(self._on_section_double_clicked)
 
-    def __edit(self, index):
+    @Slot(int)
+    def _on_section_double_clicked(self, index):
         if not self.editable:
             return
-        geo = self.line.geometry()
-        geo.setWidth(self.sectionSize(index))
-        geo.moveLeft(self.sectionViewportPosition(index))
-        current_text = self.model().headerData(index, Qt.Horizontal,
-                                               Qt.DisplayRole)
-        self.line.setGeometry(geo)
-        self.line.setHidden(False)
-        self.line.blockSignals(False)
-        self.line.setText(str(current_text))
-        self.line.setFocus()
-        self.line.selectAll()
-        self.col = index
-
-    def __done_editing(self):
-        text = self.line.text()
-        if not text.strip():
-            # No debe ser vacío
-            QMessageBox.critical(self, "Error",
-                                 self.tr("El campo no debe ser vacío"))
-            self.line.hide()
-            return
-        self.line.blockSignals(True)
-        self.line.setHidden(False)
-        self.model().setHeaderData(self.col, Qt.Horizontal, text,
-                                   Qt.DisplayRole)
-        self.line.setText("")
-        self.line.hide()
-        self.setCurrentIndex(QModelIndex())
+        name, ok = QInputDialog.getText(
+            self,
+            tr.TR_INPUT_DIALOG_HEADER_TITLE,
+            tr.TR_INPUT_DIALOG_HEADER_BODY
+        )
+        if ok:
+            self.model().setHeaderData(index, Qt.Horizontal, name.strip())

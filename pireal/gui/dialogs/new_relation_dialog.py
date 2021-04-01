@@ -38,7 +38,7 @@ from pireal.gui.main_window import Pireal
 
 class NewRelationDialog(QDialog):
 
-    created = Signal(str, str)
+    created = Signal(object, str)
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
@@ -127,7 +127,6 @@ class NewRelationDialog(QDialog):
             model.takeColumn(model.columnCount() - 1)
 
     def _create(self):
-
         relation_name = self._line_relation_name.text().strip()
         if not relation_name:
             QMessageBox.critical(self, "Error",
