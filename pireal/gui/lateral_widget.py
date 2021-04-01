@@ -39,6 +39,7 @@ from PyQt5.QtCore import QAbstractListModel
 from PyQt5.QtCore import pyqtSignal as Signal
 
 from pireal.gui.main_window import Pireal
+from pireal import translations as tr
 
 
 RelationItem = namedtuple('RelationItem', 'name cardinality degree')
@@ -187,13 +188,13 @@ class LateralWidget(QSplitter):
         super().__init__(parent)
         self.setOrientation(Qt.Vertical)
         # Lista de relaciones de la base de datos
-        self._relations_list = RelationListView('Relations')
+        self._relations_list = RelationListView(tr.TR_RELATIONS)
         self._relations_model = RelationModel()
         self._relations_list.view.setModel(self._relations_model)
         self._relations_list.view.setItemDelegate(RelationDelegate())
         self.addWidget(self._relations_list)
         # Lista de relaciones del resultado de consultas
-        self._results_list = RelationListView('Results')
+        self._results_list = RelationListView(tr.TR_RESULTS)
         self._results_model = RelationModel()
         self._results_list.view.setModel(self._results_model)
         self._results_list.view.setItemDelegate(RelationDelegate())

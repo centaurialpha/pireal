@@ -27,6 +27,7 @@ from PyQt5.QtCore import Qt
 from pireal.gui.model_view_delegate import create_view
 
 from pireal.gui.main_window import Pireal
+from pireal import translations as tr
 
 
 class TableWidget(QSplitter):
@@ -46,17 +47,17 @@ class TableWidget(QSplitter):
         self.stacked = QStackedWidget()
         self._tabs.addTab(self.stacked, "Workspace")
         self.stacked_result = QStackedWidget()
-        self._tabs.addTab(self.stacked_result, self.tr("Resultados"))
+        self._tabs.addTab(self.stacked_result, tr.TR_RESULTS)
 
         btn_split = QToolButton()
         btn_split.setText("\uf04c")
-        btn_split.setToolTip(self.tr("Click para dividir la pantalla"))
+        btn_split.setToolTip(tr.TR_TABLE_CLICK_TO_SPLIT)
         btn_split.setAutoRaise(True)
         self._tabs.setCornerWidget(btn_split)
         btn_split.clicked.connect(self._split)
         btn_split = QToolButton()
         btn_split.setText("\uf0c8")
-        btn_split.setToolTip(self.tr("Click para juntar las pantallas"))
+        btn_split.setToolTip(tr.TR_TABLE_CLICK_TO_JOIN)
         btn_split.setAutoRaise(True)
         btn_split.clicked.connect(self._unsplit)
         self._other_tab.setCornerWidget(btn_split)
@@ -82,12 +83,12 @@ class TableWidget(QSplitter):
     def _unsplit(self):
         self._other_tab.hide()
         result_widget = self._other_tab.widget(0)
-        self._tabs.addTab(result_widget, self.tr("Resultados"))
+        self._tabs.addTab(result_widget, tr.TR_RESULTS)
         self._tabs.cornerWidget().show()
 
     def _split(self):
         result_widget = self._tabs.widget(1)
-        self._other_tab.addTab(result_widget, self.tr("Resultados"))
+        self._other_tab.addTab(result_widget, tr.TR_RESULTS)
         self._other_tab.show()
         self.setSizes([1, 1])
         self._tabs.cornerWidget().hide()
@@ -97,14 +98,14 @@ class TableWidget(QSplitter):
         menu = QMenu(self)
 
         if self.count() > 0:
-            add_tuple_action = menu.addAction(self.tr("Agregar Tupla"))
-            add_col_action = menu.addAction(self.tr("Add Column"))
+            add_tuple_action = menu.addAction(tr.TR_TABLE_ADD_TUPLE)
+            add_col_action = menu.addAction(tr.TR_TABLE_ADD_COL)
 
             add_tuple_action.triggered.connect(self.add_tuple)
             add_col_action.triggered.connect(self.add_column)
             menu.addSeparator()
 
-        add_relation_action = menu.addAction(self.tr("Create new Relation"))
+        add_relation_action = menu.addAction(tr.TR_TABLE_CREATE_RELATION)
         add_relation_action.triggered.connect(self.__new_relation)
 
         menu.exec_(self.mapToGlobal(position))

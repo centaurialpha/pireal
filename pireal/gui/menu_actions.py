@@ -43,10 +43,10 @@ m_file = {
         Action(tr.TR_MENU_FILE_SAVE_AS_DB, 'central:save_database_as'),
         Action(tr.TR_MENU_FILE_CLOSE_DB, 'central:close_database'),
         'Query',
-        Action(tr.TR_MENU_QUERY_NEW_QUERY, 'central:new_query'),
-        Action(tr.TR_MENU_QUERY_OPEN_QUERY, 'central:open_query'),
-        Action(tr.TR_MENU_QUERY_SAVE_QUERY, 'central:save_query'),
-        Action(tr.TR_MENU_QUERY_SAVE_AS_QUERY, 'central:save_query_as'),
+        Action(tr.TR_MENU_FILE_NEW_QUERY, 'central:new_query'),
+        Action(tr.TR_MENU_FILE_OPEN_QUERY, 'central:open_query'),
+        Action(tr.TR_MENU_FILE_SAVE_QUERY, 'central:save_query'),
+        Action(tr.TR_MENU_FILE_SAVE_AS_QUERY, 'central:save_query_as'),
         Action(tr.TR_MENU_FILE_CLOSE_QUERY, 'central:close_query'),
         {},  # This is a separator
         Action(tr.TR_MENU_FILE_QUIT, 'pireal:close')
@@ -54,21 +54,20 @@ m_file = {
 }
 
 m_schema = {
-    'name': '&Schema',
+    'name': tr.TR_MENU_SCHEME,
     'actions': (
-        Action(tr.TR_MENU_RELATION_NEW, 'central:create_relation'),
-        Action(tr.TR_MENU_RELATION_LOAD, 'central:load_relation'),
-        Action(tr.TR_MENU_RELATION_DELETE, 'central:remove_relation'),
+        Action(tr.TR_MENU_SCHEME_CREATE_RELATION, 'central:create_relation'),
+        Action(tr.TR_MENU_SCHEME_LOAD_RELATION, 'central:load_relation'),
+        Action(tr.TR_MENU_SCHEME_REMOVE_RELATION, 'central:remove_relation'),
         {},
-        Action(tr.TR_MENU_QUERY_EXECUTE, 'central:execute_query')
+        Action(tr.TR_MENU_SCHEME_EXECUTE_QUERIES, 'central:execute_query')
     )
 }
 
 m_tools = {
     'name': tr.TR_MENU_TOOLS,
     'actions': (
-        Action(tr.TR_MENU_TOOLS_PREFERENCES, 'central:show_settings'),
-        # Action(tr.TR_DARK_MODE, 'pireal:switch_theme', is_checkable=True)
+        Action(tr.TR_MENU_TOOLS_SETTINGS, 'central:show_settings'),
     )
 }
 
@@ -77,7 +76,7 @@ m_help = {
     'actions': (
         Action(tr.TR_MENU_HELP_REPORT_ISSUE, 'pireal:report_issue'),
         {},
-        Action(tr.TR_MENU_HELP_ABOUT, 'pireal:about_pireal'),
+        Action(tr.TR_MENU_HELP_ABOUT_PIREAL, 'pireal:about_pireal'),
         Action(tr.TR_MENU_HELP_ABOUT_QT, 'pireal:about_qt')
     )
 }

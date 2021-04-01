@@ -22,171 +22,186 @@ from PyQt5.QtCore import QCoreApplication
 tr = QCoreApplication.translate
 
 ###############################################################################
+# START PAGE
+###############################################################################
+TR_OPEN_DB = QCoreApplication.translate('Pireal', 'Open Database')
+TR_NEW_DB = QCoreApplication.translate('Pireal', 'New Database')
+TR_EXAMPLE_DB = QCoreApplication.translate('Pireal', 'Example')
+
+###############################################################################
 # MENU BAR
 ###############################################################################
-TR_MENU_FILE = tr('Pireal', '&File')
-TR_MENU_RELATION = tr('Pireal', '&Relation')
-TR_MENU_TOOLS = tr('Pireal', '&Tools')
-TR_MENU_HELP = tr('Pireal', '&Help')
+TR_MENU_FILE = QCoreApplication.translate('Pireal', '&File')
+TR_MENU_SCHEME = QCoreApplication.translate('Pireal', '&Scheme')
+TR_MENU_TOOLS = QCoreApplication.translate('Pireal', '&Tools')
+TR_MENU_HELP = QCoreApplication.translate('Pireal', '&Help')
 
 ###############################################################################
 # MENU ITEMS
 ###############################################################################
 # File
-TR_MENU_FILE_NEW_DB = tr('Pireal', 'New')
-TR_MENU_FILE_OPEN_DB = tr('Pireal', 'Open')
-TR_MENU_FILE_SAVE_DB = tr('Pireal', 'Save')
-TR_MENU_FILE_SAVE_AS_DB = tr('Pireal', 'Save As...')
-TR_MENU_FILE_CLOSE_DB = tr('Pireal', 'Close')
-TR_MENU_QUERY_NEW_QUERY = tr('Pireal', 'New')
-TR_MENU_QUERY_OPEN_QUERY = tr('Pireal', 'Open')
-TR_MENU_QUERY_SAVE_QUERY = tr('Pireal', 'Save')
-TR_MENU_QUERY_SAVE_AS_QUERY = tr('Pireal', 'Save As...')
-TR_MENU_FILE_CLOSE_QUERY = tr('Pireal', 'Close')
-TR_MENU_FILE_QUIT = tr('Pireal', 'Quit')
+TR_MENU_FILE_NEW_DB = QCoreApplication.translate('Pireal', 'New')
+TR_MENU_FILE_OPEN_DB = QCoreApplication.translate('Pireal', 'Open')
+TR_MENU_FILE_SAVE_DB = QCoreApplication.translate('Pireal', 'Save')
+TR_MENU_FILE_SAVE_AS_DB = QCoreApplication.translate('Pireal', 'Save As...')
+TR_MENU_FILE_CLOSE_DB = QCoreApplication.translate('Pireal', 'Close')
+TR_MENU_FILE_NEW_QUERY = QCoreApplication.translate('Pireal', 'New')
+TR_MENU_FILE_OPEN_QUERY = QCoreApplication.translate('Pireal', 'Open')
+TR_MENU_FILE_SAVE_QUERY = QCoreApplication.translate('Pireal', 'Save')
+TR_MENU_FILE_SAVE_AS_QUERY = QCoreApplication.translate('Pireal', 'Save As...')
+TR_MENU_FILE_CLOSE_QUERY = QCoreApplication.translate('Pireal', 'Close')
+TR_MENU_FILE_QUIT = QCoreApplication.translate('Pireal', 'Quit')
 
 # Schema
-TR_MENU_RELATION_NEW = tr('Pireal', 'New Relation')
-TR_MENU_RELATION_DELETE = tr('Pireal', 'Delete Relation')
-TR_MENU_RELATION_LOAD = tr('Pireal', 'Load Relation')
-TR_MENU_QUERY_EXECUTE = tr('Pireal', 'Execute Query')
+TR_MENU_SCHEME_CREATE_RELATION = QCoreApplication.translate('Pireal', 'New Relation')
+TR_MENU_SCHEME_LOAD_RELATION = QCoreApplication.translate('Pireal', 'Load Relation')
+TR_MENU_SCHEME_REMOVE_RELATION = QCoreApplication.translate('Pireal', 'Delete Relation')
+TR_MENU_SCHEME_EXECUTE_QUERIES = QCoreApplication.translate('Pireal', 'Execute Query')
 # Tools
-TR_MENU_TOOLS_PREFERENCES = tr('Pireal', 'Preferences')
-TR_DARK_MODE = tr('Pireal', 'Dark Mode')
+TR_MENU_TOOLS_SETTINGS = QCoreApplication.translate('Pireal', 'Preferences')
 # Help
-TR_MENU_HELP_HELP = tr('Pireal', 'Help')
-TR_MENU_HELP_REPORT_ISSUE = tr('Pireal', 'Report Issue')
-TR_MENU_HELP_ABOUT = tr('Pireal', 'About Pireal')
-TR_MENU_HELP_ABOUT_QT = tr('Pireal', 'About Qt')
+TR_MENU_HELP_REPORT_ISSUE = QCoreApplication.translate('Pireal', 'Report Issue')
+TR_MENU_HELP_ABOUT_PIREAL = QCoreApplication.translate('Pireal', 'About Pireal')
+TR_MENU_HELP_ABOUT_QT = QCoreApplication.translate('Pireal', 'About Qt')
 
 ###############################################################################
 # MESSAGES
 ###############################################################################
-TR_MSG_INFORMATION = tr('Pireal', 'Information')
-TR_MSG_WARNING = tr('Pireal', 'Warning!')
-TR_MSG_ONE_DB_AT_TIME = tr('Pireal', 'Oops! One database at a time please')
+TR_MSG_INFORMATION = QCoreApplication.translate('Pireal', 'Information')
+TR_MSG_ONE_DB_AT_TIME = QCoreApplication.translate('Pireal', 'Oops! One database at a time please')
+TR_MSG_UPDATES = QCoreApplication.translate('Pireal', 'Pireal Updates')
+TR_MSG_UPDATES_BODY = QCoreApplication.translate(
+    'Pireal',
+    'New version of Pireal available: {}\n\nClick on this message or System Tray icon to download!')
+TR_OPEN_DATABASE = QCoreApplication.translate('Pireal', 'Open Database')
+TR_MSG_DB_NOT_OPENED = QCoreApplication.translate('Pireal', 'The database file could not be opened')
 
-TR_OPEN_DATABASE = tr('Pireal', 'Open Database')
-TR_MSG_DB_NOT_OPENED = tr('Pireal', 'The database file could not be opened')
+TR_MSG_OPEN_QUERY = QCoreApplication.translate('Pireal', 'Open Query')
+TR_CANCEL = QCoreApplication.translate('Pireal', 'Cancel')
+TR_MSG_CONFIRMATION = QCoreApplication.translate('Pireal', 'Confirmation')
 
-TR_MSG_ERROR = tr('Pireal', 'Error')
-TR_MSG_CANCEL = tr('Pireal', 'Cancel')
-TR_MSG_NO = tr('Pireal', 'No')
-TR_MSG_YES = tr('Pireal', 'Yes')
-TR_MSG_CONFIRMATION = tr('Pireal', 'Confirmation')
-TR_MSG_OK = tr('Pireal', 'Ok')
-
-TR_OPEN_QUERY = tr('Pireal', 'Open Query')
-
-TR_MSG_SAVE_CHANGES = tr('Pireal', 'Save changes?')
-TR_MSG_SAVE_CHANGES_BODY = tr(
+TR_MSG_SAVE_CHANGES = QCoreApplication.translate('Pireal', 'Save changes?')
+TR_MSG_SAVE_CHANGES_BODY = QCoreApplication.translate(
     'Pireal',
     'The database has been modified. Do you want to save the changes?')
 
-TR_MSG_FILE_MODIFIED = tr('Pireal', 'File modified')
-TR_MSG_FILE_MODIFIED_BODY = tr(
+TR_MSG_FILE_MODIFIED = QCoreApplication.translate('Pireal', 'File modified')
+TR_MSG_FILE_MODIFIED_BODY = QCoreApplication.translate(
     'Pireal',
     'The file <b>{}</b> has unsaved changes. Do you want to keep them?')
 
-TR_NOTIFICATION_DB_SAVED = tr('Pireal', 'The database has been saved: {}')
-TR_NOTIFICATION_DB_CONNECTED = tr('Pireal', 'Connected to: ')
+TR_MSG_SAVE_DB_AS = QCoreApplication.translate('Pireal', 'Save Database As...')
+TR_MSG_OPEN_RELATION = QCoreApplication.translate('Pireal', 'Open Relation')
 
-TR_MSG_SAVE_DB_AS = tr('Pireal', 'Save Database As...')
+TR_MSG_REMOVE_TUPLES = QCoreApplication.translate('Pireal', 'Delete tuple/s?')
+TR_MSG_REMOVE_TUPLES_BODY = QCoreApplication.translate(
+    'Pireal',
+    'Are you sure you want to delete the selected tuples?')
 
-TR_MSG_REMOVE_TUPLES = tr('Pireal', 'Delete tuple/s?')
-TR_MSG_REMOVE_TUPLES_BODY = tr('Pireal', 'Are you sure you want to delete the selected tuples?')
+TR_MSG_REMOVE_RELATION = QCoreApplication.translate(
+    'Pireal',
+    'Are you sure you want to delete the relation <b>{}</b>?')
 
-TR_MSG_REMOVE_RELATION = tr('Pireal', 'Are you sure you want to delete the relation <b>{}</b>?')
+TR_MSG_FILE_NOT_OPENED = QCoreApplication.translate('Pireal', 'The file could not be opened')
 
-TR_MSG_FILE_NOT_OPENED = tr('Pireal', 'The file could not be opened')
-
-TR_MSG_SAVE_QUERY_FILE = tr('Pieal', 'Save Query File')
-
-TR_HEADER_NOT_EMPTY = tr('Pireal', 'The field must not be empty')
+TR_MSG_SAVE_QUERY_FILE = QCoreApplication.translate('Pireal', 'Save Query File')
 
 # Table Widget
-TR_TABLE_WORKSPACE = tr('Pireal', 'Workspace')
-TR_TABLE_RESULTS = tr('Pireal', 'Results')
-TR_TABLE_CLICK_TO_SPLIT = tr('Pireal', 'Click to split window')
-TR_TABLE_CLICK_TO_JOIN = tr('Pireal', 'Click to join window')
-TR_TABLE_ADD_TUPLE = tr('Pireal', 'Add Tuple')
-TR_TABLE_ADD_COL = tr('Pireal', 'Add Column')
-TR_TABLE_CREATE_RELATION = tr('Pireal', 'Create new Relation')
+TR_TABLE_CLICK_TO_SPLIT = QCoreApplication.translate('Pireal', 'Click to split window')
+TR_TABLE_CLICK_TO_JOIN = QCoreApplication.translate('Pireal', 'Click to join window')
+TR_TABLE_ADD_TUPLE = QCoreApplication.translate('Pireal', 'Add Tuple')
+TR_TABLE_ADD_COL = QCoreApplication.translate('Pireal', 'Add Column')
+TR_TABLE_CREATE_RELATION = QCoreApplication.translate('Pireal', 'Create new Relation')
 
 # Query Container
-TR_UNDOCK = tr('Pireal', 'Undock')
-TR_SYNTAX_ERROR = tr('Pireal', 'Syntax Error')
-TR_NAME_DUPLICATED = tr('Pireal', 'Name Duplicated')
-TR_RELATION_NAME_ALREADY_EXISTS = tr(
+TR_SYNTAX_ERROR = QCoreApplication.translate('Pireal', 'Syntax Error')
+TR_NAME_DUPLICATED = QCoreApplication.translate('Pireal', 'Name Duplicated')
+TR_RELATION_NAME_ALREADY_EXISTS = QCoreApplication.translate(
     'Pireal',
     'There is already a relationship with name <b>{}</b> :(<br><br>Please choose another.')
-TR_QUERY_ERROR = tr('Pireal', 'Query Error')
+TR_QUERY_ERROR = QCoreApplication.translate('Pireal', 'Query Error')
+#
+TR_RELATIONS = QCoreApplication.translate('Pireal', 'Relations')
+TR_RESULTS = QCoreApplication.translate('Pireal', 'Results')
 
-TR_RELATIONS = tr('Pireal', 'Relations')
-
-TR_QUERY_NOT_SAVED = tr('Pireal', 'Queries not saved')
-TR_QUERY_NOT_SAVED_BODY = tr('Pireal', '{files}<br><br>Do you want to save the queries?')
-
-TR_DB_FILE_EMPTY = tr('Pireal', 'The file <b>{}</b> is empty :/.')
-
+TR_QUERY_NOT_SAVED = QCoreApplication.translate('Pireal', 'Queries not saved')
+TR_QUERY_NOT_SAVED_BODY = QCoreApplication.translate(
+    'Pireal',
+    '{files}<br><br>Do you want to save the queries?')
+#
+# TR_DB_FILE_EMPTY = QCoreApplication.translate('Pireal', 'The file <b>{}</b> is empty :/.')
+#
 # Search widget
-TR_BTN_FIND_PREVIOUS = tr('Pireal', 'Find Previous')
-TR_BTN_FIND_NEXT = tr('Pireal', 'Find Next')
-
+TR_BTN_FIND_PREVIOUS = QCoreApplication.translate('Pireal', 'Find Previous')
+TR_BTN_FIND_NEXT = QCoreApplication.translate('Pireal', 'Find Next')
+#
 ###############################################################################
 # DIALOGS
 ###############################################################################
 # Preferences
-TR_DIALOG_PREF_TITLE = tr('Pireal', 'Preferences')
-TR_DIALOG_PREF_GENERAL = tr('Pireal', 'General:')
-TR_DIALOG_PREF_DARK_MODE = tr('Pireal', 'Dark Mode')
-TR_DIALOG_PREF_DARK_MODE_LABEL = tr('Pireal', '<i>(Changes will be applied after restart)</i>')
-TR_DIALOG_PREF_LANG = tr('Pireal', 'Language:')
-TR_DIALOG_PREF_EDITOR = tr('Pireal', 'Editor:')
-TR_DIALOG_PREF_HIGHLIGHT_CUR_LINE = tr('Pireal', 'Highlight Current Line')
-TR_DIALOG_PREF_HIGHLIGHT_BRACES = tr('Pireal', 'Highlight Braces')
-TR_DIALOG_PREF_FONT = tr('Pireal', 'Font:')
-TR_DIALOG_PREF_FONT_FAMILY = tr('Pireal', 'Family:')
-TR_DIALOG_PREF_FONT_SIZE = tr('Pireal', 'Size:')
+TR_DIALOG_PREF_TITLE = QCoreApplication.translate('Pireal', 'Preferences')
+TR_DIALOG_PREF_DARK_MODE = QCoreApplication.translate('Pireal', 'Dark Mode')
+TR_DIALOG_PREF_LANG = QCoreApplication.translate('Pireal', 'Language:')
+TR_DIALOG_PREF_HIGHLIGHT_CUR_LINE = QCoreApplication.translate('Pireal', 'Highlight Current Line')
+TR_DIALOG_PREF_HIGHLIGHT_BRACES = QCoreApplication.translate('Pireal', 'Highlight Braces')
+TR_DIALOG_PREF_FONT = QCoreApplication.translate('Pireal', 'Font:')
+TR_DIALOG_PREF_FONT_FAMILY = QCoreApplication.translate('Pireal', 'Family:')
+TR_DIALOG_PREF_FONT_SIZE = QCoreApplication.translate('Pireal', 'Size:')
 # About
-TR_DIALOG_ABOUT_PIREAL_TITLE = tr('Pireal', 'About Pireal')
-TR_DIALOG_ABOUT_PIREAL_BODY = tr('Pireal', 'Relational Algebra Query Evaluator')
-TR_DIALOG_ABOUT_PIREAL_COPY = tr(
+TR_DIALOG_ABOUT_PIREAL_TITLE = QCoreApplication.translate('Pireal', 'About Pireal')
+TR_DIALOG_ABOUT_PIREAL_BODY = QCoreApplication.translate(
+    'Pireal',
+    'Relational Algebra Query Evaluator')
+TR_DIALOG_ABOUT_PIREAL_COPY = QCoreApplication.translate(
     'Pireal',
     "<br>This Software is distributed under <a href='{}'><span style='color: #3465a4'>"
     "GNU GPL</span></a> 3.<br> The source code is available in"
     " <a href='{}'><span style='color: #3465a4'>GitHub.</span></a>"
 )
 # New Database
-TR_DB_DIALOG_TITLE = tr('Pireal', 'Create New Database')
-TR_DB_DIALOG_NEW_DB = tr('Pireal', 'Pireal New Database')
-TR_DB_DIALOG_NEW_DB_SUB = tr('Pireal', 'Choose the name and destination of the database')
-TR_DB_DIALOG_DB_NAME = tr('Pireal', 'Database Name:')
-TR_DB_DIALOG_DB_LOCATION = tr('Pireal', 'Location:')
-TR_DB_DIALOG_DB_FILENAME = tr('Pireal', 'Filename:')
-TR_DB_DIALOG_SELECT_FOLDER = tr('Pireal', 'Select Folder')
-# New Relation
-TR_RELATION_DIALOG_CHANGE_HEADER_LABEL = tr('Pireal', 'Change header label')
-TR_RELATION_DIALOG_HEADER_NAME = tr('Pireal', 'Name:')
-
-TR_RELATION_DIALOG_TITLE = tr('Pireal', 'Relation Creator')
-TR_RELATION_DIALOG_NAME = tr('Pireal', 'Relation Name')
-TR_RELATION_DIALOG_ADD_TUPLE = tr('Pireal', 'Add Tuple')
-TR_RELATION_DIALOG_DELETE_TUPLE = tr('Pireal', 'Delete Tuple')
-TR_RELATION_DIALOG_ADD_COLUMN = tr('Pireal', 'Add Column')
-TR_RELATION_DIALOG_DELETE_COLUMN = tr('Pireal', 'Delete Column')
-TR_RELATION_DIALOG_FIELD1 = tr('Pireal', 'Field 1')
-TR_RELATION_DIALOG_FIELD2 = tr('Pireal', 'Field 2')
-TR_RELATION_DIALOG_CREATE = tr('Pireal', 'Create')
-TR_RELATION_DIALOG_CONFIRM_DELETE_TUPLE = tr('Pireal', 'Confirm tuple delete')
-TR_RELATION_DIALOG_CONFIRM_DELETE_TUPLE_BODY = tr(
+TR_DB_DIALOG_TITLE = QCoreApplication.translate('Pireal', 'Create New Database')
+TR_DB_DIALOG_NEW_DB = QCoreApplication.translate('Pireal', 'Pireal New Database')
+TR_DB_DIALOG_NEW_DB_SUB = QCoreApplication.translate(
+    'Pireal',
+    'Choose the name and destination of the database')
+TR_DB_DIALOG_DB_NAME = QCoreApplication.translate('Pireal', 'Database Name:')
+TR_DB_DIALOG_DB_LOCATION = QCoreApplication.translate('Pireal', 'Location:')
+TR_DB_DIALOG_DB_FILENAME = QCoreApplication.translate('Pireal', 'Filename:')
+TR_DB_DIALOG_SELECT_FOLDER = QCoreApplication.translate('Pireal', 'Select Folder')
+# # New Relation
+# TR_RELATION_DIALOG_HEADER_NAME = QCoreApplication.translate('Pireal', 'Name:')
+#
+TR_RELATION_DIALOG_TITLE = QCoreApplication.translate('Pireal', 'Relation Creator')
+TR_RELATION_DIALOG_NAME = QCoreApplication.translate('Pireal', 'Relation Name')
+# TR_RELATION_DIALOG_ADD_TUPLE = QCoreApplication.translate('Pireal', 'Add Tuple')
+# TR_RELATION_DIALOG_DELETE_TUPLE = QCoreApplication.translate('Pireal', 'Delete Tuple')
+# TR_RELATION_DIALOG_ADD_COLUMN = QCoreApplication.translate('Pireal', 'Add Column')
+# TR_RELATION_DIALOG_DELETE_COLUMN = QCoreApplication.translate('Pireal', 'Delete Column')
+# TR_RELATION_DIALOG_FIELD1 = QCoreApplication.translate('Pireal', 'Field 1')
+# TR_RELATION_DIALOG_FIELD2 = QCoreApplication.translate('Pireal', 'Field 2')
+TR_RELATION_DIALOG_CREATE = QCoreApplication.translate('Pireal', 'Create')
+TR_RELATION_DIALOG_CONFIRM_DELETE_TUPLE = QCoreApplication.translate(
+    'Pireal', 'Confirm tuple delete')
+TR_RELATION_DIALOG_CONFIRM_DELETE_TUPLE_BODY = QCoreApplication.translate(
     'Pireal',
     'Are you sure you want to delete the selected tuple(s)?'
 )
-TR_RELATION_DIALOG_EMPTY_RELATION_NAME = tr('Pireal', 'Relation name not specified')
-TR_RELATION_DIALOG_WHITESPACE = tr(
+TR_RELATION_DIALOG_EMPTY_RELATION_NAME = QCoreApplication.translate(
+    'Pireal', 'Relation name not specified')
+TR_RELATION_DIALOG_WHITESPACE = QCoreApplication.translate(
     'Pireal',
     'The blanks are so boring :(.<br><br>Please enter data in <b>{}:{}</b>')
 
-TR_INPUT_DIALOG_HEADER_TITLE = QCoreApplication.translate('Pireal', 'Header Name')
-TR_INPUT_DIALOG_HEADER_BODY = QCoreApplication.translate('Pireal', 'Name:')
+###############################################################################
+# TOOLTIPS
+###############################################################################
+TR_TOOLTIP_VERSION_AVAILABLE = QCoreApplication.translate('Pireal', 'New version available!')
+
+TR_REMOVE_TUPLE = QCoreApplication.translate('Pireal', 'Remove Tuple')
+TR_REMOVE_COLUMN = QCoreApplication.translate('Pireal', 'Remove Column')
+TR_MSG_WRONG = QCoreApplication.translate('Pireal', 'Something has gone wrong')
+
+TR_STATUS_DB_SAVED = QCoreApplication.translate('Pireal', 'Database has been saved: {}')
+TR_STATUS_DB_LOADED = QCoreApplication.translate('Pireal', 'Database has been loaded: {}')
+TR_STATUS_DB_CONNECTED = QCoreApplication.translate('Pireal', 'Connected to: {}')
+TR_STATUS_QUERY_SAVED = QCoreApplication.translate('Pireal', 'Query saved: {}')

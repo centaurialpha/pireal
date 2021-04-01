@@ -33,6 +33,7 @@ from PyQt5.QtCore import Qt
 
 from pireal.settings import SETTINGS
 from pireal.gui.main_window import Pireal
+from pireal import translations as tr
 
 
 class SettingsDialog(QDialog):
@@ -40,26 +41,29 @@ class SettingsDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setAttribute(Qt.WA_DeleteOnClose)
-        self.setWindowTitle('Settings')
+        self.setWindowTitle(tr.TR_DIALOG_PREF_TITLE)
 
         vbox = QVBoxLayout(self)
 
-        group_general = QGroupBox(self.tr('General'))
-        group_editor = QGroupBox(self.tr('Editor'))
-        group_font = QGroupBox(self.tr('Font'))
+        group_general = QGroupBox('General')
+        group_editor = QGroupBox('Editor')
+        group_font = QGroupBox(tr.TR_DIALOG_PREF_FONT)
 
         layout_general = QGridLayout(group_general)
         layout_editor = QGridLayout(group_editor)
         layout_font = QGridLayout(group_font)
 
-        self._check_dark_mode = QCheckBox(self.tr('Dark Mode'))
-        self._check_dark_mode.setChecked(SETTINGS.dark_mode)
-
         self._combo_languages = QComboBox()
+        self._languages = {
+            'en': 'English',
+            'es': 'Spanish',
+        }
+        self._combo_languages.addItems(self._languages.values())
+        self._combo_languages.setCurrentText(self._languages[SETTINGS.language])
 
-        self._check_highlight_line = QCheckBox(self.tr('Highlight Current Line'))
+        self._check_highlight_line = QCheckBox(tr.TR_DIALOG_PREF_HIGHLIGHT_CUR_LINE)
         self._check_highlight_line.setChecked(SETTINGS.highlight_current_line)
-        self._check_highlight_braces = QCheckBox(self.tr('Highlight Braces'))
+        self._check_highlight_braces = QCheckBox(tr.TR_DIALOG_PREF_HIGHLIGHT_BRACES)
         self._check_highlight_braces.setChecked(SETTINGS.match_parenthesis)
 
         self._combo_font_family = QFontComboBox()
@@ -71,14 +75,13 @@ class SettingsDialog(QDialog):
         self._combo_font_size.addItems(sizes_list_str)
         self._combo_font_size.setCurrentText(str(SETTINGS.font_size))
 
-        layout_general.addWidget(self._check_dark_mode, 0, 0)
-        layout_general.addWidget(QLabel(self.tr('Language:')), 0, 1, Qt.AlignRight)
-        layout_general.addWidget(self._combo_languages, 0, 2)
+        layout_general.addWidget(QLabel(tr.TR_DIALOG_PREF_LANG), 0, 0, Qt.AlignLeft)
+        layout_general.addWidget(self._combo_languages, 0, 1)
         layout_editor.addWidget(self._check_highlight_line, 0, 0)
         layout_editor.addWidget(self._check_highlight_braces, 0, 1)
-        layout_font.addWidget(QLabel(self.tr('Font Family:')), 0, 0)
+        layout_font.addWidget(QLabel(tr.TR_DIALOG_PREF_FONT_FAMILY), 0, 0)
         layout_font.addWidget(self._combo_font_family, 0, 1)
-        layout_font.addWidget(QLabel(self.tr('Font Size:')), 0, 2, Qt.AlignRight)
+        layout_font.addWidget(QLabel(tr.TR_DIALOG_PREF_FONT_SIZE), 0, 2, Qt.AlignRight)
         layout_font.addWidget(self._combo_font_size, 0, 3)
 
         button_box = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
@@ -91,7 +94,10 @@ class SettingsDialog(QDialog):
         vbox.addWidget(button_box)
 
     def accept(self):
-        SETTINGS.dark_mode = self._check_dark_mode.isChecked()
+        for key_lang, lang in self._languages.items():
+            if lang == self._combo_languages.currentText():
+                SETTINGS.language = key_lang
+                break
         SETTINGS.highlight_current_line = self._check_highlight_line.isChecked()
         SETTINGS.match_parenthesis = self._check_highlight_braces.isChecked()
         SETTINGS.font_family = self._combo_font_family.currentText()

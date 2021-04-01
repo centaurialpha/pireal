@@ -31,13 +31,14 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 from pireal import gui
+from pireal import translations as tr
 
 
 class AboutDialog(QDialog):
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
-        self.setWindowTitle(self.tr("Acerca de Pireal"))
+        self.setWindowTitle(tr.TR_DIALOG_ABOUT_PIREAL_TITLE)
         vbox = QVBoxLayout(self)
         # Banner
         banner = QLabel()
@@ -54,8 +55,7 @@ class AboutDialog(QDialog):
         vbox.addWidget(lbl_version)
 
         # Description
-        description = QLabel(
-            self.tr("Relational Algebra query evaluator"))
+        description = QLabel(tr.TR_DIALOG_ABOUT_PIREAL_BODY)
         description.setAlignment(Qt.AlignHCenter)
         font = description.font()
         font.setPointSize(13)
@@ -80,16 +80,9 @@ class AboutDialog(QDialog):
         vbox.addWidget(copy)
 
         # License and source
-        lbl_license_source = QLabel(self.tr("<br>Este software tiene licencia "
-                                            "<a href='{0}'><span style"
-                                            "='color: #3465a4'>GNU GPL</span>"
-                                            "</a> versión 3,<br>el código "
-                                            "fuente "
-                                            "está disponible en <a href='{1}'>"
-                                            "<span style='color: #3465a4'>"
-                                            "GitHub.</span></a>".format(
-                                                gui.__license__,
-                                                gui.__source_code__)))
+        lbl_license_source = QLabel(
+            tr.TR_DIALOG_ABOUT_PIREAL_COPY.format(gui.__license__, gui.__source_code__)
+        )
         lbl_license_source.setAlignment(Qt.AlignHCenter)
         lbl_license_source.setOpenExternalLinks(True)
         font = lbl_license_source.font()
@@ -100,7 +93,7 @@ class AboutDialog(QDialog):
         # Buttons
         hbox = QHBoxLayout()
         hbox.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
-        btn_ok = QPushButton(self.tr("Aceptar"))
+        btn_ok = QPushButton('Ok')
         hbox.addWidget(btn_ok)
         vbox.addLayout(hbox)
 

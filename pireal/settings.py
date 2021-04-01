@@ -46,7 +46,7 @@ class SettingManager:
 
     def load(self):
         self._language: str = self._qs.value(
-            'language', defaultValue='english')
+            'language', defaultValue='en')
         self._highlight_current_line: bool = self._qs.value(
             'highlight_current_line', defaultValue=False, type=bool)
         self._match_parenthesis: bool = self._qs.value(

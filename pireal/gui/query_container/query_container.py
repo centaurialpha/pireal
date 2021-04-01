@@ -29,7 +29,6 @@ from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QLineEdit
-from PyQt5.QtWidgets import QAction
 from PyQt5.QtWidgets import QToolBar
 
 from PyQt5.QtCore import Qt
@@ -49,6 +48,7 @@ from pireal.gui.query_container import editor
 from pireal.gui.query_container import tab_widget
 from pireal.gui.lateral_widget import RelationItemType
 
+from pireal import translations as tr
 from pireal.dirs import DATA_SETTINGS
 
 
@@ -175,19 +175,17 @@ class QueryContainer(QWidget):
         try:
             result = parser.parse(query)
         except MissingQuoteError as reason:
-            title = self.tr("Error de Sintáxis")
+            title = tr.TR_SYNTAX_ERROR
             text = self.parse_error(str(reason))
         except InvalidSyntaxError as reason:
-            title = self.tr("Error de Sintáxis")
+            title = tr.TR_SYNTAX_ERROR
             text = self.parse_error(str(reason) + "\n" + self.tr(
                 "El error comienza con " + reason.character))
         except DuplicateRelationNameError as reason:
-            title = self.tr("Nombre duplicado")
-            text = self.tr("Ya existe una relación con el nombre <b>{}</b> :(."
-                           "<br><br>Elige otro por favor ;).".format(
-                               reason.rname))
+            title = tr.TR_NAME_DUPLICATED
+            text = tr.TR_RELATION_NAME_ALREADY_EXISTS.format(reason.rname)
         except ConsumeError as reason:
-            title = self.tr("Error de Sintáxis")
+            title = tr.TR_SYNTAX_ERROR
             text = self.parse_error(str(reason))
         else:
             error = False
@@ -201,7 +199,7 @@ class QueryContainer(QWidget):
             except Exception as reason:
                 QMessageBox.critical(
                     self,
-                    self.tr("Error de Consulta"),
+                    tr.TR_QUERY_ERROR,
                     self.parse_error(str(reason))
                 )
                 return
@@ -325,7 +323,7 @@ class QueryWidget(QWidget):
         table = table_widget.create_table(rela, editable=False)
         box.addWidget(table)
         hbox = QHBoxLayout()
-        btn = QPushButton(self.tr("Ok"))
+        btn = QPushButton('Ok')
         btn.clicked.connect(dialog.close)
         hbox.addStretch()
         hbox.addWidget(btn)
@@ -424,8 +422,8 @@ class EditorWidget(QWidget):
         vbox.addWidget(self._search_widget)
 
         # Editor connections
-        self._editor.customContextMenuRequested.connect(
-            self.__show_context_menu)
+        # self._editor.customContextMenuRequested.connect(
+        #     self.__show_context_menu)
         self._editor.modificationChanged[bool].connect(
             lambda modified: self.editorModified.emit(modified))
         # self._editor.undoAvailable[bool].connect(
@@ -453,17 +451,6 @@ class EditorWidget(QWidget):
     def get_editor(self):
         return self._editor
 
-    def __show_context_menu(self, point):
-        popup_menu = self._editor.createStandardContextMenu()
-
-        undock_editor = QAction(self.tr("Undock"), self)
-        popup_menu.insertAction(popup_menu.actions()[0],
-                                undock_editor)
-        popup_menu.insertSeparator(popup_menu.actions()[1])
-        undock_editor.triggered.connect(self.__undock_editor)
-
-        popup_menu.exec_(self.mapToGlobal(point))
-
     def __undock_editor(self):
         new_editor = editor.Editor()
         actual_doc = self._editor.document()
@@ -478,28 +465,6 @@ class EditorWidget(QWidget):
         new_editor.setWindowTitle(qc.tab_text(qc.current_index()))
         new_editor.show()
 
-    # def __on_undo_available(self, value):
-    #     """ Change state of undo action """
-
-    #     pireal = Pireal.get_service("pireal")
-    #     action = pireal.get_action("undo_action")
-    #     action.setEnabled(value)
-
-    # def __on_redo_available(self, value):
-    #     """ Change state of redo action """
-
-    #     pireal = Pireal.get_service("pireal")
-    #     action = pireal.get_action("redo_action")
-    #     action.setEnabled(value)
-
-    # def __on_copy_available(self, value):
-    #     """ Change states of cut and copy action """
-
-    #     cut_action = Pireal.get_action("cut_action")
-    #     cut_action.setEnabled(value)
-    #     copy_action = Pireal.get_action("copy_action")
-    #     copy_action.setEnabled(value)
-
 
 class SearchWidget(QWidget):
 
@@ -510,9 +475,9 @@ class SearchWidget(QWidget):
         box.setSpacing(0)
         self._line_search = QLineEdit()
         box.addWidget(self._line_search)
-        btn_find_previous = QPushButton("Find Previous")
+        btn_find_previous = QPushButton(tr.TR_BTN_FIND_PREVIOUS)
         box.addWidget(btn_find_previous)
-        btn_find_next = QPushButton("Find Next")
+        btn_find_next = QPushButton(tr.TR_BTN_FIND_NEXT)
         box.addWidget(btn_find_next)
 
         self._parent = parent

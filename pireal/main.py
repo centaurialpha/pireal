@@ -59,25 +59,11 @@ def start_pireal(args):
     #             __version__, sys.version_info, sys.platform)
 
     app = QApplication(sys.argv)
-
-    SETTINGS.load()
-
-    # Set application icon
+    app.setApplicationName('Pireal')
+    app.setApplicationDisplayName('Pireal')
     app.setWindowIcon(QIcon(':img/icon'))
 
-    # Install translators
-    # Qt translations
-    qt_languages_path = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
-    system_locale_name = QLocale.system().name()
-    qt_translator = QTranslator()
-    qt_translator.load(
-        os.path.join('qt_', system_locale_name, qt_languages_path))
-    # Application translations
-    # language = settings.USER_SETTINGS.language
-    # if language != 'english':
-    #     translator = QTranslator()
-    #     translator.load(os.path.join(settings.LANGUAGE_PATH, language + '.qm'))
-    #     app.installTranslator(translator)
+    SETTINGS.load()
 
     app.setStyle('fusion')
     apply_theme(app)
@@ -88,6 +74,21 @@ def start_pireal(args):
     font = QFont(family)
     font.setStyleName('Solid')
     app.setFont(font)
+    # Install translators
+    # Qt translations
+    system_locale_name = QLocale.system().name()
+    qt_languages_path = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
+    qt_translator = QTranslator()
+    translator_loaded = qt_translator.load(
+        os.path.join(qt_languages_path, f'qt_{SETTINGS.language}.qm'))
+    if not translator_loaded:
+        qt_translator.load(
+            os.path.join(qt_languages_path, 'qt_{}.qml'.format(system_locale_name.split('_')[0])))
+    app.installTranslator(qt_translator)
+    # App translator
+    translator = QTranslator()
+    if translator.load(f':lang/{SETTINGS.language}'):
+        app.installTranslator(translator)
     # Load services
     from pireal.gui import central_widget  # noqa
     from pireal.gui import notification  # noqa

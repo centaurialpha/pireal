@@ -28,9 +28,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QSettings
 from PyQt5.QtCore import pyqtSlot as Slot
 
-from PyQt5.QtGui import QPalette
-from PyQt5.QtGui import QColor
-
 from pireal.gui import (
     table_widget,
     lateral_widget,
@@ -45,6 +42,7 @@ from pireal.core import (
     file_manager
 )
 from pireal.dirs import DATA_SETTINGS
+from pireal import translations as tr
 
 logger = logging.getLogger(__name__)
 
@@ -145,15 +143,14 @@ class DatabaseContainer(QSplitter):
                     rel.insert(i)
                 relation_name = file_manager.get_basename(filename)
                 if not self.table_widget.add_relation(relation_name, rel):
-                    QMessageBox.information(self, self.tr("Información"),
-                                            self.tr("Ya existe una relación "
-                                                    "con el nombre  "
-                                                    "'{}'".format(
-                                                        relation_name)))
+                    QMessageBox.information(
+                        self,
+                        tr.TR_MSG_INFORMATION,
+                        tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name)
+                    )
                     return False
 
             self.table_widget.add_table(rel, relation_name)
-            # self.lateral_widget.add_item(relation_name, rel.cardinality())
             return True
 
     def delete_relation(self):
@@ -161,21 +158,13 @@ class DatabaseContainer(QSplitter):
         index = self.lateral_widget.relation_list.current_index()
         if not name:
             return
-        msgbox = QMessageBox(self)
-        msgbox.setIcon(QMessageBox.Question)
-        msgbox.setWindowTitle(self.tr("Confirmación"))
-        msgbox.setText(
-            self.tr("Está seguro de eliminar la relación <b>{}</b>?".format(
-                name)))
-        msgbox.addButton(self.tr("No!"), QMessageBox.NoRole)
-
-        si = msgbox.addButton(self.tr("Si, estoy seguro"), QMessageBox.YesRole)
-        palette = QPalette()
-        palette.setColor(QPalette.Button, QColor("#cc575d"))
-        palette.setColor(QPalette.ButtonText, QColor("white"))
-        si.setPalette(palette)
-        msgbox.exec_()
-        if msgbox.clickedButton() == si:
+        ret = QMessageBox.question(
+            self,
+            tr.TR_MSG_CONFIRMATION,
+            tr.TR_MSG_REMOVE_RELATION.format(name),
+            QMessageBox.Yes | QMessageBox.No
+        )
+        if ret == QMessageBox.Yes:
             self.lateral_widget.relation_list.remove_item(index)
             self.table_widget.remove_table(index)
             self.table_widget.remove_relation(name)
@@ -230,19 +219,23 @@ class DatabaseContainer(QSplitter):
         content = editor.toPlainText()
         try:
             editor.pfile.save(data=content)
-        except Exception as reason:
-            QMessageBox.critical(self, "Error",
-                                 self.tr("El archivo no se puede abrir!"
-                                         "\n\n{}".format(reason)))
+        except Exception:
+            QMessageBox.critical(
+                self,
+                'Error',
+                tr.TR_MSG_FILE_NOT_OPENED
+            )
             return False
         editor.saved()
         return editor.pfile.filename
 
     def save_query_as(self, editor=None):
-        filename = QFileDialog.getSaveFileName(self,
-                                               self.tr("Guardar Archivo"),
-                                               editor.name,
-                                               "Pireal query files(*.pqf)")
+        filename = QFileDialog.getSaveFileName(
+            self,
+            tr.TR_MSG_SAVE_QUERY_FILE,
+            editor.name,
+            "Pireal query files(*.pqf)"
+        )
         filename = filename[0]
         if not filename:
             return

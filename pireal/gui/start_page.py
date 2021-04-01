@@ -52,6 +52,7 @@ from pireal.dirs import (
     EXAMPLES_DIR,
 )
 from pireal.gui.main_window import Pireal
+from pireal import translations as tr
 
 logger = logging.getLogger(__name__)
 
@@ -137,13 +138,13 @@ class StartPage(QWidget):
 
         # Buttons
         hbox_btn = QHBoxLayout()
-        btn_open_db = QPushButton('Open Database')
+        btn_open_db = QPushButton(tr.TR_OPEN_DB)
         btn_open_db.setMinimumSize(150, 0)
         btn_open_db.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        btn_new_db = QPushButton('New Database')
+        btn_new_db = QPushButton(tr.TR_NEW_DB)
         btn_new_db.setMinimumSize(150, 0)
         btn_new_db.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        btn_example = QPushButton('Example')
+        btn_example = QPushButton(tr.TR_EXAMPLE_DB)
         btn_example.setMinimumSize(150, 0)
         btn_example.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
 

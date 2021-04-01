@@ -45,8 +45,8 @@ if args.version:
 create_app_dirs()
 
 from pireal.core import logger  # noqa
-from pireal import main  # noqa
 from pireal import resources  # noqa
+from pireal import main  # noqa
 # Set up logger
 # logger.set_up(debug=args.debug, verbose=args.verbose)
 logger.set_up(verbose=args.verbose)

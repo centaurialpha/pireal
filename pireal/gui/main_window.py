@@ -53,6 +53,7 @@ from pireal.settings import SETTINGS
 from pireal.gui.theme import apply_theme
 from pireal.gui import __version__
 from pireal.dirs import DATA_SETTINGS
+from pireal import translations as tr
 
 
 class _StatusBar(QFrame):
@@ -145,7 +146,7 @@ class Pireal(QMainWindow):
 
     def __init__(self, check_updates=True):
         QMainWindow.__init__(self)
-        self.setWindowTitle(self.tr("Pireal"))
+        self.setWindowTitle('Pireal')
         self.setMinimumSize(880, 600)
         # Load window geometry
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
@@ -188,7 +189,7 @@ class Pireal(QMainWindow):
 
         if check_updates:
             self.tray = QSystemTrayIcon(QIcon(':img/icon'))
-            self.tray.setToolTip('New version available!')
+            self.tray.setToolTip(tr.TR_TOOLTIP_VERSION_AVAILABLE)
             self.tray.activated.connect(self._on_system_tray_clicked)
             self.tray.messageClicked.connect(self._on_system_tray_message_clicked)
 
@@ -336,9 +337,8 @@ class Pireal(QMainWindow):
         if self._updater.version:
             self.tray.show()
             self.tray.showMessage(
-                'Pireal Updates',
-                f'New version of Pireal available: {self._updater.version}\n\n'
-                'Click on this message or System Tray icon to download!',
+                tr.TR_MSG_UPDATES,
+                tr.TR_MSG_UPDATES_BODY.format(self._updater.version),
                 QSystemTrayIcon.Information, 10000
             )
 
@@ -412,41 +412,29 @@ class Pireal(QMainWindow):
             db.save_sizes()
             # Databases unsaved
             if db.modified:
-                msg = QMessageBox(self)
-                msg.setIcon(QMessageBox.Question)
-                msg.setWindowTitle(self.tr("Algunos cambios no fueron guardados"))
-                msg.setText(
-                    self.tr("Desea guardar los cambios en la base de datos?"))
-                cancel_btn = msg.addButton(self.tr("Cancelar"),
-                                           QMessageBox.RejectRole)
-                msg.addButton(self.tr("No"),
-                              QMessageBox.NoRole)
-                yes_btn = msg.addButton(self.tr("Si"),
-                                        QMessageBox.YesRole)
-                msg.exec_()
-                r = msg.clickedButton()
-                if r == yes_btn:
+                ret = QMessageBox.question(
+                    self,
+                    tr.TR_MSG_SAVE_CHANGES,
+                    tr.TR_MSG_SAVE_CHANGES_BODY,
+                    QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+                )
+                if ret == QMessageBox.Yes:
                     central_widget.save_database()
-                if r == cancel_btn:
+                elif ret == QMessageBox.Cancel:
                     event.ignore()
             # Query files
             unsaved_editors = central_widget.get_unsaved_queries()
             if unsaved_editors:
-                msg = QMessageBox(self)
-                msg.setIcon(QMessageBox.Question)
-                msg.setWindowTitle(self.tr("Consultas no guardadas"))
                 text = '\n'.join([editor.name for editor in unsaved_editors])
-                msg.setText(self.tr("{files}\n\nQuiere guardarlas?".format(
-                    files=text)))
-                cancel_btn = msg.addButton(self.tr("Cancelar"),
-                                           QMessageBox.RejectRole)
-                msg.addButton(self.tr("No"),
-                              QMessageBox.NoRole)
-                yes_btn = msg.addButton(self.tr("Si"),
-                                        QMessageBox.YesRole)
-                msg.exec_()
-                if msg.clickedButton() == yes_btn:
+                ret = QMessageBox.question(
+                    self,
+                    tr.TR_QUERY_NOT_SAVED,
+                    tr.TR_QUERY_NOT_SAVED_BODY.format(files=text),
+                    QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+                )
+
+                if ret == QMessageBox.Yes:
                     for editor in unsaved_editors:
                         central_widget.save_query(editor)
-                if msg.clickedButton() == cancel_btn:
+                elif ret == QMessageBox.Cancel:
                     event.ignore()
