@@ -28,7 +28,7 @@ from PyQt5.QtWidgets import (
     QLineEdit
 )
 
-from pireal.gui import view
+from pireal.gui.model_view_delegate import View, Header
 
 
 class RelationDialog(QDialog):
@@ -57,10 +57,10 @@ class RelationDialog(QDialog):
         box_btns.addWidget(delete_column_btn)
         box.addLayout(box_btns)
         # La tabla es la vista
-        self.view = view.View()
+        self.view = View()
         box.addWidget(self.view)
         # Custom header que puede ser editado
-        header = view.Header()
+        header = Header()
         self.view.setHorizontalHeader(header)
         # self.table = QTableView()
         # self.table.setSelectionBehavior(QAbstractItemView.SelectRows)

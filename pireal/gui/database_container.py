@@ -34,10 +34,8 @@ from PyQt5.QtGui import QColor
 from pireal.gui import (
     table_widget,
     lateral_widget,
-    view,
-    model,
-    delegate
 )
+from pireal.gui.model_view_delegate import create_view
 from pireal.gui.lateral_widget import RelationItemType
 
 from pireal.gui.query_container import query_container
@@ -47,9 +45,7 @@ from pireal.core import (
     file_manager
 )
 from pireal.dirs import DATA_SETTINGS
-# from src.core.logger import Logger
 
-# logger = Logger(__name__)
 logger = logging.getLogger(__name__)
 
 
@@ -113,10 +109,6 @@ class DatabaseContainer(QSplitter):
             for _tuple in tuples:
                 rela.insert(_tuple)
             # Se usa el patrón Modelo/Vista/Delegado
-            # Para entender más, leer el código de cáda módulo
-            # src.gui.model
-            # src.gui.view
-            # src.gui.delegate
             _view = self.create_table(rela, table_name)
             # Add relation to relations dict
             self.table_widget.add_relation(table_name, rela)
@@ -132,24 +124,7 @@ class DatabaseContainer(QSplitter):
     def create_table(self, relation_obj, relation_name, editable=True):
         """ Se crea la vista, el model y el delegado para @relation_obj """
 
-        _view = view.View()
-        header = view.Header()
-        _model = model.RelationModel(relation_obj)
-        _view.setModel(_model)
-        _view.setItemDelegate(delegate.Delegate())
-        _view.setHorizontalHeader(header)
-        return _view
-        # _model = model.Model(relation_obj)
-        # _model.modelModified[bool].connect(self.__on_model_modified)
-        # _model.cardinalityChanged[int].connect(
-        #         self.__on_cardinality_changed)
-        # if not editable:
-        #     _model.editable = False
-        #     header.editable = False
-        # _view.setModel(_model)
-        # _view.setItemDelegate(delegate.Delegate())
-        # _view.setHorizontalHeader(header)
-        # return _view
+        return create_view(relation_obj, editable=editable)
 
     @Slot(bool)
     def __on_model_modified(self, modified):
@@ -157,7 +132,6 @@ class DatabaseContainer(QSplitter):
 
     @Slot(int)
     def __on_cardinality_changed(self, value):
-        # self.lateral_widget.update_item(value)
         self.lateral_widget.relation_list.update_cardinality(value)
 
     def load_relation(self, filenames):

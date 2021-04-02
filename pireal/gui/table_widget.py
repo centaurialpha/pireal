@@ -17,23 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from collections import OrderedDict
-
-# from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QSplitter
 from PyQt5.QtWidgets import QTabWidget
 from PyQt5.QtWidgets import QToolButton
-# from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QStackedWidget
-# from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QMenu
 
 from PyQt5.QtCore import Qt
-from pireal.gui import view
-from pireal.gui import model
-from pireal.gui import delegate
+from pireal.gui.model_view_delegate import create_view
 
-# from src.core import relation
 from pireal.gui.main_window import Pireal
 
 
@@ -48,7 +40,7 @@ class TableWidget(QSplitter):
         self.setSizes([1, 1])
         self._other_tab.hide()
 
-        self.relations = OrderedDict()
+        self.relations = {}
 
         # Stack
         self.stacked = QStackedWidget()
@@ -199,9 +191,4 @@ class TableWidget(QSplitter):
     def create_table(self, rela, editable=True):
         """ Se crea la vista y el modelo """
 
-        _view = view.View()
-        _model = model.RelationModel(rela)
-        _view.setModel(_model)
-        _view.setItemDelegate(delegate.Delegate())
-        _view.setHorizontalHeader(view.Header())
-        return _view
+        return create_view(rela, editable=editable)
