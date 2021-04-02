@@ -28,6 +28,23 @@ def test_get_by_index():
     assert os[0] == 'a'
 
 
+def test_get_by_index_after_update():
+    os = OrderedSet('argentina')
+    assert os[3] == 'e'
+    assert os[0] == 'a'
+    os[3] = 'E'
+    os[0] = 'A'
+    assert os[3] == 'E'
+    assert os[0] == 'A'
+
+
+def test_update():
+    os = OrderedSet('gabox')
+    assert os[3] == 'o'
+    os[3] = 'x'
+    assert os[3] == 'x'
+
+
 def test_intersection():
     s1 = OrderedSet([3, 1])
     s2 = OrderedSet([3, 10])

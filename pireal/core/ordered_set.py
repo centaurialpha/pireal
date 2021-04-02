@@ -77,6 +77,11 @@ class OrderedSet(MutableSet):
         else:
             raise TypeError('Mmmm error with %r', index)
 
+    def __setitem__(self, index, data):
+        del self._map[self._items[index]]
+        self._items[index] = data
+        self._map[data] = index
+
     def discard(self, key):
         if key in self:
             i = self._map[key]

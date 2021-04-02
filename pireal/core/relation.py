@@ -134,12 +134,9 @@ class Relation(object):
         self.content.add(values)
 
     def update(self, row, column, new_value):
-        content = list(self.content)
-        self.content.remove(content[row])
-        content_row = list(content[row])
-        content_row[column] = new_value
-        content_row = tuple(content_row)
-        self.content.add(content_row)
+        old = list(self.content[row])
+        old[column] = new_value
+        self.content[row] = tuple(old)
 
     def append_row(self):
         """Agrega una fila/tupla al final"""
