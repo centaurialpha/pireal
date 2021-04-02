@@ -24,16 +24,16 @@ from PyQt5.QtWidgets import QHeaderView
 from PyQt5.QtWidgets import QAbstractItemView
 from PyQt5.QtWidgets import QItemDelegate
 from PyQt5.QtWidgets import QInputDialog
-from PyQt5.QtWidgets import QStyle
 
 from PyQt5.QtGui import QColor
-from PyQt5.QtGui import QPalette
 
 from PyQt5.QtCore import QAbstractTableModel
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import pyqtSlot as Slot
 from pireal import translations as tr
+
+from pireal.gui.theme import get_color
 
 logger = logging.getLogger('gui.model_view_delegate')
 
@@ -44,6 +44,7 @@ class RelationModel(QAbstractTableModel):
         super().__init__()
         self.editable = True
         self.relation = relation_object
+        self._null_text_color = QColor(get_color('BrightText'))
 
     def rowCount(self, parent=QModelIndex()):
         """Devuelve la cardinalidad de la relación"""
@@ -67,9 +68,8 @@ class RelationModel(QAbstractTableModel):
             return data[row][column]
         elif role == Qt.TextColorRole:
             value = data[row][column]
-            # FIXME: mejorar esto
             if value == 'null':
-                return QColor('red')
+                return self._null_text_color
         return None
 
     def headerData(self, section, orientation, role):
@@ -172,13 +172,6 @@ class Delegate(QItemDelegate):
     def setEditorData(self, editor, index):
         text = index.model().data(index, Qt.DisplayRole)
         editor.setText(text)
-
-    def paint(self, painter, opt, index):
-        if opt.state & QStyle.State_Selected:
-            opt.palette.setColor(QPalette.Highlight, QColor("#fffde1"))
-            painter.drawRect(opt.rect)
-        opt.palette.setColor(QPalette.HighlightedText, Qt.black)
-        super().paint(painter, opt, index)
 
 
 def create_view(relation, *, editable=False):

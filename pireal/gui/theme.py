@@ -18,13 +18,13 @@ DARK = {
     'Button': '#191a1f',
     'ButtonText': '#ffffff',
     'ButtonTextDisabled': '#7f7f7f',
-    'BrightText': '#ff0000',
+    'BrightText': '#ec7875',
     'Link': '#2a82da',
     'Highlight': '#42539e',
     'Mid': '#ff0000',
     'Midlight': '#ff0000',
     'HighlightDisabled': '#505050',
-    'HighlightedText': '#2a82da',
+    'HighlightedText': '#f1f1f1',
     'HighlightedTextDisabled': '#7f7f7f'
 }
 
