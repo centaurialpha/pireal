@@ -57,7 +57,7 @@ m_schema = {
     'name': tr.TR_MENU_SCHEME,
     'actions': (
         Action(tr.TR_MENU_SCHEME_CREATE_RELATION, 'central:create_relation'),
-        Action(tr.TR_MENU_SCHEME_LOAD_RELATION, 'central:load_relation'),
+        # Action(tr.TR_MENU_SCHEME_LOAD_RELATION, 'central:load_relation'),
         Action(tr.TR_MENU_SCHEME_REMOVE_RELATION, 'central:remove_relation'),
         {},
         Action(tr.TR_MENU_SCHEME_EXECUTE_QUERIES, 'central:execute_query')

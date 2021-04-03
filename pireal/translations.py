@@ -168,8 +168,9 @@ TR_DB_DIALOG_DB_NAME = QCoreApplication.translate('Pireal', 'Database Name:')
 TR_DB_DIALOG_DB_LOCATION = QCoreApplication.translate('Pireal', 'Location:')
 TR_DB_DIALOG_DB_FILENAME = QCoreApplication.translate('Pireal', 'Filename:')
 TR_DB_DIALOG_SELECT_FOLDER = QCoreApplication.translate('Pireal', 'Select Folder')
-# # New Relation
-# TR_RELATION_DIALOG_HEADER_NAME = QCoreApplication.translate('Pireal', 'Name:')
+# New Relation
+TR_INPUT_DIALOG_HEADER_TITLE = QCoreApplication.translate('Pireal', 'New Header Name:')
+TR_INPUT_DIALOG_HEADER_BODY = QCoreApplication.translate('Pireal', 'Header Name:')
 #
 TR_RELATION_DIALOG_TITLE = QCoreApplication.translate('Pireal', 'Relation Creator')
 TR_RELATION_DIALOG_NAME = QCoreApplication.translate('Pireal', 'Relation Name')

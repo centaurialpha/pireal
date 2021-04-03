@@ -210,6 +210,18 @@ class LateralWidget(QSplitter):
 
         Pireal.load_service("lateral_widget", self)
 
+    def current_index(self):
+        index = self._relations_list.view.currentIndex()
+        return index.row()
+
+    def current_text(self):
+        index = self.current_index()
+        relation = self._relations_model.relation_by_index(index)
+        return relation.name
+
+    def remove_relation(self, index):
+        self._relations_model.remove_relation(index)
+
     def add_item(self, relation, rtype: RelationItemType.Normal):
         """Add relation to list of relations or results depending on rtype"""
         item = RelationItem(

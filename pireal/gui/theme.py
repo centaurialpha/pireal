@@ -21,7 +21,7 @@ DARK = {
     'BrightText': '#ec7875',
     'Link': '#2a82da',
     'Highlight': '#42539e',
-    'Mid': '#ff0000',
+    'Mid': '#404040',
     'Midlight': '#ff0000',
     'HighlightDisabled': '#505050',
     'HighlightedText': '#f1f1f1',
@@ -31,6 +31,7 @@ DARK = {
 
 LIGHT = {
     'Highlight': '#7742539e',
+    'BrightText': '#ec7875',
     'Dark': '#dddddd'
 }
 

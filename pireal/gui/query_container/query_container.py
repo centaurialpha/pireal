@@ -25,15 +25,12 @@ from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QSplitter
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QStackedWidget
-from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QLineEdit
-from PyQt5.QtWidgets import QToolBar
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QSettings
-from PyQt5.QtCore import QSize
 
 from PyQt5.QtCore import pyqtSignal as Signal
 from pireal.interpreter import parser
@@ -60,7 +57,7 @@ class QueryContainer(QWidget):
         self._parent = parent
         box = QVBoxLayout(self)
         self.setObjectName("query_container")
-        box.setContentsMargins(0, 10, 0, 0)
+        box.setContentsMargins(0, 0, 0, 0)
         box.setSpacing(0)
         # Regex for validate variable name
         self.__validName = re.compile(r'^[a-z_]\w*$')
@@ -70,10 +67,6 @@ class QueryContainer(QWidget):
         # Tab
         self._tabs = tab_widget.TabWidget()
         self._tabs.tabBar().setObjectName("tab_query")
-        # self._tabs.setAutoFillBackground(True)
-        # p = self._tabs.palette()
-        # p.setColor(p.Window, Qt.white)
-        # self._tabs.setPalette(p)
         box.addWidget(self._tabs)
 
         self.relations = {}
@@ -83,6 +76,11 @@ class QueryContainer(QWidget):
         # Connections
         self._tabs.tabCloseRequested.connect(self.__hide)
         self._tabs.saveEditor.connect(self.__on_save_editor)
+
+    def close_query(self):
+        if self.currentWidget() is not None:
+            self._tabs.remove_tab(self.current_index())
+            self.__hide()
 
     def set_focus_editor_tab(self, index):
         self._tabs.setCurrentIndex(index)
@@ -379,15 +377,6 @@ class QueryWidget(QWidget):
 
 class EditorWidget(QWidget):
 
-    TOOLBAR_ITEMS = [
-        'save_query',
-        '',
-        'undo_action',
-        'redo_action',
-        'cut_action',
-        'paste_action',
-    ]
-
     editorModified = Signal(bool)
 
     def __init__(self, parent=None):
@@ -395,24 +384,6 @@ class EditorWidget(QWidget):
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         vbox.setSpacing(0)
-        # self.setStyleSheet("outline: none")
-        hbox = QHBoxLayout()
-        # Position
-        self._column_str = "Col: {}"
-        self._column_lbl = QLabel(self._column_str.format(0))
-        # Toolbar
-        self._toolbar = QToolBar(self)
-        self._toolbar.setIconSize(QSize(16, 16))
-        pireal = Pireal.get_service("pireal")
-        for action in self.TOOLBAR_ITEMS:
-            qaction = pireal.get_action(action)
-            if qaction is not None:
-                self._toolbar.addAction(qaction)
-            else:
-                self._toolbar.addSeparator()
-        # hbox.addWidget(self._toolbar, 1)
-        # hbox.addWidget(self._column_lbl)
-        vbox.addLayout(hbox)
         # Editor
         self._editor = editor.Editor()
         vbox.addWidget(self._editor)
@@ -422,18 +393,8 @@ class EditorWidget(QWidget):
         vbox.addWidget(self._search_widget)
 
         # Editor connections
-        # self._editor.customContextMenuRequested.connect(
-        #     self.__show_context_menu)
         self._editor.modificationChanged[bool].connect(
             lambda modified: self.editorModified.emit(modified))
-        # self._editor.undoAvailable[bool].connect(
-        #     self.__on_undo_available)
-        # self._editor.redoAvailable[bool].connect(
-        #     self.__on_redo_available)
-        # self._editor.copyAvailable[bool].connect(
-        #     self.__on_copy_available)
-        # self._editor.cursorPositionChanged.connect(
-        #     self._update_column_label)
 
     def show_search_widget(self):
         self._search_widget.show()
@@ -444,26 +405,8 @@ class EditorWidget(QWidget):
         self._search_widget.hide()
         self._search_widget._line_search.clear()
 
-    def _update_column_label(self):
-        col = str(self._editor.textCursor().columnNumber() + 1)
-        self._column_lbl.setText(self._column_str.format(col))
-
     def get_editor(self):
         return self._editor
-
-    def __undock_editor(self):
-        new_editor = editor.Editor()
-        actual_doc = self._editor.document()
-        new_editor.setDocument(actual_doc)
-        new_editor.resize(900, 400)
-        # Set text cursor
-        tc = self._editor.textCursor()
-        new_editor.setTextCursor(tc)
-        # Set title
-        db = Pireal.get_service("central").get_active_db()
-        qc = db.query_container
-        new_editor.setWindowTitle(qc.tab_text(qc.current_index()))
-        new_editor.show()
 
 
 class SearchWidget(QWidget):

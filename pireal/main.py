@@ -21,21 +21,17 @@
 
 import sys
 import os
-# import platform
 import logging
 
 from PyQt5.QtWidgets import QApplication
 
 from PyQt5.QtGui import QIcon, QFont, QFontDatabase
 
-# from PyQt5.QtCore import QT_VERSION_STR
 from PyQt5.QtCore import QTranslator
 from PyQt5.QtCore import QLocale
 from PyQt5.QtCore import QLibraryInfo
 
 
-# from pireal import __version__
-# from pireal.gui.main_window import Pireal
 from pireal.gui.theme import apply_theme
 from pireal.settings import SETTINGS
 
@@ -91,7 +87,6 @@ def start_pireal(args):
         app.installTranslator(translator)
     # Load services
     from pireal.gui import central_widget  # noqa
-    from pireal.gui import notification  # noqa
     from pireal.gui.main_window import Pireal
 
     check_updates = not args.no_check_updates

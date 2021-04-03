@@ -43,6 +43,7 @@ from pireal.core import (
 )
 from pireal.dirs import DATA_SETTINGS
 from pireal import translations as tr
+from pireal.gui.main_window import Pireal
 
 logger = logging.getLogger(__name__)
 
@@ -116,8 +117,6 @@ class DatabaseContainer(QSplitter):
             # FIXME: feooo
             rela.name = table_name
             self.lateral_widget.add_item(rela, RelationItemType.Normal)
-        # Select first item
-        # self.lateral_widget.relation_list.select_first()
 
     def create_table(self, relation_obj, relation_name, editable=True):
         """ Se crea la vista, el model y el delegado para @relation_obj """
@@ -154,8 +153,8 @@ class DatabaseContainer(QSplitter):
             return True
 
     def delete_relation(self):
-        name = self.lateral_widget.relation_list.current_text()
-        index = self.lateral_widget.relation_list.current_index()
+        index = self.lateral_widget.current_index()
+        name = self.lateral_widget.current_text()
         if not name:
             return
         ret = QMessageBox.question(
@@ -165,32 +164,11 @@ class DatabaseContainer(QSplitter):
             QMessageBox.Yes | QMessageBox.No
         )
         if ret == QMessageBox.Yes:
-            self.lateral_widget.relation_list.remove_item(index)
+            self.lateral_widget.remove_relation(index)
             self.table_widget.remove_table(index)
             self.table_widget.remove_relation(name)
             return True
         return False
-
-    def __on_data_table_changed(self, row, col, data):
-        # current_relation = self.lateral_widget.current_text()
-        # # Relation to be update
-        # rela = self.table_widget.relations.get(current_relation)
-        # # Clear old content
-        # rela.clear()
-        # current_table = self.table_widget.stacked.currentWidget()
-        # model = current_table.model()
-        # for i in range(model.rowCount()):
-        #     reg = []
-        #     for j in range(model.columnCount()):
-        #         if row == i and col == j:
-        #             reg.append(data)
-        #         else:
-        #             reg.append(model.item(i, j).text())
-        #     # Insert new content
-        #     rela.insert(reg)
-        # # Update relation
-        # self.table_widget.relations[current_relation] = rela
-        pass
 
     def new_query(self, filename):
         editor_tab_at = self.query_container.is_open(filename)
@@ -213,6 +191,8 @@ class DatabaseContainer(QSplitter):
     def save_query(self, editor):
         if not editor:
             editor = self.query_container.currentWidget().get_editor()
+        if not editor.modified:
+            return
         if editor.is_new:
             return self.save_query_as(editor)
         # Get content of editor
@@ -230,6 +210,8 @@ class DatabaseContainer(QSplitter):
         return editor.pfile.filename
 
     def save_query_as(self, editor=None):
+        if not editor:
+            editor = self.query_container.currentWidget().get_editor()
         filename = QFileDialog.getSaveFileName(
             self,
             tr.TR_MSG_SAVE_QUERY_FILE,
@@ -244,6 +226,8 @@ class DatabaseContainer(QSplitter):
         # Write the file
         editor.pfile.save(data=content, path=filename)
         editor.saved()
+        pireal = Pireal.get_service('pireal')
+        pireal.status_bar.show_message(tr.TR_STATUS_QUERY_SAVED.format(filename))
 
     def execute_queries(self):
         self.query_container.execute_queries()

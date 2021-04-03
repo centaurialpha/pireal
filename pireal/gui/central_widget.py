@@ -23,19 +23,14 @@ import logging
 from collections import defaultdict
 
 from PyQt5.QtWidgets import QWidget
-# from PyQt5.QtWidgets import QDialog
 from PyQt5.QtWidgets import QVBoxLayout
-# from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QStackedWidget
-# from PyQt5.QtWidgets import QLineEdit
-# from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QShortcut
 
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import Qt
-from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtCore import QSettings
 
 
@@ -63,11 +58,6 @@ logger = logging.getLogger(__name__)
 
 
 class CentralWidget(QWidget):
-    # This signals is used by notificator
-    databaseSaved = Signal(str)
-    databaseSaved = Signal(str)
-    querySaved = Signal(str)
-    databaseConected = Signal(str)
 
     def __init__(self):
         QWidget.__init__(self)
@@ -170,7 +160,6 @@ class CentralWidget(QWidget):
                 directory = os.path.expanduser("~")
             else:
                 directory = self._last_open_folder
-            # filter_ = settings.SUPPORTED_FILES.split(';;')[0]
             filter_ = settings.get_extension_filter('.pdb')
             filename, _ = QFileDialog.getOpenFileName(
                 self,
@@ -234,7 +223,7 @@ class CentralWidget(QWidget):
                 directory = os.path.expanduser("~")
             else:
                 directory = self._last_open_folder
-            filter_ = settings.SUPPORTED_FILES.split(';;')[1]
+            filter_ = settings.get_extension_filter('.pqf')
             filename, _ = QFileDialog.getOpenFileName(
                 self,
                 tr.TR_MSG_OPEN_QUERY,
@@ -252,13 +241,18 @@ class CentralWidget(QWidget):
 
     def save_query(self, editor=None):
         db = self.get_active_db()
+        if db is None:
+            return
         fname = db.save_query(editor)
         if fname:
             pireal = Pireal.get_service('pireal')
             pireal.status_bar.show_message(tr.TR_STATUS_QUERY_SAVED.format(fname))
 
     def save_query_as(self):
-        pass
+        db = self.get_active_db()
+        if db is None:
+            return
+        db.save_query_as()
 
     def __sanitize_data(self, data):
         """
@@ -298,6 +292,12 @@ class CentralWidget(QWidget):
 
         widget = self.stacked.widget(self.stacked.count() - 1)
         self.stacked.removeWidget(widget)
+
+    def close_query(self):
+        db = self.get_active_db()
+        if db is None:
+            return
+        db.query_container.close_query()
 
     def close_database(self):
         """ Close the database and return to the main widget """
@@ -375,16 +375,18 @@ class CentralWidget(QWidget):
         db.modified = False
 
     def save_database_as(self):
-        filter = settings.SUPPORTED_FILES.split(';;')[0]
+        db = self.get_active_db()
+        if db is None:
+            return
+        filter_ = settings.get_extension_filter('.pdb')
         filename, _ = QFileDialog.getSaveFileName(
             self,
             tr.TR_MSG_SAVE_DB_AS,
-            settings.PIREAL_DATABASES,
-            filter
+            db.pfile.filename,
+            filter_
         )
         if not filename:
             return
-        db = self.get_active_db()
         # Get relations
         relations = db.table_widget.relations
         # Content
@@ -400,6 +402,8 @@ class CentralWidget(QWidget):
 
     def remove_relation(self):
         db = self.get_active_db()
+        if db is None:
+            return
         if db.delete_relation():
             db.modified = True
 
@@ -413,6 +417,9 @@ class CentralWidget(QWidget):
             lateral.add_item(relation, rtype=RelationItemType.Normal)
             db.modified = True
 
+        db = self.get_active_db()
+        if db is None:
+            return
         dialog = new_relation_dialog.NewRelationDialog(self)
         dialog.created.connect(_create_relation)
         dialog.show()
@@ -453,15 +460,6 @@ class CentralWidget(QWidget):
 
         settings_dialog = preferences.SettingsDialog(self)
         settings_dialog.exec_()
-        # if isinstance(self.widget(1), preferences.Preferences):
-        #     self.widget(1).close()
-        # else:
-        #     self.stacked.insertWidget(1, preferences_dialog)
-        #     self.stacked.setCurrentIndex(1)
-
-        # # Connect the closed signal
-        # preferences_dialog.settingsClosed.connect(self._settings_closed)
-        # TODO: para la próxima versión
 
     def widget(self, index):
         """ Returns the widget at the given index """

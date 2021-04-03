@@ -162,13 +162,8 @@ class Pireal(QMainWindow):
         # Menu bar
         menubar = self.menuBar()
         self.__load_menubar(menubar)
-        # Load notification widget after toolbar actions
-        notification_widget = Pireal.get_service("notification")
         # Central widget
         central_widget = Pireal.get_service("central")
-        central_widget.databaseSaved.connect(notification_widget.show_text)
-        central_widget.querySaved.connect(notification_widget.show_text)
-        central_widget.databaseConected.connect(self.change_title)
         self.setCentralWidget(central_widget)
         central_widget.add_start_page()
 
@@ -285,17 +280,6 @@ class Pireal(QMainWindow):
                     qmenu.addSeparator()
                 else:
                     qaction = qmenu.addAction(action.name)
-                    # FIXME: qaction checkable
-                    # if action.is_checkable:
-                    #     qaction.setCheckable(True)
-                    #     attr = qaction.text().lower().replace(' ', '_')
-                    #     try:
-                    #         attr_value = getattr(USER_SETTINGS, attr)
-                    #     except AttributeError as reason:
-                    #         # ok, not big deal
-                    #         logger.warning(reason)
-                    #     else:
-                    #         qaction.setChecked(attr_value)
 
                     obj_name, slot = action.slot.split(':')
 
@@ -310,23 +294,6 @@ class Pireal(QMainWindow):
                     func = getattr(obj, slot, None)
                     if callable(func):
                         qaction.triggered.connect(func)
-
-    # def __install_toolbar(self, rela_actions):
-    #     menu = QMenu()
-    #     tool_button = QToolButton()
-    #     tool_button.setIcon(QIcon(":img/create_new_relation"))
-    #     tool_button.setMenu(menu)
-    #     tool_button.setPopupMode(QToolButton.InstantPopup)
-    #     for item in self.TOOLBAR_ITEMS:
-    #         if item:
-    #             if item == "relation_menu":
-    #                 # Install menu for relation
-    #                 menu.addActions(rela_actions)
-    #                 self.toolbar.addWidget(tool_button)
-    #             else:
-    #                 self.toolbar.addAction(self.__ACTIONS[item])
-    #         else:
-    #             self.toolbar.addSeparator()
 
     def __show_status_message(self, msg):
         status = Pireal.get_service("status")
@@ -375,14 +342,6 @@ class Pireal(QMainWindow):
             self.menuBar().hide()
         else:
             self.menuBar().show()
-
-    # def show_hide_toolbar(self):
-    #     """ Change visibility of tool bar """
-
-    #     if self.toolbar.isVisible():
-    #         self.toolbar.hide()
-    #     else:
-    #         self.toolbar.show()
 
     def show_error_message(self, text, syntax_error=True):
         self._msg_error_widget.show_msg(text, syntax_error)

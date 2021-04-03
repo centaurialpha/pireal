@@ -318,7 +318,7 @@ class Editor(QPlainTextEdit):
             end_pos = cursor.position()
         # Create extra selection
         selection = QTextEdit.ExtraSelection()
-        selection.format.setBackground(Qt.lightGray)
+        selection.format.setBackground(self._highlight_line_color)
         selection.cursor = QTextCursor(cursor)
         selection.cursor.setPosition(start_pos)
         selection.cursor.setPosition(end_pos, QTextCursor.KeepAnchor)
