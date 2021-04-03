@@ -127,7 +127,7 @@ TR_RESULTS = QCoreApplication.translate('Pireal', 'Results')
 TR_QUERY_NOT_SAVED = QCoreApplication.translate('Pireal', 'Queries not saved')
 TR_QUERY_NOT_SAVED_BODY = QCoreApplication.translate(
     'Pireal',
-    '{files}<br><br>Do you want to save the queries?')
+    '{files}\n\nDo you want to save the queries?')
 #
 # TR_DB_FILE_EMPTY = QCoreApplication.translate('Pireal', 'The file <b>{}</b> is empty :/.')
 #

@@ -9,6 +9,10 @@ help:
 	@echo "lint 			-- run pycodestyle and flake8"
 	@echo "dist 			-- run python setup.py sdist"
 	@echo "deb 			-- build a .deb package"
+	@echo "rc                       -- buil resources"
+
+rc:
+	pyrcc5 pireal/resources/resources.qrc -o pireal/resources.py
 
 clean:
 	rm -rf `find -name "*pyc"`

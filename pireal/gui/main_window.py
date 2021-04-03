@@ -240,7 +240,7 @@ class Pireal(QMainWindow):
         if value:
             self.showFullScreen()
         else:
-            self.showNormal()
+            self.showMaximized()
 
     def open_download_release(self):
         webbrowser.open_new('https://github.com/centaurialpha/pireal/releases/latest')

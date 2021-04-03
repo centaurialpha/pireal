@@ -20,6 +20,7 @@
 import platform
 
 from PyQt5.QtCore import QSettings
+from PyQt5.QtGui import QFontDatabase
 
 from pireal.dirs import CONFIG_FILE
 
@@ -87,13 +88,25 @@ class SettingManager:
 
     @property
     def font_family(self) -> str:
-        ff = self._font_family
-        if ff is None:
-            if platform.system() == 'Windows':
-                ff = 'Courier'
-            elif platform.system() == 'Linux':
-                ff = 'Liberation Mono'
-        return ff
+        font = self._font_family
+        if font is None:
+            families = QFontDatabase().families()
+            preferred_fonts = []
+            if platform.system() == 'Linux':
+                preferred_fonts.append('Ubuntu Mono')
+                preferred_fonts.append('Liberation Mono')
+                preferred_fonts.append('Source Code Pro')
+            elif platform.system() == 'Windows':
+                preferred_fonts.append('Courier New')
+                preferred_fonts.append('Courier')
+            # FIXME: mac OSX
+
+            font = None
+            for preferred_font in preferred_fonts:
+                if preferred_font in families:
+                    font = preferred_font
+                    break
+        return font
 
     @font_family.setter
     def font_family(self, font):

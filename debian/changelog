@@ -1,4 +1,29 @@
-pireal (3.1.0) unstable; urgency=low
+pireal (3.1.0) unstable; urgency=medium
 
+  * feature: new Makefile
+  * feature: new CI
+  * refactor: new Start Page (no QML)
+  * fix: translations and menu actions
+  * feat: replace QML ListView by QListView with custom delegate
+  * feat: settings dialog
+  * feat: new settings manager
+  * refactor: rename src by package name
+  * feature: add thread to check updates
+  * fix: set Qt.AA_EnableHighDpiScaling before QApplication is created
+  * feature: dark mode
+  * fix: font for platform
+  * feat: add Font Awesome icon/font application
+  * refactor: better and more tests
+  * refactor: module names and better fs
+  * feat: add own ordered set implementation
+  * feat: custom status bar
+  * fix: use QInputDialog in custom header
+  * feature: add translations eng/es
+  * fix color in null items
+  * fix: now ordered set has __setitem__ for updates
+  * fix: encoding when open file
+  * fix: add pireal.spec for PyInstaller
+  * feature: add script to build binary and generate installer
+  * deploy: add install script to create shortcuts after installation
 
- -- Gabriel Acosta <acostadariogabriel@gmail.com>  Thu, 24 May 2018 12:41:00 -0300
+ -- Gabriel Acosta <acostadariogabriel@gmail.com>  Sun, 11 Apr 2021 11:36:06 -0300

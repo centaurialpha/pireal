@@ -19,6 +19,7 @@
 
 import os
 import shutil
+<<<<<<< HEAD
 from setuptools.command.install import install
 from setuptools import setup, find_packages
 
@@ -28,6 +29,10 @@ class CustomInstall(install):
     def run(self):
         install.run(self)
 
+=======
+from setuptools import setup, find_packages
+
+>>>>>>> 3305dee (deploy: add install script to create shortcuts after installation)
 
 classifiers = [
     'Development Status :: 5 - Production/Stable',
@@ -40,11 +45,11 @@ classifiers = [
     'Programming Language :: Python :: 3 :: Only',
     'Topic :: Education',
     'Topic :: Utilities'
-
 ]
 
 
 setup(
+<<<<<<< HEAD
     name="pireal",
     version="3.0",
     description="Relational Algebra Interpreter",
@@ -57,4 +62,25 @@ setup(
     scripts=['bin/pireal'],
     classifiers=classifiers,
     cmdclass={'install': CustomInstall},
+=======
+    name='pireal',
+    version=open('version.txt').read().strip(),
+    description='Relational Algebra Interpreter',
+    author='Gabriel Acosta',
+    author_email='acostadariogabriel@gmail.com',
+    url='http://centaurialpha.github.io/pireal',
+    license='GPLv3+',
+    long_description=open('README.md').read(),
+    packages=find_packages(exclude=['tests']),
+    package_data={
+        'pireal': ['resources/samples/*', 'resources/images/pireal_icon.png'],
+    },
+    scripts=['bin/pireal'],
+    classifiers=classifiers,
+    install_requires=['pyqt5'],
+    extras_require={
+        'test': ['flake8', 'pycodestyle', 'pytest', 'pytest-cov'],
+        'dev': ['ipython'],
+    }
+>>>>>>> 3305dee (deploy: add install script to create shortcuts after installation)
 )

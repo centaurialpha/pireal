@@ -47,8 +47,8 @@ from pireal.gui import (
 from pireal.gui.dialogs import (
     preferences,
     new_relation_dialog,
-    new_database_dialog
 )
+from pireal.gui.dialogs.new_database_dialog import DBInputDialog
 from pireal.gui.lateral_widget import RelationItemType
 from pireal.dirs import DATA_SETTINGS
 from pireal import translations as tr
@@ -93,6 +93,10 @@ class CentralWidget(QWidget):
         return self._recent_dbs
 
     def remember_recent_database(self, path: str):
+        # TODO: FEISIMO
+        if path.endswith('pireal/resources/samples/database.pdb'):
+            return
+
         if path in self._recent_dbs:
             self._recent_dbs.remove(path)
         logger.debug('adding %s to recent databases', path)
@@ -118,28 +122,19 @@ class CentralWidget(QWidget):
 
         if self.created:
             return self.__say_about_one_db_at_time()
-        dialog = new_database_dialog.NewDatabaseDialog(self)
-        dialog.created.connect(self.__on_wizard_finished)
-        dialog.show()
+        db_filepath = DBInputDialog.ask_db_name(parent=self)
+        if not db_filepath:
+            logger.debug('database name not provided')
+            return
 
-    def __on_wizard_finished(self, *data):
-        """This slot execute when wizard to create a database is finished"""
-
-        pireal = Pireal.get_service("pireal")
-        if data:
-            db_name, location, fname = data
-            # Create a new data base container
-            db_container = database_container.DatabaseContainer()
-            # Associate the file name with the PFile object
-            pfile_object = pfile.File(fname)
-            # Associate PFile object with data base container
-            # and add widget to stacked
-            db_container.pfile = pfile_object
-            self.add_widget(db_container)
-            # Set window title
-            pireal.change_title(file_manager.get_basename(fname))
-            self.created = True
-            logger.debug("La base de datos ha sido creada con éxito")
+        pireal = Pireal.get_service('pireal')
+        db_container = database_container.DatabaseContainer()
+        pfile_object = pfile.File(db_filepath)
+        db_container.pfile = pfile_object
+        self.add_widget(db_container)
+        pireal.change_title(file_manager.get_basename(db_filepath))
+        self.created = True
+        logger.debug('database=%s has been created', db_filepath)
 
     def __say_about_one_db_at_time(self):
         logger.warning("Oops! One database at a time please")
@@ -270,7 +265,7 @@ class CentralWidget(QWidget):
                 # Header de una relación
                 tpoint = line.find(":")
                 if tpoint == -1:
-                    raise Exception("Error de sintáxis en la línea {}".format(
+                    raise Exception("Syntax error in {}".format(
                         line_count + 1))
                 table_name, line = line.split(":")
                 table_name = table_name[1:].strip()

@@ -44,6 +44,7 @@ from pireal.core import (
 from pireal.dirs import DATA_SETTINGS
 from pireal import translations as tr
 from pireal.gui.main_window import Pireal
+from pireal import settings
 
 logger = logging.getLogger(__name__)
 
@@ -211,12 +212,14 @@ class DatabaseContainer(QSplitter):
 
     def save_query_as(self, editor=None):
         if not editor:
+            if self.query_container.currentWidget() is None:
+                return
             editor = self.query_container.currentWidget().get_editor()
         filename = QFileDialog.getSaveFileName(
             self,
             tr.TR_MSG_SAVE_QUERY_FILE,
             editor.name,
-            "Pireal query files(*.pqf)"
+            settings.get_extension_filter('.pqf')
         )
         filename = filename[0]
         if not filename:

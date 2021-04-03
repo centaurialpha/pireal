@@ -106,8 +106,9 @@ class SettingsDialog(QDialog):
         central = Pireal.get_service('central')
         db_container = central.get_active_db()
         if db_container is not None:
-            editor = db_container.query_container.currentWidget().get_editor()
-            if editor is not None:
-                editor.set_font(SETTINGS.font_family, SETTINGS.font_size)
+            if db_container.query_container.currentWidget() is not None:
+                editor = db_container.query_container.currentWidget().get_editor()
+                if editor is not None:
+                    editor.set_font(SETTINGS.font_family, SETTINGS.font_size)
 
         super().accept()

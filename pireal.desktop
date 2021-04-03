@@ -5,5 +5,6 @@ Name=Pireal
 GenericName=Pireal
 Comment=Educational tool for working with Relational Algebra
 Exec=pireal
+Icon=/usr/share/icons/pireal_icon.png
 Terminal=false
 Categories=Application;Education;

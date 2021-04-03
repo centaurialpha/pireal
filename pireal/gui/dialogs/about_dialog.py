@@ -62,12 +62,13 @@ class AboutDialog(QDialog):
         description.setFont(font)
         vbox.addWidget(description)
 
-        # Web
-        web_lbl = QLabel("<a href='{0}'><span style='color: #3465a4'>"
-                         "www.centaurialpha.github.io/pireal</span></a>")
-        web_lbl.setOpenExternalLinks(True)
-        web_lbl.setAlignment(Qt.AlignHCenter)
-        vbox.addWidget(web_lbl)
+        abuelo_agui_lbl = QLabel(
+            'In memory of my grandpa, Agui <span style="color: #EC7875"> </span>')
+        font = abuelo_agui_lbl.font()
+        font.setPointSize(8)
+        abuelo_agui_lbl.setFont(font)
+        abuelo_agui_lbl.setAlignment(Qt.AlignHCenter)
+        vbox.addWidget(abuelo_agui_lbl)
 
         # Copyright
         copy = QLabel("<br>Copyright © 2015-{year} - "
