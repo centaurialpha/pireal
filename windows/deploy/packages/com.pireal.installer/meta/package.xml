@@ -8,4 +8,5 @@
         <License name="LICENSE TITLE" file="license.txt" />
     </Licenses>
     <Default>true</Default>
+	<Script>installscript.qs</Script>
 </Package>

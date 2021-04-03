@@ -5,6 +5,7 @@ block_cipher = None
 added_files = [
     ('../pireal/resources/samples/database.pdb', 'pireal/resources/samples'),
     ('../pireal/resources/samples/queries.pqf', 'pireal/resources/samples'),
+    ('icon.ico', '.'),
 ]
 
 a = Analysis(['Z:\\projects\\pireal\\bin\\pireal'],

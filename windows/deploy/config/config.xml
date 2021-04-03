@@ -5,6 +5,6 @@
     <Title>Pireal</Title>
     <Publisher>Gabriel Acosta</Publisher>
     <StartMenuDir>Pireal</StartMenuDir>
-    <TargetDir>@HomeDir@/Pireal</TargetDir>
+    <TargetDir>@ApplicationsDir@/Pireal</TargetDir>
     <InstallerWindowIcon>../../icon.ico</InstallerWindowIcon>
 </Installer>
