@@ -66,12 +66,5 @@ class File(QObject):
     def read(self):
         """ Reads the file and returns the content """
 
-        _file = QFile(self.filename)
-        if not _file.open(QIODevice.ReadOnly | QIODevice.Text):
-            raise Exception(_file.errorString())
-
-        # Codec
-        codec = QTextCodec.codecForLocale()
-        stream = QTextStream(_file)
-        stream.setCodec(codec)
-        return stream.readAll()
+        with open(self.filename, encoding='utf-8') as f:
+            return f.read()
