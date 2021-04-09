@@ -1,0 +1,10 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: pireal
+Upstream-Contact: Gabriel 'gabo' Acosta <acostadariogabriel@gmail.com>
+Source: https://github.com/centaurialpha/pireal
+
+Files: *
+Copyright: (C) 2015-2021 Gabriel 'gabo' Acosta <acostadariogabriel@gmail.com>
+License: GPL-3
+ The full text of the GPL is distributed in
+ /usr/share/common-licenses/GPL-3 on Debian systems.
