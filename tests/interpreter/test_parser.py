@@ -1,152 +1,146 @@
 import pytest
-
-from src.core.interpreter import scanner
-from src.core.interpreter import lexer
-from src.core.interpreter import parser
-from src.core.interpreter import rast as ast
-
-
-@pytest.fixture
-def fixture_parser():
-    def _make_parser(text):
-        sc = scanner.Scanner(text)
-        lex = lexer.Lexer(sc)
-        par = parser.Parser(lex)
-        return par
-    return _make_parser
-
-
-def test_parser_select_expression(fixture_parser):
-    p = fixture_parser('q1 := select id=1 (p);')
-    tree = p.parse()
-    assert isinstance(tree, ast.Compound)
-    for c in tree.children:
-        assert isinstance(c, ast.Assignment)
-        assert isinstance(c.query, ast.SelectExpr)
-
-
-def test_parser_project_expression(fixture_parser):
-    p = fixture_parser('q1 := project a, b, c (p);')
-    tree = p.parse()
-    assert isinstance(tree, ast.Compound)
-    for c in tree.children:
-        assert isinstance(c, ast.Assignment)
-        assert isinstance(c.query, ast.ProjectExpr)
-
-
-def test_parser_binary_expression(fixture_parser):
-    p = fixture_parser('q1 := a intersect b;')
-    tree = p.parse()
-    assert isinstance(tree, ast.Compound)
-    for c in tree.children:
-        assert isinstance(c, ast.Assignment)
-        assert isinstance(c.query, ast.BinaryOp)
-
-
-def test_parser_condition(fixture_parser):
-    p = fixture_parser('q1 := select i<2 (p);')
-    tree = p.parse()
-    assert isinstance(tree, ast.Compound)
-    for c in tree.children:
-        assert isinstance(c, ast.Assignment)
-        assert isinstance(c.query.condition, ast.Condition)
-
-
-def test_string_node(fixture_parser):
-    p = fixture_parser('q1 := select name=\'gabo\' (p);')
-    tree = p.parse()
-    assert isinstance(tree, ast.Compound)
-    for c in tree.children:
-        assert isinstance(c, ast.Assignment)
-        assert isinstance(c.query.condition.op2, ast.String)
-
-
-@pytest.mark.parametrize(
-    'date',
-    [
-        ('20/01/1991',),
-        ('1991/01/20')
-    ]
+from unittest import (
+    TestCase,
+    mock,
 )
-def test_date_node(fixture_parser, date):
-    p = fixture_parser('q1 := select date=\'%s\' (p);' % date)
-    tree = p.parse()
-    assert isinstance(tree, ast.Compound)
-    for c in tree.children:
-        assert isinstance(c, ast.Assignment)
-        assert isinstance(c.query.condition.op2, ast.Date)
+
+from pireal.interpreter import (
+    Scanner,
+    Lexer,
+    Parser
+)
+from pireal.interpreter.lexer import Token
+from pireal.interpreter import rast as ast
+from pireal.interpreter import tokens
+from pireal.interpreter.exceptions import ConsumeError
 
 
-def test_time_node(fixture_parser):
-    p = fixture_parser('q1 := select hour=\'20:15\' (p);')
-    tree = p.parse()
-    assert isinstance(tree, ast.Compound)
-    for c in tree.children:
-        assert isinstance(c, ast.Assignment)
-        assert isinstance(c.query.condition.op2, ast.Time)
+class ParserTestCase(TestCase):
+
+    def test_compound(self):
+        query = 'query := q1 njoin q2; qq := query njoin otro;'
+        parser = Parser(Lexer(Scanner(query)))
+
+        node = parser.compound()
+
+        self.assertIsInstance(node, ast.Compound)
+        self.assertEqual(len(node.children), 2)
+
+    def test_assignment(self):
+        query = 'q := project name (r);'
+        parser = Parser(Lexer(Scanner(query)))
+
+        with mock.patch.multiple(
+            parser,
+            consume=mock.DEFAULT,
+            expression=mock.DEFAULT,
+        ) as mocks:
+            node = parser.assignment()
+
+        self.assertEqual(mocks['consume'].call_count, 3)
+        self.assertIsInstance(node, ast.Assignment)
+
+    def test_expression_binary(self):
+        query = 'q1 njoin q2'
+        parser = Parser(Lexer(Scanner(query)))
+
+        node = parser.expression()
+
+        self.assertIsInstance(node, ast.BinaryOp)
+
+    def test_nested_expression(self):
+        query = 'select id = 1 (project name, id (q1))'
+        parser = Parser(Lexer(Scanner(query)))
+
+        node = parser.expression()
+
+        self.assertIsInstance(node, ast.SelectExpr)
+        self.assertIsInstance(node.expr, ast.ProjectExpr)
+
+    def test_attributes(self):
+        query = 'id, name, age, attr1, attr2'
+        parser = Parser(Lexer(Scanner(query)))
+
+        node = parser.attributes()
+
+        self.assertIsInstance(node, list)
+        self.assertEqual(len(node), 5)
+        for attr_node in node:
+            self.assertIsInstance(attr_node, ast.Variable)
+
+    def test_condition(self):
+        queries = (
+            'algo > algo2',
+            '(algo < algo2)',
+        )
+        for query in queries:
+            parser = Parser(Lexer(Scanner(query)))
+
+            node = parser.condition()
+
+            self.assertIsInstance(node, ast.Condition)
+
+    def test_consume(self):
+        query = 'q1 :='
+        parser = Parser(Lexer(Scanner(query)))
+
+        parser.consume(tokens.ID)
+        with self.assertRaises(ConsumeError):
+            parser.consume(tokens.SELECT)
+        parser.consume(tokens.ASSIGNMENT)
 
 
-def test_bool_node(fixture_parser):
-    p = fixture_parser('q1 := select edad < 20 or edad > 10 (p);')
-    tree = p.parse()
-    assert isinstance(tree, ast.Compound)
-    for c in tree.children:
-        assert isinstance(c, ast.Assignment)
-        assert isinstance(c.query.condition, ast.BoolOp)
-        assert 'or' in c.query.condition.ops
-        for c, c2 in zip(['<', '>'], c.query.condition.conditions):
-            assert c == c2.operator.value
+class SelectExpressionTestCase(TestCase):
+
+    def test_simple(self):
+        query = 'select id = 1 (q)'
+        parser = Parser(Lexer(Scanner(query)))
+
+        node = parser.select_expression()
+
+        self.assertIsInstance(node, ast.SelectExpr)
+
+    def test_and_operator(self):
+        query = 'select id = 1 and age = 20 (q)'
+        parser = Parser(Lexer(Scanner(query)))
+
+        node = parser.select_expression()
+
+        self.assertIsInstance(node, ast.SelectExpr)
+        self.assertEqual(len(node.condition.conditions), 2)
+        self.assertEqual(node.condition.ops, ['and'])
+
+    def test_or_operator(self):
+        query = 'select id = 1 or age = 20 (q)'
+        parser = Parser(Lexer(Scanner(query)))
+
+        node = parser.select_expression()
+
+        self.assertIsInstance(node, ast.SelectExpr)
+        self.assertEqual(len(node.condition.conditions), 2)
+        self.assertEqual(node.condition.ops, ['or'])
 
 
-def test_expression_node(fixture_parser):
-    p = fixture_parser('q1 := (project a,b (select id=1 (p)));')
-    tree = p.parse()
-    assert isinstance(tree, ast.Compound)
-    for c in tree.children:
-        assert isinstance(c, ast.Assignment)
-        assert isinstance(c.query, ast.ProjectExpr)
-        assert isinstance(c.query.expr, ast.SelectExpr)
+class ProjectExpressionTestCase(TestCase):
 
+    def test_simple(self):
+        query = 'project name (algo)'
+        parser = Parser(Lexer(Scanner(query)))
 
-# # @pytest.mark.parametrize(
-# #     'query',
-# #     [
-# #         ('q1:=')
-# #     ]
-# # )
-# # FIXME: parametrizar esto
-# @pytest.mark.parametrize(
-#     'query, consumed',
-#     [
-#         ('q1 :=', (lexer.ID, lexer.ASSIGNMENT)),
-#         ('select id=', (lexer.KEYWORDS['select'], lexer.ID, lexer.EQUAL)),
-#         ('project a,b', (lexer.KEYWORDS['project'], lexer.ID, lexer.SEMI, lexer.ID))
-#     ]
-# )
-# def test_consume(fixture_parser, query, consumed):
-#     p = fixture_parser(query)
-#     for token_to_consume in consumed:
-#         p.consume(token_to_consume)
+        node = parser.project_expression()
 
+        self.assertIsInstance(node, ast.ProjectExpr)
+        self.assertEqual(len(node.attrs), 1)
 
-# def test_consume_error(fixture_parser):
-#     p = fixture_parser('q1 :=')
-#     p.consume(lexer.ID)
-#     with pytest.raises(parser.ConsumeError):
-#         p.consume(lexer.SEMI)
+    def test_multiple_attributes(self):
+        query = 'project name, id, age (algo)'
+        parser = Parser(Lexer(Scanner(query)))
 
+        expected_attrs = ['name', 'id', 'age']
 
-# def test_variable(fixture_parser):
-#     p = fixture_parser('q1 :=')
-#     node = p._variable()
-#     assert isinstance(node, parser.Variable)
-#     assert node.token.type == lexer.ID
-#     assert node.token.value == 'q1'
+        node = parser.project_expression()
 
-
-# def test_condition(fixture_parser):
-#     p = fixture_parser("name='gabo'")
-#     node = p._condition()
-#     assert isinstance(node, parser.Condition)
-
+        self.assertIsInstance(node, ast.ProjectExpr)
+        for index, expected_attr in enumerate(expected_attrs):
+            self.assertEqual(node.attrs[index].token.value, expected_attr)
 

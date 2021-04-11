@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/img">
+        <file alias="icon">images/pireal_icon.png</file>
+        <file alias="bwqt">images/bwqt.png</file>
+        <file alias="python">images/python-logo.png</file>
+    </qresource>
+    <qresource prefix="/font">
+        <file alias="awesome">images/font-awesome.ttf</file>
+    </qresource>
+    <qresource prefix="/lang">
+        <file alias="es">lang/esp.qm</file>
+    </qresource>
+</RCC>

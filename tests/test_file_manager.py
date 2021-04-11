@@ -1,7 +1,7 @@
 import pytest
 
-from src.core import file_manager
-from src.core import relation
+from pireal.core import file_manager
+from pireal.core import relation
 
 
 @pytest.mark.parametrize(
@@ -49,7 +49,6 @@ def test_get_files_from_folder(tmpdir):
     assert len(tmpdir.listdir()) == 0
     for f in files:
         path = tmpdir.join(f)
-        # print(path)
         path.write("Some content")
     assert len(tmpdir.listdir()) == len(files)
     _files = file_manager.get_files_from_folder(tmpdir.strpath)

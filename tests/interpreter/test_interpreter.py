@@ -1,9 +1,9 @@
 import pytest
 
 
-from src.core.interpreter import lexer
-from src.core.interpreter import parser
-from src.core.interpreter import rast as ast
+from pireal.interpreter import lexer
+from pireal.interpreter import parser
+from pireal.interpreter import rast as ast
 
 
 # def test_visit_Assignment():

@@ -1,0 +1,47 @@
+#!/usr/bin/python3
+
+# Copyright 2015-2021 - Gabriel Acosta <acostadariogabriel@gmail.com>
+#
+# This file is part of Pireal.
+#
+# Pireal is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# any later version.
+#
+# Pireal is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Pireal; If not, see <http://www.gnu.org/licenses/>.
+
+import os
+import sys
+
+project_base_dir = os.path.abspath(os.path.dirname(os.path.dirname(
+        os.path.realpath(sys.argv[0]))))
+if project_base_dir not in sys.path:
+    sys.path.insert(0, project_base_dir)
+
+from pireal.core import cliparser  # noqa
+from pireal.gui import __version__  # noqa
+from pireal.dirs import create_app_dirs  # noqa
+
+# Parse CLI
+args = cliparser.get_cli().parse_args()
+if args.version:
+    print(__version__)
+    sys.exit(0)
+
+# Creo los dirs antes de leer logs. see #84
+create_app_dirs()
+
+from pireal.core import logger  # noqa
+from pireal import resources  # noqa
+from pireal import main  # noqa
+# Set up logger
+logger.set_up(verbose=args.verbose)
+
+main.start_pireal(args)

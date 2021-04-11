@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>Pireal</Name>
+    <Version>3.1.0</Version>
+    <Title>Pireal</Title>
+    <Publisher>Gabriel Acosta</Publisher>
+    <StartMenuDir>Pireal</StartMenuDir>
+    <TargetDir>@ApplicationsDir@/Pireal</TargetDir>
+    <InstallerWindowIcon>../../icon.ico</InstallerWindowIcon>
+</Installer>

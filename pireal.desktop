@@ -1,10 +1,10 @@
 [Desktop Entry]
-Version=2.0.2
+Version=3.1.0
 Type=Application
 Name=Pireal
 GenericName=Pireal
 Comment=Educational tool for working with Relational Algebra
-Icon=@ INSTALLED_ICON @
 Exec=pireal
+Icon=/usr/share/icons/pireal_icon.png
 Terminal=false
 Categories=Application;Education;

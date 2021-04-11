@@ -21,7 +21,7 @@
 
 import pytest
 
-from src.core.interpreter import scanner
+from pireal.interpreter import scanner
 
 
 @pytest.fixture
