@@ -81,6 +81,8 @@ class QueryContainer(QWidget):
         if self.currentWidget() is not None:
             self._tabs.remove_tab(self.current_index())
             self.__hide()
+            pireal = Pireal.get_service('pireal')
+            pireal.status_bar._line_col_label.hide()
 
     def set_focus_editor_tab(self, index):
         self._tabs.setCurrentIndex(index)
@@ -395,6 +397,13 @@ class EditorWidget(QWidget):
         # Editor connections
         self._editor.modificationChanged[bool].connect(
             lambda modified: self.editorModified.emit(modified))
+        self._editor.cursorPositionChanged.connect(self._on_cursor_position_changed)
+
+    def _on_cursor_position_changed(self):
+        line = self._editor.textCursor().blockNumber() + 1
+        col = self._editor.textCursor().columnNumber() + 1
+        pireal = Pireal.get_service('pireal')
+        pireal.status_bar.update_line_and_col(line, col)
 
     def show_search_widget(self):
         self._search_widget.show()

@@ -90,13 +90,16 @@ class _StatusBar(QFrame):
         self._messages_label.setText(f'Pireal v{__version__}')
         left_layout.addWidget(self._messages_label)
         # Mid widgets
+        self._line_col_label = QLabel('Line: 0, Col: 0')
+        self._line_col_label.hide()
+        mid_layout.addWidget(self._line_col_label)
+        # Right widgets
         execute_button = QToolButton()
         execute_button.setAutoRaise(True)
         execute_button.setFocusPolicy(Qt.NoFocus)
         execute_button.setText('\uf04b')
         execute_button.clicked.connect(lambda: self.playClicked.emit())
         right_layout.addWidget(execute_button)
-        # Right widgets
         dark_mode_button = QToolButton()
         dark_mode_button.setAutoRaise(True)
         dark_mode_button.setFocusPolicy(Qt.NoFocus)
@@ -131,6 +134,11 @@ class _StatusBar(QFrame):
         self._messages_label.setText(msg)
         if timeout > 0:
             QTimer.singleShot(timeout, self._messages_label.clear)
+
+    def update_line_and_col(self, line, col):
+        if not self._line_col_label.isVisible():
+            self._line_col_label.show()
+        self._line_col_label.setText('Line: {}, Col: {}'.format(line, col))
 
 
 class Pireal(QMainWindow):
