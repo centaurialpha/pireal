@@ -17,22 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import shutil
-<<<<<<< HEAD
-from setuptools.command.install import install
 from setuptools import setup, find_packages
 
-
-class CustomInstall(install):
-
-    def run(self):
-        install.run(self)
-
-=======
-from setuptools import setup, find_packages
-
->>>>>>> 3305dee (deploy: add install script to create shortcuts after installation)
 
 classifiers = [
     'Development Status :: 5 - Production/Stable',
@@ -49,20 +35,6 @@ classifiers = [
 
 
 setup(
-<<<<<<< HEAD
-    name="pireal",
-    version="3.0",
-    description="Relational Algebra Interpreter",
-    author="Gabriel Acosta",
-    author_email="acostadariogabriel@gmail.com",
-    url="http://centaurialpha.github.io/pireal",
-    license='GPLv3+',
-    long_description=open('README.md').read(),
-    packages=find_packages(exclude=['tests']),
-    scripts=['bin/pireal'],
-    classifiers=classifiers,
-    cmdclass={'install': CustomInstall},
-=======
     name='pireal',
     version=open('version.txt').read().strip(),
     description='Relational Algebra Interpreter',
@@ -82,5 +54,4 @@ setup(
         'test': ['flake8', 'pycodestyle', 'pytest', 'pytest-cov'],
         'dev': ['ipython'],
     }
->>>>>>> 3305dee (deploy: add install script to create shortcuts after installation)
 )
