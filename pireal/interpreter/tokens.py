@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015-2016 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2021 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -17,60 +17,92 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-ID = 'IDENTIFIER'
-CONSTANT = 'CONSTANT'
-ASSIGNMENT = 'ASSIGNMENT'
-LPAREN = 'LPAREN'
-RPAREN = 'RPAREN'
-INTEGER = 'INTEGER'
-REAL = 'REAL'
-STRING = 'STRING'
-DATE = 'DATE'
-TIME = 'TIME'
-SEMI = 'SEMI'
-SEMICOLON = 'SEMICOLON'
-LESS = 'LESS'
-GREATER = 'GREATER'
-LEQUAL = 'LEQUAL'
-GEQUAL = 'GEQUAL'
-EQUAL = 'EQUAL'
-NOTEQUAL = 'NOTEQUAL'
-SELECT = 'SELECT'
-PROJECT = 'PROJECT'
-NJOIN = 'NJOIN'
-LEFT_OUTER_JOIN = 'LOUTER'
-RIGHT_OUTER_JOIN = 'ROUTER'
-FULL_OUTER_JOIN = 'FOUTER'
-PRODUCT = 'PRODUCT'
-INTERSECT = 'INTERSECT'
-UNION = 'UNION'
-DIFFERENCE = 'DIFFERENCE'
-AND = 'AND'
-OR = 'OR'
-KEYWORD = 'KEYWORD'
-EOF = 'EOF'
-BINARYOP = (
-    NJOIN,
-    LEFT_OUTER_JOIN,
-    RIGHT_OUTER_JOIN,
-    FULL_OUTER_JOIN,
-    PRODUCT,
-    INTERSECT,
-    DIFFERENCE,
-    UNION
-)
+import enum
 
-KEYWORDS = {
-    'select': SELECT,
-    'project': PROJECT,
-    'njoin': NJOIN,
-    'louter': LEFT_OUTER_JOIN,
-    'router': RIGHT_OUTER_JOIN,
-    'fouter': FULL_OUTER_JOIN,
-    'product': PRODUCT,
-    'intersect': INTERSECT,
-    'union': UNION,
-    'difference': DIFFERENCE,
-    'and': AND,
-    'or': OR
-}
+
+class TokenTypes(enum.Enum):
+    SEMI = ';'
+    COMMA = ','
+    LESS = '<'
+    GREATER = '>'
+    LEQUAL = '<='
+    GEQUAL = '>='
+    EQUAL = '='
+    NOTEQUAL = '<>'
+    LPAREN = '('
+    RPAREN = ')'
+    ASSIGNMENT = ':='
+
+    ID = 'IDENTIFIER'
+    CONSTANT = 'CONSTANT'
+    INTEGER = 'INTEGER'
+    REAL = 'REAL'
+    STRING = 'STRING'
+    DATE = 'DATE'
+    TIME = 'TIME'
+    KEYWORD = 'KEYWORD'
+    EOF = 'EOF'
+
+    # RA operators
+    SELECT = 'select'  # no cambiar
+    PROJECT = 'project'
+    # Binary operators
+    PRODUCT = 'product'  # no cambiar
+    INTERSECT = 'intersect'
+    UNION = 'union'
+    DIFFERENCE = 'difference'
+    NJOIN = 'njoin'
+    LEFT_OUTER_JOIN = 'louter'
+    RIGHT_OUTER_JOIN = 'router'
+    FULL_OUTER_JOIN = 'fouter'  # no cambiar
+    # Conditional
+    AND = 'and'
+    OR = 'or'  # no cambiar
+
+
+def _build(start_token, end_token):
+    token_type_list = list(TokenTypes)
+    start_index = token_type_list.index(start_token)
+    end_index = token_type_list.index(end_token)
+    return {
+        token_type.value: token_type
+        for token_type in token_type_list[start_index:end_index+1]
+    }
+
+
+def _build_binary_operators():
+    return _build(TokenTypes.PRODUCT, TokenTypes.FULL_OUTER_JOIN)
+
+
+def _build_reserved_keywords():
+    return _build(TokenTypes.SELECT, TokenTypes.OR)
+
+
+BINARY_OPERATORS = _build_binary_operators()
+RESERVED_KEYWORKDS = _build_reserved_keywords()
+
+# BINARYOP = (
+#     NJOIN,
+#     LEFT_OUTER_JOIN,
+#     RIGHT_OUTER_JOIN,
+#     FULL_OUTER_JOIN,
+#     PRODUCT,
+#     INTERSECT,
+#     DIFFERENCE,
+#     UNION
+# )
+#
+# KEYWORDS = {
+#     'select': SELECT,
+#     'project': PROJECT,
+#     'njoin': NJOIN,
+#     'louter': LEFT_OUTER_JOIN,
+#     'router': RIGHT_OUTER_JOIN,
+#     'fouter': FULL_OUTER_JOIN,
+#     'product': PRODUCT,
+#     'intersect': INTERSECT,
+#     'union': UNION,
+#     'difference': DIFFERENCE,
+#     'and': AND,
+#     'or': OR
+# }

@@ -17,12 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from pireal.interpreter.scanner import Scanner
-from pireal.interpreter.lexer import Lexer
-from pireal.interpreter.parser import Parser
-
-__all__ = [
-    'Scanner',
-    'Lexer',
-    'Parser',
-]
+# from pireal.interpreter.scanner import Scanner
+# from pireal.interpreter.lexer import Lexer
+# from pireal.interpreter.parser import Parser
+#
+# __all__ = [
+#     'Scanner',
+#     'Lexer',
+#     'Parser',
+# ]
