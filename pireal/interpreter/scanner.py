@@ -41,6 +41,12 @@ class Scanner(object):
         # End of file
         return None
 
+    def peek(self):
+        peek_pos = self.index + 1
+        if peek_pos > len(self._text) - 1:
+            return None
+        return self._text[peek_pos]
+
     def next(self):
         """ Move on to the next character in the scanned text """
 

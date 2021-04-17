@@ -20,7 +20,9 @@
 """Test para el Scanner"""
 
 import pytest
+import unittest
 
+from pireal.interpreter.scanner import Scanner
 from pireal.interpreter import scanner
 
 
@@ -86,3 +88,13 @@ def test_repr(scanner_bot):
     sc.next()
     sc.next()
     assert repr(sc) == '<Scanner at 1:3 - Character: r>'
+
+
+class ScannerTestCase(unittest.TestCase):
+
+    def test_peek(self):
+        sc = Scanner('gabox')
+
+        self.assertEqual(sc.peek(), 'a')
+        sc.next()
+        self.assertEqual(sc.peek(), 'b')

@@ -18,19 +18,23 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import enum
+from dataclasses import dataclass
+from typing import Union
 
 
 class TokenTypes(enum.Enum):
+    # Single character
     SEMI = ';'
     COMMA = ','
     LESS = '<'
     GREATER = '>'
-    LEQUAL = '<='
-    GEQUAL = '>='
-    EQUAL = '='
-    NOTEQUAL = '<>'
     LPAREN = '('
     RPAREN = ')'
+    EQUAL = '='
+
+    LEQUAL = '<='
+    GEQUAL = '>='
+    NOTEQUAL = '<>'
     ASSIGNMENT = ':='
 
     ID = 'IDENTIFIER'
@@ -78,31 +82,16 @@ def _build_reserved_keywords():
     return _build(TokenTypes.SELECT, TokenTypes.OR)
 
 
+@dataclass(eq=False)
+class Token:
+    type: TokenTypes
+    value: Union[int, float, str]
+    line: int = None
+    col: int = None
+
+    def __eq__(self, other):
+        return self.type == other.type and self.value == other.value
+
+
 BINARY_OPERATORS = _build_binary_operators()
 RESERVED_KEYWORDS = _build_reserved_keywords()
-
-# BINARYOP = (
-#     NJOIN,
-#     LEFT_OUTER_JOIN,
-#     RIGHT_OUTER_JOIN,
-#     FULL_OUTER_JOIN,
-#     PRODUCT,
-#     INTERSECT,
-#     DIFFERENCE,
-#     UNION
-# )
-#
-# KEYWORDS = {
-#     'select': SELECT,
-#     'project': PROJECT,
-#     'njoin': NJOIN,
-#     'louter': LEFT_OUTER_JOIN,
-#     'router': RIGHT_OUTER_JOIN,
-#     'fouter': FULL_OUTER_JOIN,
-#     'product': PRODUCT,
-#     'intersect': INTERSECT,
-#     'union': UNION,
-#     'difference': DIFFERENCE,
-#     'and': AND,
-#     'or': OR
-# }

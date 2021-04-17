@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015-2016 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2021 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -20,51 +20,21 @@
 # This module is responsible for organizing called "tokens" pieces,
 # each of these tokens has a meaning in language
 
-import re
 from pireal.interpreter.tokens import (
+    Token,
     TokenTypes,
     RESERVED_KEYWORDS,
 )
+
 from pireal.interpreter.exceptions import (
     MissingQuoteError,
     InvalidSyntaxError
 )
-# Formato DD/MM/AAAA o también AAAA/MM/DD
-IS_DATE = re.compile(
-    r'^([\d+]{2}|[\d+]{4})[\/][\d+]{2}[\/]([\d+]{2}|[\d+]{4})$')
-# Formato HH:MM
-IS_TIME = re.compile(r'^[\d+]{2}:[\d+]{2}$')
 
-# TODO: implementar __repr__ en el Lexer
-
-
-class Token(object):
-    """ A Token is the kind of thing that Lexer returns.
-    It holds:
-    - The value of the token
-    - The type of token that it is
-    """
-
-    __slots__ = ('type', 'value')
-
-    def __init__(self, type, value):
-        self.type = type
-        self.value = value
-
-    def __str__(self):
-        """ Returns a representation of token. For example:
-
-        Token(SEMICOLON, ';')
-        Token(IDENTIFIER, foo)
-        """
-
-        return 'Token({type}, {value})'.format(
-            type=self.type,
-            value=self.value
-        )
-
-    def __repr__(self):
-        return self.__str__()
+from pireal.interpreter.utils import (
+    is_date,
+    is_time,
+)
 
 
 class Lexer(object):
@@ -80,19 +50,17 @@ class Lexer(object):
 
     The lexer organized in this way:
 
-    Token(IDENTIFIER, 'query_1')
+    Token(ID, 'query_1')
     Token(ASSIGNMENT, ':=')
-    Token(IDENTIFIER, 'people')
+    Token(ID, 'people')
     Token(NJOIN, 'njoin')
-    Token(IDENTIFIER, 'skills')
+    Token(ID, 'skills')
     """
 
-    __slots__ = ('sc', 'token')
+    QUOTES = ('"', "'")
 
     def __init__(self, scanner):
         self.sc = scanner
-        # Current token
-        self.token = None
 
     def _skip_whitespace(self):
         while self.sc.char is not None and self.sc.char.isspace():
@@ -103,13 +71,14 @@ class Lexer(object):
             self.sc.next()
         self.sc.next()
 
-    def _get_identifier_or_keyword(self):
+    def get_identifier_or_keyword(self):
         """ Handle identifiers and reserved keywords """
+
+        token = Token(type=None, value=None, line=self.sc.lineno, col=self.sc.colno)
 
         var = ''
         while self.sc.char is not None and not self.sc.char.isspace():
             # Recognize identifiers like: query_1, query2323
-            # FIXME: improve this, regex?
             if self.sc.char == '_':
                 var += '_'
                 self.sc.next()
@@ -123,10 +92,18 @@ class Lexer(object):
             var += self.sc.char
             self.sc.next()
 
-        return var
+        token_type = RESERVED_KEYWORDS.get(var)
+        if token_type is None:
+            token.type = TokenTypes.ID
+        else:
+            token.type = token_type
+        token.value = var
+        return token
 
-    def _get_number(self):
+    def get_number(self):
         """ Returns a multidigit integer or float """
+
+        token = Token(type=None, value=None, line=self.sc.lineno, col=self.sc.colno)
 
         number = ''
         while self.sc.char is not None and self.sc.char.isdigit():
@@ -141,22 +118,39 @@ class Lexer(object):
                 number += self.sc.char
                 self.sc.next()
 
-            token = Token(TokenTypes.REAL, float(number))
+            token.type = TokenTypes.REAL
+            token.value = float(number)
         else:
-            token = Token(TokenTypes.INTEGER, int(number))
+            token.type = TokenTypes.INTEGER
+            token.value = int(number)
 
         return token
 
-    # def peek(self, n=1):
-    #     index = self.sc.index
-    #     col = self.sc.colno
-    #     line = self.sc.lineno
-    #     for i in range(n):
-    #         token = self.next_token()
-    #     self.sc.index = index
-    #     self.sc.colno = col
-    #     self.sc.lineno = line
-    #     return token
+    def _get_string(self):
+        """Handle string inside quotes"""
+        self.sc.next()  # consume first quote
+
+        saved_lineno = self.sc.lineno
+        save_col = self.sc.colno
+
+        string = ""
+        while True:
+            # FIXME: check complementary
+            if self.sc.char in Lexer.QUOTES:
+                break
+            try:
+                string += self.sc.char
+            except TypeError:
+                raise MissingQuoteError(
+                    "Missing quote on line: '{0}'",
+                    saved_lineno + 1,
+                    save_col
+                )
+            self.sc.next()
+
+        self.sc.next()  # consume second quote
+
+        return string
 
     def next_token(self):
         """ Lexical analyzer.
@@ -168,18 +162,7 @@ class Lexer(object):
         while self.sc.char is not None:
             # Recognize identifiers and keywords
             if self.sc.char.isalpha():
-                _id = self._get_identifier_or_keyword()
-
-                if _id in RESERVED_KEYWORDS:
-                    return Token(RESERVED_KEYWORDS[_id], _id)
-                return Token(TokenTypes.ID, _id)
-
-            # Assignment
-            if self.sc.char == ':':
-                self.sc.next()
-                if self.sc.char == '=':
-                    self.sc.next()
-                    return Token(TokenTypes.ASSIGNMENT, ':=')
+                return self.get_identifier_or_keyword()
 
             # Ignore any whitespace characters
             if self.sc.char.isspace():
@@ -191,87 +174,114 @@ class Lexer(object):
                 self._skip_comment()
                 continue
 
-            # Operators
-            # Less, not-equal and less-equal
-            if self.sc.char == '<':
+            # Assignment
+            if self.sc.char == ':' and self.sc.peek() == '=':
+                token = Token(
+                    type=TokenTypes.ASSIGNMENT,
+                    value=TokenTypes.ASSIGNMENT.value,
+                    line=self.sc.lineno,
+                    col=self.sc.colno
+                )
                 self.sc.next()
-                if self.sc.char == '>':
-                    self.sc.next()
-                    return Token(TokenTypes.NOTEQUAL, '<>')
-                elif self.sc.char == '=':
-                    self.sc.next()
-                    return Token(TokenTypes.LEQUAL, '<=')
-                return Token(TokenTypes.LESS, '<')
+                self.sc.next()
+                return token
 
-            # Equal
-            if self.sc.char == '=':
+            # Operators <>, <=, >=
+            if self.sc.char == '<' and self.sc.peek() == '>':
+                token = Token(
+                    type=TokenTypes.NOTEQUAL,
+                    value=TokenTypes.NOTEQUAL.value,
+                    line=self.sc.lineno,
+                    col=self.sc.colno
+                )
                 self.sc.next()
-                return Token(TokenTypes.EQUAL, '=')
+                self.sc.next()
+                return token
 
-            # Greater and greater-equal
-            if self.sc.char == '>':
+            if self.sc.char == '<' and self.sc.peek() == '=':
+                token = Token(
+                    type=TokenTypes.LEQUAL,
+                    value=TokenTypes.LEQUAL.value,
+                    line=self.sc.lineno,
+                    col=self.sc.colno
+                )
                 self.sc.next()
-                if self.sc.char == '=':
-                    self.sc.next()
-                    return Token(TokenTypes.GEQUAL, '>=')
-                return Token(TokenTypes.GREATER, '>')
+                self.sc.next()
+                return token
 
-            # Semicolon
-            if self.sc.char == ';':
+            if self.sc.char == '>' and self.sc.peek() == '=':
+                token = Token(
+                    type=TokenTypes.GEQUAL,
+                    value=TokenTypes.GEQUAL.value,
+                    line=self.sc.lineno,
+                    col=self.sc.colno
+                )
                 self.sc.next()
-                return Token(TokenTypes.SEMI, ';')
+                self.sc.next()
+                return token
 
             # Number
             if self.sc.char.isdigit():
-                return self._get_number()
+                return self.get_number()
 
-            # Strings
-            if self.sc.char == "'":
+            # Strings, dates, times
+            if self.sc.char in Lexer.QUOTES:
+                string = self._get_string()
+                # ok, date = build_date(string)
+                # if ok:
+                #     return Token(
+                #         type=TokenTypes.DATE,
+                #         value=date,
+                #         line=self.sc.lineno,
+                #         col=self.sc.colno
+                #     )
+                # ok, time = build_time(string)
+                # if ok:
+                #     return Token(
+                #         type=TokenTypes.TIME,
+                #         value=time,
+                #         line=self.sc.lineno,
+                #         col=self.sc.colno
+                #     )
+                if is_date(string):
+                    return Token(
+                        type=TokenTypes.DATE,
+                        value=string,
+                        line=self.sc.lineno,
+                        col=self.sc.colno
+                    )
+                elif is_time(string):
+                    return Token(
+                        type=TokenTypes.TIME,
+                        value=string,
+                        line=self.sc.lineno,
+                        col=self.sc.colno
+                    )
+                return Token(
+                    type=TokenTypes.STRING,
+                    value=string,
+                    line=self.sc.lineno,
+                    col=self.sc.colno
+                )
+
+            # Single-character
+            try:
+                token_type = TokenTypes(self.sc.char)
+            except ValueError:
+                raise InvalidSyntaxError(
+                    self.sc.lineno,
+                    self.sc.colno,
+                    self.sc.char
+                )
+            else:
+                token = Token(
+                    type=token_type,
+                    value=token_type.value,
+                    line=self.sc.lineno,
+                    col=self.sc.colno,
+                )
                 self.sc.next()
-                string = ""
-                saved_lineno = self.sc.lineno
-                save_col = self.sc.colno
-                while True:
-                    if self.sc.char == "'":
-                        break
-                    try:
-                        string += self.sc.char
-                    except TypeError:
-                        raise MissingQuoteError(
-                            "Missing quote on line: '{0}'",
-                            saved_lineno + 1,
-                            save_col
-                        )
-                    self.sc.next()
-
-                self.sc.next()
-                # Tengo la cadena, ahora compruebo si es una fecha o una
-                # hora (time)
-                if IS_DATE.match(string):
-                    return Token(TokenTypes.DATE, string)
-                elif IS_TIME.match(string):
-                    return Token(TokenTypes.TIME, string)
-                return Token(TokenTypes.STRING, string)
-
-            if self.sc.char == '(':
-                self.sc.next()
-                return Token(TokenTypes.LPAREN, '(')
-
-            # Right parenthesis
-            if self.sc.char == ')':
-                self.sc.next()
-                return Token(TokenTypes.RPAREN, ')')
-
-            # Comma
-            if self.sc.char == ',':
-                self.sc.next()
-                return Token(TokenTypes.COMMA, ',')
-
-            raise InvalidSyntaxError(
-                self.sc.lineno,
-                self.sc.colno,
-                self.sc.char
-            )
+                return token
 
         # EOF
         return Token(TokenTypes.EOF, None)

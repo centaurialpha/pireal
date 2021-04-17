@@ -1,123 +1,108 @@
-import pytest
-from unittest import mock
+import unittest
 
-from pireal.interpreter import scanner
-from pireal.interpreter import lexer
-from pireal.interpreter.tokens import TokenTypes, RESERVED_KEYWORDS
-from pireal.interpreter import exceptions
-
-
-@pytest.fixture
-def fixture_lexer():
-    def _make_lexer(text):
-        sc = scanner.Scanner(text)
-        lex = lexer.Lexer(sc)
-        return lex
-    return _make_lexer
-
-
-@pytest.mark.parametrize(
-    'chars, expected, ttype, rep',
-    [
-        ('234asdasd asd ', 234, TokenTypes.INTEGER, 'INTEGER'),
-        ('9.0<<>>', 9.0, TokenTypes.REAL, 'REAL'),
-        ('9>====84<<>.223', 9, TokenTypes.INTEGER, 'INTEGER')
-    ]
+from pireal.interpreter.lexer import (
+    Lexer,
+    Token,
 )
-def test_get_number(fixture_lexer, chars, expected, ttype, rep):
-    lex = fixture_lexer(chars)
-    tkn = lex._get_number()
-    assert tkn.type == ttype
-    assert tkn.value == expected
-    # assert repr(tkn) == 'Token({}, {})'.format(rep, tkn.value)
+from pireal.interpreter.exceptions import InvalidSyntaxError
+from pireal.interpreter.tokens import TokenTypes
+from pireal.interpreter.scanner import Scanner
 
 
-@pytest.mark.parametrize(
-    'text, expected',
-    [
-        ('gab.o aa s', 'gab'),
-        ('gab_o   ', 'gab_o'),
-        ('project', 'project'),
-        ('select_', 'select_'),
-        ('foo_bar_23 foo', 'foo_bar_23')
-    ]
-)
-def test_get_identifier_or_keyword(fixture_lexer, text, expected):
-    lex = fixture_lexer(text)
-    _id = lex._get_identifier_or_keyword()
-    assert _id == expected
+class LexerTestCase(unittest.TestCase):
 
+    def setUp(self):
+        pass
 
-@pytest.mark.parametrize(
-    'text, called',
-    [
-        ('asd asd', 1),
-        ('sd sdsd sds s', 3),
-        ('hola gabo como estas <>>>> pireal es lo más ', 9)
-    ]
-)
-def test_skip_whitespace(fixture_lexer, text, called):
-    lex = fixture_lexer(text)
-    with mock.patch.object(lexer.Lexer, '_skip_whitespace', wraps=lex._skip_whitespace) as m:
-        while lex.next_token().value is not None:
-            pass
-        assert m.call_count == called
+    def test_get_number(self):
+        numbers = ['28', '3.14156', '111111', '1.33']
+        expected_tokens = [
+            Token(TokenTypes.INTEGER, 28),
+            Token(TokenTypes.REAL, 3.14156),
+            Token(TokenTypes.INTEGER, 111111),
+            Token(TokenTypes.REAL, 1.33),
+        ]
 
+        for number, expected_token in zip(numbers, expected_tokens):
+            with self.subTest(number=number):
+                lex = Lexer(Scanner(number))
+                current_token = lex.get_number()
 
-@pytest.mark.parametrize(
-    'text, called',
-    [
-        ('d\n%asda\n%dsd', 2),
-        ('asdasd\n%dsadasd\n%dsadasd\n%dsad', 3),
-        ('adasdasd', 0)
-    ]
-)
-def test_skip_comment(fixture_lexer, text, called):
-    lex = fixture_lexer(text)
-    with mock.patch.object(lexer.Lexer, '_skip_comment', wraps=lex._skip_comment) as m:
-        while lex.next_token().value is not None:
-            pass
-        assert m.call_count == called
+                self.assertEqual(current_token, expected_token)
 
+    def test_next_token(self):
+        text = (
+            '% comentario\n'
+            '; , < > ( ) ='  # single characters
+            '<= >= <> :='
+            'query_1234 qqq '
+            'select project product intersect union difference njoin louter router fouter '
+            'and or '
+            '1234 22.22 '
+            '\'gabox\' \'20/01/1991\' \'15:15\''
+        )
+        lex = Lexer(Scanner(text))
+        expected_tokens = (
+            Token(TokenTypes.SEMI, ';'),
+            Token(TokenTypes.COMMA, ','),
+            Token(TokenTypes.LESS, '<'),
+            Token(TokenTypes.GREATER, '>'),
+            Token(TokenTypes.LPAREN, '('),
+            Token(TokenTypes.RPAREN, ')'),
+            Token(TokenTypes.EQUAL, '='),
+            Token(TokenTypes.LEQUAL, '<='),
+            Token(TokenTypes.GEQUAL, '>='),
+            Token(TokenTypes.NOTEQUAL, '<>'),
+            Token(TokenTypes.ASSIGNMENT, ':='),
+            Token(TokenTypes.ID, 'query_1234'),
+            Token(TokenTypes.ID, 'qqq'),
+            Token(TokenTypes.SELECT, 'select'),
+            Token(TokenTypes.PROJECT, 'project'),
+            Token(TokenTypes.PRODUCT, 'product'),
+            Token(TokenTypes.INTERSECT, 'intersect'),
+            Token(TokenTypes.UNION, 'union'),
+            Token(TokenTypes.DIFFERENCE, 'difference'),
+            Token(TokenTypes.NJOIN, 'njoin'),
+            Token(TokenTypes.LEFT_OUTER_JOIN, 'louter'),
+            Token(TokenTypes.RIGHT_OUTER_JOIN, 'router'),
+            Token(TokenTypes.FULL_OUTER_JOIN, 'fouter'),
+            Token(TokenTypes.AND, 'and'),
+            Token(TokenTypes.OR, 'or'),
+            Token(TokenTypes.INTEGER, 1234),
+            Token(TokenTypes.REAL, 22.22),
+            Token(TokenTypes.STRING, 'gabox'),
+            Token(TokenTypes.DATE, '20/01/1991'),
+            Token(TokenTypes.TIME, '15:15'),
+            Token(TokenTypes.EOF, None),
+        )
 
-@pytest.mark.parametrize(
-    'token_str, ttype, value',
-    [
-        (':=', TokenTypes.ASSIGNMENT, ':='),
-        ('<', TokenTypes.LESS, '<'),
-        ('>', TokenTypes.GREATER, '>'),
-        ('<>', TokenTypes.NOTEQUAL, '<>'),
-        ('<=', TokenTypes.LEQUAL, '<='),
-        ('>=', TokenTypes.GEQUAL, '>='),
-        ('=', TokenTypes.EQUAL, '='),
-        (';', TokenTypes.SEMI, ';'),
-        ('(', TokenTypes.LPAREN, '('),
-        (')', TokenTypes.RPAREN, ')'),
-        (',', TokenTypes.COMMA, ','),
-        ('123', TokenTypes.INTEGER, 123),
-        ('3.14', TokenTypes.REAL, 3.14),
-        ("'hola'", TokenTypes.STRING, "hola"),
-        ("'20/01/1991'", TokenTypes.DATE, "20/01/1991"),
-        ("'15:15'", TokenTypes.TIME, "15:15"),
-        ("intersect", RESERVED_KEYWORDS['intersect'], "intersect")
-    ]
-)
-def test_next_token(fixture_lexer, token_str, ttype, value):
-    lex = fixture_lexer(token_str)
-    token = lex.next_token()
-    assert token.type == ttype
-    assert token.value == value
+        for expected_token in expected_tokens:
+            with self.subTest(token=expected_token):
+                current_token = lex.next_token()
+                self.assertEqual(current_token, expected_token)
 
-
-def test_missing_quote_error(fixture_lexer):
-    lex = fixture_lexer("'hola")
-    with pytest.raises(exceptions.MissingQuoteError):
+    def test_syntax_error(self):
+        lex = Lexer(Scanner('12 / id * 2'))
         lex.next_token()
+        with self.assertRaises(InvalidSyntaxError):
+            lex.next_token()
 
+    def test_get_identifier_or_keyword(self):
+        keywords_and_ids = [
+            'id',
+            'hola_como_estas',
+            'select',
+            'query_123',
+        ]
+        expected_tokens = [
+            Token(TokenTypes.ID, 'id'),
+            Token(TokenTypes.ID, 'hola_como_estas'),
+            Token(TokenTypes.SELECT, 'select'),
+            Token(TokenTypes.ID, 'query_123'),
+        ]
+        for word, expected_token in zip(keywords_and_ids, expected_tokens):
+            with self.subTest(identifier=word):
+                lex = Lexer(Scanner(word))
+                token = lex.get_identifier_or_keyword()
 
-def test_raise_invalid_syntax_error(fixture_lexer):
-    lex = fixture_lexer('< > = ] <')
-    for _ in range(3):
-        lex.next_token()
-    with pytest.raises(exceptions.InvalidSyntaxError):
-        lex.next_token()
+                self.assertEqual(token, expected_token)
