@@ -4,14 +4,11 @@ from unittest import (
     mock,
 )
 
-from pireal.interpreter import (
-    Scanner,
-    Lexer,
-    Parser
-)
-from pireal.interpreter.lexer import Token
+from pireal.interpreter.scanner import Scanner
+from pireal.interpreter.lexer import Lexer, Token
+from pireal.interpreter.parser import Parser
 from pireal.interpreter import rast as ast
-from pireal.interpreter import tokens
+from pireal.interpreter.tokens import TokenTypes
 from pireal.interpreter.exceptions import ConsumeError
 
 
@@ -84,10 +81,10 @@ class ParserTestCase(TestCase):
         query = 'q1 :='
         parser = Parser(Lexer(Scanner(query)))
 
-        parser.consume(tokens.ID)
+        parser.consume(TokenTypes.ID)
         with self.assertRaises(ConsumeError):
-            parser.consume(tokens.SELECT)
-        parser.consume(tokens.ASSIGNMENT)
+            parser.consume(TokenTypes.SELECT)
+        parser.consume(TokenTypes.ASSIGNMENT)
 
 
 class SelectExpressionTestCase(TestCase):

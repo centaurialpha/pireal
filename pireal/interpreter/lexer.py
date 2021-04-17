@@ -22,25 +22,8 @@
 
 import re
 from pireal.interpreter.tokens import (
-    ID,
-    ASSIGNMENT,
-    LPAREN,
-    RPAREN,
-    INTEGER,
-    REAL,
-    STRING,
-    DATE,
-    TIME,
-    SEMI,
-    SEMICOLON,
-    LESS,
-    GREATER,
-    LEQUAL,
-    GEQUAL,
-    EQUAL,
-    NOTEQUAL,
-    KEYWORDS,
-    EOF
+    TokenTypes,
+    RESERVED_KEYWORDS,
 )
 from pireal.interpreter.exceptions import (
     MissingQuoteError,
@@ -158,9 +141,9 @@ class Lexer(object):
                 number += self.sc.char
                 self.sc.next()
 
-            token = Token(REAL, float(number))
+            token = Token(TokenTypes.REAL, float(number))
         else:
-            token = Token(INTEGER, int(number))
+            token = Token(TokenTypes.INTEGER, int(number))
 
         return token
 
@@ -187,16 +170,16 @@ class Lexer(object):
             if self.sc.char.isalpha():
                 _id = self._get_identifier_or_keyword()
 
-                if _id in KEYWORDS:
-                    return Token(KEYWORDS[_id], _id)
-                return Token(ID, _id)
+                if _id in RESERVED_KEYWORDS:
+                    return Token(RESERVED_KEYWORDS[_id], _id)
+                return Token(TokenTypes.ID, _id)
 
             # Assignment
             if self.sc.char == ':':
                 self.sc.next()
                 if self.sc.char == '=':
                     self.sc.next()
-                    return Token(ASSIGNMENT, ':=')
+                    return Token(TokenTypes.ASSIGNMENT, ':=')
 
             # Ignore any whitespace characters
             if self.sc.char.isspace():
@@ -214,29 +197,29 @@ class Lexer(object):
                 self.sc.next()
                 if self.sc.char == '>':
                     self.sc.next()
-                    return Token(NOTEQUAL, '<>')
+                    return Token(TokenTypes.NOTEQUAL, '<>')
                 elif self.sc.char == '=':
                     self.sc.next()
-                    return Token(LEQUAL, '<=')
-                return Token(LESS, '<')
+                    return Token(TokenTypes.LEQUAL, '<=')
+                return Token(TokenTypes.LESS, '<')
 
             # Equal
             if self.sc.char == '=':
                 self.sc.next()
-                return Token(EQUAL, '=')
+                return Token(TokenTypes.EQUAL, '=')
 
             # Greater and greater-equal
             if self.sc.char == '>':
                 self.sc.next()
                 if self.sc.char == '=':
                     self.sc.next()
-                    return Token(GEQUAL, '>=')
-                return Token(GREATER, '>')
+                    return Token(TokenTypes.GEQUAL, '>=')
+                return Token(TokenTypes.GREATER, '>')
 
             # Semicolon
             if self.sc.char == ';':
                 self.sc.next()
-                return Token(SEMICOLON, ';')
+                return Token(TokenTypes.SEMI, ';')
 
             # Number
             if self.sc.char.isdigit():
@@ -265,24 +248,24 @@ class Lexer(object):
                 # Tengo la cadena, ahora compruebo si es una fecha o una
                 # hora (time)
                 if IS_DATE.match(string):
-                    return Token(DATE, string)
+                    return Token(TokenTypes.DATE, string)
                 elif IS_TIME.match(string):
-                    return Token(TIME, string)
-                return Token(STRING, string)
+                    return Token(TokenTypes.TIME, string)
+                return Token(TokenTypes.STRING, string)
 
             if self.sc.char == '(':
                 self.sc.next()
-                return Token(LPAREN, '(')
+                return Token(TokenTypes.LPAREN, '(')
 
             # Right parenthesis
             if self.sc.char == ')':
                 self.sc.next()
-                return Token(RPAREN, ')')
+                return Token(TokenTypes.RPAREN, ')')
 
             # Comma
             if self.sc.char == ',':
                 self.sc.next()
-                return Token(SEMI, ',')
+                return Token(TokenTypes.COMMA, ',')
 
             raise InvalidSyntaxError(
                 self.sc.lineno,
@@ -291,4 +274,4 @@ class Lexer(object):
             )
 
         # EOF
-        return Token(EOF, None)
+        return Token(TokenTypes.EOF, None)

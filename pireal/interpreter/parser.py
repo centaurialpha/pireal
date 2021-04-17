@@ -20,30 +20,9 @@
 from collections import OrderedDict
 
 from pireal.interpreter.tokens import (
-    STRING,
-    DATE,
-    TIME,
-    SEMICOLON,
-    INTEGER,
-    REAL,
-    ID,
-    LPAREN,
-    RPAREN,
-    SEMI,
-    SELECT,
-    PROJECT,
-    BINARYOP,
-    EQUAL,
-    NOTEQUAL,
-    LESS,
-    GREATER,
-    LEQUAL,
-    GEQUAL,
-    KEYWORDS,
-    AND,
-    OR,
-    ASSIGNMENT,
-    EOF
+    TokenTypes,
+    BINARY_OPERATORS,
+    RESERVED_KEYWORDS,
 )
 from pireal.interpreter.exceptions import ConsumeError
 from pireal.interpreter.exceptions import DuplicateRelationNameError
@@ -128,7 +107,7 @@ class Parser(object):
 
         nodes = []
 
-        while self.token.type != EOF:
+        while self.token.type != TokenTypes.EOF:
             nodes.append(self.assignment())
 
         compound = ast.Compound()
@@ -142,11 +121,11 @@ class Parser(object):
         """
 
         rname = ast.Variable(self.token)
-        self.consume(ID)
-        self.consume(ASSIGNMENT)
+        self.consume(TokenTypes.ID)
+        self.consume(TokenTypes.ASSIGNMENT)
         q = self.expression()
         node = ast.Assignment(rname, q)
-        self.consume(SEMICOLON)
+        self.consume(TokenTypes.SEMI)
 
         return node
 
@@ -156,13 +135,13 @@ class Parser(object):
         """
 
         operator = self.token
-        self.consume(KEYWORDS.get(operator.value))
+        self.consume(RESERVED_KEYWORDS.get(operator.value))
         right_node = self.expression()
         return ast.BinaryOp(left_node, operator, right_node)
 
     def _variable(self):
         node = ast.Variable(self.token)
-        self.consume(ID)
+        self.consume(TokenTypes.ID)
         return node
 
     def project_expression(self):
@@ -170,11 +149,11 @@ class Parser(object):
         ProjectExpression : PROJECT AttrList (Expression)
         """
 
-        self.consume(PROJECT)
+        self.consume(TokenTypes.PROJECT)
         attributes = self.attributes()
-        self.consume(LPAREN)
+        self.consume(TokenTypes.LPAREN)
         expression = self.expression()
-        self.consume(RPAREN)
+        self.consume(TokenTypes.RPAREN)
         return ast.ProjectExpr(attributes, expression)
 
     def select_expression(self):
@@ -182,26 +161,26 @@ class Parser(object):
         SelectExpression : SELECT Condition (Expression)
         """
 
-        self.consume(SELECT)
+        self.consume(TokenTypes.SELECT)
         condition = self.condition()
         # Bool operation
         bool_op = None
-        if self.token.type in (AND, OR):
+        if self.token.type in (TokenTypes.AND, TokenTypes.OR):
             bool_op = ast.BoolOp()
             bool_op.conditions.append(condition)
 
-            while self.token.type in (AND, OR):
+            while self.token.type in (TokenTypes.AND, TokenTypes.OR):
                 op = self.token.value
-                self.consume(KEYWORDS.get(op))
+                self.consume(RESERVED_KEYWORDS.get(op))
                 bool_op.ops.append(op)
                 bool_op.conditions.append(self.condition())
 
         if bool_op is not None:
             condition = bool_op
         # FIXME: puede venir otra CONDITION
-        self.consume(LPAREN)
+        self.consume(TokenTypes.LPAREN)
         expression = self.expression()
-        self.consume(RPAREN)
+        self.consume(TokenTypes.RPAREN)
         return ast.SelectExpr(condition, expression)
 
     def expression(self):
@@ -214,27 +193,27 @@ class Parser(object):
         """
 
         # Select
-        if self.token.type == SELECT:
+        if self.token.type == TokenTypes.SELECT:
             node = self.select_expression()
 
         # Project
-        elif self.token.type == PROJECT:
+        elif self.token.type == TokenTypes.PROJECT:
             node = self.project_expression()
 
         # (Expression) or (Expression) BinaryOp (Expression)
-        elif self.token.type == LPAREN:
-            self.consume(LPAREN)
+        elif self.token.type == TokenTypes.LPAREN:
+            self.consume(TokenTypes.LPAREN)
             node = self.expression()
-            self.consume(RPAREN)
+            self.consume(TokenTypes.RPAREN)
             # If next token is binary operator, them create BinaryOp node
-            if self.token.type in BINARYOP:
+            if self.token.type in BINARY_OPERATORS:
                 # Pass the left node
                 node = self._binary_expression(node)
 
         # Var
-        elif self.token.type == ID:
+        elif self.token.type == TokenTypes.ID:
             node = self._variable()
-            if self.token.type in BINARYOP:
+            if self.token.value in BINARY_OPERATORS:
                 # Pass the left node
                 node = self._binary_expression(node)
         else:
@@ -247,11 +226,11 @@ class Parser(object):
                   | (Condition)
         """
 
-        if self.token.type == LPAREN:
-            self.consume(LPAREN)
+        if self.token.type == TokenTypes.LPAREN:
+            self.consume(TokenTypes.LPAREN)
             node = self.condition()
-            self.consume(RPAREN)
-        elif self.token.type == ID:
+            self.consume(TokenTypes.RPAREN)
+        elif self.token.type == TokenTypes.ID:
             compared = self._compared()
             comp = self._comp()
             compared2 = self._compared()
@@ -273,18 +252,18 @@ class Parser(object):
 
         node = self.token
 
-        if self.token.type == EQUAL:
-            self.consume(EQUAL)
-        elif self.token.type == NOTEQUAL:
-            self.consume(NOTEQUAL)
-        elif self.token.type == LESS:
-            self.consume(LESS)
-        elif self.token.type == GREATER:
-            self.consume(GREATER)
-        elif self.token.type == LEQUAL:
-            self.consume(LEQUAL)
-        elif self.token.type == GEQUAL:
-            self.consume(GEQUAL)
+        if self.token.type == TokenTypes.EQUAL:
+            self.consume(TokenTypes.EQUAL)
+        elif self.token.type == TokenTypes.NOTEQUAL:
+            self.consume(TokenTypes.NOTEQUAL)
+        elif self.token.type == TokenTypes.LESS:
+            self.consume(TokenTypes.LESS)
+        elif self.token.type == TokenTypes.GREATER:
+            self.consume(TokenTypes.GREATER)
+        elif self.token.type == TokenTypes.LEQUAL:
+            self.consume(TokenTypes.LEQUAL)
+        elif self.token.type == TokenTypes.GEQUAL:
+            self.consume(TokenTypes.GEQUAL)
         else:
             self.consume('COMPARATOR')
 
@@ -296,9 +275,9 @@ class Parser(object):
                  | Data
         """
 
-        if self.token.type == ID:
+        if self.token.type == TokenTypes.ID:
             node = ast.Variable(self.token)
-            self.consume(ID)
+            self.consume(TokenTypes.ID)
         else:
             node = self._data()
 
@@ -313,21 +292,21 @@ class Parser(object):
              | STRING
         """
 
-        if self.token.type == INTEGER:
+        if self.token.type == TokenTypes.INTEGER:
             node = ast.Number(self.token)
-            self.consume(INTEGER)
-        elif self.token.type == REAL:
+            self.consume(TokenTypes.INTEGER)
+        elif self.token.type == TokenTypes.REAL:
             node = ast.Number(self.token)
-            self.consume(REAL)
-        elif self.token.type == DATE:
+            self.consume(TokenTypes.REAL)
+        elif self.token.type == TokenTypes.DATE:
             node = ast.Date(self.token)
-            self.consume(DATE)
-        elif self.token.type == TIME:
+            self.consume(TokenTypes.DATE)
+        elif self.token.type == TokenTypes.TIME:
             node = ast.Time(self.token)
-            self.consume(TIME)
-        elif self.token.type == STRING:
+            self.consume(TokenTypes.TIME)
+        elif self.token.type == TokenTypes.STRING:
             node = ast.String(self.token)
-            self.consume(STRING)
+            self.consume(TokenTypes.STRING)
         else:
             self.consume("CONSTANT")
 
@@ -340,14 +319,14 @@ class Parser(object):
         """
 
         node = ast.Variable(self.token)
-        self.consume(ID)
+        self.consume(TokenTypes.ID)
 
         results = [node]
 
-        while self.token.type == SEMI:
-            self.consume(SEMI)
+        while self.token.type == TokenTypes.COMMA:
+            self.consume(TokenTypes.COMMA)
             results.append(ast.Variable(self.token))
-            self.consume(ID)
+            self.consume(TokenTypes.ID)
 
         return results
 

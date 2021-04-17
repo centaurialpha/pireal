@@ -79,7 +79,7 @@ def _build_reserved_keywords():
 
 
 BINARY_OPERATORS = _build_binary_operators()
-RESERVED_KEYWORKDS = _build_reserved_keywords()
+RESERVED_KEYWORDS = _build_reserved_keywords()
 
 # BINARYOP = (
 #     NJOIN,
