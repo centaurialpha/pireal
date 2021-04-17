@@ -22,10 +22,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
+          pip install . --upgrade
       - name: Lint
         run: |
           pycodestyle pireal
           flake8 pireal
-      - name: Tests
+      - name: unittest
         run: |
-          pytest tests -v --cov pireal.core --cov-report term-missing
+          pytest -v tests/unit
+      - name: interpreter tests
+        run: |
+          pytest -v tests/interpreter
+      - name: integration tests
+        run: |
+          pytest -v tests/integration

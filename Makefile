@@ -36,14 +36,19 @@ flake8:
 
 lint: pep8 flake8
 
-test:
-	@$(PYTEST) -v --cov pireal.core --cov pireal.interpreter --cov-report term-missing -m "not integration and not gui" --ignore=tests/gui
+test-unit:
+	pytest -v tests/unit --cov pireal.core --cov-report term-missing
+
+test-interpreter:
+	pytest -v tests/interpreter --cov pireal.interpreter --cov-report term-missing
 
 test-gui:
 	@$(PYTEST) -v -m gui
 
 test-integration:
-	@$(PYTEST) -v -m integration --ignore=tests/gui
+	pytest -v tests/integration
+
+test: test-unit test-interpreter test-integration
 
 dist: clean
 	python setup.py sdist
