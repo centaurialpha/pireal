@@ -19,7 +19,7 @@
 - [PyQt5](http://www.riverbankcomputing.co.uk/software/pyqt/intro)
 
 ### Implemented Operators
-The operations are implemented in [relation.py](https://github.com/centaurialpha/pireal/blob/master/src/core/relation.py).
+The operations are implemented in [relation.py](https://github.com/centaurialpha/pireal/blob/development/pireal/core/relation.py).
 
 |Operator|Supported|
 |--------|---------|
