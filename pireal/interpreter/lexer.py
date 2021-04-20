@@ -227,33 +227,19 @@ class Lexer(object):
             # Strings, dates, times
             if self.sc.char in Lexer.QUOTES:
                 string = self._get_string()
-                # ok, date = build_date(string)
-                # if ok:
-                #     return Token(
-                #         type=TokenTypes.DATE,
-                #         value=date,
-                #         line=self.sc.lineno,
-                #         col=self.sc.colno
-                #     )
-                # ok, time = build_time(string)
-                # if ok:
-                #     return Token(
-                #         type=TokenTypes.TIME,
-                #         value=time,
-                #         line=self.sc.lineno,
-                #         col=self.sc.colno
-                #     )
-                if is_date(string):
+                ok, date = is_date(string)
+                if ok:
                     return Token(
                         type=TokenTypes.DATE,
-                        value=string,
+                        value=date,
                         line=self.sc.lineno,
                         col=self.sc.colno
                     )
-                elif is_time(string):
+                ok, time = is_time(string)
+                if ok:
                     return Token(
                         type=TokenTypes.TIME,
-                        value=string,
+                        value=time,
                         line=self.sc.lineno,
                         col=self.sc.colno
                     )

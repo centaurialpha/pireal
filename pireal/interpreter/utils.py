@@ -3,20 +3,22 @@ from datetime import datetime
 
 def is_date(string) -> bool:
     ok = True
+    date = None
     try:
-        datetime.strptime(string, '%d/%m/%Y')
+        date = datetime.strptime(string, '%d/%m/%Y').date()
     except ValueError:
         try:
-            datetime.strptime(string, '%Y/%m/%d')
+            date = datetime.strptime(string, '%Y/%m/%d').date()
         except ValueError:
             ok = False
-    return ok
+    return ok, date
 
 
 def is_time(string) -> bool:
     ok = True
+    time = None
     try:
-        datetime.strptime(string, '%H:%M')
+        time = datetime.strptime(string, '%H:%M').time()
     except ValueError:
         ok = False
-    return ok
+    return ok, time

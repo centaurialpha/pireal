@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from collections import OrderedDict
-
 from pireal.interpreter.tokens import (
     TokenTypes,
     BINARY_OPERATORS,
@@ -342,7 +340,7 @@ class Interpreter(ast.NodeVisitor):
 
     # key: relation_name
     # value: query
-    SCOPE = OrderedDict()
+    SCOPE = {}
 
     def __init__(self, parser):
         self.parser = parser

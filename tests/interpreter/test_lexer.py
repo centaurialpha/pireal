@@ -1,4 +1,5 @@
 import unittest
+import datetime
 
 from pireal.interpreter.lexer import (
     Lexer,
@@ -71,8 +72,8 @@ class LexerTestCase(unittest.TestCase):
             Token(TokenTypes.INTEGER, 1234),
             Token(TokenTypes.REAL, 22.22),
             Token(TokenTypes.STRING, 'gabox'),
-            Token(TokenTypes.DATE, '20/01/1991'),
-            Token(TokenTypes.TIME, '15:15'),
+            Token(TokenTypes.DATE, datetime.date(day=20, month=1, year=1991)),
+            Token(TokenTypes.TIME, datetime.time(hour=15, minute=15)),
             Token(TokenTypes.EOF, None),
         )
 

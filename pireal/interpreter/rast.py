@@ -1,6 +1,3 @@
-import datetime
-
-
 class AST(object):
     """ Base class for all nodes """
     pass
@@ -30,18 +27,13 @@ class String(AST):
 class Date(AST):
 
     def __init__(self, token):
-        try:
-            date = datetime.datetime.strptime(token.value, "%d/%m/%Y").date()
-        except ValueError:
-            date = datetime.datetime.strptime(token.value, "%Y/%m/%d").date()
-        self.date = date
+        self.date = token.value
 
 
 class Time(AST):
 
     def __init__(self, token):
-        hour, minute = map(int, token.value.split(':'))
-        self.time = datetime.time(hour, minute)
+        self.time = token.value
 
 
 class ProjectExpr(AST):

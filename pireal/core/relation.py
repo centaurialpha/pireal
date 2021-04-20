@@ -23,7 +23,7 @@
 import re
 import itertools
 
-from pireal.core.rtypes import RelationStr
+from pireal.core.rtypes import RType
 from pireal.core.ordered_set import OrderedSet
 
 IS_VALID_FIELD_NAME = re.compile("^[_á-úa-zA-Z][_á-úa-zA-Z0-9]*$")
@@ -194,7 +194,7 @@ class Relation(object):
         expr = compile(expression, "select", "eval")
 
         for tupla in self.content:
-            attrs = {attr: RelationStr(tupla[e]).cast()
+            attrs = {attr: RType.cast(tupla[e])
                      for e, attr in enumerate(self.header)}
             try:
                 if eval(expr, datetime_dict, attrs):
