@@ -46,7 +46,7 @@ test-gui:
 	@$(PYTEST) -v -m gui
 
 test-integration:
-	pytest -v tests/integration
+	pytest -v tests/integration -s
 
 test: test-unit test-interpreter test-integration
 

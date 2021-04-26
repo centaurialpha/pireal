@@ -16,29 +16,29 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
-
-# -*- coding: utf-8 -*-
-#
-# Copyright 2015-2018 - Gabriel Acosta <acostadariogabriel@gmail.com>
-#
-# This file is part of Pireal.
-#
-# Pireal is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# any later version.
-#
-# Pireal is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Pireal; If not, see <http://www.gnu.org/licenses/>.
-
+import unittest
 import pytest
 
 from pireal.core import relation
+from pireal.core.relation import Relation
+
+
+class RelationTestCase(unittest.TestCase):
+
+    def test_select_with_date(self):
+        r1 = Relation()
+        r1.header = ['id', 'dates']
+        r1.insert(('1', '20/01/1991'))
+        r1.insert(('2', '20/01/1993'))
+        r1.insert(('3', '20/01/1998'))
+
+        expected_relation = Relation()
+        expected_relation.header = ['id', 'dates']
+        expected_relation.insert(('2', '20/01/1993'))
+        expected_relation.insert(('3', '20/01/1998'))
+
+        r = r1.select("dates >= datetime.date(1993, 1, 20)")
+        print(r)
 
 
 @pytest.fixture

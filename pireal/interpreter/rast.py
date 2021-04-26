@@ -1,6 +1,16 @@
 class AST(object):
     """ Base class for all nodes """
-    pass
+
+    def __eq__(self, other):
+        attrs = [attr for attr in dir(self) if not attr.startswith('_')]
+
+        boolean_values = []
+        for attr in attrs:
+            value = getattr(self, attr)
+            other_value = getattr(other, attr)
+            boolean_values.append(value == other_value)
+
+        return all(boolean_values)
 
 
 class Variable(AST):
@@ -66,11 +76,12 @@ class Condition(AST):
         self.op2 = op2
 
 
-class BoolOp(AST):
+class BooleanExpression(AST):
 
-    def __init__(self):
-        self.ops = []
-        self.conditions = []
+    def __init__(self, left_formula, operator, right_formula):
+        self.left_formula = left_formula
+        self.operator = operator
+        self.right_formula = right_formula
 
 
 class Assignment(AST):

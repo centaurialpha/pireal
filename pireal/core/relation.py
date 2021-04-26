@@ -23,16 +23,11 @@
 import re
 import itertools
 
+from pireal.utils import eval_expr
 from pireal.core.rtypes import RType
 from pireal.core.ordered_set import OrderedSet
 
 IS_VALID_FIELD_NAME = re.compile("^[_á-úa-zA-Z][_á-úa-zA-Z0-9]*$")
-
-datetime_dict = {
-    'datetime': __import__('datetime')
-}
-
-# FIXME: atributo name ?
 
 
 class Error(Exception):
@@ -191,17 +186,11 @@ class Relation(object):
         new_relation = Relation()
         new_relation.header = self._header
 
-        expr = compile(expression, "select", "eval")
-
         for tupla in self.content:
             attrs = {attr: RType.cast(tupla[e])
                      for e, attr in enumerate(self.header)}
-            try:
-                if eval(expr, datetime_dict, attrs):
-                    new_relation.insert(tupla)
-            # FIXME: en qué caso pasa esto?
-            except SyntaxError:
-                raise SelectionSyntaxError
+            if eval_expr(expression, attrs):
+                new_relation.insert(tupla)
         return new_relation
 
     def njoin(self, other_relation):
