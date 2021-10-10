@@ -43,10 +43,11 @@ setup(
     url='http://centaurialpha.github.io/pireal',
     license='GPLv3+',
     long_description=open('README.md').read(),
-    packages=find_packages(exclude=['tests']),
+    packages=find_packages(where="src"),
     package_data={
         'pireal': ['resources/samples/*', 'resources/images/pireal_icon.png'],
     },
+    package_dir={"": "src"},
     scripts=['bin/pireal'],
     classifiers=classifiers,
     install_requires=['pyqt5'],

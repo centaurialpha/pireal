@@ -25,8 +25,8 @@ jobs:
           pip install . --upgrade
       - name: Lint
         run: |
-          pycodestyle pireal
-          flake8 pireal
+          pycodestyle src/pireal
+          flake8 src/pireal
       - name: unittest
         run: |
           pytest -v tests/unit
