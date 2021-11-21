@@ -9,17 +9,25 @@
 |:--------:|:----------:|
 | ![pireal-screenshot](https://user-images.githubusercontent.com/5894606/112898694-8b92ca00-90b7-11eb-8515-cf04649f11f9.png) | ![pireal-in-action](https://user-images.githubusercontent.com/5894606/112898688-89c90680-90b7-11eb-8ae1-372d406b33fd.png) |
 
-#### Platforms
+### Platforms
 - GNU/Linux
 - Windows
 - Mac OS X
 
-### Requirements to run/install from source
-- [Python 3](http://python.org/)
-- [PyQt5](http://www.riverbankcomputing.co.uk/software/pyqt/intro)
+### Download
+So far we only have the package for Debian and an installer for Windows. You can find them [here](https://github.com/centaurialpha/pireal/releases/tag/v3.1.0)
+
+You always have the option to install from the sources. First download the source code and install with:
+
+**NOTE**: The following commands assume that you have activated the virtual environment of your project.
+
+```
+$ make pip-install
+$ pip install .
+```
 
 ### Implemented Operators
-The operations are implemented in [relation.py](https://github.com/centaurialpha/pireal/blob/development/pireal/core/relation.py).
+The operations are implemented in [relation.py](https://github.com/centaurialpha/pireal/blob/development/src/pireal/core/relation.py).
 
 |Operator|Supported|
 |--------|---------|
@@ -34,7 +42,7 @@ The operations are implemented in [relation.py](https://github.com/centaurialpha
 | Left Outer Join | :heavy_check_mark: |
 | Right Outer Join | :heavy_check_mark: |
 | Full Outer Join | :heavy_check_mark: |
-| Division | :x: (Can be expressed using relational operators)|
+| Division | :x: (As a student, you can be able to express Division using integrated operators.)|
 
 ### Donate
 
