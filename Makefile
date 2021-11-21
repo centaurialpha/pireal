@@ -59,3 +59,14 @@ deb:
 
 install:
 	python setup.py install
+
+pip-install:
+	@pip install -r requirements.txt -r requirements-dev.txt
+
+pip-compile:
+	@rm -f requirements*.txt
+	@pip-compile requirements.in
+	@pip-compile requirements-dev.in
+
+pip-sync:
+	@pip-sync requirements*.txt

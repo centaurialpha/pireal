@@ -4,3 +4,4 @@
 .pytest_cache/
 .coverage*
 pireal.egg-*
+venv/

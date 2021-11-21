@@ -1,0 +1,5 @@
+pytest
+pytest-qt
+pytest-cov
+flake8
+pycodestyle
