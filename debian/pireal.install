@@ -1,2 +1,2 @@
 pireal.desktop /usr/share/applications/
-pireal/resources/images/pireal_icon.png /usr/share/icons/
+src/pireal/resources/images/pireal_icon.png /usr/share/icons/
