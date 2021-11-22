@@ -159,7 +159,7 @@ class Editor(QPlainTextEdit):
     def __cursor_position_changed(self):
         self.clear_selections("current_line")
 
-        if SETTINGS.match_parenthesis:
+        if SETTINGS.highlight_current_line:
             _selection = QTextEdit.ExtraSelection()
             _selection.format.setBackground(self._highlight_line_color)
             _selection.format.setProperty(
@@ -433,3 +433,4 @@ class Editor(QPlainTextEdit):
         self.setPalette(pal)
         self._highlighter = None
         self._highlighter = highlighter.Highlighter(self.document())
+        self.__cursor_position_changed()
