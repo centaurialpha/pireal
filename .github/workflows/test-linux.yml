@@ -29,9 +29,6 @@ jobs:
       - name: unittests
         run: |
           make test-unit
-      - name: interpreter tests
-        run: |
-          make test-interpreter
       - name: integration tests
         run: |
           make test-integration

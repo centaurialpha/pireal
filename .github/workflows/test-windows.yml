@@ -30,9 +30,6 @@ jobs:
       - name: unittest
         run: |
           pytest -v tests/unit
-      - name: interpreter tests
-        run: |
-          pytest -v tests/interpreter
       - name: integration tests
         run: |
           pytest -v tests/integration
