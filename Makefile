@@ -37,10 +37,7 @@ flake8:
 lint: pep8 flake8
 
 test-unit:
-	pytest -v tests/unit --cov pireal.core --cov-report term-missing
-
-test-interpreter:
-	pytest -v tests/interpreter --cov pireal.interpreter --cov-report term-missing
+	pytest -v tests/unit --cov pireal --cov-report term-missing
 
 test-gui:
 	@$(PYTEST) -v -m gui
@@ -48,7 +45,7 @@ test-gui:
 test-integration:
 	pytest -v tests/integration -s
 
-test: test-unit test-interpreter test-integration
+test: test-unit test-integration
 
 dist: clean
 	python setup.py sdist
