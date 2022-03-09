@@ -240,7 +240,9 @@ class DatabaseContainer(QSplitter):
         if vsizes is not None:
             self._vsplitter.restoreState(vsizes)
         else:
-            self._vsplitter.setSizes([round(self.height() / 3), round(self.height() / 6)])
+            self._vsplitter.setSizes(
+                [round(self.height() / 3), round(self.height() / 6)]
+            )
         hsizes = qsettings.value("hsplitter_sizes", None)
         if hsizes is not None:
             self.restoreState(hsizes)

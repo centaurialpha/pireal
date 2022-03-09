@@ -24,5 +24,5 @@ from pkg_resources import get_distribution, DistributionNotFound
 try:
     __version__ = get_distribution("pireal").version
 except DistributionNotFound:
-     # package is not installed
+    # package is not installed
     pass
