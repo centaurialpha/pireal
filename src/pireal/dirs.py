@@ -31,21 +31,23 @@ _ROOT_DIR = Path(__file__).resolve().parent.parent
 
 _HOME_DIR = Path.home()
 
-EXAMPLES_DIR = _ROOT_DIR / 'pireal' / 'resources' / 'samples'
+EXAMPLES_DIR = _ROOT_DIR / "pireal" / "resources" / "samples"
 
 
 def _data_dir() -> Path:
     """Return the app data dir for Pireal"""
 
-    pireal_dir_name = '.pireal'
+    pireal_dir_name = ".pireal"
 
-    if platform.system() == 'Linux':
+    if platform.system() == "Linux":
         # Store data files in $HOME
         pireal_data_dir = _HOME_DIR / pireal_dir_name
     else:
         # In windows and mac, use standard paths provided by Qt
-        pireal_data_dir = Path(QStandardPaths.writableLocation(
-            QStandardPaths.GenericDataLocation)) / pireal_dir_name
+        pireal_data_dir = (
+            Path(QStandardPaths.writableLocation(QStandardPaths.GenericDataLocation))
+            / pireal_dir_name
+        )
 
     return pireal_data_dir
 
@@ -53,16 +55,17 @@ def _data_dir() -> Path:
 def _get_databases_location() -> Path:
     """Return the path used for store the user databases"""
 
-    db_dir = Path(QStandardPaths.writableLocation(
-        QStandardPaths.HomeLocation)) / 'PirealDBs'
+    db_dir = (
+        Path(QStandardPaths.writableLocation(QStandardPaths.HomeLocation)) / "PirealDBs"
+    )
 
     return db_dir
 
 
-LOGS_DIR = _data_dir() / 'logs'
-CONFIG_FILE = _data_dir() / 'config.ini'
-DATA_SETTINGS = _data_dir() / 'data_settings.ini'
-LANGUAGES_DIR = _ROOT_DIR / 'pireal' / 'resources' / 'lang'
+LOGS_DIR = _data_dir() / "logs"
+CONFIG_FILE = _data_dir() / "config.ini"
+DATA_SETTINGS = _data_dir() / "data_settings.ini"
+LANGUAGES_DIR = _ROOT_DIR / "pireal" / "resources" / "lang"
 DATABASES_DIR = _get_databases_location()
 
 

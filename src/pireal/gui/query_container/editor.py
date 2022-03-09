@@ -21,30 +21,20 @@ from PyQt5.QtWidgets import (
     QPlainTextEdit,
     QTextEdit,
 )
-from PyQt5.QtGui import (
-    QTextCharFormat,
-    QTextCursor,
-    QFont,
-    QColor,
-    QTextDocument
-)
+from PyQt5.QtGui import QTextCharFormat, QTextCursor, QFont, QColor, QTextDocument
 from PyQt5.QtCore import Qt, QTimer
 
-from pireal.gui.query_container import (
-    highlighter,
-    sidebar
-)
+from pireal.gui.query_container import highlighter, sidebar
 from pireal.gui.theme import get_editor_color
 from pireal.settings import SETTINGS
 
 
 class Editor(QPlainTextEdit):
-
     def __init__(self, pfile=None):
         super(Editor, self).__init__()
         pal = self.palette()
-        pal.setColor(pal.Text, QColor(get_editor_color('foreground')))
-        pal.setColor(pal.Window, QColor(get_editor_color('background')))
+        pal.setColor(pal.Text, QColor(get_editor_color("foreground")))
+        pal.setColor(pal.Window, QColor(get_editor_color("background")))
         self.setPalette(pal)
 
         self.setFrameShape(QPlainTextEdit.NoFrame)
@@ -56,7 +46,7 @@ class Editor(QPlainTextEdit):
         self.modified = False
         # Highlight current line
         self._highlight_line = SETTINGS.match_parenthesis
-        self._highlight_line_color = QColor(get_editor_color('current_line'))
+        self._highlight_line_color = QColor(get_editor_color("current_line"))
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
@@ -84,8 +74,7 @@ class Editor(QPlainTextEdit):
 
         block = self.firstVisibleBlock()
         block_number = block.blockNumber()
-        top = self.blockBoundingGeometry(block).translated(
-            self.contentOffset()).top()
+        top = self.blockBoundingGeometry(block).translated(self.contentOffset()).top()
         bottom = top + self.blockBoundingRect(block).height()
         editor_height = self.height()
         while block.isValid():
@@ -135,9 +124,11 @@ class Editor(QPlainTextEdit):
             cursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor)
             char = cursor.selectedText()[0]
             selected_text = cursor.selectedText()
-            if (selected_text in self.word_separators and (
-                    selected_text != "n" and selected_text != "t") or
-                    char.isspace()):
+            if (
+                selected_text in self.word_separators
+                and (selected_text != "n" and selected_text != "t")
+                or char.isspace()
+            ):
                 break
             start_pos = cursor.position()
             cursor.setPosition(start_pos)
@@ -146,9 +137,11 @@ class Editor(QPlainTextEdit):
             cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor)
             char = cursor.selectedText()[0]
             selected_text = cursor.selectedText()
-            if (selected_text in self.word_separators and (
-                    selected_text != "n" and selected_text != "t") or
-                    char.isspace()):
+            if (
+                selected_text in self.word_separators
+                and (selected_text != "n" and selected_text != "t")
+                or char.isspace()
+            ):
                 break
             end_pos = cursor.position()
             cursor.setPosition(end_pos)
@@ -162,8 +155,7 @@ class Editor(QPlainTextEdit):
         if SETTINGS.highlight_current_line:
             _selection = QTextEdit.ExtraSelection()
             _selection.format.setBackground(self._highlight_line_color)
-            _selection.format.setProperty(
-                QTextCharFormat.FullWidthSelection, True)
+            _selection.format.setProperty(QTextCharFormat.FullWidthSelection, True)
             _selection.cursor = self.textCursor()
             _selection.cursor.clearSelection()
             self.add_selection("current_line", [_selection])
@@ -194,25 +186,22 @@ class Editor(QPlainTextEdit):
             n = len(paren)
 
             for k in range(0, n):
-                if paren[k].position == position - block_pos or \
-                        paren[k].position == position - block_pos - 1:
+                if (
+                    paren[k].position == position - block_pos
+                    or paren[k].position == position - block_pos - 1
+                ):
                     previous = paren[k].position + block_pos
-                    if paren[k].character == '(':
-                        _next = self.__match_left(block,
-                                                  paren[k].character,
-                                                  k + 1, 0)
-                    elif paren[k].character == ')':
-                        _next = self.__match_right(block,
-                                                   paren[k].character,
-                                                   k, 0)
+                    if paren[k].character == "(":
+                        _next = self.__match_left(block, paren[k].character, k + 1, 0)
+                    elif paren[k].character == ")":
+                        _next = self.__match_right(block, paren[k].character, k, 0)
 
         if _next is not None and _next > 0:
             if previous is not None and previous > 0:
                 _format = QTextCharFormat()
 
                 cursor.setPosition(previous)
-                cursor.movePosition(QTextCursor.NextCharacter,
-                                    QTextCursor.KeepAnchor)
+                cursor.movePosition(QTextCursor.NextCharacter, QTextCursor.KeepAnchor)
 
                 _format.setForeground(Qt.blue)
                 _format.setBackground(Qt.white)
@@ -220,8 +209,7 @@ class Editor(QPlainTextEdit):
                 left.cursor = cursor
 
                 cursor.setPosition(_next)
-                cursor.movePosition(QTextCursor.NextCharacter,
-                                    QTextCursor.KeepAnchor)
+                cursor.movePosition(QTextCursor.NextCharacter, QTextCursor.KeepAnchor)
 
                 _format.setForeground(Qt.white)
                 _format.setBackground(Qt.blue)
@@ -234,8 +222,7 @@ class Editor(QPlainTextEdit):
             _format = QTextCharFormat()
 
             cursor.setPosition(previous)
-            cursor.movePosition(QTextCursor.NextCharacter,
-                                QTextCursor.KeepAnchor)
+            cursor.movePosition(QTextCursor.NextCharacter, QTextCursor.KeepAnchor)
 
             _format.setForeground(Qt.white)
             _format.setBackground(Qt.red)
@@ -253,7 +240,7 @@ class Editor(QPlainTextEdit):
                     if paren[i].character == char:
                         found += 1
 
-                    if paren[i].character == ')':
+                    if paren[i].character == ")":
                         if not found:
                             return paren[i].position + block.position()
                         else:
@@ -274,7 +261,7 @@ class Editor(QPlainTextEdit):
                 for i in range(start - 1, -1, -1):
                     if paren[i].character == char:
                         found += 1
-                    if paren[i].character == '(':
+                    if paren[i].character == "(":
                         if found == 0:
                             return paren[i].position + block.position()
                         else:
@@ -324,8 +311,7 @@ class Editor(QPlainTextEdit):
         selection.cursor.setPosition(end_pos, QTextCursor.KeepAnchor)
         self.add_selection("run_cursor", [selection])
         # Remove extra selection after 0.3 seconds
-        QTimer.singleShot(
-            300, lambda: self.clear_selections("run_cursor"))
+        QTimer.singleShot(300, lambda: self.clear_selections("run_cursor"))
 
     def saved(self):
         self.modified = False
@@ -344,7 +330,7 @@ class Editor(QPlainTextEdit):
         while block_start != block_end:
             if block_start.text():
                 tcursor.setPosition(block_start.position())
-                if block_start.text()[0] != '%':
+                if block_start.text()[0] != "%":
                     tcursor.insertText("% ")
             block_start = block_start.next()
 
@@ -362,14 +348,13 @@ class Editor(QPlainTextEdit):
         while block_start != block_end:
             if block_start.text():
                 tcursor.setPosition(block_start.position())
-                if block_start.text()[0] == '%':
+                if block_start.text()[0] == "%":
                     tcursor.deleteChar()
             block_start = block_start.next()
 
         tcursor.endEditBlock()
 
-    def find_text(self, search, cs=False, wo=False,
-                  backward=False, find_next=True):
+    def find_text(self, search, cs=False, wo=False, backward=False, find_next=True):
         flags = QTextDocument.FindFlags()
         if cs:
             flags = QTextDocument.FindCaseSensitively
@@ -395,18 +380,18 @@ class Editor(QPlainTextEdit):
     def highlight_error(self, linenumber):
         if linenumber == -1:
             # Borro la selección
-            self.clear_selections('error')
+            self.clear_selections("error")
             return
         selection = QTextEdit.ExtraSelection()
         selection.cursor = self.textCursor()
-        selection.cursor.movePosition(QTextCursor.Start,
-                                      QTextCursor.MoveAnchor)
-        selection.cursor.movePosition(QTextCursor.Down, QTextCursor.MoveAnchor,
-                                      linenumber - 1)
+        selection.cursor.movePosition(QTextCursor.Start, QTextCursor.MoveAnchor)
+        selection.cursor.movePosition(
+            QTextCursor.Down, QTextCursor.MoveAnchor, linenumber - 1
+        )
         selection.format.setProperty(QTextCharFormat.FullWidthSelection, True)
         selection.format.setBackground(QColor("#DD4040"))
         selection.format.setForeground(Qt.white)
-        self.add_selection('error', [selection])
+        self.add_selection("error", [selection])
 
     def add_selection(self, selection_name, selections):
         self._selections[selection_name] = selections
@@ -425,11 +410,11 @@ class Editor(QPlainTextEdit):
 
     def re_paint(self):
         self.set_font(SETTINGS.font_family, SETTINGS.font_size)
-        self._highlight_line_color = QColor(get_editor_color('current_line'))
+        self._highlight_line_color = QColor(get_editor_color("current_line"))
         self._sidebar.re_paint()
         pal = self.palette()
-        pal.setColor(pal.Text, QColor(get_editor_color('foreground')))
-        pal.setColor(pal.Window, QColor(get_editor_color('background')))
+        pal.setColor(pal.Text, QColor(get_editor_color("foreground")))
+        pal.setColor(pal.Window, QColor(get_editor_color("background")))
         self.setPalette(pal)
         self._highlighter = None
         self._highlighter = highlighter.Highlighter(self.document())

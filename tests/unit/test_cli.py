@@ -30,27 +30,18 @@ def parser():
 
 def test_parser_help(parser):
     with pytest.raises(SystemExit):
-        parser.parse_args(['--help'])
+        parser.parse_args(["--help"])
 
 
 def test_parser_args_valid(parser):
-    cmd = [
-        '-d file.pdb',
-        '--database lalala',
-        '-v',
-        '--verbose',
-        '--version'
-    ]
+    cmd = ["-d file.pdb", "--database lalala", "-v", "--verbose", "--version"]
     for line in cmd:
         cmdline = shlex.split(line)
         parser.parse_args(cmdline)
 
 
 def test_parser_args_invalid(parser):
-    cmd = [
-        'algo sdsdsd',
-        '-d'
-    ]
+    cmd = ["algo sdsdsd", "-d"]
     for line in cmd:
         cmdline = shlex.split(line)
         with pytest.raises(SystemExit):

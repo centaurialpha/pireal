@@ -44,7 +44,7 @@ from PyQt5.QtCore import (
     QModelIndex,
     QSettings,
     QTimer,
-    pyqtSlot as Slot
+    pyqtSlot as Slot,
 )
 
 from pireal.dirs import (
@@ -58,7 +58,6 @@ logger = logging.getLogger(__name__)
 
 
 class RecentDBModel(QAbstractListModel):
-
     def __init__(self, data):
         super().__init__()
         self._items = data
@@ -89,7 +88,7 @@ class RecentDBDelegate(QStyledItemDelegate):
         db_name = index.model().data(index, Qt.DisplayRole)
         db_path = index.model().data(index, Qt.UserRole)
 
-        opt.text = ''
+        opt.text = ""
         opt.widget.style().drawControl(QStyle.CE_ItemViewItem, opt, painter, opt.widget)
 
         rect = opt.rect
@@ -104,14 +103,23 @@ class RecentDBDelegate(QStyledItemDelegate):
         painter.setFont(font)
         painter.drawText(
             QRect(rect.left(), rect.top(), rect.width(), rect.height() / 2),
-            opt.displayAlignment, db_name)
+            opt.displayAlignment,
+            db_name,
+        )
 
         painter.restore()
 
         # Draw path name
         painter.drawText(
-            QRect(rect.left(), rect.top() + rect.height() / 2, rect.width(), rect.height() / 2),
-            opt.displayAlignment, db_path)
+            QRect(
+                rect.left(),
+                rect.top() + rect.height() / 2,
+                rect.width(),
+                rect.height() / 2,
+            ),
+            opt.displayAlignment,
+            db_path,
+        )
 
     def sizeHint(self, option, index):
         size = super().sizeHint(option, index)
@@ -120,7 +128,6 @@ class RecentDBDelegate(QStyledItemDelegate):
 
 
 class StartPage(QWidget):
-
     def __init__(self, parent=None):
         super().__init__(parent)
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
@@ -131,7 +138,7 @@ class StartPage(QWidget):
         font.setPointSize(42)
         title_lbl.setFont(font)
 
-        subtitle_lbl = QLabel('free and open source Relational Algebra Interpreter')
+        subtitle_lbl = QLabel("free and open source Relational Algebra Interpreter")
         font = subtitle_lbl.font()
         font.setPointSize(14)
         subtitle_lbl.setFont(font)
@@ -159,12 +166,12 @@ class StartPage(QWidget):
         frame_recent_dbs.setFrameShape(QFrame.StyledPanel)
         frame_recent_dbs.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         vbox_recent_dbs = QVBoxLayout(frame_recent_dbs)
-        vbox_recent_dbs.addWidget(QLabel('Recent Databases'), alignment=Qt.AlignHCenter)
+        vbox_recent_dbs.addWidget(QLabel("Recent Databases"), alignment=Qt.AlignHCenter)
         self._recent_dbs_list = QListView()
         self._recent_dbs_list.setMinimumWidth(550)
         vbox_recent_dbs.addWidget(self._recent_dbs_list, alignment=Qt.AlignHCenter)
         model_data = []
-        for recent_db in qsettings.value('recent_databases', type=list):
+        for recent_db in qsettings.value("recent_databases", type=list):
             name = os.path.splitext(os.path.basename(recent_db))[0]
             model_data.append((name, recent_db))
         self._model = RecentDBModel(model_data)
@@ -173,13 +180,13 @@ class StartPage(QWidget):
 
         # Footer
         hbox_footer = QHBoxLayout()
-        powered_by_lbl = QLabel('Powered by: ')
+        powered_by_lbl = QLabel("Powered by: ")
         hbox_footer.addWidget(powered_by_lbl)
-        python_logo = QPixmap(':img/python')
+        python_logo = QPixmap(":img/python")
         python_logo_lbl = QLabel()
         python_logo_lbl.setPixmap(python_logo)
         hbox_footer.addWidget(python_logo_lbl, alignment=Qt.AlignLeft)
-        qt_logo = QPixmap(':img/bwqt')
+        qt_logo = QPixmap(":img/bwqt")
         qt_logo_lbl = QLabel()
         qt_logo_lbl.setPixmap(qt_logo)
         hbox_footer.addWidget(qt_logo_lbl, alignment=Qt.AlignLeft)
@@ -187,8 +194,9 @@ class StartPage(QWidget):
 
         now = datetime.now()
         copyright_lbl = QLabel(
-            f'Copyright © 2015-{now.year} Gabriel Acosta. '
-            f'Pireal is distributed under the terms of the GNU GPLv3+ copyleft license')
+            f"Copyright © 2015-{now.year} Gabriel Acosta. "
+            f"Pireal is distributed under the terms of the GNU GPLv3+ copyleft license"
+        )
         hbox_footer.addWidget(copyright_lbl)
 
         main_layout.addStretch(1)
@@ -200,24 +208,26 @@ class StartPage(QWidget):
         main_layout.addStretch(1)
         main_layout.addLayout(hbox_footer)
 
-        self._recent_dbs_list.doubleClicked.connect(self._on_listview_item_double_clicked)
+        self._recent_dbs_list.doubleClicked.connect(
+            self._on_listview_item_double_clicked
+        )
         btn_open_db.clicked.connect(self._open_database)
         btn_new_db.clicked.connect(self._new_database)
         btn_example.clicked.connect(self._open_example)
 
     def _new_database(self):
-        central_widget = Pireal.get_service('central')
+        central_widget = Pireal.get_service("central")
         central_widget.create_database()
 
     def _open_database(self, path=None):
-        central_widget = Pireal.get_service('central')
+        central_widget = Pireal.get_service("central")
         central_widget.open_database(path)
 
     def _open_example(self):
-        central_widget = Pireal.get_service('central')
-        logger.info("DATABASE: %s", str(EXAMPLES_DIR / 'database.pdb'))
-        central_widget.open_database(str(EXAMPLES_DIR / 'database.pdb'))
-        central_widget.open_query(str(EXAMPLES_DIR / 'queries.pqf'))
+        central_widget = Pireal.get_service("central")
+        logger.info("DATABASE: %s", str(EXAMPLES_DIR / "database.pdb"))
+        central_widget.open_database(str(EXAMPLES_DIR / "database.pdb"))
+        central_widget.open_query(str(EXAMPLES_DIR / "queries.pqf"))
 
         QTimer.singleShot(1300, central_widget.execute_queries)
 

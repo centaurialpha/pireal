@@ -22,17 +22,15 @@ from PyQt5.QtGui import (
     QTextCharFormat,
     QFont,
     QTextBlockUserData,
-    QColor
+    QColor,
 )
-from PyQt5.QtCore import (
-    QRegExp
-)
+from PyQt5.QtCore import QRegExp
 
 from pireal.gui.theme import get_editor_color
 
 
 class Highlighter(QSyntaxHighlighter):
-    """ Syntax Highlighting
+    """Syntax Highlighting
 
     This class defines rules, a rule consists of a QRegExp pattern and a
     QTextCharFormat instance.
@@ -52,59 +50,61 @@ class Highlighter(QSyntaxHighlighter):
         "intersect",
         "union",
         "and",
-        "or"
+        "or",
     ]
 
     def __init__(self, editor):
         super(Highlighter, self).__init__(editor)
         # Keywords format
         keyword_format = QTextCharFormat()
-        keyword_format.setForeground(QColor(get_editor_color('keyword')))
+        keyword_format.setForeground(QColor(get_editor_color("keyword")))
         keyword_format.setFontWeight(QFont.Bold)
 
         # Rules
-        self._rules = [(QRegExp("\\b" + pattern + "\\b"), keyword_format)
-                       for pattern in Highlighter.KEYWORDS]
+        self._rules = [
+            (QRegExp("\\b" + pattern + "\\b"), keyword_format)
+            for pattern in Highlighter.KEYWORDS
+        ]
 
         # vars
         var_format = QTextCharFormat()
         var_pattern = QRegExp(r"\w+\s*\:\=")
         var_format.setFontWeight(QFont.Bold)
-        var_format.setForeground(QColor(get_editor_color('variable')))
+        var_format.setForeground(QColor(get_editor_color("variable")))
 
         self._rules.append((var_pattern, var_format))
 
         op_format = QTextCharFormat()
         op_pattern = QRegExp("(\\:=|\\(|\\))|=|<|>")
-        op_format.setForeground(QColor(get_editor_color('operator')))
+        op_format.setForeground(QColor(get_editor_color("operator")))
         op_format.setFontWeight(QFont.Bold)
         self._rules.append((op_pattern, op_format))
         # Number format
         number_format = QTextCharFormat()
         number_pattern = QRegExp(r"\b([A-Z0-9]+)(?:[ _-](\d+))?\b")
         number_pattern.setMinimal(True)
-        number_format.setForeground(QColor(get_editor_color('number')))
+        number_format.setForeground(QColor(get_editor_color("number")))
         self._rules.append((number_pattern, number_format))
 
         # String format
         string_format = QTextCharFormat()
-        string_pattern = QRegExp("\'.*\'")
+        string_pattern = QRegExp("'.*'")
         string_pattern.setMinimal(True)
-        string_format.setForeground(QColor(get_editor_color('string')))
+        string_format.setForeground(QColor(get_editor_color("string")))
         self._rules.append((string_pattern, string_format))
 
         # Comment format
         comment_format = QTextCharFormat()
         comment_pattern = QRegExp("%[^\n]*")
-        comment_format.setForeground(QColor(get_editor_color('comment')))
+        comment_format.setForeground(QColor(get_editor_color("comment")))
         comment_format.setFontItalic(True)
         self._rules.append((comment_pattern, comment_format))
 
         # Paren
-        self.paren = QRegExp(r'\(|\)')
+        self.paren = QRegExp(r"\(|\)")
 
     def highlightBlock(self, text):
-        """ Reimplementation """
+        """Reimplementation"""
 
         block_data = TextBlockData()
         # Paren
@@ -129,7 +129,6 @@ class Highlighter(QSyntaxHighlighter):
 
 
 class TextBlockData(QTextBlockUserData):
-
     def __init__(self):
         super(TextBlockData, self).__init__()
         self.paren = []
@@ -145,7 +144,6 @@ class TextBlockData(QTextBlockUserData):
 
 
 class ParenInfo(object):
-
     def __init__(self, char, pos):
         self.character = char
         self.position = pos

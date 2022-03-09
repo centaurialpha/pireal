@@ -37,7 +37,6 @@ from pireal import translations as tr
 
 
 class SettingsDialog(QDialog):
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setAttribute(Qt.WA_DeleteOnClose)
@@ -45,8 +44,8 @@ class SettingsDialog(QDialog):
 
         vbox = QVBoxLayout(self)
 
-        group_general = QGroupBox('General')
-        group_editor = QGroupBox('Editor')
+        group_general = QGroupBox("General")
+        group_editor = QGroupBox("Editor")
         group_font = QGroupBox(tr.TR_DIALOG_PREF_FONT)
 
         layout_general = QGridLayout(group_general)
@@ -55,8 +54,8 @@ class SettingsDialog(QDialog):
 
         self._combo_languages = QComboBox()
         self._languages = {
-            'en': 'English',
-            'es': 'Spanish',
+            "en": "English",
+            "es": "Spanish",
         }
         self._combo_languages.addItems(self._languages.values())
         self._combo_languages.setCurrentText(self._languages[SETTINGS.language])
@@ -68,10 +67,12 @@ class SettingsDialog(QDialog):
 
         self._combo_font_family = QFontComboBox()
         font_db = QFontDatabase()
-        font_family = font_db.font(SETTINGS.font_family, '', SETTINGS.font_size)
+        font_family = font_db.font(SETTINGS.font_family, "", SETTINGS.font_size)
         self._combo_font_family.setCurrentFont(font_family)
         self._combo_font_size = QComboBox()
-        sizes_list_str = [str(size) for size in font_db.smoothSizes(SETTINGS.font_family, '')]
+        sizes_list_str = [
+            str(size) for size in font_db.smoothSizes(SETTINGS.font_family, "")
+        ]
         self._combo_font_size.addItems(sizes_list_str)
         self._combo_font_size.setCurrentText(str(SETTINGS.font_size))
 
@@ -103,7 +104,7 @@ class SettingsDialog(QDialog):
         SETTINGS.font_family = self._combo_font_family.currentText()
         SETTINGS.font_size = int(self._combo_font_size.currentText())
 
-        central = Pireal.get_service('central')
+        central = Pireal.get_service("central")
         db_container = central.get_active_db()
         if db_container is not None:
             if db_container.query_container.currentWidget() is not None:

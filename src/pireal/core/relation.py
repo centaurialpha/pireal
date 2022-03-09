@@ -47,23 +47,24 @@ class InvalidFieldNameError(FieldError):
 
     def __init__(self, campo, msg=None):
         super().__init__(
-            campo, msg="El nombre de campo '{}' no es válido".format(campo))
+            campo, msg="El nombre de campo '{}' no es válido".format(campo)
+        )
 
 
 class DuplicateFieldError(FieldError):
-
     def __init__(self, campo, msg=None):
         super().__init__(
-            campo, msg="Campo duplicado '{}' en la operación producto".format(
-                campo))
+            campo, msg="Campo duplicado '{}' en la operación producto".format(campo)
+        )
 
 
 class FieldNotInHeaderError(FieldError):
     """Excepción lanzada cuando un campo no existe en la relación"""
 
     def __init__(self, campo, relacion, msg=None):
-        super().__init__(campo, msg="El campo '{}' no existe en '{}'".format(
-            campo, relacion))
+        super().__init__(
+            campo, msg="El campo '{}' no existe en '{}'".format(campo, relacion)
+        )
         self.nombre_relacion = relacion
 
 
@@ -89,17 +90,19 @@ class UnionCompatibleError(Error):
 
 def union_compatible(operation):
     """Decorador que comprueba que dos relaciones sean compatibles"""
+
     def inner(self, *args, **kwargs):
         header_other = args[0].header
         if len(self._header) != len(header_other):
             raise UnionCompatibleError(
-                "Union not compatible for '{}'".format(operation.__name__))
+                "Union not compatible for '{}'".format(operation.__name__)
+            )
         return operation(self, *args, **kwargs)
+
     return inner
 
 
 class Relation(object):
-
     def __init__(self):
         self.content = OrderedSet()
         self._header = []
@@ -122,10 +125,7 @@ class Relation(object):
             values = tuple(values.split())
 
         if len(values) != len(self._header):
-            raise WrongSizeError(
-                len(self._header),
-                len(values)
-            )
+            raise WrongSizeError(len(self._header), len(values))
         self.content.add(values)
 
     def update(self, row, column, new_value):
@@ -138,7 +138,7 @@ class Relation(object):
 
         nulls = []
         for _ in range(self.degree()):
-            nulls.append('null ({})'.format(self._null_count))
+            nulls.append("null ({})".format(self._null_count))
             self._null_count += 1
         self.insert(tuple(nulls))
 
@@ -164,8 +164,7 @@ class Relation(object):
             try:
                 indexes.append(self._header.index(arg))
             except ValueError as reason:
-                raise FieldNotInHeaderError(
-                    str(reason).split()[0], self.name)
+                raise FieldNotInHeaderError(str(reason).split()[0], self.name)
         # New fields
         header = [self._header[i] for i in indexes]
         # New relation
@@ -187,8 +186,7 @@ class Relation(object):
         new_relation.header = self._header
 
         for tupla in self.content:
-            attrs = {attr: RType.cast(tupla[e])
-                     for e, attr in enumerate(self.header)}
+            attrs = {attr: RType.cast(tupla[e]) for e, attr in enumerate(self.header)}
             if eval_expr(expression, attrs):
                 new_relation.insert(tupla)
         return new_relation
@@ -202,8 +200,9 @@ class Relation(object):
 
         # Campos en común
         sharedf = set(self._header).intersection(set(other_relation.header))
-        final_fields = self._header + [i for i in other_relation.header
-                                       if i not in sharedf]
+        final_fields = self._header + [
+            i for i in other_relation.header if i not in sharedf
+        ]
         indexes_r = [self._header.index(i) for i in sharedf]
         indexes_or = [other_relation.header.index(i) for i in sharedf]
 
@@ -221,8 +220,9 @@ class Relation(object):
         new_relation.header = header
 
         sharedf = set(self._header).intersection(set(other_relation.header))
-        final_fields = self._header + [i for i in other_relation.header
-                                       if i not in sharedf]
+        final_fields = self._header + [
+            i for i in other_relation.header if i not in sharedf
+        ]
 
         indexes_r = [self._header.index(i) for i in sharedf]
         indexes_or = [other_relation.header.index(i) for i in sharedf]
@@ -338,6 +338,8 @@ class Relation(object):
         return header + content
 
     def __repr__(self):
-        return (f'Relation(name={self.name}, '
-                f'degree={self.degree()}, '
-                f'cardinality={self.cardinality()})')
+        return (
+            f"Relation(name={self.name}, "
+            f"degree={self.degree()}, "
+            f"cardinality={self.cardinality()})"
+        )

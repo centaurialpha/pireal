@@ -38,7 +38,7 @@ from pireal.interpreter.exceptions import (
     InvalidSyntaxError,
     MissingQuoteError,
     DuplicateRelationNameError,
-    ConsumeError
+    ConsumeError,
 )
 from pireal.gui.main_window import Pireal
 from pireal.gui.query_container import editor
@@ -60,7 +60,7 @@ class QueryContainer(QWidget):
         box.setContentsMargins(0, 0, 0, 0)
         box.setSpacing(0)
         # Regex for validate variable name
-        self.__validName = re.compile(r'^[a-z_]\w*$')
+        self.__validName = re.compile(r"^[a-z_]\w*$")
 
         self.__nquery = 1
 
@@ -81,14 +81,14 @@ class QueryContainer(QWidget):
         if self.currentWidget() is not None:
             self._tabs.remove_tab(self.current_index())
             self.__hide()
-            pireal = Pireal.get_service('pireal')
+            pireal = Pireal.get_service("pireal")
             pireal.status_bar._line_col_label.hide()
 
     def set_focus_editor_tab(self, index):
         self._tabs.setCurrentIndex(index)
 
     def current_index(self):
-        """ This property holds the index position of the current tab page """
+        """This property holds the index position of the current tab page"""
 
         return self._tabs.currentIndex()
 
@@ -107,7 +107,7 @@ class QueryContainer(QWidget):
         data = self.sender().data()
         widget = self._tabs.currentWidget()
         tc = widget.get_editor().textCursor()
-        tc.insertText(data + ' ')
+        tc.insertText(data + " ")
 
     def get_unsaved_queries(self):
         weditors = []
@@ -132,7 +132,8 @@ class QueryContainer(QWidget):
         self._tabs.setTabToolTip(index, weditor.filename)
 
         widget.editorModified[bool].connect(
-            lambda value: self._tabs.tab_modified(self.sender(), value))
+            lambda value: self._tabs.tab_modified(self.sender(), value)
+        )
 
         return widget
 
@@ -149,15 +150,14 @@ class QueryContainer(QWidget):
     def __on_save_editor(self, editor):
         self.saveEditor.emit(editor)
 
-    def execute_queries(self, query=''):
-        """ This function executes queries """
+    def execute_queries(self, query=""):
+        """This function executes queries"""
 
         # If text is selected, then this text is the query,
         # otherwise the query is all text that has the editor
         editor_widget = self.currentWidget().get_editor()
         if editor_widget.textCursor().hasSelection():
-            query = "\n".join(
-                editor_widget.textCursor().selectedText().splitlines())
+            query = "\n".join(editor_widget.textCursor().selectedText().splitlines())
         else:
             query = editor_widget.toPlainText()
         relations = self.currentWidget().relations
@@ -179,8 +179,11 @@ class QueryContainer(QWidget):
             text = self.parse_error(str(reason))
         except InvalidSyntaxError as reason:
             title = tr.TR_SYNTAX_ERROR
-            text = self.parse_error(str(reason) + "\n" + self.tr(
-                "El error comienza con " + reason.character))
+            text = self.parse_error(
+                str(reason)
+                + "\n"
+                + self.tr("El error comienza con " + reason.character)
+            )
         except DuplicateRelationNameError as reason:
             title = tr.TR_NAME_DUPLICATED
             text = tr.TR_RELATION_NAME_ALREADY_EXISTS.format(reason.rname)
@@ -198,9 +201,7 @@ class QueryContainer(QWidget):
                 new_relation = eval(expression, {}, relations)
             except Exception as reason:
                 QMessageBox.critical(
-                    self,
-                    tr.TR_QUERY_ERROR,
-                    self.parse_error(str(reason))
+                    self, tr.TR_QUERY_ERROR, self.parse_error(str(reason))
                 )
                 return
             relations[relation_name] = new_relation
@@ -223,7 +224,7 @@ class QueryContainer(QWidget):
 
     @staticmethod
     def parse_error(text):
-        """ Replaces quotes by <b></b> tag """
+        """Replaces quotes by <b></b> tag"""
 
         return re.sub(r"\'(.*?)\'", r"<b>\1</b>", text)
 
@@ -306,7 +307,8 @@ class QueryWidget(QWidget):
         # Editor widget
         self._editor_widget = EditorWidget(self)
         self._editor_widget.editorModified[bool].connect(
-            lambda modified: self.editorModified.emit(modified))
+            lambda modified: self.editorModified.emit(modified)
+        )
         self._editor_splitter.addWidget(self._editor_widget)
 
         box.addWidget(self._editor_splitter)
@@ -323,7 +325,7 @@ class QueryWidget(QWidget):
         table = table_widget.create_table(rela, editable=False)
         box.addWidget(table)
         hbox = QHBoxLayout()
-        btn = QPushButton('Ok')
+        btn = QPushButton("Ok")
         btn.clicked.connect(dialog.close)
         hbox.addStretch()
         hbox.addWidget(btn)
@@ -331,13 +333,15 @@ class QueryWidget(QWidget):
         dialog.show()
 
     def save_sizes(self):
-        """ Save sizes of Splitters """
+        """Save sizes of Splitters"""
 
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
-        qsettings.setValue('result_splitter_query_sizes',
-                           self.result_splitter.saveState())
-        qsettings.setValue('editor_splitter_query_sizes',
-                           self._editor_splitter.saveState())
+        qsettings.setValue(
+            "result_splitter_query_sizes", self.result_splitter.saveState()
+        )
+        qsettings.setValue(
+            "editor_splitter_query_sizes", self._editor_splitter.saveState()
+        )
 
     def get_editor(self):
         return self._editor_widget.get_editor()
@@ -396,13 +400,14 @@ class EditorWidget(QWidget):
 
         # Editor connections
         self._editor.modificationChanged[bool].connect(
-            lambda modified: self.editorModified.emit(modified))
+            lambda modified: self.editorModified.emit(modified)
+        )
         self._editor.cursorPositionChanged.connect(self._on_cursor_position_changed)
 
     def _on_cursor_position_changed(self):
         line = self._editor.textCursor().blockNumber() + 1
         col = self._editor.textCursor().columnNumber() + 1
-        pireal = Pireal.get_service('pireal')
+        pireal = Pireal.get_service("pireal")
         pireal.status_bar.update_line_and_col(line, col)
 
     def show_search_widget(self):
@@ -419,7 +424,6 @@ class EditorWidget(QWidget):
 
 
 class SearchWidget(QWidget):
-
     def __init__(self, parent=None):
         super().__init__(parent)
         box = QHBoxLayout(self)

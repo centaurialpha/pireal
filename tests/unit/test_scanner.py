@@ -32,16 +32,12 @@ def scanner_bot():
         sc = scanner.Scanner(text)
         sc.index = pos
         return sc
+
     return _make_scanner
 
 
 @pytest.mark.parametrize(
-    'text, pos, expected',
-    [
-        ('hola', 1, 'o'),
-        ('hola', 3, 'a'),
-        ('hola', 9, None)
-    ]
+    "text, pos, expected", [("hola", 1, "o"), ("hola", 3, "a"), ("hola", 9, None)]
 )
 def test_char_property(scanner_bot, text, pos, expected):
     sc = scanner_bot(text, pos)
@@ -49,11 +45,11 @@ def test_char_property(scanner_bot, text, pos, expected):
 
 
 @pytest.mark.parametrize(
-    'text, moves, expected',
+    "text, moves, expected",
     [
-        ('h\nol\na', 3, (2, 2, 3)),
-        ('h\nol\na', 1, (1, 2, 1)),
-    ]
+        ("h\nol\na", 3, (2, 2, 3)),
+        ("h\nol\na", 1, (1, 2, 1)),
+    ],
 )
 def test_next(scanner_bot, text, moves, expected):
     sc = scanner_bot(text)
@@ -66,35 +62,34 @@ def test_next(scanner_bot, text, moves, expected):
 
 
 @pytest.mark.parametrize(
-    'text, moves, expected',
+    "text, moves, expected",
     [
-        ('hola como estas', 1, 'o'),
-        ('hola como estas', 4, ' '),
-        ('hola como estas', 7, 'm'),
-        ('hola como estas', 0, '')
-    ]
+        ("hola como estas", 1, "o"),
+        ("hola como estas", 4, " "),
+        ("hola como estas", 7, "m"),
+        ("hola como estas", 0, ""),
+    ],
 )
 def test_next_char(scanner_bot, text, moves, expected):
     sc = scanner_bot(text)
-    char = ''
+    char = ""
     for _ in range(moves):
         char = sc.next_char()
     assert char == expected
 
 
 def test_repr(scanner_bot):
-    sc = scanner_bot('pireal')
-    assert repr(sc) == '<Scanner at 1:1 - Character: p>'
+    sc = scanner_bot("pireal")
+    assert repr(sc) == "<Scanner at 1:1 - Character: p>"
     sc.next()
     sc.next()
-    assert repr(sc) == '<Scanner at 1:3 - Character: r>'
+    assert repr(sc) == "<Scanner at 1:3 - Character: r>"
 
 
 class ScannerTestCase(unittest.TestCase):
-
     def test_peek(self):
-        sc = Scanner('gabox')
+        sc = Scanner("gabox")
 
-        self.assertEqual(sc.peek(), 'a')
+        self.assertEqual(sc.peek(), "a")
         sc.next()
-        self.assertEqual(sc.peek(), 'b')
+        self.assertEqual(sc.peek(), "b")

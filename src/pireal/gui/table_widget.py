@@ -31,7 +31,6 @@ from pireal import translations as tr
 
 
 class TableWidget(QSplitter):
-
     def __init__(self):
         super(TableWidget, self).__init__()
         self._tabs = QTabWidget()
@@ -65,7 +64,8 @@ class TableWidget(QSplitter):
         lateral_widget = Pireal.get_service("lateral_widget")
         lateral_widget.resultClicked.connect(self._on_result_list_clicked)
         lateral_widget.resultSelectionChanged.connect(
-            lambda index: self.stacked_result.setCurrentIndex(index))
+            lambda index: self.stacked_result.setCurrentIndex(index)
+        )
 
     def insert_rows(self, tuplas):
         current_view = self.current_table()
@@ -135,7 +135,7 @@ class TableWidget(QSplitter):
         return False
 
     def add_table(self, rela, name, table):
-        """ Add new table from New Relation Dialog """
+        """Add new table from New Relation Dialog"""
 
         self.add_relation(name, rela)
         self.stacked.addWidget(table)
@@ -170,7 +170,7 @@ class TableWidget(QSplitter):
                     i -= 1
 
     def delete_column(self):
-        """ Elimina la/las columnas seleccionadas """
+        """Elimina la/las columnas seleccionadas"""
 
         current_view = self.current_table()
         if current_view is not None:
@@ -178,8 +178,7 @@ class TableWidget(QSplitter):
             selection = current_view.selectionModel()
             if selection.hasSelection():
                 selection = selection.selection()
-                columns = set(
-                    [index.column() for index in selection.indexes()])
+                columns = set([index.column() for index in selection.indexes()])
                 columns = sorted(list(columns))
                 previous = -1
                 i = len(columns) - 1
@@ -190,6 +189,6 @@ class TableWidget(QSplitter):
                     i -= 1
 
     def create_table(self, rela, editable=True):
-        """ Se crea la vista y el modelo """
+        """Se crea la vista y el modelo"""
 
         return create_view(rela, editable=editable)

@@ -87,17 +87,17 @@ class _StatusBar(QFrame):
 
         # Left widgets
         self._messages_label = QLabel()
-        self._messages_label.setText(f'Pireal v{__version__}')
+        self._messages_label.setText(f"Pireal v{__version__}")
         left_layout.addWidget(self._messages_label)
         # Mid widgets
-        self._line_col_label = QLabel('Line: 0, Col: 0')
+        self._line_col_label = QLabel("Line: 0, Col: 0")
         self._line_col_label.hide()
         mid_layout.addWidget(self._line_col_label)
         # Right widgets
         execute_button = QToolButton()
         execute_button.setAutoRaise(True)
         execute_button.setFocusPolicy(Qt.NoFocus)
-        execute_button.setText('\uf04b')
+        execute_button.setText("\uf04b")
         execute_button.clicked.connect(lambda: self.playClicked.emit())
         right_layout.addWidget(execute_button)
         dark_mode_button = QToolButton()
@@ -105,20 +105,20 @@ class _StatusBar(QFrame):
         dark_mode_button.setFocusPolicy(Qt.NoFocus)
         dark_mode_button.setCheckable(True)
         dark_mode_button.setChecked(SETTINGS.dark_mode)
-        dark_mode_button.setText('\uf186')
+        dark_mode_button.setText("\uf186")
         dark_mode_button.toggled.connect(lambda v: self.moonClicked.emit(v))
         right_layout.addWidget(dark_mode_button)
         settings_button = QToolButton()
         settings_button.setAutoRaise(True)
         settings_button.setFocusPolicy(Qt.NoFocus)
-        settings_button.setText('\uf013')
+        settings_button.setText("\uf013")
         settings_button.clicked.connect(lambda: self.gearClicked.emit())
         right_layout.addWidget(settings_button)
 
         fullscreen_button = QToolButton()
         fullscreen_button.setAutoRaise(True)
         fullscreen_button.setFocusPolicy(Qt.NoFocus)
-        fullscreen_button.setText('\uf065')
+        fullscreen_button.setText("\uf065")
         fullscreen_button.setCheckable(True)
         fullscreen_button.setChecked(self._main_window.isFullScreen())
         fullscreen_button.toggled.connect(lambda v: self.expandClicked.emit(v))
@@ -138,7 +138,7 @@ class _StatusBar(QFrame):
     def update_line_and_col(self, line, col):
         if not self._line_col_label.isVisible():
             self._line_col_label.show()
-        self._line_col_label.setText('Line: {}, Col: {}'.format(line, col))
+        self._line_col_label.setText("Line: {}, Col: {}".format(line, col))
 
 
 class Pireal(QMainWindow):
@@ -154,17 +154,17 @@ class Pireal(QMainWindow):
 
     def __init__(self, check_updates=True):
         QMainWindow.__init__(self)
-        self.setWindowTitle('Pireal')
+        self.setWindowTitle("Pireal")
         self.setMinimumSize(880, 600)
         # Load window geometry
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
-        window_maximized = qsettings.value('window_max', True)
+        window_maximized = qsettings.value("window_max", True)
         if window_maximized:
             self.showMaximized()
         else:
-            size = qsettings.value('window_size')
+            size = qsettings.value("window_size")
             self.resize(size)
-            position = qsettings.value('window_pos')
+            position = qsettings.value("window_pos")
             self.move(position)
 
         # Menu bar
@@ -179,7 +179,8 @@ class Pireal(QMainWindow):
         self.status_bar = _StatusBar(self, parent=self.statusBar())
         self.statusBar().addWidget(self.status_bar, 1)
         self.statusBar().setStyleSheet(
-            'QStatusBar { margin: 0; padding: 0; border-top: 1px solid palette(dark); }')
+            "QStatusBar { margin: 0; padding: 0; border-top: 1px solid palette(dark); }"
+        )
         self.statusBar().setSizeGripEnabled(False)
         self.statusBar().show()
         self.status_bar.gearClicked.connect(central_widget.show_settings)
@@ -191,7 +192,7 @@ class Pireal(QMainWindow):
         Pireal.load_service("pireal", self)
 
         if check_updates:
-            self.tray = QSystemTrayIcon(QIcon(':img/icon'))
+            self.tray = QSystemTrayIcon(QIcon(":img/icon"))
             self.tray.setToolTip(tr.TR_TOOLTIP_VERSION_AVAILABLE)
             self.tray.activated.connect(self._on_system_tray_clicked)
             self.tray.messageClicked.connect(self._on_system_tray_message_clicked)
@@ -217,8 +218,9 @@ class Pireal(QMainWindow):
         SETTINGS.dark_mode = value
         apply_theme(qapp)
         self.statusBar().setStyleSheet(
-            'QStatusBar { margin: 0; padding: 0; border-top: 1px solid palette(dark); }')
-        central = Pireal.get_service('central')
+            "QStatusBar { margin: 0; padding: 0; border-top: 1px solid palette(dark); }"
+        )
+        central = Pireal.get_service("central")
         if central is None:
             return
         active_db = central.get_active_db()
@@ -243,29 +245,29 @@ class Pireal(QMainWindow):
             self.showMaximized()
 
     def open_download_release(self):
-        webbrowser.open_new('https://github.com/centaurialpha/pireal/releases/latest')
+        webbrowser.open_new("https://github.com/centaurialpha/pireal/releases/latest")
 
     @classmethod
     def get_service(cls, service):
-        """ Return the instance of a loaded service """
+        """Return the instance of a loaded service"""
 
         return cls.__SERVICES.get(service, None)
 
     @classmethod
     def load_service(cls, name, instance):
-        """ Load a service providing the service name and the instance """
+        """Load a service providing the service name and the instance"""
 
         cls.__SERVICES[name] = instance
 
     @classmethod
     def get_action(cls, name):
-        """ Return the instance of a loaded QAction """
+        """Return the instance of a loaded QAction"""
 
         return cls.__ACTIONS.get(name, None)
 
     @classmethod
     def load_action(cls, name, action):
-        """ Load a QAction """
+        """Load a QAction"""
 
         cls.__ACTIONS[name] = action
 
@@ -289,14 +291,14 @@ class Pireal(QMainWindow):
                 else:
                     qaction = qmenu.addAction(action.name)
 
-                    obj_name, slot = action.slot.split(':')
+                    obj_name, slot = action.slot.split(":")
 
                     shortcut = keymap.KEYMAP.get(slot)
                     if shortcut is not None:
                         qaction.setShortcut(shortcut)
 
                     obj = central
-                    if obj_name == 'pireal':
+                    if obj_name == "pireal":
                         obj = self
 
                     func = getattr(obj, slot, None)
@@ -314,12 +316,13 @@ class Pireal(QMainWindow):
             self.tray.showMessage(
                 tr.TR_MSG_UPDATES,
                 tr.TR_MSG_UPDATES_BODY.format(self._updater.version),
-                QSystemTrayIcon.Information, 10000
+                QSystemTrayIcon.Information,
+                10000,
             )
 
         self._updater.deleteLater()
 
-    def change_title(self, title=''):
+    def change_title(self, title=""):
         if title:
             _title = title + " - Pireal "
         else:
@@ -327,24 +330,25 @@ class Pireal(QMainWindow):
         self.setWindowTitle(_title)
 
     def about_qt(self):
-        """ Show about qt dialog """
+        """Show about qt dialog"""
 
         QMessageBox.aboutQt(self)
 
     def about_pireal(self):
-        """ Show the bout Pireal dialog """
+        """Show the bout Pireal dialog"""
 
         from pireal.gui.dialogs import about_dialog
+
         dialog = about_dialog.AboutDialog(self)
         dialog.exec_()
 
     def report_issue(self):
-        """ Open in the browser the page to create new  issue """
+        """Open in the browser the page to create new  issue"""
 
         webbrowser.open("http://github.com/centaurialpha/pireal/issues/new")
 
     def show_hide_menubar(self):
-        """ Change visibility of menu bar """
+        """Change visibility of menu bar"""
 
         if self.menuBar().isVisible():
             self.menuBar().hide()
@@ -361,16 +365,16 @@ class Pireal(QMainWindow):
         # Qt settings
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
 
-        qsettings.setValue('last_open_folder', central_widget.last_open_folder)
-        qsettings.setValue('recent_databases', central_widget.recent_databases)
+        qsettings.setValue("last_open_folder", central_widget.last_open_folder)
+        qsettings.setValue("recent_databases", central_widget.recent_databases)
 
         # Save window geometry
         if self.isMaximized():
-            qsettings.setValue('window_max', True)
+            qsettings.setValue("window_max", True)
         else:
-            qsettings.setValue('window_max', False)
-            qsettings.setValue('window_pos', self.pos())
-            qsettings.setValue('window_size', self.size())
+            qsettings.setValue("window_max", False)
+            qsettings.setValue("window_pos", self.pos())
+            qsettings.setValue("window_size", self.size())
 
         central_widget = Pireal.get_service("central")
         db = central_widget.get_active_db()
@@ -383,7 +387,7 @@ class Pireal(QMainWindow):
                     self,
                     tr.TR_MSG_SAVE_CHANGES,
                     tr.TR_MSG_SAVE_CHANGES_BODY,
-                    QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+                    QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel,
                 )
                 if ret == QMessageBox.Yes:
                     central_widget.save_database()
@@ -392,12 +396,12 @@ class Pireal(QMainWindow):
             # Query files
             unsaved_editors = central_widget.get_unsaved_queries()
             if unsaved_editors:
-                text = '\n'.join([editor.name for editor in unsaved_editors])
+                text = "\n".join([editor.name for editor in unsaved_editors])
                 ret = QMessageBox.question(
                     self,
                     tr.TR_QUERY_NOT_SAVED,
                     tr.TR_QUERY_NOT_SAVED_BODY.format(files=text),
-                    QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+                    QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel,
                 )
 
                 if ret == QMessageBox.Yes:

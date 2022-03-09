@@ -1,8 +1,8 @@
 class AST(object):
-    """ Base class for all nodes """
+    """Base class for all nodes"""
 
     def __eq__(self, other):
-        attrs = [attr for attr in dir(self) if not attr.startswith('_')]
+        attrs = [attr for attr in dir(self) if not attr.startswith("_")]
 
         boolean_values = []
         for attr in attrs:
@@ -14,54 +14,46 @@ class AST(object):
 
 
 class Variable(AST):
-
     def __init__(self, token):
         self.token = token
         self.value = token.value
 
 
 class Number(AST):
-
     def __init__(self, token):
         self.num = token.value
         self.token = token
 
 
 class String(AST):
-
     def __init__(self, token):
         self.string = token.value
         self.token = token
 
 
 class Date(AST):
-
     def __init__(self, token):
         self.date = token.value
 
 
 class Time(AST):
-
     def __init__(self, token):
         self.time = token.value
 
 
 class ProjectExpr(AST):
-
     def __init__(self, attrs, expr):
         self.attrs = attrs
         self.expr = expr
 
 
 class SelectExpr(AST):
-
     def __init__(self, cond, expr):
         self.condition = cond
         self.expr = expr
 
 
 class BinaryOp(AST):
-
     def __init__(self, left, op, right):
         self.left = left
         self.token = self.op = op
@@ -69,7 +61,6 @@ class BinaryOp(AST):
 
 
 class Condition(AST):
-
     def __init__(self, op1, operator, op2):
         self.op1 = op1
         self.operator = operator
@@ -77,7 +68,6 @@ class Condition(AST):
 
 
 class BooleanExpression(AST):
-
     def __init__(self, left_formula, operator, right_formula):
         self.left_formula = left_formula
         self.operator = operator
@@ -85,20 +75,18 @@ class BooleanExpression(AST):
 
 
 class Assignment(AST):
-
     def __init__(self, rname, query):
         self.rname = rname
         self.query = query
 
 
 class Compound(AST):
-
     def __init__(self):
         self.children = []
 
 
 class NodeVisitor(object):
-    """ Visitor pattern
+    """Visitor pattern
 
     A node visitor base class that walks the abstract syntax tree and calls
     a visitor function for every node found. This function may return a value
@@ -115,13 +103,13 @@ class NodeVisitor(object):
     """
 
     def visit(self, node):
-        """ Visit a node """
+        """Visit a node"""
 
-        method_name = 'visit_' + node.__class__.__name__
+        method_name = "visit_" + node.__class__.__name__
         visitor = getattr(self, method_name, self._generic_visit)
         return visitor(node)
 
     def _generic_visit(self, node):
-        """ Called if not explicit visitor function exists for a node """
+        """Called if not explicit visitor function exists for a node"""
 
         raise Exception("No visit_{} method".format(node.__class__.__name__))

@@ -29,11 +29,11 @@ from PyQt5.QtCore import QIODevice
 
 class File(QObject):
 
-    """ This class represents an object file"""
+    """This class represents an object file"""
 
     fileSaved = Signal(str)
 
-    def __init__(self, filename=''):
+    def __init__(self, filename=""):
         QObject.__init__(self)
         self.is_new = True
         if filename:
@@ -42,7 +42,7 @@ class File(QObject):
 
     @property
     def display_name(self):
-        """ Returns only the file name with extension, without the path"""
+        """Returns only the file name with extension, without the path"""
 
         return os.path.basename(self.filename)
 
@@ -64,7 +64,7 @@ class File(QObject):
         self.fileSaved.emit(self.filename)
 
     def read(self):
-        """ Reads the file and returns the content """
+        """Reads the file and returns the content"""
 
-        with open(self.filename, encoding='utf-8') as f:
+        with open(self.filename, encoding="utf-8") as f:
             return f.read()

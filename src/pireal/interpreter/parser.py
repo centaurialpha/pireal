@@ -72,7 +72,7 @@ from pireal.interpreter import rast as ast
 
 
 class Parser(object):
-    """ The Parser is the part that really understands the syntax of
+    """The Parser is the part that really understands the syntax of
     the language. It calls the Lexer to get tokens and processes the tokens
     per the syntax of the language.
     """
@@ -82,7 +82,7 @@ class Parser(object):
         self.token = self.lexer.next_token()
 
     def consume(self, token_type):
-        """ Consume a token of a given type and get the next token.
+        """Consume a token of a given type and get the next token.
         If the current token is not of the expected type, then
         raise an error
         """
@@ -90,11 +90,7 @@ class Parser(object):
         if self.token.type == token_type:
             self.token = self.lexer.next_token()
         else:
-            raise ConsumeError(
-                token_type,
-                self.token.type,
-                self.lexer.sc.lineno
-            )
+            raise ConsumeError(token_type, self.token.type, self.lexer.sc.lineno)
 
     def parse(self):
         return self.compound()
@@ -142,7 +138,7 @@ class Parser(object):
                 node = ast.BinaryOp(
                     left=node,
                     op=token_type,
-                    right=self.expression()  # to allow (<Expression>)
+                    right=self.expression(),  # to allow (<Expression>)
                 )
 
         return node
@@ -186,7 +182,7 @@ class Parser(object):
             boolean_node = ast.BooleanExpression(
                 left_formula=node,
                 operator=boolean_operator,
-                right_formula=self.formula()
+                right_formula=self.formula(),
             )
             node = boolean_node
 
@@ -256,7 +252,7 @@ class Parser(object):
 
 
 class Interpreter(ast.NodeVisitor):
-    """ Este objeto es el encargado de 'visitar' los nodos con el
+    """Este objeto es el encargado de 'visitar' los nodos con el
     método Interpreter.to_python(), que convierte a un string que luego
     es evaluado como código Python
 
@@ -284,11 +280,7 @@ class Interpreter(ast.NodeVisitor):
     def visit_BinaryOp(self, node):
         left = self.visit(node.left)
         right = self.visit(node.right)
-        return '{0}.{1}({2})'.format(
-            left,
-            node.token.value,
-            right
-        )
+        return "{0}.{1}({2})".format(left, node.token.value, right)
 
     def visit_Number(self, node):
         return node.num
@@ -297,9 +289,8 @@ class Interpreter(ast.NodeVisitor):
         attrs = [i.value for i in node.attrs]
         expr = self.visit(node.expr)
 
-        return '{0}.project({1})'.format(
-            expr,
-            ', '.join("'{0}'".format(i) for i in attrs)
+        return "{0}.project({1})".format(
+            expr, ", ".join("'{0}'".format(i) for i in attrs)
         )
 
     def visit_SelectExpr(self, node):
@@ -312,7 +303,7 @@ class Interpreter(ast.NodeVisitor):
         left_formula = self.visit(node.left_formula)
         right_formula = self.visit(node.right_formula)
 
-        return f'{left_formula} {node.operator.value} {right_formula}'
+        return f"{left_formula} {node.operator.value} {right_formula}"
 
     def visit_Condition(self, node):
         left_operand = self.visit(node.op1)
@@ -320,13 +311,10 @@ class Interpreter(ast.NodeVisitor):
         right_operand = self.visit(node.op2)
 
         # Convert RA operator to valid Python operator
-        map_operators = {
-            '=': '==',
-            '<>': '!='
-        }
+        map_operators = {"=": "==", "<>": "!="}
         operator = map_operators.get(operator, operator)
 
-        return f'{left_operand} {operator} {right_operand}'
+        return f"{left_operand} {operator} {right_operand}"
 
     def visit_Variable(self, node):
         return node.value

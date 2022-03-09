@@ -22,14 +22,11 @@ from distutils.version import LooseVersion
 from urllib.request import urlopen
 from urllib.error import URLError
 
-from PyQt5.QtCore import (
-    QObject,
-    pyqtSignal as Signal
-)
+from PyQt5.QtCore import QObject, pyqtSignal as Signal
 
 from pireal import gui
 
-logger = logging.getLogger('updater')
+logger = logging.getLogger("updater")
 
 URL = "https://raw.githubusercontent.com/centaurialpha/pireal/main/version.txt"
 
@@ -42,17 +39,17 @@ class Updater(QObject):
         self.version = ""
 
     def check_updates(self):
-        logger.info('Checking for updates...')
+        logger.info("Checking for updates...")
         try:
             web_version = urlopen(URL).read().decode().strip()
             if LooseVersion(gui.__version__) < LooseVersion(web_version):
                 self.version = web_version
-                logger.info('new version found: %s', self.version)
+                logger.info("new version found: %s", self.version)
             else:
-                logger.info('no new version available')
+                logger.info("no new version available")
         except URLError:
-            logger.exception('error while checking updates', exc_info=True)
+            logger.exception("error while checking updates", exc_info=True)
         finally:
-            logger.info('updater finished')
+            logger.info("updater finished")
 
         self.finished.emit()

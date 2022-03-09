@@ -5,47 +5,43 @@ from pireal.core import relation
 
 
 @pytest.mark.parametrize(
-    'filename, expected',
+    "filename, expected",
     [
-        ('/home/gabo/archivo.py', '.py'),
-        ('/path/path/blabla/file.extension', '.extension'),
-        ('/hola/como/estas/que_onda.qda', '.qda')
-    ]
+        ("/home/gabo/archivo.py", ".py"),
+        ("/path/path/blabla/file.extension", ".extension"),
+        ("/hola/como/estas/que_onda.qda", ".qda"),
+    ],
 )
 def test_get_extension(filename, expected):
     assert file_manager.get_extension(filename) == expected
 
 
 @pytest.mark.parametrize(
-    'filename, name',
+    "filename, name",
     [
-        ('/home/gabo/archivo.py', 'archivo'),
-        ('/path/path/blabla/file.extension', 'file'),
-        ('/hola/como/estas/que_onda.qda', 'que_onda')
-    ]
+        ("/home/gabo/archivo.py", "archivo"),
+        ("/path/path/blabla/file.extension", "file"),
+        ("/hola/como/estas/que_onda.qda", "que_onda"),
+    ],
 )
 def test_get_basename(filename, name):
     assert file_manager.get_basename(filename) == name
 
 
 @pytest.mark.parametrize(
-    'filename, path',
+    "filename, path",
     [
-        ('/home/gabo/archivo.py', '/home/gabo'),
-        ('/path/path/blabla/file.extension', '/path/path/blabla'),
-        ('/hola/como/estas/que_onda.qda', '/hola/como/estas')
-    ]
+        ("/home/gabo/archivo.py", "/home/gabo"),
+        ("/path/path/blabla/file.extension", "/path/path/blabla"),
+        ("/hola/como/estas/que_onda.qda", "/hola/como/estas"),
+    ],
 )
 def test_get_path(filename, path):
     assert file_manager.get_path(filename) == path
 
 
 def test_get_files_from_folder(tmpdir):
-    files = (
-        'archivo.py',
-        'archivo2.py',
-        'archivo3.py'
-    )
+    files = ("archivo.py", "archivo2.py", "archivo3.py")
     assert len(tmpdir.listdir()) == 0
     for f in files:
         path = tmpdir.join(f)
@@ -58,15 +54,12 @@ def test_get_files_from_folder(tmpdir):
 def test_generate_database():
     # FIXME: arreglar
     r = relation.Relation()
-    r.header = ['id', 'name']
-    data = {
-        ("1", "Gabriel"),
-        ("23", "Rodrigo")
-    }
+    r.header = ["id", "name"]
+    data = {("1", "Gabriel"), ("23", "Rodrigo")}
     for d in data:
         r.insert(d)
 
-    relations = {'persona': r}
+    relations = {"persona": r}
     expected = "@persona:id,name\n1,Gabriel\n23,Rodrigo\n"
 
     # assert expected in file_manager.generate_database(relations)

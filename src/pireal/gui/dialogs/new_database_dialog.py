@@ -32,11 +32,10 @@ from PyQt5.QtCore import Qt
 from pireal import translations as tr
 from pireal import dirs
 
-PIREAL_DB_EXTENSION = '.pdb'
+PIREAL_DB_EXTENSION = ".pdb"
 
 
 class DBInputDialog(QDialog):
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle(tr.TR_DB_DIALOG_TITLE)
@@ -49,14 +48,17 @@ class DBInputDialog(QDialog):
         self._line_db_location.setText(str(dirs.DATABASES_DIR))
         self._line_db_location.setReadOnly(True)
         choose_dir_action = self._line_db_location.addAction(
-            self.style().standardIcon(QStyle.SP_DirIcon), QLineEdit.TrailingPosition)
+            self.style().standardIcon(QStyle.SP_DirIcon), QLineEdit.TrailingPosition
+        )
         layout.addRow(tr.TR_DB_DIALOG_DB_LOCATION, self._line_db_location)
         self._line_db_path = QLineEdit()
         self._line_db_path.setReadOnly(True)
         layout.addRow(tr.TR_DB_DIALOG_DB_FILENAME, self._line_db_path)
         self._line_db_path.setText(str(dirs.DATABASES_DIR))
 
-        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal)
+        button_box = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal
+        )
         layout.addWidget(button_box)
         self._button_ok = button_box.button(QDialogButtonBox.Ok)
 
@@ -93,7 +95,7 @@ class DBInputDialog(QDialog):
         ret = dialog.exec_()
         if ret:
             return dialog.db_path
-        return ''
+        return ""
 
     def _validate(self):
         exist = os.path.exists(self._line_db_path.text().strip())

@@ -25,7 +25,7 @@ from PyQt5.QtWidgets import (
     QLineEdit,
     QPushButton,
     QSpacerItem,
-    QSizePolicy
+    QSizePolicy,
 )
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtCore import Qt
@@ -90,7 +90,7 @@ class NewRelationDialog(QDialog):
         btn_create.clicked.connect(self._create)
 
     def __add_tuple(self):
-        """ Agrega una tupla/fila al final de la tabla """
+        """Agrega una tupla/fila al final de la tabla"""
 
         model = self._view.model()
         model.insertRow(model.rowCount())
@@ -104,7 +104,7 @@ class NewRelationDialog(QDialog):
                 self,
                 tr.TR_RELATION_DIALOG_CONFIRM_DELETE_TUPLE,
                 tr.TR_RELATION_DIALOG_CONFIRM_DELETE_TUPLE_BODY,
-                QMessageBox.Yes | QMessageBox.No
+                QMessageBox.Yes | QMessageBox.No,
             )
             if r == QMessageBox.Yes:
                 selection = selection.selection()
@@ -131,17 +131,13 @@ class NewRelationDialog(QDialog):
         relation_name = self._line_relation_name.text().strip()
         if not relation_name:
             QMessageBox.critical(
-                self,
-                'Error',
-                tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME
+                self, "Error", tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME
             )
             return
         central = Pireal.get_service("central")
         if relation_name in central.get_active_db().table_widget.relations:
             QMessageBox.information(
-                self,
-                'Error',
-                tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name)
+                self, "Error", tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name)
             )
             return
         # Table model
@@ -160,11 +156,7 @@ class NewRelationDialog(QDialog):
                 header.append(text)
             rela.header = header
         except Exception as reason:
-            QMessageBox.critical(
-                self,
-                'Header Error',
-                str(reason)
-            )
+            QMessageBox.critical(self, "Header Error", str(reason))
             return
 
         # Load relation
@@ -179,7 +171,7 @@ class NewRelationDialog(QDialog):
                     QMessageBox.information(
                         self,
                         tr.TR_MSG_WRONG,
-                        tr.TR_RELATION_DIALOG_WHITESPACE.format(row + 1, column + 1)
+                        tr.TR_RELATION_DIALOG_WHITESPACE.format(row + 1, column + 1),
                     )
                     return
                 tuples.append(item.text().strip())

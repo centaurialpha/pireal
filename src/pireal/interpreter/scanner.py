@@ -23,7 +23,8 @@ class Scanner(object):
     The Scanner is used to step through text character by character
     and keep track of the line and column number of each passed character
     """
-    __slots__ = ('lineno', 'colno', 'index', '_text')
+
+    __slots__ = ("lineno", "colno", "index", "_text")
 
     def __init__(self, text):
         self._text = text
@@ -33,7 +34,7 @@ class Scanner(object):
 
     @property
     def char(self):
-        """ Returns a character in the current index """
+        """Returns a character in the current index"""
 
         if self.index < len(self._text):
             return self._text[self.index]
@@ -48,9 +49,9 @@ class Scanner(object):
         return self._text[peek_pos]
 
     def next(self):
-        """ Move on to the next character in the scanned text """
+        """Move on to the next character in the scanned text"""
 
-        if self.char == '\n':
+        if self.char == "\n":
             # We are in a new line, therefore we increase the line
             # number and restart the column number
             self.lineno += 1
@@ -60,14 +61,12 @@ class Scanner(object):
         self.index += 1
 
     def next_char(self):
-        """ Returns the next character in the source text"""
+        """Returns the next character in the source text"""
 
         self.next()
         return self.char
 
     def __repr__(self):
-        return '<Scanner at {line}:{col} - Character: {char}>'.format(
-            line=self.lineno,
-            col=self.colno,
-            char=self.char
+        return "<Scanner at {line}:{col} - Character: {char}>".format(
+            line=self.lineno, col=self.colno, char=self.char
         )

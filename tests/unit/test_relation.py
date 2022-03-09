@@ -24,18 +24,17 @@ from pireal.core.relation import Relation
 
 
 class RelationTestCase(unittest.TestCase):
-
     def test_select_with_date(self):
         r1 = Relation()
-        r1.header = ['id', 'dates']
-        r1.insert(('1', '20/01/1991'))
-        r1.insert(('2', '20/01/1993'))
-        r1.insert(('3', '20/01/1998'))
+        r1.header = ["id", "dates"]
+        r1.insert(("1", "20/01/1991"))
+        r1.insert(("2", "20/01/1993"))
+        r1.insert(("3", "20/01/1998"))
 
         expected_relation = Relation()
-        expected_relation.header = ['id', 'dates']
-        expected_relation.insert(('2', '20/01/1993'))
-        expected_relation.insert(('3', '20/01/1998'))
+        expected_relation.header = ["id", "dates"]
+        expected_relation.insert(("2", "20/01/1993"))
+        expected_relation.insert(("3", "20/01/1998"))
 
         r = r1.select("dates >= datetime.date(1993, 1, 20)")
         print(r)
@@ -49,29 +48,20 @@ def relation_fixture():
         ("1", "Gabriel", "Belén"),
         ("23", "Rodrigo", "Belén"),
         ("12", "Mercedes", "Las Juntas"),
-        ("2", "Diego", "Santiago del Estero")
+        ("2", "Diego", "Santiago del Estero"),
     }
     for d in data:
         r1.insert(d)
 
     r2 = relation.Relation()
     r2.header = ["id", "skill"]
-    data = {
-        ("3", "Ruby"),
-        ("1", "Python"),
-        ("12", "Rocas"),
-        ("23", "Games")
-    }
+    data = {("3", "Ruby"), ("1", "Python"), ("12", "Rocas"), ("23", "Games")}
     for d in data:
         r2.insert(d)
 
     r3 = relation.Relation()
     r3.header = ["date"]
-    data = {
-        ("2015-12-12"),
-        ("2012-07-09"),
-        ("1998-12-09")
-    }
+    data = {("2015-12-12"), ("2012-07-09"), ("1998-12-09")}
     for d in data:
         r3.insert(d)
     return r1, r2, r3
@@ -94,10 +84,7 @@ def test_cardinality():
 def test_wrong_size_relation():
     r = relation.Relation()
     r.header = ["aaa", "bbb"]
-    data = {
-        ("a", "b", "c", "d"),
-        ("e", "f", "g", "h")
-    }
+    data = {("a", "b", "c", "d"), ("e", "f", "g", "h")}
     with pytest.raises(relation.WrongSizeError):
         for d in data:
             r.insert(d)
@@ -134,7 +121,7 @@ def test_selection2():
         ("104", "curso2"),
         ("500", "curso3"),
         ("1000", "curso4"),
-        ("200", "curso5")
+        ("200", "curso5"),
     }
     for d in data:
         r.insert(d)
@@ -153,7 +140,7 @@ def test_selection3():
         ("curso2", "104"),
         ("curso3", "500"),
         ("curso4", "1000"),
-        ("curso5", "200")
+        ("curso5", "200"),
     }
     for d in data:
         r.insert(d)
@@ -173,11 +160,7 @@ def test_combination(relation_fixture):
     r1, r2, _ = relation_fixture
     join_natural = r1.njoin(r2)
     projection = join_natural.project("name", "skill")
-    expected = {
-        ("Gabriel", "Python"),
-        ("Rodrigo", "Games"),
-        ("Mercedes", "Rocas")
-    }
+    expected = {("Gabriel", "Python"), ("Rodrigo", "Games"), ("Mercedes", "Rocas")}
     assert projection.cardinality() == 3
     assert projection.degree() == 2
     assert projection.content == expected
@@ -196,7 +179,7 @@ def test_product(relation_fixture):
         ("12", "Mercedes", "Las Juntas", "1998-12-09"),
         ("2", "Diego", "Santiago del Estero", "2015-12-12"),
         ("2", "Diego", "Santiago del Estero", "2012-07-09"),
-        ("2", "Diego", "Santiago del Estero", "1998-12-09")
+        ("2", "Diego", "Santiago del Estero", "1998-12-09"),
     }
     r1, _, r3 = relation_fixture
     product = r1.product(r3)
@@ -208,7 +191,7 @@ def test_product(relation_fixture):
 def test_product_duplicate_field_error(relation_fixture):
     _, r2, _ = relation_fixture
     r1 = relation.Relation()
-    r1.header = ['algo', 'skill']  # skill duplicado!
+    r1.header = ["algo", "skill"]  # skill duplicado!
     with pytest.raises(relation.DuplicateFieldError):
         r1.product(r2)
 
@@ -219,7 +202,7 @@ def test_njoin(relation_fixture):
     expected = {
         ("1", "Gabriel", "Belén", "Python"),
         ("12", "Mercedes", "Las Juntas", "Rocas"),
-        ("23", "Rodrigo", "Belén", "Games")
+        ("23", "Rodrigo", "Belén", "Games"),
     }
     r3 = r1.njoin(r2)
     assert r3.degree() == 4
@@ -233,7 +216,7 @@ def test_louter(relation_fixture):
         ("1", "Gabriel", "Belén", "Python"),
         ("23", "Rodrigo", "Belén", "Games"),
         ("12", "Mercedes", "Las Juntas", "Rocas"),
-        ("2", "Diego", "Santiago del Estero", "null")
+        ("2", "Diego", "Santiago del Estero", "null"),
     }
     r = r1.louter(r2)
     assert r.degree() == 4
@@ -247,7 +230,7 @@ def test_router(relation_fixture):
         ("3", "null", "null", "Ruby"),
         ("1", "Gabriel", "Belén", "Python"),
         ("12", "Mercedes", "Las Juntas", "Rocas"),
-        ("23", "Rodrigo", "Belén", "Games")
+        ("23", "Rodrigo", "Belén", "Games"),
     }
 
     r = r1.router(r2)
@@ -264,19 +247,13 @@ def test_relation_compatible(relation_fixture):
 
 def test_intersect():
     r1 = relation.Relation()
-    r1.header = ['id', 'name']
-    data = {
-        ("1", "Gabo"),
-        ("2", "Rodrigo")
-    }
+    r1.header = ["id", "name"]
+    data = {("1", "Gabo"), ("2", "Rodrigo")}
     for d in data:
         r1.insert(d)
     r2 = relation.Relation()
-    r2.header = ['id', 'name']
-    data = {
-        ("1", "Gabo"),
-        ("3", "Mercedes")
-    }
+    r2.header = ["id", "name"]
+    data = {("1", "Gabo"), ("3", "Mercedes")}
     for d in data:
         r2.insert(d)
     expected = {("1", "Gabo")}
@@ -290,7 +267,7 @@ def test_fouther(relation_fixture):
         ("23", "Rodrigo", "Belén", "Games"),
         ("12", "Mercedes", "Las Juntas", "Rocas"),
         ("2", "Diego", "Santiago del Estero", "null"),
-        ("3", "null", "null", "Ruby")
+        ("3", "null", "null", "Ruby"),
     }
 
     r = r1.fouter(r2)
@@ -303,28 +280,41 @@ def test_difference():
     r = relation.Relation()
     r.header = ["patente"]
     data = {
-        ("ass-002",), ("dde-456",), ("agt-303",),
-        ("tsv-360",), ("k-23526",), ("cdd-479",),
-        ("cdt-504",), ("exs-900",), ("beo-825",),
-        ("afs-448",), ("fvj-530",), ("fvv-120",),
-        ("gaa-589",)
+        ("ass-002",),
+        ("dde-456",),
+        ("agt-303",),
+        ("tsv-360",),
+        ("k-23526",),
+        ("cdd-479",),
+        ("cdt-504",),
+        ("exs-900",),
+        ("beo-825",),
+        ("afs-448",),
+        ("fvj-530",),
+        ("fvv-120",),
+        ("gaa-589",),
     }
     for i in data:
         r.insert(i)
     r2 = relation.Relation()
     r2.header = ["patente"]
     data = {
-        ("dde-456",), ("dde-456",), ("beo-825",),
-        ("k-23526",), ("gaa-589",), ("ass-002",),
-        ("ass-002",), ("fvj-530",), ("tsv-360",),
-        ("tsv-360",), ("cdt-504",), ("cdt-504",)
+        ("dde-456",),
+        ("dde-456",),
+        ("beo-825",),
+        ("k-23526",),
+        ("gaa-589",),
+        ("ass-002",),
+        ("ass-002",),
+        ("fvj-530",),
+        ("tsv-360",),
+        ("tsv-360",),
+        ("cdt-504",),
+        ("cdt-504",),
     }
     for i in data:
         r2.insert(i)
-    expected = {
-        ("agt-303",), ("cdd-479",), ("exs-900",),
-        ("afs-448",), ("fvv-120",)
-    }
+    expected = {("agt-303",), ("cdd-479",), ("exs-900",), ("afs-448",), ("fvv-120",)}
     assert r.cardinality() == 13
     new = r.difference(r2)
     assert new.content == expected
@@ -333,32 +323,31 @@ def test_difference():
 
 def test_update_relation():
     r = relation.Relation()
-    r.header = ['id', 'name']
-    r.content.add(('21', 'Rodrigo'))
-    r.content.add(('1', 'gabox'))
+    r.header = ["id", "name"]
+    r.content.add(("21", "Rodrigo"))
+    r.content.add(("1", "gabox"))
 
-    expected = relation.OrderedSet([
-        ('21', 'Rodrigo'),
-        ('1', 'Gabriel')
-    ])
+    expected = relation.OrderedSet([("21", "Rodrigo"), ("1", "Gabriel")])
 
-    r.update(1, 1, 'Gabriel')
+    r.update(1, 1, "Gabriel")
 
     assert r.content == expected
 
 
 def test_append_row():
     r = relation.Relation()
-    r.header = ['id', 'name']
-    r.content.add(('21', 'Rodrigo'))
-    r.content.add(('1', 'gabox'))
+    r.header = ["id", "name"]
+    r.content.add(("21", "Rodrigo"))
+    r.content.add(("1", "gabox"))
 
-    expected = relation.OrderedSet([
-        ('21', 'Rodrigo'),
-        ('1', 'gabox'),
-        ('null (1)', 'null (2)'),
-        ('null (3)', 'null (4)')
-    ])
+    expected = relation.OrderedSet(
+        [
+            ("21", "Rodrigo"),
+            ("1", "gabox"),
+            ("null (1)", "null (2)"),
+            ("null (3)", "null (4)"),
+        ]
+    )
 
     r.append_row()
     r.append_row()
@@ -368,14 +357,16 @@ def test_append_row():
 
 def test_str_repr():
     r = relation.Relation()
-    r.name = 'test_r'
-    r.header = ['id', 'name']
-    r.content.add(('21', 'Rodrigo'))
+    r.name = "test_r"
+    r.header = ["id", "name"]
+    r.content.add(("21", "Rodrigo"))
 
-    expected_str = '|      id      |     name     |\n-------------------------------\n|      21      |   Rodrigo    |\n'
-    expected_repr = 'Relation(name=test_r, degree=2, cardinality=1)'
+    expected_str = "|      id      |     name     |\n-------------------------------\n|      21      |   Rodrigo    |\n"
+    expected_repr = "Relation(name=test_r, degree=2, cardinality=1)"
     assert r.__str__() == expected_str
     assert r.__repr__() == expected_repr
+
+
 # import pytest
 #
 # from pireal.core import relation

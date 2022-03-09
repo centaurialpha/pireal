@@ -46,15 +46,18 @@ class SettingManager:
         self._qs = QSettings(str(CONFIG_FILE), QSettings.IniFormat)
 
     def load(self):
-        self._language: str = self._qs.value(
-            'language', defaultValue='en')
+        self._language: str = self._qs.value("language", defaultValue="en")
         self._highlight_current_line: bool = self._qs.value(
-            'highlight_current_line', defaultValue=False, type=bool)
+            "highlight_current_line", defaultValue=False, type=bool
+        )
         self._match_parenthesis: bool = self._qs.value(
-            'match_parenthesis', defaultValue=True, type=bool)
-        self._font_family: str = self._qs.value('font_family')
-        self._font_size: int = self._qs.value('font_size', defaultValue=12, type=int)
-        self._dark_mode: bool = self._qs.value('dark_mode', defaultValue=True, type=bool)
+            "match_parenthesis", defaultValue=True, type=bool
+        )
+        self._font_family: str = self._qs.value("font_family")
+        self._font_size: int = self._qs.value("font_size", defaultValue=12, type=int)
+        self._dark_mode: bool = self._qs.value(
+            "dark_mode", defaultValue=True, type=bool
+        )
 
     @property
     def language(self) -> str:
@@ -64,7 +67,7 @@ class SettingManager:
     def language(self, lang):
         if lang != self._language:
             self._language = lang
-            self._qs.setValue('language', lang)
+            self._qs.setValue("language", lang)
 
     @property
     def highlight_current_line(self) -> bool:
@@ -74,7 +77,7 @@ class SettingManager:
     def highlight_current_line(self, value):
         if value != self._highlight_current_line:
             self._highlight_current_line = value
-            self._qs.setValue('highlight_current_line', value)
+            self._qs.setValue("highlight_current_line", value)
 
     @property
     def match_parenthesis(self) -> bool:
@@ -84,7 +87,7 @@ class SettingManager:
     def match_parenthesis(self, value):
         if value != self._match_parenthesis:
             self._match_parenthesis = value
-            self._qs.setValue('match_parenthesis', value)
+            self._qs.setValue("match_parenthesis", value)
 
     @property
     def font_family(self) -> str:
@@ -92,13 +95,13 @@ class SettingManager:
         if font is None:
             families = QFontDatabase().families()
             preferred_fonts = []
-            if platform.system() == 'Linux':
-                preferred_fonts.append('Ubuntu Mono')
-                preferred_fonts.append('Liberation Mono')
-                preferred_fonts.append('Source Code Pro')
-            elif platform.system() == 'Windows':
-                preferred_fonts.append('Courier New')
-                preferred_fonts.append('Courier')
+            if platform.system() == "Linux":
+                preferred_fonts.append("Ubuntu Mono")
+                preferred_fonts.append("Liberation Mono")
+                preferred_fonts.append("Source Code Pro")
+            elif platform.system() == "Windows":
+                preferred_fonts.append("Courier New")
+                preferred_fonts.append("Courier")
             # FIXME: mac OSX
 
             font = None
@@ -112,7 +115,7 @@ class SettingManager:
     def font_family(self, font):
         if font != self._font_family:
             self._font = font
-            self._qs.setValue('font_family', font)
+            self._qs.setValue("font_family", font)
 
     @property
     def font_size(self) -> int:
@@ -122,7 +125,7 @@ class SettingManager:
     def font_size(self, size):
         if size != self._font_size:
             self._font_size = size
-            self._qs.setValue('font_size', size)
+            self._qs.setValue("font_size", size)
 
     @property
     def dark_mode(self):
@@ -132,7 +135,7 @@ class SettingManager:
     def dark_mode(self, use_dark_mode):
         if use_dark_mode != self._dark_mode:
             self._dark_mode = use_dark_mode
-            self._qs.setValue('dark_mode', use_dark_mode)
+            self._qs.setValue("dark_mode", use_dark_mode)
 
 
 SETTINGS = SettingManager()

@@ -36,6 +36,12 @@ flake8:
 
 lint: pep8 flake8
 
+format-check:
+	@black src/ tests/ --check
+
+format:
+	@black src/ tests/
+
 test-unit:
 	pytest -v tests/unit --cov pireal --cov-report term-missing
 

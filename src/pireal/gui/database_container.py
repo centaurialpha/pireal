@@ -36,11 +36,7 @@ from pireal.gui.model_view_delegate import create_view
 from pireal.gui.lateral_widget import RelationItemType
 
 from pireal.gui.query_container import query_container
-from pireal.core import (
-    relation,
-    pfile,
-    file_manager
-)
+from pireal.core import relation, pfile, file_manager
 from pireal.dirs import DATA_SETTINGS
 from pireal import translations as tr
 from pireal.gui.main_window import Pireal
@@ -50,7 +46,6 @@ logger = logging.getLogger(__name__)
 
 
 class DatabaseContainer(QSplitter):
-
     def __init__(self, orientation=Qt.Horizontal):
         QSplitter.__init__(self, orientation)
         self.pfile = None
@@ -77,9 +72,9 @@ class DatabaseContainer(QSplitter):
         # For change table widget item when up/down
         # see issue #39
         self.lateral_widget.relationSelectionChanged.connect(
-            lambda i: self.table_widget.stacked.setCurrentIndex(i))
-        self.query_container.saveEditor.connect(
-            self.save_query)
+            lambda i: self.table_widget.stacked.setCurrentIndex(i)
+        )
+        self.query_container.saveEditor.connect(self.save_query)
         self.setSizes([1, 1])
 
     def _on_relation_clicked(self, index):
@@ -88,7 +83,7 @@ class DatabaseContainer(QSplitter):
         self.table_widget.stacked.setCurrentIndex(index)
 
     def dbname(self):
-        """ Return display name """
+        """Return display name"""
 
         return self.pfile.display_name
 
@@ -96,11 +91,11 @@ class DatabaseContainer(QSplitter):
         return self.pfile.is_new
 
     def create_database(self, data):
-        for table in data.get('tables'):
+        for table in data.get("tables"):
             # Get data
-            table_name = table.get('name')
-            header = table.get('header')
-            tuples = table.get('tuples')
+            table_name = table.get("name")
+            header = table.get("header")
+            tuples = table.get("tuples")
 
             # Creo el objeto Relation
             rela = relation.Relation()
@@ -120,7 +115,7 @@ class DatabaseContainer(QSplitter):
             self.lateral_widget.add_item(rela, RelationItemType.Normal)
 
     def create_table(self, relation_obj, relation_name, editable=True):
-        """ Se crea la vista, el model y el delegado para @relation_obj """
+        """Se crea la vista, el model y el delegado para @relation_obj"""
 
         return create_view(relation_obj, editable=editable)
 
@@ -146,7 +141,7 @@ class DatabaseContainer(QSplitter):
                     QMessageBox.information(
                         self,
                         tr.TR_MSG_INFORMATION,
-                        tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name)
+                        tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name),
                     )
                     return False
 
@@ -162,7 +157,7 @@ class DatabaseContainer(QSplitter):
             self,
             tr.TR_MSG_CONFIRMATION,
             tr.TR_MSG_REMOVE_RELATION.format(name),
-            QMessageBox.Yes | QMessageBox.No
+            QMessageBox.Yes | QMessageBox.No,
         )
         if ret == QMessageBox.Yes:
             self.lateral_widget.remove_relation(index)
@@ -182,7 +177,7 @@ class DatabaseContainer(QSplitter):
             editor = query_widget.get_editor()
             editor.pfile = ffile
             if not filename:
-                ffile.filename = 'untitled_{n}.pqf'.format(n=self.__nquery)
+                ffile.filename = "untitled_{n}.pqf".format(n=self.__nquery)
             else:
                 content = ffile.read()
                 editor.setPlainText(content)
@@ -201,11 +196,7 @@ class DatabaseContainer(QSplitter):
         try:
             editor.pfile.save(data=content)
         except Exception:
-            QMessageBox.critical(
-                self,
-                'Error',
-                tr.TR_MSG_FILE_NOT_OPENED
-            )
+            QMessageBox.critical(self, "Error", tr.TR_MSG_FILE_NOT_OPENED)
             return False
         editor.saved()
         return editor.pfile.filename
@@ -219,7 +210,7 @@ class DatabaseContainer(QSplitter):
             self,
             tr.TR_MSG_SAVE_QUERY_FILE,
             editor.name,
-            settings.get_extension_filter('.pqf')
+            settings.get_extension_filter(".pqf"),
         )
         filename = filename[0]
         if not filename:
@@ -229,7 +220,7 @@ class DatabaseContainer(QSplitter):
         # Write the file
         editor.pfile.save(data=content, path=filename)
         editor.saved()
-        pireal = Pireal.get_service('pireal')
+        pireal = Pireal.get_service("pireal")
         pireal.status_bar.show_message(tr.TR_STATUS_QUERY_SAVED.format(filename))
 
     def execute_queries(self):
@@ -245,23 +236,21 @@ class DatabaseContainer(QSplitter):
     def showEvent(self, event):
         QSplitter.showEvent(self, event)
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
-        vsizes = qsettings.value('vsplitter_sizes', None)
+        vsizes = qsettings.value("vsplitter_sizes", None)
         if vsizes is not None:
             self._vsplitter.restoreState(vsizes)
         else:
             self._vsplitter.setSizes([self.height() / 3, self.height() / 6])
-        hsizes = qsettings.value('hsplitter_sizes', None)
+        hsizes = qsettings.value("hsplitter_sizes", None)
         if hsizes is not None:
             self.restoreState(hsizes)
         else:
             self.setSizes([self.width() / 10, self.width() / 3])
 
     def save_sizes(self):
-        """ Save sizes of Splitters """
+        """Save sizes of Splitters"""
 
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
-        qsettings.setValue('vsplitter_sizes',
-                           self._vsplitter.saveState())
-        qsettings.setValue('hsplitter_sizes',
-                           self.saveState())
+        qsettings.setValue("vsplitter_sizes", self._vsplitter.saveState())
+        qsettings.setValue("hsplitter_sizes", self.saveState())
         # FIXME: save sizes of query container

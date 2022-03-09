@@ -35,16 +35,15 @@ from pireal import translations as tr
 
 from pireal.gui.theme import get_color
 
-logger = logging.getLogger('gui.model_view_delegate')
+logger = logging.getLogger("gui.model_view_delegate")
 
 
 class RelationModel(QAbstractTableModel):
-
     def __init__(self, relation_object):
         super().__init__()
         self.editable = True
         self.relation = relation_object
-        self._null_text_color = QColor(get_color('BrightText'))
+        self._null_text_color = QColor(get_color("BrightText"))
 
     def rowCount(self, parent=QModelIndex()):
         """Devuelve la cardinalidad de la relación"""
@@ -68,7 +67,7 @@ class RelationModel(QAbstractTableModel):
             return data[row][column]
         elif role == Qt.TextColorRole:
             value = data[row][column]
-            if value == 'null':
+            if value == "null":
                 return self._null_text_color
         return None
 
@@ -96,15 +95,20 @@ class RelationModel(QAbstractTableModel):
             if current_value != value:
                 self.relation.update(index.row(), index.column(), value)
                 self.dataChanged.emit(index, index)
-                logger.debug('Editing %d:%d - Current: %s, New: %s',
-                             index.row(), index.column(), current_value, value)
+                logger.debug(
+                    "Editing %d:%d - Current: %s, New: %s",
+                    index.row(),
+                    index.column(),
+                    current_value,
+                    value,
+                )
                 # FIXME: avisar que se ha modificado la base de datos
                 return True
         return False
 
 
 class View(QTableView):
-    """ Vista """
+    """Vista"""
 
     def __init__(self):
         super(View, self).__init__()
@@ -121,7 +125,7 @@ class View(QTableView):
         self.adjust_columns()
 
     def adjust_columns(self):
-        """ Resize all sections to content and user interactive """
+        """Resize all sections to content and user interactive"""
 
         header = self.horizontalHeader()
         for column in range(header.count()):
@@ -133,7 +137,6 @@ class View(QTableView):
 
 
 class Header(QHeaderView):
-
     def __init__(self, orientation=Qt.Horizontal, parent=None):
         super(Header, self).__init__(orientation, parent)
         self.editable = True
@@ -148,16 +151,14 @@ class Header(QHeaderView):
         if not self.editable:
             return
         name, ok = QInputDialog.getText(
-            self,
-            tr.TR_INPUT_DIALOG_HEADER_TITLE,
-            tr.TR_INPUT_DIALOG_HEADER_BODY
+            self, tr.TR_INPUT_DIALOG_HEADER_TITLE, tr.TR_INPUT_DIALOG_HEADER_BODY
         )
         if ok:
             self.model().setHeaderData(index, Qt.Horizontal, name.strip())
 
 
 class Delegate(QItemDelegate):
-    """ Delegado
+    """Delegado
     Asegura que al editar un campo no se envíe un dato vacío
     """
 

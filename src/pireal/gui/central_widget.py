@@ -40,10 +40,7 @@ from pireal.core import (
     pfile,
 )
 from pireal.gui.main_window import Pireal
-from pireal.gui import (
-    start_page,
-    database_container
-)
+from pireal.gui import start_page, database_container
 from pireal.gui.dialogs import (
     preferences,
     new_relation_dialog,
@@ -58,7 +55,6 @@ logger = logging.getLogger(__name__)
 
 
 class CentralWidget(QWidget):
-
     def __init__(self):
         QWidget.__init__(self)
         box = QVBoxLayout(self)
@@ -72,8 +68,8 @@ class CentralWidget(QWidget):
 
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
         # Acá cacheo la última carpeta accedida
-        self._last_open_folder = qsettings.value('last_open_folder', type=str)
-        self._recent_dbs = qsettings.value('recent_databases', type=list)
+        self._last_open_folder = qsettings.value("last_open_folder", type=str)
+        self._recent_dbs = qsettings.value("recent_databases", type=list)
 
         Pireal.load_service("central", self)
 
@@ -94,17 +90,17 @@ class CentralWidget(QWidget):
 
     def remember_recent_database(self, path: str):
         # TODO: FEISIMO
-        if path.endswith('pireal/resources/samples/database.pdb'):
+        if path.endswith("pireal/resources/samples/database.pdb"):
             return
 
         if path in self._recent_dbs:
             self._recent_dbs.remove(path)
-        logger.debug('adding %s to recent databases', path)
+        logger.debug("adding %s to recent databases", path)
         self._recent_dbs.insert(0, path)
 
     def remove_db_from_recents(self, path: str):
         if path in self._recent_dbs:
-            logger.debug('removing %s from recent databases', path)
+            logger.debug("removing %s from recent databases", path)
             self._recent_dbs.remove(path)
 
     @property
@@ -113,6 +109,7 @@ class CentralWidget(QWidget):
 
     def rdb_to_pdb(self):
         from src.gui import rdb_pdb_tool
+
         dialog = rdb_pdb_tool.RDBPDBTool(self)
         dialog.exec_()
 
@@ -124,46 +121,42 @@ class CentralWidget(QWidget):
             return self.__say_about_one_db_at_time()
         db_filepath = DBInputDialog.ask_db_name(parent=self)
         if not db_filepath:
-            logger.debug('database name not provided')
+            logger.debug("database name not provided")
             return
 
-        pireal = Pireal.get_service('pireal')
+        pireal = Pireal.get_service("pireal")
         db_container = database_container.DatabaseContainer()
         pfile_object = pfile.File(db_filepath)
         db_container.pfile = pfile_object
         self.add_widget(db_container)
         pireal.change_title(file_manager.get_basename(db_filepath))
         self.created = True
-        logger.debug('database=%s has been created', db_filepath)
+        logger.debug("database=%s has been created", db_filepath)
 
     def __say_about_one_db_at_time(self):
         logger.warning("Oops! One database at a time please")
-        QMessageBox.information(self,
-                                tr.TR_MSG_INFORMATION,
-                                tr.TR_MSG_ONE_DB_AT_TIME)
+        QMessageBox.information(self, tr.TR_MSG_INFORMATION, tr.TR_MSG_ONE_DB_AT_TIME)
 
-    def open_database(self, filename='', remember=True):
-        """ This function opens a database and set this on the UI """
-        logger.debug('Triying to open database...')
+    def open_database(self, filename="", remember=True):
+        """This function opens a database and set this on the UI"""
+        logger.debug("Triying to open database...")
         if self.created:
             return self.__say_about_one_db_at_time()
 
         # If not filename provide, then open dialog to select
         if not filename:
-            logger.debug('Filename not provided')
+            logger.debug("Filename not provided")
             if self._last_open_folder is None:
                 directory = os.path.expanduser("~")
             else:
                 directory = self._last_open_folder
-            filter_ = settings.get_extension_filter('.pdb')
+            filter_ = settings.get_extension_filter(".pdb")
             filename, _ = QFileDialog.getOpenFileName(
-                self,
-                tr.TR_OPEN_DATABASE,
-                directory, filter_
+                self, tr.TR_OPEN_DATABASE, directory, filter_
             )
             # If is canceled, return
             if not filename:
-                logger.debug('File not selected, bye!')
+                logger.debug("File not selected, bye!")
                 return
 
         # If filename provide
@@ -174,14 +167,10 @@ class CentralWidget(QWidget):
             db_data = pfile_object.read()
             # Create a dict to manipulate data more easy
             db_data = self.__sanitize_data(db_data)
-            logger.debug('Database loaded successful')
+            logger.debug("Database loaded successful")
         except Exception as reason:
-            logger.exception('The database file could not be opened: %s', filename)
-            QMessageBox.information(
-                self,
-                tr.TR_MSG_DB_NOT_OPENED,
-                str(reason)
-            )
+            logger.exception("The database file could not be opened: %s", filename)
+            QMessageBox.information(self, tr.TR_MSG_DB_NOT_OPENED, str(reason))
             return
 
         # Create a database container widget
@@ -190,11 +179,11 @@ class CentralWidget(QWidget):
         try:
             db_container.create_database(db_data)
         except Exception as reason:
-            logger.exception('Error creating the database')
-            QMessageBox.information(self, 'Error', str(reason))
+            logger.exception("Error creating the database")
+            QMessageBox.information(self, "Error", str(reason))
             return
 
-        pireal = Pireal.get_service('pireal')
+        pireal = Pireal.get_service("pireal")
         pireal.status_bar.show_message(tr.TR_STATUS_DB_LOADED.format(filename))
 
         # Set the PFile object to the new database
@@ -212,18 +201,15 @@ class CentralWidget(QWidget):
             self._last_open_folder = file_manager.get_path(filename)
         self.created = True
 
-    def open_query(self, filename='', remember=True):
+    def open_query(self, filename="", remember=True):
         if not filename:
             if self._last_open_folder is None:
                 directory = os.path.expanduser("~")
             else:
                 directory = self._last_open_folder
-            filter_ = settings.get_extension_filter('.pqf')
+            filter_ = settings.get_extension_filter(".pqf")
             filename, _ = QFileDialog.getOpenFileName(
-                self,
-                tr.TR_MSG_OPEN_QUERY,
-                directory,
-                filter_
+                self, tr.TR_MSG_OPEN_QUERY, directory, filter_
             )
             if not filename:
                 return
@@ -240,7 +226,7 @@ class CentralWidget(QWidget):
             return
         fname = db.save_query(editor)
         if fname:
-            pireal = Pireal.get_service('pireal')
+            pireal = Pireal.get_service("pireal")
             pireal.status_bar.show_message(tr.TR_STATUS_QUERY_SAVED.format(fname))
 
     def save_query_as(self):
@@ -265,8 +251,7 @@ class CentralWidget(QWidget):
                 # Header de una relación
                 tpoint = line.find(":")
                 if tpoint == -1:
-                    raise Exception("Syntax error in {}".format(
-                        line_count + 1))
+                    raise Exception("Syntax error in {}".format(line_count + 1))
                 table_name, line = line.split(":")
                 table_name = table_name[1:].strip()
                 table_dict = {}
@@ -283,7 +268,7 @@ class CentralWidget(QWidget):
         return data_dict
 
     def remove_last_widget(self):
-        """ Remove last widget from stacked """
+        """Remove last widget from stacked"""
 
         widget = self.stacked.widget(self.stacked.count() - 1)
         self.stacked.removeWidget(widget)
@@ -295,7 +280,7 @@ class CentralWidget(QWidget):
         db.query_container.close_query()
 
     def close_database(self):
-        """ Close the database and return to the main widget """
+        """Close the database and return to the main widget"""
 
         db = self.get_active_db()
         query_container = db.query_container
@@ -305,7 +290,7 @@ class CentralWidget(QWidget):
                 self,
                 tr.TR_MSG_SAVE_CHANGES,
                 tr.TR_MSG_SAVE_CHANGES_BODY,
-                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel,
             )
             if ret == QMessageBox.Cancel:
                 return
@@ -323,7 +308,7 @@ class CentralWidget(QWidget):
                         self,
                         tr.TR_MSG_FILE_MODIFIED,
                         tr.TR_MSG_FILE_MODIFIED_BODY.format(weditor.name),
-                        QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+                        QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel,
                     )
                     if ret == QMessageBox.Cancel:
                         return
@@ -337,7 +322,7 @@ class CentralWidget(QWidget):
         self.created = False
         del db
 
-    def new_query(self, filename=''):
+    def new_query(self, filename=""):
         db_container = self.get_active_db()
         db_container.new_query(filename)
         # Enable editor actions
@@ -364,7 +349,7 @@ class CentralWidget(QWidget):
         db.pfile.save(data=content)
         filename = db.pfile.filename
 
-        pireal = Pireal.get_service('pireal')
+        pireal = Pireal.get_service("pireal")
         pireal.status_bar.show_message(tr.TR_STATUS_DB_SAVED.format(filename))
 
         db.modified = False
@@ -373,12 +358,9 @@ class CentralWidget(QWidget):
         db = self.get_active_db()
         if db is None:
             return
-        filter_ = settings.get_extension_filter('.pdb')
+        filter_ = settings.get_extension_filter(".pdb")
         filename, _ = QFileDialog.getSaveFileName(
-            self,
-            tr.TR_MSG_SAVE_DB_AS,
-            db.pfile.filename,
-            filter_
+            self, tr.TR_MSG_SAVE_DB_AS, db.pfile.filename, filter_
         )
         if not filename:
             return
@@ -388,9 +370,9 @@ class CentralWidget(QWidget):
         content = file_manager.generate_database(relations)
         # Si no se provee la extensión, le agrego
         if not os.path.splitext(filename)[1]:
-            filename += '.pdb'
+            filename += ".pdb"
         db.pfile.save(content, filename)
-        pireal = Pireal.get_service('pireal')
+        pireal = Pireal.get_service("pireal")
         pireal.status_bar.show_message(tr.TR_STATUS_DB_SAVED.format(db.pfile.filename))
 
         db.modified = False
@@ -419,8 +401,8 @@ class CentralWidget(QWidget):
         dialog.created.connect(_create_relation)
         dialog.show()
 
-    def load_relation(self, filename=''):
-        """ Load Relation file """
+    def load_relation(self, filename=""):
+        """Load Relation file"""
 
         if not filename:
             if self._last_open_folder is None:
@@ -428,12 +410,10 @@ class CentralWidget(QWidget):
             else:
                 directory = self._last_open_folder
 
-            filter_ = settings.SUPPORTED_FILES.split(';;')[-1]
+            filter_ = settings.SUPPORTED_FILES.split(";;")[-1]
             filenames = QFileDialog.getOpenFileNames(
-                self,
-                tr.TR_MSG_OPEN_RELATION,
-                directory,
-                filter_)[0]
+                self, tr.TR_MSG_OPEN_RELATION, directory, filter_
+            )[0]
 
             if not filenames:
                 return
@@ -445,24 +425,24 @@ class CentralWidget(QWidget):
             db_container.modified = True
 
     def add_start_page(self):
-        """ This function adds the Start Page to the stacked widget """
+        """This function adds the Start Page to the stacked widget"""
 
         sp = start_page.StartPage()
         self.add_widget(sp)
 
     def show_settings(self):
-        """ Show settings dialog on stacked """
+        """Show settings dialog on stacked"""
 
         settings_dialog = preferences.SettingsDialog(self)
         settings_dialog.exec_()
 
     def widget(self, index):
-        """ Returns the widget at the given index """
+        """Returns the widget at the given index"""
 
         return self.stacked.widget(index)
 
     def add_widget(self, widget):
-        """ Appends and show the given widget to the Stacked """
+        """Appends and show the given widget to the Stacked"""
 
         index = self.stacked.addWidget(widget)
         self.stacked.setCurrentIndex(index)
@@ -472,9 +452,9 @@ class CentralWidget(QWidget):
         self.stacked.setCurrentWidget(self.stacked.currentWidget())
 
     def get_active_db(self):
-        """ Return an instance of DatabaseContainer widget if the
+        """Return an instance of DatabaseContainer widget if the
         stacked contains an DatabaseContainer in last index or None if it's
-        not an instance of DatabaseContainer """
+        not an instance of DatabaseContainer"""
 
         index = self.stacked.count() - 1
         widget = self.widget(index)
@@ -529,6 +509,7 @@ class CentralWidget(QWidget):
         # rname = lateral.relation_list.item_text(lateral.relation_list.row())
         rname = lateral.relation_list.current_text()
         from src.gui.dialogs.edit_relation_dialog import EditRelationDialog
+
         dialog = EditRelationDialog(rname, self)
         tw = self.get_active_db().table_widget
         dialog.sendData.connect(tw.insert_rows)
@@ -546,7 +527,7 @@ class CentralWidget(QWidget):
             self,
             tr.TR_MSG_REMOVE_TUPLES,
             tr.TR_MSG_REMOVE_TUPLES_BODY,
-            QMessageBox.Yes | QMessageBox.Cancel
+            QMessageBox.Yes | QMessageBox.Cancel,
         )
         if r == QMessageBox.Cancel:
             return

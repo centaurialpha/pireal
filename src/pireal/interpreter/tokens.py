@@ -24,44 +24,44 @@ from typing import Union
 
 class TokenTypes(enum.Enum):
     # Single character
-    SEMI = ';'
-    COMMA = ','
-    LESS = '<'
-    GREATER = '>'
-    LPAREN = '('
-    RPAREN = ')'
-    EQUAL = '='
+    SEMI = ";"
+    COMMA = ","
+    LESS = "<"
+    GREATER = ">"
+    LPAREN = "("
+    RPAREN = ")"
+    EQUAL = "="
 
-    LEQUAL = '<='
-    GEQUAL = '>='
-    NOTEQUAL = '<>'
-    ASSIGNMENT = ':='
+    LEQUAL = "<="
+    GEQUAL = ">="
+    NOTEQUAL = "<>"
+    ASSIGNMENT = ":="
 
-    ID = 'IDENTIFIER'
-    CONSTANT = 'CONSTANT'
-    INTEGER = 'INTEGER'
-    REAL = 'REAL'
-    STRING = 'STRING'
-    DATE = 'DATE'
-    TIME = 'TIME'
-    KEYWORD = 'KEYWORD'
-    EOF = 'EOF'
+    ID = "IDENTIFIER"
+    CONSTANT = "CONSTANT"
+    INTEGER = "INTEGER"
+    REAL = "REAL"
+    STRING = "STRING"
+    DATE = "DATE"
+    TIME = "TIME"
+    KEYWORD = "KEYWORD"
+    EOF = "EOF"
 
     # RA operators
-    SELECT = 'select'  # no cambiar
-    PROJECT = 'project'
+    SELECT = "select"  # no cambiar
+    PROJECT = "project"
     # Binary operators
-    PRODUCT = 'product'  # no cambiar
-    INTERSECT = 'intersect'
-    UNION = 'union'
-    DIFFERENCE = 'difference'
-    NJOIN = 'njoin'
-    LEFT_OUTER_JOIN = 'louter'
-    RIGHT_OUTER_JOIN = 'router'
-    FULL_OUTER_JOIN = 'fouter'  # no cambiar
+    PRODUCT = "product"  # no cambiar
+    INTERSECT = "intersect"
+    UNION = "union"
+    DIFFERENCE = "difference"
+    NJOIN = "njoin"
+    LEFT_OUTER_JOIN = "louter"
+    RIGHT_OUTER_JOIN = "router"
+    FULL_OUTER_JOIN = "fouter"  # no cambiar
     # Conditional
-    AND = 'and'
-    OR = 'or'  # no cambiar
+    AND = "and"
+    OR = "or"  # no cambiar
 
 
 def _build(start_token, end_token):
@@ -70,7 +70,7 @@ def _build(start_token, end_token):
     end_index = token_type_list.index(end_token)
     return {
         token_type.value: token_type
-        for token_type in token_type_list[start_index:end_index+1]
+        for token_type in token_type_list[start_index : end_index + 1]
     }
 
 

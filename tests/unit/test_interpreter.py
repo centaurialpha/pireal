@@ -34,36 +34,33 @@ def test_visit_Num():
 
 
 def test_visit_Variable():
-    node_var = ast.Variable(lexer.Token(TokenTypes.ID, 'persona'))
+    node_var = ast.Variable(lexer.Token(TokenTypes.ID, "persona"))
     inter = parser.Interpreter(None)
-    expected = 'persona'
+    expected = "persona"
     assert inter.visit_Variable(node_var) == expected
 
 
 def test_visit_Select():
-    var = ast.Variable(lexer.Token(TokenTypes.ID, 'edad'))
+    var = ast.Variable(lexer.Token(TokenTypes.ID, "edad"))
     var2 = ast.Number(lexer.Token(TokenTypes.INTEGER, 11))
-    operator = lexer.Token(TokenTypes.GREATER, '>')
+    operator = lexer.Token(TokenTypes.GREATER, ">")
     node_condition = ast.Condition(var, operator, var2)
-    node_rela = ast.Variable(lexer.Token(TokenTypes.ID, 'p'))
+    node_rela = ast.Variable(lexer.Token(TokenTypes.ID, "p"))
 
     node_select = ast.SelectExpr(node_condition, node_rela)
     # print(node_select.operator)
     inter = parser.Interpreter(None)
-    expected = "p.select(\"edad > 11\")"
+    expected = 'p.select("edad > 11")'
     assert inter.visit_SelectExpr(node_select) == expected
 
 
 def test_visit_Project():
-    node_attr1 = ast.Variable(lexer.Token(TokenTypes.ID, 'a'))
-    node_attr2 = ast.Variable(lexer.Token(TokenTypes.ID, 'b'))
+    node_attr1 = ast.Variable(lexer.Token(TokenTypes.ID, "a"))
+    node_attr2 = ast.Variable(lexer.Token(TokenTypes.ID, "b"))
 
-    node_rela = ast.Variable(lexer.Token(TokenTypes.ID, 'p'))
+    node_rela = ast.Variable(lexer.Token(TokenTypes.ID, "p"))
 
-    node_projection = ast.ProjectExpr(
-        [node_attr1, node_attr2],
-        node_rela
-    )
+    node_projection = ast.ProjectExpr([node_attr1, node_attr2], node_rela)
     expected = "p.project('a', 'b')"
     inter = parser.Interpreter(None)
     assert inter.visit_ProjectExpr(node_projection) == expected

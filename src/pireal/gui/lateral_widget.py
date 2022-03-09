@@ -30,11 +30,7 @@ from PyQt5.QtWidgets import QStyleOptionViewItem
 from PyQt5.QtWidgets import QStyle
 from PyQt5.QtWidgets import QSizePolicy
 
-from PyQt5.QtCore import (
-    Qt,
-    QRect,
-    QModelIndex
-)
+from PyQt5.QtCore import Qt, QRect, QModelIndex
 from PyQt5.QtCore import QAbstractListModel
 from PyQt5.QtCore import pyqtSignal as Signal
 
@@ -42,12 +38,12 @@ from pireal.gui.main_window import Pireal
 from pireal import translations as tr
 
 
-RelationItem = namedtuple('RelationItem', 'name cardinality degree')
+RelationItem = namedtuple("RelationItem", "name cardinality degree")
 
 
 class RelationItemType(enum.Enum):
-    Normal = 'normal'
-    Result = 'result'
+    Normal = "normal"
+    Result = "result"
 
 
 class RelationModel(QAbstractListModel):
@@ -100,14 +96,13 @@ class RelationModel(QAbstractListModel):
 
     def roles(self):
         return {
-            self.NameRole: b'name',
-            self.CardinalityRole: b'cardinality',
-            self.DegreeRole: b'degree'
+            self.NameRole: b"name",
+            self.CardinalityRole: b"cardinality",
+            self.DegreeRole: b"degree",
         }
 
 
 class RelationDelegate(QStyledItemDelegate):
-
     def paint(self, painter, option, index):
         opt = QStyleOptionViewItem(option)
         self.initStyleOption(opt, index)
@@ -117,7 +112,7 @@ class RelationDelegate(QStyledItemDelegate):
         cardinality = model.data(index, model.CardinalityRole)
         degree = model.data(index, model.DegreeRole)
 
-        opt.text = ''
+        opt.text = ""
         opt.widget.style().drawControl(QStyle.CE_ItemViewItem, opt, painter, opt.widget)
 
         rect = opt.rect
@@ -131,19 +126,27 @@ class RelationDelegate(QStyledItemDelegate):
         painter.setFont(font)
         painter.drawText(
             QRect(rect.left(), rect.top(), rect.width(), rect.height() / 3),
-            opt.displayAlignment, relation_name
+            opt.displayAlignment,
+            relation_name,
         )
 
         painter.restore()
 
         painter.drawText(
             QRect(rect.left(), rect.top(), rect.width(), rect.height()),
-            opt.displayAlignment, 'cardinality: ' + str(cardinality)
+            opt.displayAlignment,
+            "cardinality: " + str(cardinality),
         )
 
         painter.drawText(
-            QRect(rect.left(), rect.top() + rect.height() / 2, rect.width(), rect.height() / 1.5),
-            opt.displayAlignment, 'degree: ' + str(degree)
+            QRect(
+                rect.left(),
+                rect.top() + rect.height() / 2,
+                rect.width(),
+                rect.height() / 1.5,
+            ),
+            opt.displayAlignment,
+            "degree: " + str(degree),
         )
 
     def sizeHint(self, option, index):
@@ -153,8 +156,7 @@ class RelationDelegate(QStyledItemDelegate):
 
 
 class RelationListView(QFrame):
-
-    def __init__(self, header_text='', parent=None):
+    def __init__(self, header_text="", parent=None):
         super().__init__(parent)
         self.setFrameShape(QFrame.StyledPanel)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
@@ -202,11 +204,15 @@ class LateralWidget(QSplitter):
 
         self._models = {
             RelationItemType.Normal: self._relations_model,
-            RelationItemType.Result: self._results_model
+            RelationItemType.Result: self._results_model,
         }
 
-        self._relations_list.view.clicked.connect(lambda i: self.relationClicked.emit(i.row()))
-        self._results_list.view.clicked.connect(lambda i: self.resultClicked.emit(i.row()))
+        self._relations_list.view.clicked.connect(
+            lambda i: self.relationClicked.emit(i.row())
+        )
+        self._results_list.view.clicked.connect(
+            lambda i: self.resultClicked.emit(i.row())
+        )
 
         Pireal.load_service("lateral_widget", self)
 
@@ -224,10 +230,7 @@ class LateralWidget(QSplitter):
 
     def add_item(self, relation, rtype: RelationItemType.Normal):
         """Add relation to list of relations or results depending on rtype"""
-        item = RelationItem(
-            relation.name,
-            relation.cardinality(),
-            relation.degree())
+        item = RelationItem(relation.name, relation.cardinality(), relation.degree())
 
         self._models[rtype].add_relation(item)
 

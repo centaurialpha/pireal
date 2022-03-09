@@ -7,13 +7,8 @@ from pireal.interpreter.utils import (
 
 
 class UtilsTestCase(unittest.TestCase):
-
     def test_is_date(self):
-        dates = (
-            '20/01/1991',
-            '01/20/1991',
-            '1991/01/20'
-        )
+        dates = ("20/01/1991", "01/20/1991", "1991/01/20")
 
         expected_values = (True, False, True)
 
@@ -23,9 +18,9 @@ class UtilsTestCase(unittest.TestCase):
 
     def test_is_time(self):
         times = (
-            '15:15',
-            '22:25',
-            '32:14',
+            "15:15",
+            "22:25",
+            "32:14",
         )
 
         expected_values = (True, True, False)

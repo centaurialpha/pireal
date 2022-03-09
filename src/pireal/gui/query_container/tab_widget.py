@@ -17,10 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import (
-    QTabWidget,
-    QMessageBox
-)
+from PyQt5.QtWidgets import QTabWidget, QMessageBox
 from PyQt5.QtCore import pyqtSignal as Signal
 
 
@@ -42,15 +39,15 @@ class TabWidget(QTabWidget):
             msgbox = QMessageBox(self)
             msgbox.setIcon(QMessageBox.Question)
             msgbox.setWindowTitle(self.tr("Archivo modificado"))
-            msgbox.setText(self.tr("El archivo <b>{}</b> tiene cambios sin "
-                                   "guardar. Quiere mantenerlos?".format(
-                                       editor.name)))
-            cancel_btn = msgbox.addButton(self.tr("Cancelar"),
-                                          QMessageBox.RejectRole)
-            msgbox.addButton(self.tr("No"),
-                             QMessageBox.NoRole)
-            yes_btn = msgbox.addButton(self.tr("Si"),
-                                       QMessageBox.YesRole)
+            msgbox.setText(
+                self.tr(
+                    "El archivo <b>{}</b> tiene cambios sin "
+                    "guardar. Quiere mantenerlos?".format(editor.name)
+                )
+            )
+            cancel_btn = msgbox.addButton(self.tr("Cancelar"), QMessageBox.RejectRole)
+            msgbox.addButton(self.tr("No"), QMessageBox.NoRole)
+            yes_btn = msgbox.addButton(self.tr("Si"), QMessageBox.YesRole)
             msgbox.exec_()
             r = msgbox.clickedButton()
             if r == cancel_btn:

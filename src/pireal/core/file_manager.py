@@ -21,7 +21,7 @@ import os
 
 
 def get_extension(filename):
-    """ This function returns the extension of filename
+    """This function returns the extension of filename
 
     :param filename: Filename path
     :returns: The extension file
@@ -31,11 +31,11 @@ def get_extension(filename):
 
 
 def get_basename(filename):
-    """ This function returns the base name of filename
+    """This function returns the base name of filename
 
     :param filename: Filename, for example: "/home/gabo/file.rpf"
     :returns: The base name, for example: "file"
-     """
+    """
 
     return os.path.splitext(os.path.basename(filename))[0]
 
@@ -46,7 +46,7 @@ def get_path(filename):
 
 
 def generate_database(relations):
-    """ This function generates the content of the database
+    """This function generates the content of the database
 
     :param relations: Dictionary with relations (Relation Object)
     :returns: The content of the database
@@ -54,17 +54,20 @@ def generate_database(relations):
 
     content = ""
     for relation_name, relation in list(relations.items()):
-        content += '@%s:' % relation_name
-        header = ','.join(relation.header)
-        content += header + '\n'
+        content += "@%s:" % relation_name
+        header = ",".join(relation.header)
+        content += header + "\n"
         for i in relation.content:
-            content += ','.join(i) + '\n'
-        content += '\n'
+            content += ",".join(i) + "\n"
+        content += "\n"
     # Remove last line
     content = content[:-1]
     return content
 
 
 def get_files_from_folder(path):
-    return [os.path.splitext(f)[0] for f in os.listdir(path)
-            if os.path.isfile(os.path.join(path, f))]
+    return [
+        os.path.splitext(f)[0]
+        for f in os.listdir(path)
+        if os.path.isfile(os.path.join(path, f))
+    ]

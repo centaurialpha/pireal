@@ -26,10 +26,7 @@ from pireal.interpreter.tokens import (
     RESERVED_KEYWORDS,
 )
 
-from pireal.interpreter.exceptions import (
-    MissingQuoteError,
-    InvalidSyntaxError
-)
+from pireal.interpreter.exceptions import MissingQuoteError, InvalidSyntaxError
 
 from pireal.interpreter.utils import (
     is_date,
@@ -38,7 +35,7 @@ from pireal.interpreter.utils import (
 
 
 class Lexer(object):
-    """ This is the first stage of analysis.
+    """This is the first stage of analysis.
 
     The Lexer serves to break up the source text into chuncks, "tokens".
     It calls the Scanner to get characters one at a time and organizes them
@@ -67,20 +64,20 @@ class Lexer(object):
             self.sc.next()
 
     def _skip_comment(self):
-        while self.sc.char is not None and self.sc.char != '\n':
+        while self.sc.char is not None and self.sc.char != "\n":
             self.sc.next()
         self.sc.next()
 
     def get_identifier_or_keyword(self):
-        """ Handle identifiers and reserved keywords """
+        """Handle identifiers and reserved keywords"""
 
         token = Token(type=None, value=None, line=self.sc.lineno, col=self.sc.colno)
 
-        var = ''
+        var = ""
         while self.sc.char is not None and not self.sc.char.isspace():
             # Recognize identifiers like: query_1, query2323
-            if self.sc.char == '_':
-                var += '_'
+            if self.sc.char == "_":
+                var += "_"
                 self.sc.next()
                 continue
             if self.sc.char.isdigit():
@@ -101,16 +98,16 @@ class Lexer(object):
         return token
 
     def get_number(self):
-        """ Returns a multidigit integer or float """
+        """Returns a multidigit integer or float"""
 
         token = Token(type=None, value=None, line=self.sc.lineno, col=self.sc.colno)
 
-        number = ''
+        number = ""
         while self.sc.char is not None and self.sc.char.isdigit():
             number += self.sc.char
             self.sc.next()
 
-        if self.sc.char == '.':
+        if self.sc.char == ".":
             number += self.sc.char
             self.sc.next()
 
@@ -142,9 +139,7 @@ class Lexer(object):
                 string += self.sc.char
             except TypeError:
                 raise MissingQuoteError(
-                    "Missing quote on line: '{0}'",
-                    saved_lineno + 1,
-                    save_col
+                    "Missing quote on line: '{0}'", saved_lineno + 1, save_col
                 )
             self.sc.next()
 
@@ -153,7 +148,7 @@ class Lexer(object):
         return string
 
     def next_token(self):
-        """ Lexical analyzer.
+        """Lexical analyzer.
 
         This method is responsible for breaking a sentence apart
         into tokens. One token at a time
@@ -170,51 +165,51 @@ class Lexer(object):
                 continue
 
             # Comments inline
-            if self.sc.char == '%':
+            if self.sc.char == "%":
                 self._skip_comment()
                 continue
 
             # Assignment
-            if self.sc.char == ':' and self.sc.peek() == '=':
+            if self.sc.char == ":" and self.sc.peek() == "=":
                 token = Token(
                     type=TokenTypes.ASSIGNMENT,
                     value=TokenTypes.ASSIGNMENT.value,
                     line=self.sc.lineno,
-                    col=self.sc.colno
+                    col=self.sc.colno,
                 )
                 self.sc.next()
                 self.sc.next()
                 return token
 
             # Operators <>, <=, >=
-            if self.sc.char == '<' and self.sc.peek() == '>':
+            if self.sc.char == "<" and self.sc.peek() == ">":
                 token = Token(
                     type=TokenTypes.NOTEQUAL,
                     value=TokenTypes.NOTEQUAL.value,
                     line=self.sc.lineno,
-                    col=self.sc.colno
+                    col=self.sc.colno,
                 )
                 self.sc.next()
                 self.sc.next()
                 return token
 
-            if self.sc.char == '<' and self.sc.peek() == '=':
+            if self.sc.char == "<" and self.sc.peek() == "=":
                 token = Token(
                     type=TokenTypes.LEQUAL,
                     value=TokenTypes.LEQUAL.value,
                     line=self.sc.lineno,
-                    col=self.sc.colno
+                    col=self.sc.colno,
                 )
                 self.sc.next()
                 self.sc.next()
                 return token
 
-            if self.sc.char == '>' and self.sc.peek() == '=':
+            if self.sc.char == ">" and self.sc.peek() == "=":
                 token = Token(
                     type=TokenTypes.GEQUAL,
                     value=TokenTypes.GEQUAL.value,
                     line=self.sc.lineno,
-                    col=self.sc.colno
+                    col=self.sc.colno,
                 )
                 self.sc.next()
                 self.sc.next()
@@ -233,7 +228,7 @@ class Lexer(object):
                         type=TokenTypes.DATE,
                         value=date,
                         line=self.sc.lineno,
-                        col=self.sc.colno
+                        col=self.sc.colno,
                     )
                 ok, time = is_time(string)
                 if ok:
@@ -241,24 +236,20 @@ class Lexer(object):
                         type=TokenTypes.TIME,
                         value=time,
                         line=self.sc.lineno,
-                        col=self.sc.colno
+                        col=self.sc.colno,
                     )
                 return Token(
                     type=TokenTypes.STRING,
                     value=string,
                     line=self.sc.lineno,
-                    col=self.sc.colno
+                    col=self.sc.colno,
                 )
 
             # Single-character
             try:
                 token_type = TokenTypes(self.sc.char)
             except ValueError:
-                raise InvalidSyntaxError(
-                    self.sc.lineno,
-                    self.sc.colno,
-                    self.sc.char
-                )
+                raise InvalidSyntaxError(self.sc.lineno, self.sc.colno, self.sc.char)
             else:
                 token = Token(
                     type=token_type,

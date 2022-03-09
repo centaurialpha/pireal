@@ -26,7 +26,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QSpacerItem,
     QSizePolicy,
-    QPushButton
+    QPushButton,
 )
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
@@ -35,7 +35,6 @@ from pireal import translations as tr
 
 
 class AboutDialog(QDialog):
-
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         self.setWindowTitle(tr.TR_DIALOG_ABOUT_PIREAL_TITLE)
@@ -63,7 +62,8 @@ class AboutDialog(QDialog):
         vbox.addWidget(description)
 
         abuelo_agui_lbl = QLabel(
-            'In memory of my grandpa, Agui <span style="color: #EC7875"> </span>')
+            'In memory of my grandpa, Agui <span style="color: #EC7875"> </span>'
+        )
         font = abuelo_agui_lbl.font()
         font.setPointSize(8)
         abuelo_agui_lbl.setFont(font)
@@ -71,9 +71,10 @@ class AboutDialog(QDialog):
         vbox.addWidget(abuelo_agui_lbl)
 
         # Copyright
-        copy = QLabel("<br>Copyright © 2015-{year} - "
-                      "Gabriel 'gabo' Acosta".format(
-                          year=datetime.today().year))
+        copy = QLabel(
+            "<br>Copyright © 2015-{year} - "
+            "Gabriel 'gabo' Acosta".format(year=datetime.today().year)
+        )
         copy.setAlignment(Qt.AlignHCenter)
         font = copy.font()
         font.setPointSize(9)
@@ -94,7 +95,7 @@ class AboutDialog(QDialog):
         # Buttons
         hbox = QHBoxLayout()
         hbox.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
-        btn_ok = QPushButton('Ok')
+        btn_ok = QPushButton("Ok")
         hbox.addWidget(btn_ok)
         vbox.addLayout(hbox)
 

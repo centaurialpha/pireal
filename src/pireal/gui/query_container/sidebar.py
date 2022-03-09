@@ -38,7 +38,7 @@ from pireal.gui.theme import get_editor_color
 
 
 class Sidebar(QFrame):
-    """ Sidebar widget """
+    """Sidebar widget"""
 
     def __init__(self, editor):
         super(Sidebar, self).__init__(editor)
@@ -46,12 +46,12 @@ class Sidebar(QFrame):
 
         self.editor.blockCountChanged.connect(self.update_viewport)
         self.editor.updateRequest.connect(self.update)
-        self._background_color = QColor(get_editor_color('sidebar_background'))
-        self._foreground_color = QColor(get_editor_color('sidebar_foreground'))
+        self._background_color = QColor(get_editor_color("sidebar_background"))
+        self._foreground_color = QColor(get_editor_color("sidebar_foreground"))
 
     def re_paint(self):
-        self._background_color = QColor(get_editor_color('sidebar_background'))
-        self._foreground_color = QColor(get_editor_color('sidebar_foreground'))
+        self._background_color = QColor(get_editor_color("sidebar_background"))
+        self._foreground_color = QColor(get_editor_color("sidebar_foreground"))
 
     def sizeHint(self):
         return QSize(self.__calculate_width(), 0)
@@ -69,8 +69,7 @@ class Sidebar(QFrame):
 
     def __calculate_width(self):
         digits = len(str(max(1, self.editor.blockCount())))
-        fmetrics_width = QFontMetrics(
-            self.editor.document().defaultFont()).width("9")
+        fmetrics_width = QFontMetrics(self.editor.document().defaultFont()).width("9")
         return 5 + fmetrics_width * digits + 3
 
     def paintEvent(self, event):
@@ -96,5 +95,4 @@ class Sidebar(QFrame):
                 painter.setFont(font_bold)
             else:
                 painter.setFont(font)
-            painter.drawText(5, top, width, height,
-                             Qt.AlignRight, str(line + 1))
+            painter.drawText(5, top, width, height, Qt.AlignRight, str(line + 1))

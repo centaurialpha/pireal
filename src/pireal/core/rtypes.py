@@ -21,7 +21,6 @@ from typing import Union
 
 
 class RType:
-
     def __init__(self, value: str):
         self.value = value
 
@@ -37,13 +36,15 @@ class RType:
                 value = float(self.value)
             except ValueError:
                 try:
-                    value = datetime.datetime.strptime(self.value, '%d/%m/%Y').date()
+                    value = datetime.datetime.strptime(self.value, "%d/%m/%Y").date()
                 except ValueError:
                     try:
-                        value = datetime.datetime.strptime(self.value, '%Y/%m/%d').date()
+                        value = datetime.datetime.strptime(
+                            self.value, "%Y/%m/%d"
+                        ).date()
                     except ValueError:
                         try:
-                            hour, minute = self.value.split(':')
+                            hour, minute = self.value.split(":")
                         except ValueError:
                             value = self.value
                         else:

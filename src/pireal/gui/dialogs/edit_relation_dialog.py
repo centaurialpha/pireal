@@ -46,8 +46,11 @@ class EditRelationDialog(QDialog):
         self.setModal(True)
         vbox = QVBoxLayout(self)
         desc = QLabel(
-            self.tr("Ingresar los datos separados por comas y las tuplas\n"
-                    "separadas por un salto de línea."))
+            self.tr(
+                "Ingresar los datos separados por comas y las tuplas\n"
+                "separadas por un salto de línea."
+            )
+        )
         vbox.addWidget(desc)
         self._editor = QPlainTextEdit()
         font, size = CONFIG.get("fontFamily"), CONFIG.get("fontSize")
@@ -62,12 +65,10 @@ class EditRelationDialog(QDialog):
         hbox = QHBoxLayout()
         hbox.addStretch(1)
         btn_accept = QPushButton(self.tr("Agregar Tuplas"))
-        btn_accept.setIcon(
-            self.style().standardIcon(QStyle.SP_DialogApplyButton))
+        btn_accept.setIcon(self.style().standardIcon(QStyle.SP_DialogApplyButton))
         hbox.addWidget(btn_accept)
         btn_cancel = QPushButton(self.tr("Cancelar"))
-        btn_cancel.setIcon(
-            self.style().standardIcon(QStyle.SP_DialogCancelButton))
+        btn_cancel.setIcon(self.style().standardIcon(QStyle.SP_DialogCancelButton))
         hbox.addWidget(btn_cancel)
 
         vbox.addLayout(hbox)
@@ -86,11 +87,14 @@ class EditRelationDialog(QDialog):
                 QMessageBox.critical(
                     self,
                     "Error",
-                    self.tr("La relación <b>{}</b> es de grado <b>{}</b>.<br> "
-                            "Ingresaste <b>{}</b> datos a la "
-                            "tupla <b>{}</b> :/".format(
-                                self._rname,
-                                relation.degree(), len(t), e + 1)))
+                    self.tr(
+                        "La relación <b>{}</b> es de grado <b>{}</b>.<br> "
+                        "Ingresaste <b>{}</b> datos a la "
+                        "tupla <b>{}</b> :/".format(
+                            self._rname, relation.degree(), len(t), e + 1
+                        )
+                    ),
+                )
                 return
         self.sendData.emit(tuples)
         self.close()

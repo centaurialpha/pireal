@@ -8,17 +8,16 @@ from pireal.interpreter.tokens import (
 
 
 class TokenTestCase(unittest.TestCase):
-
     def test_build_binary_operators(self):
         expected_operators = {
-            'product': TokenTypes.PRODUCT,
-            'intersect': TokenTypes.INTERSECT,
-            'union': TokenTypes.UNION,
-            'difference': TokenTypes.DIFFERENCE,
-            'njoin': TokenTypes.NJOIN,
-            'louter': TokenTypes.LEFT_OUTER_JOIN,
-            'router': TokenTypes.RIGHT_OUTER_JOIN,
-            'fouter': TokenTypes.FULL_OUTER_JOIN,
+            "product": TokenTypes.PRODUCT,
+            "intersect": TokenTypes.INTERSECT,
+            "union": TokenTypes.UNION,
+            "difference": TokenTypes.DIFFERENCE,
+            "njoin": TokenTypes.NJOIN,
+            "louter": TokenTypes.LEFT_OUTER_JOIN,
+            "router": TokenTypes.RIGHT_OUTER_JOIN,
+            "fouter": TokenTypes.FULL_OUTER_JOIN,
         }
 
         binary_operators = _build_binary_operators()
@@ -27,18 +26,18 @@ class TokenTestCase(unittest.TestCase):
 
     def test_build_reserved_keywords(self):
         expected_keywords = {
-            'select': TokenTypes.SELECT,
-            'project': TokenTypes.PROJECT,
-            'product': TokenTypes.PRODUCT,
-            'intersect': TokenTypes.INTERSECT,
-            'union': TokenTypes.UNION,
-            'difference': TokenTypes.DIFFERENCE,
-            'njoin': TokenTypes.NJOIN,
-            'louter': TokenTypes.LEFT_OUTER_JOIN,
-            'router': TokenTypes.RIGHT_OUTER_JOIN,
-            'fouter': TokenTypes.FULL_OUTER_JOIN,
-            'and': TokenTypes.AND,
-            'or': TokenTypes.OR,
+            "select": TokenTypes.SELECT,
+            "project": TokenTypes.PROJECT,
+            "product": TokenTypes.PRODUCT,
+            "intersect": TokenTypes.INTERSECT,
+            "union": TokenTypes.UNION,
+            "difference": TokenTypes.DIFFERENCE,
+            "njoin": TokenTypes.NJOIN,
+            "louter": TokenTypes.LEFT_OUTER_JOIN,
+            "router": TokenTypes.RIGHT_OUTER_JOIN,
+            "fouter": TokenTypes.FULL_OUTER_JOIN,
+            "and": TokenTypes.AND,
+            "or": TokenTypes.OR,
         }
 
         reserved_keywords = _build_reserved_keywords()
