@@ -4,9 +4,7 @@ help:
 	@echo "test 	 		-- run tests"
 	@echo "test-gui  		-- run tests for GUI"
 	@echo "test-integration 	-- run integration tests"
-	@echo "pep8 			-- run pycodestyle"
 	@echo "flake8			-- run flake8"
-	@echo "lint 			-- run pycodestyle and flake8"
 	@echo "dist 			-- run python setup.py sdist"
 	@echo "deb 			-- build a .deb package"
 	@echo "rc                       -- buil resources"
@@ -28,13 +26,8 @@ clean:
 	rm -rf pireal.egg-info
 	rm -rf build/
 
-pep8:
-	pycodestyle src/pireal --config=.pycodestyle
-
 flake8:
 	flake8 src/pireal --config=.flake8
-
-lint: pep8 flake8
 
 format-check:
 	@black src/ tests/ --check

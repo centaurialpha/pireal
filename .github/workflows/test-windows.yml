@@ -8,7 +8,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: ["3.8", "3.9", "3.10"]
 
     steps:
       - name: Checkout
@@ -23,9 +23,11 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
           pip install . --upgrade
-      - name: Lint
+      - name: Format
         run: |
-          pycodestyle src/pireal --config=.pycodestyle
+          black src/ tests/ --check
+      - name: PEP8
+        run: |
           flake8 src/pireal --config=.flake8
       - name: unittest
         run: |
