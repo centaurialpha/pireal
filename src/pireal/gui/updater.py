@@ -18,13 +18,13 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 import logging
 
-from distutils.version import LooseVersion
+from pkg_resources import parse_version
 from urllib.request import urlopen
 from urllib.error import URLError
 
 from PyQt5.QtCore import QObject, pyqtSignal as Signal
 
-from pireal import gui
+from pireal import __version__
 
 logger = logging.getLogger("updater")
 
@@ -41,8 +41,9 @@ class Updater(QObject):
     def check_updates(self):
         logger.info("Checking for updates...")
         try:
-            web_version = urlopen(URL).read().decode().strip()
-            if LooseVersion(gui.__version__) < LooseVersion(web_version):
+            web_version = parse_version(urlopen(URL).read().decode().strip())
+            version = parse_version(__version__)
+            if version < web_version:
                 self.version = web_version
                 logger.info("new version found: %s", self.version)
             else:

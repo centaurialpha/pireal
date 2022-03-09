@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
-from pireal import gui
+from pireal import __version__, gui
 from pireal import translations as tr
 
 
@@ -46,7 +46,7 @@ class AboutDialog(QDialog):
         vbox.addWidget(banner)
 
         # Version
-        lbl_version = QLabel("{0}".format(gui.__version__))
+        lbl_version = QLabel("{0}".format(__version__))
         lbl_version.setAlignment(Qt.AlignHCenter)
         font = lbl_version.font()
         font.setPointSize(10)

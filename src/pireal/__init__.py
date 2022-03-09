@@ -18,3 +18,11 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 # This necesary for sphinx
+
+from pkg_resources import get_distribution, DistributionNotFound
+
+try:
+    __version__ = get_distribution("pireal").version
+except DistributionNotFound:
+     # package is not installed
+    pass

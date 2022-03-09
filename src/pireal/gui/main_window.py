@@ -51,7 +51,7 @@ from pireal.gui import (
 
 from pireal.settings import SETTINGS
 from pireal.gui.theme import apply_theme
-from pireal.gui import __version__
+from pireal import __version__
 from pireal.dirs import DATA_SETTINGS
 from pireal import translations as tr
 
