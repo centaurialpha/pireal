@@ -95,4 +95,4 @@ class Sidebar(QFrame):
                 painter.setFont(font_bold)
             else:
                 painter.setFont(font)
-            painter.drawText(5, top, width, height, Qt.AlignRight, str(line + 1))
+            painter.drawText(5, int(top), width, height, Qt.AlignRight, str(line + 1))

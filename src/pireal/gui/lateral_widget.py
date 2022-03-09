@@ -125,7 +125,7 @@ class RelationDelegate(QStyledItemDelegate):
         font.setPointSize(12)
         painter.setFont(font)
         painter.drawText(
-            QRect(rect.left(), rect.top(), rect.width(), rect.height() / 3),
+            QRect(rect.left(), rect.top(), rect.width(), round(rect.height() / 3)),
             opt.displayAlignment,
             relation_name,
         )
@@ -141,9 +141,9 @@ class RelationDelegate(QStyledItemDelegate):
         painter.drawText(
             QRect(
                 rect.left(),
-                rect.top() + rect.height() / 2,
+                round(rect.top() + rect.height() / 2),
                 rect.width(),
-                rect.height() / 1.5,
+                round(rect.height() / 1.5),
             ),
             opt.displayAlignment,
             "degree: " + str(degree),
@@ -151,7 +151,7 @@ class RelationDelegate(QStyledItemDelegate):
 
     def sizeHint(self, option, index):
         size = super().sizeHint(option, index)
-        size.setHeight(size.height() * 4.5)
+        size.setHeight(round(size.height() * 4.5))
         return size
 
 
