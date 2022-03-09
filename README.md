@@ -1,53 +1,103 @@
-[![Linux Tests](https://github.com/centaurialpha/pireal/actions/workflows/test-linux.yml/badge.svg)](https://github.com/centaurialpha/pireal/actions/workflows/test-linux.yml)
-[![Windows Tests](https://github.com/centaurialpha/pireal/actions/workflows/test-windows.yml/badge.svg)](https://github.com/centaurialpha/pireal/actions/workflows/test-windows.yml)
-[![Coverage Status](https://coveralls.io/repos/github/centaurialpha/pireal/badge.svg)](https://coveralls.io/github/centaurialpha/pireal)
----
+<div id="top"></div>
+
+<div align="center">
+  
+  # πireal
+  
+  [![Linux Tests](https://github.com/centaurialpha/pireal/actions/workflows/test-linux.yml/badge.svg?style=flat)](https://github.com/centaurialpha/pireal/actions/workflows/test-linux.yml)
+  [![Windows Tests](https://github.com/centaurialpha/pireal/actions/workflows/test-windows.yml/badge.svg)](https://github.com/centaurialpha/pireal/actions/workflows/test-windows.yml)
+  [![Coverage Status](https://coveralls.io/repos/github/centaurialpha/pireal/badge.svg)](https://coveralls.io/github/centaurialpha/pireal)
+  ![code style](https://img.shields.io/badge/code%20style-black-black?style=flat)
+  
+A Relational Algebra interpreter.
+  
+  [Getting started](#getting-started) •
+  [Report Bug](https://github.com/centaurialpha/pireal/issues)
+  
+</div>
+
+<!-- ABOUT THE PROJECT -->
+## About The Project
+
+![pireal-in-action](https://user-images.githubusercontent.com/5894606/112898688-89c90680-90b7-11eb-8ae1-372d406b33fd.png)
 
 **πireal** is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.
 
-| Home Page | In action |
-|:--------:|:----------:|
-| ![pireal-screenshot](https://user-images.githubusercontent.com/5894606/112898694-8b92ca00-90b7-11eb-8515-cf04649f11f9.png) | ![pireal-in-action](https://user-images.githubusercontent.com/5894606/112898688-89c90680-90b7-11eb-8ae1-372d406b33fd.png) |
+<p align="right">(<a href="#top">back to top</a>)</p>
 
-### Platforms
-- GNU/Linux
-- Windows
-- Mac OS X
+### Built With
 
-### Download
-So far we only have the package for Debian and an installer for Windows. You can find them [here](https://github.com/centaurialpha/pireal/releases/tag/v3.1.0)
+* [Python](https://python.org/)
+* [PyQt](https://riverbankcomputing.com/software/pyqt/intro)
+* [Qt](https://www.qt.io/)
 
-You always have the option to install from the sources. First download the source code and install with:
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Getting Started
+
+You can download the installer from [here](). Currently we only have installer for Windows and Debian. If you know how to pack for Mac OS or any other Linux distribution, I'll thank you.
+
+There is always the option to execute from the sources:
+
+### Prerequisites
 
 **NOTE**: The following commands assume that you have activated the virtual environment of your project.
 
 ```
-$ make pip-install
 $ pip install .
 ```
 
-### Implemented Operators
-The operations are implemented in [relation.py](https://github.com/centaurialpha/pireal/blob/development/src/pireal/core/relation.py).
+<!-- CONTRIBUTING -->
+## Contributing
 
-|Operator|Supported|
-|--------|---------|
-| Selection | :heavy_check_mark: |
-| Projection | :heavy_check_mark: |
-| Rename | :x: |
-| Product | :heavy_check_mark: |
-| Union | :heavy_check_mark: |
-| Difference | :heavy_check_mark: |
-| Intersection | :heavy_check_mark: |
-| Natural Join | :heavy_check_mark: |
-| Left Outer Join | :heavy_check_mark: |
-| Right Outer Join | :heavy_check_mark: |
-| Full Outer Join | :heavy_check_mark: |
-| Division | :x: (As a student, you can be able to express Division using integrated operators.)|
+First install all dependencies to have the development environment ready:
 
-### Donate
+```
+$ make pip-install
+```
+Take a look the `Makefile` for more commands:
 
-I have developed Pireal with a lot of :heart:, I hope it is useful.
+```
+$ make
+test                    -- run tests
+test-gui                -- run tests for GUI
+test-integration        -- run integration tests
+pep8                    -- run pycodestyle
+flake8                   -- run flake8
+lint                    -- run pycodestyle and flake8
+dist                    -- run python setup.py sdist
+deb                     -- build a .deb package
+rc                      -- buil resources
+```
 
-You can donate any amount that you think Pireal deserves.
+Now you're ready to contribute to the project 🙂.
 
-[![Invitame un café en cafecito.app](https://cdn.cafecito.app/imgs/buttons/button_5.svg)](https://cafecito.app/gabox)
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+
+<!-- LICENSE -->
+## License
+
+Distributed under the GNU GPLv3. See `COPYING` for more information.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+
+<!-- CONTACT -->
+## Contact
+
+Gabriel Acosta - [@_alfacentauri](https://twitter.com/_alfacentauri) - acostadariogabriel@gmail.com
+
+<p align="right">(<a href="#top">back to top</a>)</p>
