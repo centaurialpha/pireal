@@ -2,7 +2,7 @@
 
 <div align="center">
   
-  # πireal
+  # πreal
   
   [![Linux Tests](https://github.com/centaurialpha/pireal/actions/workflows/test-linux.yml/badge.svg?style=flat)](https://github.com/centaurialpha/pireal/actions/workflows/test-linux.yml)
   [![Windows Tests](https://github.com/centaurialpha/pireal/actions/workflows/test-windows.yml/badge.svg)](https://github.com/centaurialpha/pireal/actions/workflows/test-windows.yml)
