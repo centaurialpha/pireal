@@ -1,6 +1,5 @@
 pip-tools
 pytest
-pytest-qt
 pytest-cov
 flake8
 black

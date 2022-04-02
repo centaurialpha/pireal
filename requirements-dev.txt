@@ -6,9 +6,9 @@
 #
 attrs==21.4.0
     # via pytest
-black==22.1.0
+black==22.3.0
     # via -r requirements-dev.in
-click==8.0.4
+click==8.1.2
     # via
     #   black
     #   pip-tools
@@ -42,14 +42,11 @@ pyflakes==2.4.0
     # via flake8
 pyparsing==3.0.7
     # via packaging
-pytest==7.0.1
+pytest==7.1.1
     # via
     #   -r requirements-dev.in
     #   pytest-cov
-    #   pytest-qt
 pytest-cov==3.0.0
-    # via -r requirements-dev.in
-pytest-qt==4.0.2
     # via -r requirements-dev.in
 tomli==2.0.1
     # via
