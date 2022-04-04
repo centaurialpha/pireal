@@ -1,19 +1,18 @@
 <div id="top"></div>
 
 <div align="center">
-  
+
   # πreal
-  
-  [![Linux Tests](https://github.com/centaurialpha/pireal/actions/workflows/test-linux.yml/badge.svg?style=flat)](https://github.com/centaurialpha/pireal/actions/workflows/test-linux.yml)
-  [![Windows Tests](https://github.com/centaurialpha/pireal/actions/workflows/test-windows.yml/badge.svg)](https://github.com/centaurialpha/pireal/actions/workflows/test-windows.yml)
+
+  [![CI](https://github.com/centaurialpha/pireal/actions/workflows/cicd.yml/badge.svg)](https://github.com/centaurialpha/pireal/actions/workflows/cicd.yml)
   [![Coverage Status](https://coveralls.io/repos/github/centaurialpha/pireal/badge.svg)](https://coveralls.io/github/centaurialpha/pireal)
   ![code style](https://img.shields.io/badge/code%20style-black-black?style=flat)
-  
+
 A Relational Algebra interpreter.
-  
+
   [Getting started](#getting-started) •
   [Report Bug](https://github.com/centaurialpha/pireal/issues)
-  
+
 </div>
 
 <!-- ABOUT THE PROJECT -->
