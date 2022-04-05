@@ -7,6 +7,8 @@
   [![CI](https://github.com/centaurialpha/pireal/actions/workflows/cicd.yml/badge.svg)](https://github.com/centaurialpha/pireal/actions/workflows/cicd.yml)
   [![Coverage Status](https://coveralls.io/repos/github/centaurialpha/pireal/badge.svg)](https://coveralls.io/github/centaurialpha/pireal)
   ![code style](https://img.shields.io/badge/code%20style-black-black?style=flat)
+  [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
+  [![GPL Licence](https://badges.frapsoft.com/os/gpl/gpl.svg?v=103)](https://opensource.org/licenses/GPL-3.0/)
 
 A Relational Algebra interpreter.
 
