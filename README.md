@@ -19,15 +19,17 @@ A Relational Algebra interpreter.
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-
-![pireal-in-action](https://user-images.githubusercontent.com/5894606/112898688-89c90680-90b7-11eb-8ae1-372d406b33fd.png)
+<!--<div align="center">
+  <img src="https://user-images.githubusercontent.com/5894606/112898688-89c90680-90b7-11eb-8ae1-372d406b33fd.png" width=70% height=70%>
+</div>
+-->
 
 **πireal** is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Demo
-![demo]()
+<img src="https://user-images.githubusercontent.com/5894606/163731005-6874b4c3-174a-4451-b011-a2a17c8bf521.gif" width=70% height=70%>
 
 ### Built With
 
