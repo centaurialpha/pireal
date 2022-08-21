@@ -20,13 +20,14 @@
 import os
 import sys
 
-project_base_dir = os.path.abspath(os.path.dirname(os.path.dirname(
-        os.path.realpath(sys.argv[0]))))
+project_base_dir = os.path.abspath(
+    os.path.dirname(os.path.dirname(os.path.realpath(sys.argv[0])))
+)
 if project_base_dir not in sys.path:
     sys.path.insert(0, project_base_dir)
 
 from pireal.core import cliparser  # noqa
-from pireal import __version__
+from pireal import __version__  # noqa
 from pireal.dirs import create_app_dirs  # noqa
 
 # Parse CLI
@@ -39,8 +40,10 @@ if args.version:
 create_app_dirs()
 
 from pireal.core import logger  # noqa
-from pireal import resources  # noqa
+
+# from pireal import resources  # noqa
 from pireal import main  # noqa
+
 # Set up logger
 logger.set_up(verbose=args.verbose)
 

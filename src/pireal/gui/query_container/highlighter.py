@@ -17,14 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtGui import (
+from PyQt6.QtGui import (
     QSyntaxHighlighter,
     QTextCharFormat,
     QFont,
     QTextBlockUserData,
     QColor,
 )
-from PyQt5.QtCore import QRegExp
+from PyQt6.QtCore import QRegularExpression
 
 from pireal.gui.theme import get_editor_color
 
@@ -58,72 +58,70 @@ class Highlighter(QSyntaxHighlighter):
         # Keywords format
         keyword_format = QTextCharFormat()
         keyword_format.setForeground(QColor(get_editor_color("keyword")))
-        keyword_format.setFontWeight(QFont.Bold)
+        keyword_format.setFontWeight(QFont.Weight.Bold)
 
         # Rules
         self._rules = [
-            (QRegExp("\\b" + pattern + "\\b"), keyword_format)
+            (QRegularExpression("\\b" + pattern + "\\b"), keyword_format)
             for pattern in Highlighter.KEYWORDS
         ]
 
         # vars
         var_format = QTextCharFormat()
-        var_pattern = QRegExp(r"\w+\s*\:\=")
-        var_format.setFontWeight(QFont.Bold)
+        var_pattern = QRegularExpression(r"\w+\s*\:\=")
+        var_format.setFontWeight(QFont.Weight.Bold)
         var_format.setForeground(QColor(get_editor_color("variable")))
 
         self._rules.append((var_pattern, var_format))
 
         op_format = QTextCharFormat()
-        op_pattern = QRegExp("(\\:=|\\(|\\))|=|<|>")
+        op_pattern = QRegularExpression("(\\:=|\\(|\\))|=|<|>")
         op_format.setForeground(QColor(get_editor_color("operator")))
-        op_format.setFontWeight(QFont.Bold)
+        op_format.setFontWeight(QFont.Weight.Bold)
         self._rules.append((op_pattern, op_format))
         # Number format
         number_format = QTextCharFormat()
-        number_pattern = QRegExp(r"\b([A-Z0-9]+)(?:[ _-](\d+))?\b")
-        number_pattern.setMinimal(True)
+        number_pattern = QRegularExpression(r"\b([A-Z0-9]+)(?:[ _-](\d+))?\b")
+        # number_pattern.setMinimal(True)
         number_format.setForeground(QColor(get_editor_color("number")))
         self._rules.append((number_pattern, number_format))
 
         # String format
         string_format = QTextCharFormat()
-        string_pattern = QRegExp("'.*'")
-        string_pattern.setMinimal(True)
+        string_pattern = QRegularExpression("'.*'")
+        # string_pattern.setMinimal(True)
         string_format.setForeground(QColor(get_editor_color("string")))
         self._rules.append((string_pattern, string_format))
 
         # Comment format
         comment_format = QTextCharFormat()
-        comment_pattern = QRegExp("%[^\n]*")
+        comment_pattern = QRegularExpression("%[^\n]*")
         comment_format.setForeground(QColor(get_editor_color("comment")))
         comment_format.setFontItalic(True)
         self._rules.append((comment_pattern, comment_format))
 
         # Paren
-        self.paren = QRegExp(r"\(|\)")
+        # self.paren = QRegularExpression(r"\(|\)")
 
     def highlightBlock(self, text):
         """Reimplementation"""
 
         block_data = TextBlockData()
         # Paren
-        index = self.paren.indexIn(text, 0)
-        while index >= 0:
-            matched_paren = str(self.paren.capturedTexts()[0])
-            info = ParenInfo(matched_paren, index)
-            block_data.insert_paren_info(info)
-            index = self.paren.indexIn(text, index + 1)
+        # index = self.paren.indexIn(text, 0)
+        # while index >= 0:
+        #     matched_paren = str(self.paren.capturedTexts()[0])
+        #     info = ParenInfo(matched_paren, index)
+        #     block_data.insert_paren_info(info)
+        #     index = self.paren.indexIn(text, index + 1)
 
         self.setCurrentBlockUserData(block_data)
 
         for pattern, _format in self._rules:
-            expression = QRegExp(pattern)
-            index = expression.indexIn(text)
-            while index >= 0:
-                length = expression.matchedLength()
-                self.setFormat(index, length, _format)
-                index = expression.indexIn(text, index + length)
+            match_iterator = pattern.globalMatch(text)
+            while match_iterator.hasNext():
+                match = match_iterator.next()
+                self.setFormat(match.capturedStart(), match.capturedLength(), _format)
 
         self.setCurrentBlockState(0)
 

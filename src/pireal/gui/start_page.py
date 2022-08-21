@@ -21,7 +21,7 @@ import logging
 import os
 from datetime import datetime
 
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QWidget,
     QLabel,
     QFrame,
@@ -34,10 +34,10 @@ from PyQt5.QtWidgets import (
     QStyleOptionViewItem,
     QStyle,
 )
-from PyQt5.QtGui import (
+from PyQt6.QtGui import (
     QPixmap,
 )
-from PyQt5.QtCore import (
+from PyQt6.QtCore import (
     QAbstractListModel,
     Qt,
     QRect,
@@ -65,14 +65,14 @@ class RecentDBModel(QAbstractListModel):
     def rowCount(self, parent=None):
         return len(self._items)
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if not index.isValid():
             return None
 
         item = self._items[index.row()]
-        if role == Qt.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole:
             return item[0]
-        elif role == Qt.UserRole:
+        elif role == Qt.ItemDataRole.UserRole:
             return item[1]
         return None
 
@@ -85,11 +85,13 @@ class RecentDBDelegate(QStyledItemDelegate):
         opt = QStyleOptionViewItem(option)
         self.initStyleOption(opt, index)
 
-        db_name = index.model().data(index, Qt.DisplayRole)
-        db_path = index.model().data(index, Qt.UserRole)
+        db_name = index.model().data(index, Qt.ItemDataRole.DisplayRole)
+        db_path = index.model().data(index, Qt.ItemDataRole.UserRole)
 
         opt.text = ""
-        opt.widget.style().drawControl(QStyle.CE_ItemViewItem, opt, painter, opt.widget)
+        opt.widget.style().drawControl(
+            QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget
+        )
 
         rect = opt.rect
 
@@ -102,7 +104,12 @@ class RecentDBDelegate(QStyledItemDelegate):
         font.setPointSize(12)
         painter.setFont(font)
         painter.drawText(
-            QRect(rect.left(), rect.top(), rect.width(), rect.height() / 2),
+            QRect(
+                int(rect.left()),
+                int(rect.top()),
+                int(rect.width()),
+                int(rect.height() / 2),
+            ),
             opt.displayAlignment,
             db_name,
         )
@@ -112,10 +119,10 @@ class RecentDBDelegate(QStyledItemDelegate):
         # Draw path name
         painter.drawText(
             QRect(
-                rect.left(),
-                rect.top() + rect.height() / 2,
-                rect.width(),
-                rect.height() / 2,
+                int(rect.left()),
+                int(rect.top() + rect.height() / 2),
+                int(rect.width()),
+                int(rect.height() / 2),
             ),
             opt.displayAlignment,
             db_path,
@@ -123,14 +130,14 @@ class RecentDBDelegate(QStyledItemDelegate):
 
     def sizeHint(self, option, index):
         size = super().sizeHint(option, index)
-        size.setHeight(size.height() * 2.5)
+        size.setHeight(int(size.height() * 2.5))
         return size
 
 
 class StartPage(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
 
         main_layout = QVBoxLayout(self)
         title_lbl = QLabel('<b><font color="#1565c0">π</font></b>real')
@@ -147,13 +154,19 @@ class StartPage(QWidget):
         hbox_btn = QHBoxLayout()
         btn_open_db = QPushButton(tr.TR_OPEN_DB)
         btn_open_db.setMinimumSize(150, 0)
-        btn_open_db.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        btn_open_db.setSizePolicy(
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred
+        )
         btn_new_db = QPushButton(tr.TR_NEW_DB)
         btn_new_db.setMinimumSize(150, 0)
-        btn_new_db.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        btn_new_db.setSizePolicy(
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred
+        )
         btn_example = QPushButton(tr.TR_EXAMPLE_DB)
         btn_example.setMinimumSize(150, 0)
-        btn_example.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        btn_example.setSizePolicy(
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred
+        )
 
         hbox_btn.addStretch()
         hbox_btn.addWidget(btn_open_db)
@@ -163,13 +176,19 @@ class StartPage(QWidget):
 
         # List
         frame_recent_dbs = QFrame()
-        frame_recent_dbs.setFrameShape(QFrame.StyledPanel)
-        frame_recent_dbs.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        frame_recent_dbs.setFrameShape(QFrame.Shape.StyledPanel)
+        frame_recent_dbs.setSizePolicy(
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred
+        )
         vbox_recent_dbs = QVBoxLayout(frame_recent_dbs)
-        vbox_recent_dbs.addWidget(QLabel("Recent Databases"), alignment=Qt.AlignHCenter)
+        vbox_recent_dbs.addWidget(
+            QLabel("Recent Databases"), alignment=Qt.AlignmentFlag.AlignHCenter
+        )
         self._recent_dbs_list = QListView()
         self._recent_dbs_list.setMinimumWidth(550)
-        vbox_recent_dbs.addWidget(self._recent_dbs_list, alignment=Qt.AlignHCenter)
+        vbox_recent_dbs.addWidget(
+            self._recent_dbs_list, alignment=Qt.AlignmentFlag.AlignHCenter
+        )
         model_data = []
         for recent_db in qsettings.value("recent_databases", type=list):
             name = os.path.splitext(os.path.basename(recent_db))[0]
@@ -185,11 +204,11 @@ class StartPage(QWidget):
         python_logo = QPixmap(":img/python")
         python_logo_lbl = QLabel()
         python_logo_lbl.setPixmap(python_logo)
-        hbox_footer.addWidget(python_logo_lbl, alignment=Qt.AlignLeft)
+        hbox_footer.addWidget(python_logo_lbl, alignment=Qt.AlignmentFlag.AlignLeft)
         qt_logo = QPixmap(":img/bwqt")
         qt_logo_lbl = QLabel()
         qt_logo_lbl.setPixmap(qt_logo)
-        hbox_footer.addWidget(qt_logo_lbl, alignment=Qt.AlignLeft)
+        hbox_footer.addWidget(qt_logo_lbl, alignment=Qt.AlignmentFlag.AlignLeft)
         hbox_footer.addStretch(1)
 
         now = datetime.now()
@@ -200,10 +219,10 @@ class StartPage(QWidget):
         hbox_footer.addWidget(copyright_lbl)
 
         main_layout.addStretch(1)
-        main_layout.addWidget(title_lbl, alignment=Qt.AlignHCenter)
-        main_layout.addWidget(subtitle_lbl, alignment=Qt.AlignHCenter)
+        main_layout.addWidget(title_lbl, alignment=Qt.AlignmentFlag.AlignHCenter)
+        main_layout.addWidget(subtitle_lbl, alignment=Qt.AlignmentFlag.AlignHCenter)
         main_layout.addLayout(hbox_btn)
-        main_layout.addWidget(frame_recent_dbs, alignment=Qt.AlignHCenter)
+        main_layout.addWidget(frame_recent_dbs, alignment=Qt.AlignmentFlag.AlignHCenter)
         main_layout.addStretch(1)
         main_layout.addStretch(1)
         main_layout.addLayout(hbox_footer)
@@ -233,6 +252,6 @@ class StartPage(QWidget):
 
     @Slot(QModelIndex)
     def _on_listview_item_double_clicked(self, index):
-        path = self._model.data(index, role=Qt.UserRole)
+        path = self._model.data(index, role=Qt.ItemDataRole.UserRole)
         if path is not None:
             self._open_database(path)

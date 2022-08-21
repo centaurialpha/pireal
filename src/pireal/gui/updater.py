@@ -22,7 +22,7 @@ from pkg_resources import parse_version
 from urllib.request import urlopen
 from urllib.error import URLError
 
-from PyQt5.QtCore import QObject, pyqtSignal as Signal
+from PyQt6.QtCore import QObject, pyqtSignal as Signal
 
 from pireal import __version__
 

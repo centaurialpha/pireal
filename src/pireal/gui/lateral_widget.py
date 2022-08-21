@@ -20,19 +20,19 @@
 import enum
 from collections import namedtuple
 
-from PyQt5.QtWidgets import QListView
-from PyQt5.QtWidgets import QVBoxLayout
-from PyQt5.QtWidgets import QFrame
-from PyQt5.QtWidgets import QLabel
-from PyQt5.QtWidgets import QSplitter
-from PyQt5.QtWidgets import QStyledItemDelegate
-from PyQt5.QtWidgets import QStyleOptionViewItem
-from PyQt5.QtWidgets import QStyle
-from PyQt5.QtWidgets import QSizePolicy
+from PyQt6.QtWidgets import QListView
+from PyQt6.QtWidgets import QVBoxLayout
+from PyQt6.QtWidgets import QFrame
+from PyQt6.QtWidgets import QLabel
+from PyQt6.QtWidgets import QSplitter
+from PyQt6.QtWidgets import QStyledItemDelegate
+from PyQt6.QtWidgets import QStyleOptionViewItem
+from PyQt6.QtWidgets import QStyle
+from PyQt6.QtWidgets import QSizePolicy
 
-from PyQt5.QtCore import Qt, QRect, QModelIndex
-from PyQt5.QtCore import QAbstractListModel
-from PyQt5.QtCore import pyqtSignal as Signal
+from PyQt6.QtCore import Qt, QRect, QModelIndex
+from PyQt6.QtCore import QAbstractListModel
+from PyQt6.QtCore import pyqtSignal as Signal
 
 from pireal.gui.main_window import Pireal
 from pireal import translations as tr
@@ -48,7 +48,7 @@ class RelationItemType(enum.Enum):
 
 class RelationModel(QAbstractListModel):
 
-    NameRole = Qt.UserRole + 1
+    NameRole = Qt.ItemDataRole.UserRole + 1
     CardinalityRole = NameRole + 1
     DegreeRole = CardinalityRole + 1
 
@@ -79,7 +79,7 @@ class RelationModel(QAbstractListModel):
     def rowCount(self, index):
         return len(self._relations)
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         try:
             relation_item = self._relations[index.row()]
         except IndexError:
@@ -113,7 +113,9 @@ class RelationDelegate(QStyledItemDelegate):
         degree = model.data(index, model.DegreeRole)
 
         opt.text = ""
-        opt.widget.style().drawControl(QStyle.CE_ItemViewItem, opt, painter, opt.widget)
+        opt.widget.style().drawControl(
+            QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget
+        )
 
         rect = opt.rect
 
@@ -158,8 +160,8 @@ class RelationDelegate(QStyledItemDelegate):
 class RelationListView(QFrame):
     def __init__(self, header_text="", parent=None):
         super().__init__(parent)
-        self.setFrameShape(QFrame.StyledPanel)
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.setFrameShape(QFrame.Shape.StyledPanel)
+        self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(3, 3, 3, 3)
@@ -167,7 +169,10 @@ class RelationListView(QFrame):
         font = header_lbl.font()
         font.setPointSize(12)
         header_lbl.setFont(font)
-        layout.addWidget(header_lbl, alignment=Qt.AlignHCenter | Qt.AlignVCenter)
+        layout.addWidget(
+            header_lbl,
+            alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter,
+        )
         self.view = QListView()
         layout.addWidget(self.view)
 
@@ -188,7 +193,7 @@ class LateralWidget(QSplitter):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setOrientation(Qt.Vertical)
+        self.setOrientation(Qt.Orientation.Vertical)
         # Lista de relaciones de la base de datos
         self._relations_list = RelationListView(tr.TR_RELATIONS)
         self._relations_model = RelationModel()

@@ -19,7 +19,7 @@
 
 from datetime import datetime
 
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QDialog,
     QVBoxLayout,
     QLabel,
@@ -28,8 +28,8 @@ from PyQt5.QtWidgets import (
     QSizePolicy,
     QPushButton,
 )
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import Qt
 from pireal import __version__, gui
 from pireal import translations as tr
 
@@ -42,12 +42,12 @@ class AboutDialog(QDialog):
         # Banner
         banner = QLabel()
         banner.setPixmap(QPixmap(":img/icon"))
-        banner.setAlignment(Qt.AlignHCenter)
+        banner.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         vbox.addWidget(banner)
 
         # Version
         lbl_version = QLabel("{0}".format(__version__))
-        lbl_version.setAlignment(Qt.AlignHCenter)
+        lbl_version.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         font = lbl_version.font()
         font.setPointSize(10)
         lbl_version.setFont(font)
@@ -55,7 +55,7 @@ class AboutDialog(QDialog):
 
         # Description
         description = QLabel(tr.TR_DIALOG_ABOUT_PIREAL_BODY)
-        description.setAlignment(Qt.AlignHCenter)
+        description.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         font = description.font()
         font.setPointSize(13)
         description.setFont(font)
@@ -67,7 +67,7 @@ class AboutDialog(QDialog):
         font = abuelo_agui_lbl.font()
         font.setPointSize(8)
         abuelo_agui_lbl.setFont(font)
-        abuelo_agui_lbl.setAlignment(Qt.AlignHCenter)
+        abuelo_agui_lbl.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         vbox.addWidget(abuelo_agui_lbl)
 
         # Copyright
@@ -75,7 +75,7 @@ class AboutDialog(QDialog):
             "<br>Copyright © 2015-{year} - "
             "Gabriel 'gabo' Acosta".format(year=datetime.today().year)
         )
-        copy.setAlignment(Qt.AlignHCenter)
+        copy.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         font = copy.font()
         font.setPointSize(9)
         copy.setFont(font)
@@ -85,7 +85,7 @@ class AboutDialog(QDialog):
         lbl_license_source = QLabel(
             tr.TR_DIALOG_ABOUT_PIREAL_COPY.format(gui.__license__, gui.__source_code__)
         )
-        lbl_license_source.setAlignment(Qt.AlignHCenter)
+        lbl_license_source.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         lbl_license_source.setOpenExternalLinks(True)
         font = lbl_license_source.font()
         font.setPointSize(13)
@@ -94,7 +94,7 @@ class AboutDialog(QDialog):
 
         # Buttons
         hbox = QHBoxLayout()
-        hbox.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
+        hbox.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding))
         btn_ok = QPushButton("Ok")
         hbox.addWidget(btn_ok)
         vbox.addLayout(hbox)

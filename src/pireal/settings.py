@@ -19,8 +19,8 @@
 
 import platform
 
-from PyQt5.QtCore import QSettings
-from PyQt5.QtGui import QFontDatabase
+from PyQt6.QtCore import QSettings
+from PyQt6.QtGui import QFontDatabase
 
 from pireal.dirs import CONFIG_FILE
 
@@ -43,7 +43,7 @@ class SettingManager:
     """Wrapper around QSettings to manage user settings"""
 
     def __init__(self):
-        self._qs = QSettings(str(CONFIG_FILE), QSettings.IniFormat)
+        self._qs = QSettings(str(CONFIG_FILE), QSettings.Format.IniFormat)
 
     def load(self):
         self._language: str = self._qs.value("language", defaultValue="en")
@@ -93,7 +93,7 @@ class SettingManager:
     def font_family(self) -> str:
         font = self._font_family
         if font is None:
-            families = QFontDatabase().families()
+            families = QFontDatabase.families()
             preferred_fonts = []
             if platform.system() == "Linux":
                 preferred_fonts.append("Ubuntu Mono")

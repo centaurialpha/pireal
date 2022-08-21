@@ -24,15 +24,15 @@ based on:
 john.nachtimwald.com/2009/08/19/better-qplaintextedit-with-line-numbers/
 """
 
-from PyQt5.QtWidgets import QFrame
-from PyQt5.QtGui import (
+from PyQt6.QtWidgets import QFrame
+from PyQt6.QtGui import (
     QFontMetrics,
     QPainter,
     QPen,
     QColor,
 )
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore import QSize
+from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QSize
 
 from pireal.gui.theme import get_editor_color
 
@@ -69,7 +69,9 @@ class Sidebar(QFrame):
 
     def __calculate_width(self):
         digits = len(str(max(1, self.editor.blockCount())))
-        fmetrics_width = QFontMetrics(self.editor.document().defaultFont()).width("9")
+        fmetrics_width = QFontMetrics(
+            self.editor.document().defaultFont()
+        ).horizontalAdvance("9")
         return 5 + fmetrics_width * digits + 3
 
     def paintEvent(self, event):
@@ -95,4 +97,6 @@ class Sidebar(QFrame):
                 painter.setFont(font_bold)
             else:
                 painter.setFont(font)
-            painter.drawText(5, int(top), width, height, Qt.AlignRight, str(line + 1))
+            painter.drawText(
+                5, int(top), width, height, Qt.AlignmentFlag.AlignRight, str(line + 1)
+            )

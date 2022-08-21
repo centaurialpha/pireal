@@ -1,5 +1,5 @@
-from PyQt5.QtGui import QColor
-from PyQt5.QtGui import QPalette
+from PyQt6.QtGui import QColor
+from PyQt6.QtGui import QPalette
 
 from pireal.settings import SETTINGS
 
@@ -80,14 +80,14 @@ def apply_theme(app):
     for role_name, color in theme.items():
         if role_name.endswith("Disabled"):
             role_name = role_name.split("Disabled")[0]
-            color_group = QPalette.Disabled
+            color_group = QPalette.ColorGroup.Disabled
         else:
-            color_group = QPalette.All
+            color_group = QPalette.ColorGroup.All
         if not isinstance(color, QColor):
             qcolor = QColor(color)
         else:
             qcolor = color
-        color_role = getattr(palette, role_name)
+        color_role = getattr(palette.ColorRole, role_name)
         palette.setBrush(color_group, color_role, qcolor)
     app.setPalette(palette)
 

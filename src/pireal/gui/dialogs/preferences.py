@@ -17,19 +17,19 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import QDialog
-from PyQt5.QtWidgets import QVBoxLayout
-from PyQt5.QtWidgets import QGridLayout
-from PyQt5.QtWidgets import QLabel
-from PyQt5.QtWidgets import QComboBox
-from PyQt5.QtWidgets import QFontComboBox
-from PyQt5.QtWidgets import QCheckBox
-from PyQt5.QtWidgets import QGroupBox
-from PyQt5.QtWidgets import QDialogButtonBox
+from PyQt6.QtWidgets import QDialog
+from PyQt6.QtWidgets import QVBoxLayout
+from PyQt6.QtWidgets import QGridLayout
+from PyQt6.QtWidgets import QLabel
+from PyQt6.QtWidgets import QComboBox
+from PyQt6.QtWidgets import QFontComboBox
+from PyQt6.QtWidgets import QCheckBox
+from PyQt6.QtWidgets import QGroupBox
+from PyQt6.QtWidgets import QDialogButtonBox
 
-from PyQt5.QtGui import QFontDatabase
+from PyQt6.QtGui import QFontDatabase
 
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 from pireal.settings import SETTINGS
 from pireal.gui.main_window import Pireal
@@ -39,7 +39,7 @@ from pireal import translations as tr
 class SettingsDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setAttribute(Qt.WA_DeleteOnClose)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.setWindowTitle(tr.TR_DIALOG_PREF_TITLE)
 
         vbox = QVBoxLayout(self)
@@ -66,26 +66,32 @@ class SettingsDialog(QDialog):
         self._check_highlight_braces.setChecked(SETTINGS.match_parenthesis)
 
         self._combo_font_family = QFontComboBox()
-        font_db = QFontDatabase()
-        font_family = font_db.font(SETTINGS.font_family, "", SETTINGS.font_size)
+        font_family = QFontDatabase.font(SETTINGS.font_family, "", SETTINGS.font_size)
         self._combo_font_family.setCurrentFont(font_family)
         self._combo_font_size = QComboBox()
         sizes_list_str = [
-            str(size) for size in font_db.smoothSizes(SETTINGS.font_family, "")
+            str(size) for size in QFontDatabase.smoothSizes(SETTINGS.font_family, "")
         ]
         self._combo_font_size.addItems(sizes_list_str)
         self._combo_font_size.setCurrentText(str(SETTINGS.font_size))
 
-        layout_general.addWidget(QLabel(tr.TR_DIALOG_PREF_LANG), 0, 0, Qt.AlignLeft)
+        layout_general.addWidget(
+            QLabel(tr.TR_DIALOG_PREF_LANG), 0, 0, Qt.AlignmentFlag.AlignLeft
+        )
         layout_general.addWidget(self._combo_languages, 0, 1)
         layout_editor.addWidget(self._check_highlight_line, 0, 0)
         layout_editor.addWidget(self._check_highlight_braces, 0, 1)
         layout_font.addWidget(QLabel(tr.TR_DIALOG_PREF_FONT_FAMILY), 0, 0)
         layout_font.addWidget(self._combo_font_family, 0, 1)
-        layout_font.addWidget(QLabel(tr.TR_DIALOG_PREF_FONT_SIZE), 0, 2, Qt.AlignRight)
+        layout_font.addWidget(
+            QLabel(tr.TR_DIALOG_PREF_FONT_SIZE), 0, 2, Qt.AlignmentFlag.AlignRight
+        )
         layout_font.addWidget(self._combo_font_size, 0, 3)
 
-        button_box = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
+        button_box = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Save
+            | QDialogButtonBox.StandardButton.Cancel
+        )
         button_box.rejected.connect(self.reject)
         button_box.accepted.connect(self.accept)
 

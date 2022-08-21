@@ -339,13 +339,8 @@ def interpret(query: str):
 def parse(query: str) -> dict:
     scanner = Scanner(query)
     lexer = Lexer(scanner)
-    try:
-        parser = Parser(lexer)
-        tree = parser.parse()
-    except Exception as exc:
-        print(exc)
-        return {}
-    else:
-        interpreter = Interpreter(tree)
-        interpreter.to_python()
-        return interpreter.global_memory
+    parser = Parser(lexer)
+    tree = parser.parse()
+    interpreter = Interpreter(tree)
+    interpreter.to_python()
+    return interpreter.global_memory

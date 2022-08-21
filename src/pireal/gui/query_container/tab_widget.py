@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import QTabWidget, QMessageBox
-from PyQt5.QtCore import pyqtSignal as Signal
+from PyQt6.QtWidgets import QTabWidget, QMessageBox
+from PyQt6.QtCore import pyqtSignal as Signal
 
 
 class TabWidget(QTabWidget):
@@ -26,7 +26,7 @@ class TabWidget(QTabWidget):
 
     def __init__(self):
         super(TabWidget, self).__init__()
-        self.setTabPosition(QTabWidget.South)
+        self.setTabPosition(QTabWidget.TabPosition.South)
         self.setTabsClosable(True)
         self.setMovable(True)
         self.setDocumentMode(True)

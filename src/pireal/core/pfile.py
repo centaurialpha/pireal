@@ -19,12 +19,13 @@
 
 import os
 
-from PyQt5.QtCore import QObject
-from PyQt5.QtCore import pyqtSignal as Signal
-from PyQt5.QtCore import QFile
-from PyQt5.QtCore import QTextStream
-from PyQt5.QtCore import QTextCodec
-from PyQt5.QtCore import QIODevice
+from PyQt6.QtCore import QObject
+from PyQt6.QtCore import pyqtSignal as Signal
+from PyQt6.QtCore import QFile
+from PyQt6.QtCore import QTextStream
+
+# from PyQt6.QtCore import QTextCodec
+from PyQt6.QtCore import QIODevice
 
 
 class File(QObject):
@@ -52,11 +53,13 @@ class File(QObject):
             self.is_new = False
 
         _file = QFile(self.filename)
-        if not _file.open(QIODevice.WriteOnly | QIODevice.Truncate):
+        if not _file.open(
+            QIODevice.OpenModeFlag.WriteOnly | QIODevice.OpenModeFlag.Truncate
+        ):
             raise Exception(_file.errorString())
 
         stream = QTextStream(_file)
-        stream.setCodec(QTextCodec.codecForLocale())
+        # stream.setCodec(QTextCodec.codecForLocale())
         stream << data
         stream.flush()
         _file.close()

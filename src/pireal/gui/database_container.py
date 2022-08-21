@@ -20,13 +20,13 @@
 import csv
 import logging
 
-from PyQt5.QtWidgets import QSplitter
-from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QSplitter
+from PyQt6.QtWidgets import QFileDialog
+from PyQt6.QtWidgets import QMessageBox
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore import QSettings
-from PyQt5.QtCore import pyqtSlot as Slot
+from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QSettings
+from PyQt6.QtCore import pyqtSlot as Slot
 
 from pireal.gui import (
     table_widget,
@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 
 
 class DatabaseContainer(QSplitter):
-    def __init__(self, orientation=Qt.Horizontal):
+    def __init__(self, orientation=Qt.Orientation.Horizontal):
         QSplitter.__init__(self, orientation)
         self.pfile = None
 
@@ -54,7 +54,7 @@ class DatabaseContainer(QSplitter):
         self.table_widget = table_widget.TableWidget()
         self.query_container = query_container.QueryContainer(self)
 
-        self._vsplitter = QSplitter(Qt.Vertical)
+        self._vsplitter = QSplitter(Qt.Orientation.Vertical)
         self._vsplitter.addWidget(self.table_widget)
         self._vsplitter.addWidget(self.query_container)
         self.addWidget(self.lateral_widget)
@@ -235,7 +235,7 @@ class DatabaseContainer(QSplitter):
 
     def showEvent(self, event):
         QSplitter.showEvent(self, event)
-        qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
         vsizes = qsettings.value("vsplitter_sizes", None)
         if vsizes is not None:
             self._vsplitter.restoreState(vsizes)
@@ -252,7 +252,7 @@ class DatabaseContainer(QSplitter):
     def save_sizes(self):
         """Save sizes of Splitters"""
 
-        qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
         qsettings.setValue("vsplitter_sizes", self._vsplitter.saveState())
         qsettings.setValue("hsplitter_sizes", self.saveState())
         # FIXME: save sizes of query container

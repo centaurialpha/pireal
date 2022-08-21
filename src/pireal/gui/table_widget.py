@@ -17,13 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import QSplitter
-from PyQt5.QtWidgets import QTabWidget
-from PyQt5.QtWidgets import QToolButton
-from PyQt5.QtWidgets import QStackedWidget
-from PyQt5.QtWidgets import QMenu
+from PyQt6.QtWidgets import QSplitter
+from PyQt6.QtWidgets import QTabWidget
+from PyQt6.QtWidgets import QToolButton
+from PyQt6.QtWidgets import QStackedWidget
+from PyQt6.QtWidgets import QMenu
 
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 from pireal.gui.model_view_delegate import create_view
 
 from pireal.gui.main_window import Pireal
@@ -92,7 +92,7 @@ class TableWidget(QSplitter):
         self._other_tab.show()
         self.setSizes([1, 1])
         self._tabs.cornerWidget().hide()
-        self.setOrientation(Qt.Horizontal)
+        self.setOrientation(Qt.Orientation.Horizontal)
 
     def _show_menu(self, position):
         menu = QMenu(self)

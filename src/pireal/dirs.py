@@ -24,7 +24,7 @@ This module contains variables and functions related to directories used by Pire
 import platform
 from pathlib import Path
 
-from PyQt5.QtCore import QStandardPaths
+from PyQt6.QtCore import QStandardPaths
 
 
 _ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -45,7 +45,11 @@ def _data_dir() -> Path:
     else:
         # In windows and mac, use standard paths provided by Qt
         pireal_data_dir = (
-            Path(QStandardPaths.writableLocation(QStandardPaths.GenericDataLocation))
+            Path(
+                QStandardPaths.writableLocation(
+                    QStandardPaths.StandardLocation.GenericDataLocation
+                )
+            )
             / pireal_dir_name
         )
 
@@ -56,7 +60,12 @@ def _get_databases_location() -> Path:
     """Return the path used for store the user databases"""
 
     db_dir = (
-        Path(QStandardPaths.writableLocation(QStandardPaths.HomeLocation)) / "PirealDBs"
+        Path(
+            QStandardPaths.writableLocation(
+                QStandardPaths.StandardLocation.HomeLocation
+            )
+        )
+        / "PirealDBs"
     )
 
     return db_dir

@@ -17,29 +17,142 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QPlainTextEdit,
     QTextEdit,
+    QFrame,
+    QLabel,
+    QHBoxLayout,
+    QToolButton,
 )
-from PyQt5.QtGui import QTextCharFormat, QTextCursor, QFont, QColor, QTextDocument
-from PyQt5.QtCore import Qt, QTimer
+from PyQt6.QtGui import QTextCharFormat, QTextCursor, QFont, QColor, QTextDocument
+from PyQt6.QtCore import Qt, QTimer
 
 from pireal.gui.query_container import highlighter, sidebar
 from pireal.gui.theme import get_editor_color
 from pireal.settings import SETTINGS
 
 
+BRACKETS = "()"
+OPOSITE_BRACKET = {
+    "(": ")",
+    ")": "(",
+}
+
+
+class EditorNotification(QFrame):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        layout = QHBoxLayout(self)
+        self.setAutoFillBackground(True)
+        pal = self.palette()
+        pal.setColor(pal.ColorRole.Window, QColor("#ff5555"))
+        self.setPalette(pal)
+        self._messages_label = QLabel()
+        layout.addWidget(self._messages_label)
+        close_button = QToolButton()
+        close_button.setText("\uf410")
+        close_button.setAutoRaise(True)
+        close_button.setToolTip("Close")
+        layout.addWidget(close_button)
+
+        close_button.clicked.connect(self.hide)
+
+    def show_message(self, text):
+        self._messages_label.setText(text)
+
+
+class BracketHighlighter:
+    def _make_selection(self, block, column_index, matched):
+        selection = QTextEdit.ExtraSelection()
+        if matched:
+            color = "#ffff00"
+        else:
+            color = "#ff0000"
+        selection.format.setBackground(QColor(color))
+        selection.cursor = QTextCursor(block)
+        selection.cursor.setPosition(block.position() + column_index)
+        selection.cursor.movePosition(
+            QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor
+        )
+        return selection
+
+    def _iterate_chars_forward(self, block, start_column_index):
+        for col_index, char in list(enumerate(block.text()))[start_column_index:]:
+            yield block, col_index, char
+
+        block = block.next()
+
+        while block.isValid():
+            for col_index, char in enumerate(block.text()):
+                yield block, col_index, char
+            block = block.next()
+
+    def _iterate_chars_backward(self, block, start_column_index):
+        for col_index, char in reversed(
+            list(enumerate(block.text()[:start_column_index]))
+        ):
+            yield block, col_index, char
+
+        block = block.previous()
+
+        while block.isValid():
+            for col_index, char in reversed(list(enumerate(block.text()))):
+                yield block, col_index, char
+            block = block.previous()
+
+    def _find_matching_bracket(self, bracket, block, column_index):
+        if bracket in "([{":
+            chars_gen = self._iterate_chars_forward(block, column_index + 1)
+        else:
+            chars_gen = self._iterate_chars_backward(block, column_index)
+
+        depth = 1
+        oposite = OPOSITE_BRACKET[bracket]
+        for block, col_index, char in chars_gen:
+            if char == oposite:
+                depth -= 1
+                if depth == 0:
+                    return block, col_index
+            elif char == bracket:
+                depth += 1
+        else:
+            return None, None
+
+    def _highlight_bracket(self, bracket, block, column_index):
+        matched_block, matched_column_index = self._find_matching_bracket(
+            bracket, block, column_index
+        )
+        if matched_block is not None:
+            return [
+                self._make_selection(block, column_index, True),
+                self._make_selection(matched_block, matched_column_index, True),
+            ]
+        return [self._make_selection(block, column_index, False)]
+
+    def extra_selections(self, block, column_index):
+        block_text = block.text()
+
+        if column_index < len(block_text) and block_text[column_index] in BRACKETS:
+            return self._highlight_bracket(
+                block_text[column_index], block, column_index
+            )
+        return []
+
+
 class Editor(QPlainTextEdit):
     def __init__(self, pfile=None):
         super(Editor, self).__init__()
         pal = self.palette()
-        pal.setColor(pal.Text, QColor(get_editor_color("foreground")))
-        pal.setColor(pal.Window, QColor(get_editor_color("background")))
+        pal.setColor(pal.ColorRole.Text, QColor(get_editor_color("foreground")))
+        pal.setColor(pal.ColorRole.Window, QColor(get_editor_color("background")))
         self.setPalette(pal)
 
-        self.setFrameShape(QPlainTextEdit.NoFrame)
+        self._bracket_highlighter = BracketHighlighter()
+
+        self.setFrameShape(QPlainTextEdit.Shape.NoFrame)
         self.setMouseTracking(True)
-        self.setLineWrapMode(QPlainTextEdit.NoWrap)
+        # self.setLineWrapMode(QPlainTextEdit.WrapMode.NoWrap)
         self.setCursorWidth(3)
         self.pfile = pfile
         self.__visible_blocks = []
@@ -53,13 +166,12 @@ class Editor(QPlainTextEdit):
         self.set_font(SETTINGS.font_family, SETTINGS.font_size)
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
-        self.__message = None
         self.word_separators = [")", "("]
         # Extra selections
         self._selections = {}
         self.__cursor_position_changed()
         # Menu
-        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.blockCountChanged.connect(self.update)
         # Connection
         self.cursorPositionChanged.connect(self.__cursor_position_changed)
@@ -121,7 +233,9 @@ class Editor(QPlainTextEdit):
             cursor = self.textCursor()
         start_pos = end_pos = cursor.position()
         while not cursor.atStart():
-            cursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor)
+            cursor.movePosition(
+                QTextCursor.MoveOperation.Left, QTextCursor.MoveMode.KeepAnchor
+            )
             char = cursor.selectedText()[0]
             selected_text = cursor.selectedText()
             if (
@@ -134,7 +248,9 @@ class Editor(QPlainTextEdit):
             cursor.setPosition(start_pos)
         cursor.setPosition(end_pos)
         while not cursor.atEnd():
-            cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor)
+            cursor.movePosition(
+                QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor
+            )
             char = cursor.selectedText()[0]
             selected_text = cursor.selectedText()
             if (
@@ -146,7 +262,7 @@ class Editor(QPlainTextEdit):
             end_pos = cursor.position()
             cursor.setPosition(end_pos)
         cursor.setPosition(start_pos)
-        cursor.setPosition(end_pos, QTextCursor.KeepAnchor)
+        cursor.setPosition(end_pos, QTextCursor.MoveMode.KeepAnchor)
         return cursor
 
     def __cursor_position_changed(self):
@@ -155,7 +271,9 @@ class Editor(QPlainTextEdit):
         if SETTINGS.highlight_current_line:
             _selection = QTextEdit.ExtraSelection()
             _selection.format.setBackground(self._highlight_line_color)
-            _selection.format.setProperty(QTextCharFormat.FullWidthSelection, True)
+            _selection.format.setProperty(
+                QTextCharFormat.Property.FullWidthSelection, True
+            )
             _selection.cursor = self.textCursor()
             _selection.cursor.clearSelection()
             self.add_selection("current_line", [_selection])
@@ -163,111 +281,15 @@ class Editor(QPlainTextEdit):
         # Paren matching
         if SETTINGS.match_parenthesis:
             self.clear_selections("parenthesis")
-            extras = self.__check_brackets()
-            if extras is not None:
-                left, right = extras
-                self.add_selection("parenthesis", [left, right])
+            cursor_column_index = self.textCursor().positionInBlock()
+            bracket_selections = self._bracket_highlighter.extra_selections(
+                self.textCursor().block(), cursor_column_index
+            )
+            self.add_selection("parenthesis", bracket_selections)
 
     def set_font(self, font_family, size):
         font = QFont(font_family, size)
         super().setFont(font)
-
-    def __check_brackets(self):
-        left, right = QTextEdit.ExtraSelection(), QTextEdit.ExtraSelection()
-        cursor = self.textCursor()
-        block = cursor.block()
-        data = block.userData()
-        previous, _next = None, None
-
-        if data is not None:
-            position = cursor.position()
-            block_pos = cursor.block().position()
-            paren = data.paren
-            n = len(paren)
-
-            for k in range(0, n):
-                if (
-                    paren[k].position == position - block_pos
-                    or paren[k].position == position - block_pos - 1
-                ):
-                    previous = paren[k].position + block_pos
-                    if paren[k].character == "(":
-                        _next = self.__match_left(block, paren[k].character, k + 1, 0)
-                    elif paren[k].character == ")":
-                        _next = self.__match_right(block, paren[k].character, k, 0)
-
-        if _next is not None and _next > 0:
-            if previous is not None and previous > 0:
-                _format = QTextCharFormat()
-
-                cursor.setPosition(previous)
-                cursor.movePosition(QTextCursor.NextCharacter, QTextCursor.KeepAnchor)
-
-                _format.setForeground(Qt.blue)
-                _format.setBackground(Qt.white)
-                left.format = _format
-                left.cursor = cursor
-
-                cursor.setPosition(_next)
-                cursor.movePosition(QTextCursor.NextCharacter, QTextCursor.KeepAnchor)
-
-                _format.setForeground(Qt.white)
-                _format.setBackground(Qt.blue)
-                right.format = _format
-                right.cursor = cursor
-
-                return left, right
-
-        elif previous is not None:
-            _format = QTextCharFormat()
-
-            cursor.setPosition(previous)
-            cursor.movePosition(QTextCursor.NextCharacter, QTextCursor.KeepAnchor)
-
-            _format.setForeground(Qt.white)
-            _format.setBackground(Qt.red)
-            left.format = _format
-            left.cursor = cursor
-            return (left, right)
-
-    def __match_left(self, block, char, start, found):
-        while block.isValid():
-            data = block.userData()
-            if data is not None:
-                paren = data.paren
-                n = len(paren)
-                for i in range(start, n):
-                    if paren[i].character == char:
-                        found += 1
-
-                    if paren[i].character == ")":
-                        if not found:
-                            return paren[i].position + block.position()
-                        else:
-                            found -= 1
-
-                block = block.next()
-                start = 0
-
-    def __match_right(self, block, char, start, found):
-        while block.isValid():
-            data = block.userData()
-
-            if data is not None:
-                paren = data.paren
-
-                if start is None:
-                    start = len(paren)
-                for i in range(start - 1, -1, -1):
-                    if paren[i].character == char:
-                        found += 1
-                    if paren[i].character == "(":
-                        if found == 0:
-                            return paren[i].position + block.position()
-                        else:
-                            found -= 1
-            block = block.previous()
-            start = None
 
     def zoom_in(self):
         font = self.font()
@@ -299,16 +321,16 @@ class Editor(QPlainTextEdit):
             self.setTextCursor(cursor)
         else:
             # If no selected text, highlight current line
-            cursor.movePosition(QTextCursor.Start)
+            cursor.movePosition(QTextCursor.MoveOperation.Start)
             start_pos = cursor.position()
-            cursor.movePosition(QTextCursor.End)
+            cursor.movePosition(QTextCursor.MoveOperation.End)
             end_pos = cursor.position()
         # Create extra selection
         selection = QTextEdit.ExtraSelection()
         selection.format.setBackground(self._highlight_line_color)
         selection.cursor = QTextCursor(cursor)
         selection.cursor.setPosition(start_pos)
-        selection.cursor.setPosition(end_pos, QTextCursor.KeepAnchor)
+        selection.cursor.setPosition(end_pos, QTextCursor.MoveMode.KeepAnchor)
         self.add_selection("run_cursor", [selection])
         # Remove extra selection after 0.3 seconds
         QTimer.singleShot(300, lambda: self.clear_selections("run_cursor"))
@@ -355,24 +377,23 @@ class Editor(QPlainTextEdit):
         tcursor.endEditBlock()
 
     def find_text(self, search, cs=False, wo=False, backward=False, find_next=True):
-        flags = QTextDocument.FindFlags()
         if cs:
-            flags = QTextDocument.FindCaseSensitively
+            flags = QTextDocument.FindFlag.FindCaseSensitively
         if wo:
-            flags |= QTextDocument.FindWholeWords
+            flags |= QTextDocument.FindFlag.FindWholeWords
         if backward:
-            flags |= QTextDocument.FindBackward
+            flags |= QTextDocument.FindFlag.FindBackward
         if find_next or backward:
-            self.moveCursor(QTextCursor.NoMove)
+            self.moveCursor(QTextCursor.MoveOperation.NoMove)
         else:
-            self.moveCursor(QTextCursor.StartOfWord)
+            self.moveCursor(QTextCursor.MoveOperation.StartOfWord)
         found = self.find(search, flags)
         if not found:
             cursor = self.textCursor()
             if backward:
-                self.moveCursor(QTextCursor.End)
+                self.moveCursor(QTextCursor.MoveOperation.End)
             else:
-                self.moveCursor(QTextCursor.Start)
+                self.moveCursor(QTextCursor.MoveOperation.Start)
             found = self.find(search, flags)
             if not found:
                 self.setTextCursor(cursor)
@@ -384,13 +405,17 @@ class Editor(QPlainTextEdit):
             return
         selection = QTextEdit.ExtraSelection()
         selection.cursor = self.textCursor()
-        selection.cursor.movePosition(QTextCursor.Start, QTextCursor.MoveAnchor)
         selection.cursor.movePosition(
-            QTextCursor.Down, QTextCursor.MoveAnchor, linenumber - 1
+            QTextCursor.MoveOperation.Start, QTextCursor.MoveMode.MoveAnchor
         )
-        selection.format.setProperty(QTextCharFormat.FullWidthSelection, True)
+        selection.cursor.movePosition(
+            QTextCursor.MoveOperation.Down,
+            QTextCursor.MoveMode.MoveAnchor,
+            linenumber - 1,
+        )
+        selection.format.setProperty(QTextCharFormat.Property.FullWidthSelection, True)
         selection.format.setBackground(QColor("#DD4040"))
-        selection.format.setForeground(Qt.white)
+        selection.format.setForeground(QColor("#ffffff"))
         self.add_selection("error", [selection])
 
     def add_selection(self, selection_name, selections):
@@ -399,7 +424,7 @@ class Editor(QPlainTextEdit):
 
     def update_selections(self):
         selections = []
-        for selection_name, selection in self._selections.items():
+        for _, selection in self._selections.items():
             selections.extend(selection)
         self.setExtraSelections(selections)
 
@@ -413,8 +438,8 @@ class Editor(QPlainTextEdit):
         self._highlight_line_color = QColor(get_editor_color("current_line"))
         self._sidebar.re_paint()
         pal = self.palette()
-        pal.setColor(pal.Text, QColor(get_editor_color("foreground")))
-        pal.setColor(pal.Window, QColor(get_editor_color("background")))
+        pal.setColor(pal.ColorRole.Text, QColor(get_editor_color("foreground")))
+        pal.setColor(pal.ColorRole.Window, QColor(get_editor_color("background")))
         self.setPalette(pal)
         self._highlighter = None
         self._highlighter = highlighter.Highlighter(self.document())

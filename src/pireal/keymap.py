@@ -22,33 +22,32 @@ KEYMAP is a dictionary, the keys are the names of the
 slots of the QAction's, and values are the key sequence.
 """
 
-from PyQt5.QtGui import QKeySequence
-from PyQt5.QtCore import Qt
+from PyQt6.QtGui import QKeySequence
 
 
 KEYMAP = {
-    "create_database": QKeySequence(Qt.CTRL + Qt.Key_N),
-    "open_database": QKeySequence(Qt.CTRL + Qt.Key_O),
-    "save_database": QKeySequence(Qt.CTRL + Qt.Key_S),
-    "close_database": QKeySequence(Qt.CTRL + Qt.Key_W),
-    "new_query": QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_N),
-    "open_query": QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_O),
-    "save_query": QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_S),
-    "close": QKeySequence(Qt.CTRL + Qt.Key_Q),
-    "undo_action": QKeySequence(Qt.CTRL + Qt.Key_Z),
-    "redo_action": QKeySequence(Qt.CTRL + Qt.Key_Y),
-    "cut_action": QKeySequence(Qt.CTRL + Qt.Key_X),
-    "copy_action": QKeySequence(Qt.CTRL + Qt.Key_C),
-    "paste_action": QKeySequence(Qt.CTRL + Qt.Key_V),
-    "zoom_in": QKeySequence(Qt.CTRL + Qt.Key_Plus),
-    "zoom_out": QKeySequence(Qt.CTRL + Qt.Key_Minus),
-    "comment": QKeySequence(Qt.CTRL + Qt.Key_D),
-    "uncomment": QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_D),
-    "show_settings": QKeySequence(Qt.CTRL + Qt.Key_P),
-    "search": QKeySequence(Qt.CTRL + Qt.Key_F),
-    "create_new_relation": QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_N),
-    "remove_relation": QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_W),
-    "load_relation": QKeySequence(Qt.CTRL + Qt.ALT + Qt.Key_O),
-    "execute_queries": QKeySequence(Qt.CTRL + Qt.Key_R),
-    "execute_selection": QKeySequence(Qt.CTRL + Qt.Key_F6),
+    "create_database": QKeySequence("Ctrl + n"),
+    "open_database": QKeySequence("Ctrl + o"),
+    "save_database": QKeySequence("Ctrl + s"),
+    "close_database": QKeySequence("Ctrl + w"),
+    "new_query": QKeySequence("Ctrl + Shift + n"),
+    "open_query": QKeySequence(""),
+    "save_query": QKeySequence(""),
+    "close": QKeySequence(""),
+    "undo_action": QKeySequence(""),
+    "redo_action": QKeySequence(""),
+    "cut_action": QKeySequence(""),
+    "copy_action": QKeySequence(""),
+    "paste_action": QKeySequence(""),
+    "zoom_in": QKeySequence(""),
+    "zoom_out": QKeySequence(""),
+    "comment": QKeySequence(""),
+    "uncomment": QKeySequence(""),
+    "show_settings": QKeySequence(""),
+    "search": QKeySequence(""),
+    "create_new_relation": QKeySequence(""),
+    "remove_relation": QKeySequence(""),
+    "load_relation": QKeySequence(""),
+    "execute_queries": QKeySequence(""),
+    "execute_selection": QKeySequence(""),
 }

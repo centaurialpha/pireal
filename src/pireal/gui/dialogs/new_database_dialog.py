@@ -19,15 +19,15 @@
 
 import os
 
-from PyQt5.QtWidgets import QDialog
-from PyQt5.QtWidgets import QDialogButtonBox
-from PyQt5.QtWidgets import QFormLayout
-from PyQt5.QtWidgets import QLineEdit
-from PyQt5.QtWidgets import QStyle
-from PyQt5.QtWidgets import QFileDialog
+from PyQt6.QtWidgets import QDialog
+from PyQt6.QtWidgets import QDialogButtonBox
+from PyQt6.QtWidgets import QFormLayout
+from PyQt6.QtWidgets import QLineEdit
+from PyQt6.QtWidgets import QStyle
+from PyQt6.QtWidgets import QFileDialog
 
-from PyQt5.QtCore import pyqtSlot as Slot
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import pyqtSlot as Slot
+from PyQt6.QtCore import Qt
 
 from pireal import translations as tr
 from pireal import dirs
@@ -41,14 +41,15 @@ class DBInputDialog(QDialog):
         self.setWindowTitle(tr.TR_DB_DIALOG_TITLE)
         self.setMinimumWidth(500)
         layout = QFormLayout(self)
-        layout.setLabelAlignment(Qt.AlignRight)
+        layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
         self._line_db_name = QLineEdit()
         layout.addRow(tr.TR_DB_DIALOG_DB_NAME, self._line_db_name)
         self._line_db_location = QLineEdit()
         self._line_db_location.setText(str(dirs.DATABASES_DIR))
         self._line_db_location.setReadOnly(True)
         choose_dir_action = self._line_db_location.addAction(
-            self.style().standardIcon(QStyle.SP_DirIcon), QLineEdit.TrailingPosition
+            self.style().standardIcon(QStyle.StandardPixmap.SP_DirIcon),
+            QLineEdit.ActionPosition.TrailingPosition,
         )
         layout.addRow(tr.TR_DB_DIALOG_DB_LOCATION, self._line_db_location)
         self._line_db_path = QLineEdit()
@@ -57,10 +58,11 @@ class DBInputDialog(QDialog):
         self._line_db_path.setText(str(dirs.DATABASES_DIR))
 
         button_box = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel,
+            Qt.Orientation.Horizontal,
         )
         layout.addWidget(button_box)
-        self._button_ok = button_box.button(QDialogButtonBox.Ok)
+        self._button_ok = button_box.button(QDialogButtonBox.StandardButton.Ok)
 
         button_box.accepted.connect(self.accept)
         button_box.rejected.connect(self.reject)
@@ -92,7 +94,7 @@ class DBInputDialog(QDialog):
     @classmethod
     def ask_db_name(cls, parent=None) -> str:
         dialog = cls(parent=parent)
-        ret = dialog.exec_()
+        ret = dialog.exec()
         if ret:
             return dialog.db_path
         return ""

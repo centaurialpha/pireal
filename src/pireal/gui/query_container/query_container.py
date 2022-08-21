@@ -19,20 +19,20 @@
 
 import re
 
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QVBoxLayout
-from PyQt5.QtWidgets import QHBoxLayout
-from PyQt5.QtWidgets import QSplitter
-from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtWidgets import QStackedWidget
-from PyQt5.QtWidgets import QDialog
-from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtWidgets import QLineEdit
+from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QVBoxLayout
+from PyQt6.QtWidgets import QHBoxLayout
+from PyQt6.QtWidgets import QSplitter
+from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QStackedWidget
+from PyQt6.QtWidgets import QDialog
+from PyQt6.QtWidgets import QPushButton
+from PyQt6.QtWidgets import QLineEdit
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore import QSettings
+from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QSettings
 
-from PyQt5.QtCore import pyqtSignal as Signal
+from PyQt6.QtCore import pyqtSignal as Signal
 from pireal.interpreter import parser
 from pireal.interpreter.exceptions import (
     InvalidSyntaxError,
@@ -59,11 +59,6 @@ class QueryContainer(QWidget):
         self.setObjectName("query_container")
         box.setContentsMargins(0, 0, 0, 0)
         box.setSpacing(0)
-        # Regex for validate variable name
-        self.__validName = re.compile(r"^[a-z_]\w*$")
-
-        self.__nquery = 1
-
         # Tab
         self._tabs = tab_widget.TabWidget()
         self._tabs.tabBar().setObjectName("tab_query")
@@ -175,25 +170,25 @@ class QueryContainer(QWidget):
         try:
             result = parser.parse(query)
         except MissingQuoteError as reason:
-            title = tr.TR_SYNTAX_ERROR
+            # title = tr.TR_SYNTAX_ERROR
             text = self.parse_error(str(reason))
         except InvalidSyntaxError as reason:
-            title = tr.TR_SYNTAX_ERROR
+            # title = tr.TR_SYNTAX_ERROR
             text = self.parse_error(
                 str(reason)
                 + "\n"
                 + self.tr("El error comienza con " + reason.character)
             )
         except DuplicateRelationNameError as reason:
-            title = tr.TR_NAME_DUPLICATED
+            # title = tr.TR_NAME_DUPLICATED
             text = tr.TR_RELATION_NAME_ALREADY_EXISTS.format(reason.rname)
         except ConsumeError as reason:
-            title = tr.TR_SYNTAX_ERROR
+            # title = tr.TR_SYNTAX_ERROR
             text = self.parse_error(str(reason))
         else:
             error = False
         if error:
-            QMessageBox.critical(self, title, text)
+            self.currentWidget()._editor_widget.show_editor_notification(text)
             return
         relations.update(table_widget.relations)
         for relation_name, expression in result.items():
@@ -297,8 +292,8 @@ class QueryWidget(QWidget):
         box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 0, 0)
 
-        self._editor_splitter = QSplitter(Qt.Horizontal)
-        self.result_splitter = QSplitter(Qt.Vertical)
+        self._editor_splitter = QSplitter(Qt.Orientation.Horizontal)
+        self.result_splitter = QSplitter(Qt.Orientation.Vertical)
 
         self._stack_tables = QStackedWidget()
         self.result_splitter.addWidget(self._stack_tables)
@@ -357,9 +352,10 @@ class QueryWidget(QWidget):
         i = table_widget.stacked_result.count()
         while i >= 0:
             widget = table_widget.stacked_result.widget(i)
-            table_widget.stacked_result.removeWidget(widget)
             if widget is not None:
-                widget.deleteLater()
+                table_widget.stacked_result.removeWidget(widget)
+                if widget is not None:
+                    widget.deleteLater()
             i -= 1
 
     def add_table(self, rela, rname):
@@ -390,6 +386,9 @@ class EditorWidget(QWidget):
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         vbox.setSpacing(0)
+        self._noti = editor.EditorNotification()
+        self._noti.hide()
+        vbox.addWidget(self._noti)
         # Editor
         self._editor = editor.Editor()
         vbox.addWidget(self._editor)
@@ -409,6 +408,10 @@ class EditorWidget(QWidget):
         col = self._editor.textCursor().columnNumber() + 1
         pireal = Pireal.get_service("pireal")
         pireal.status_bar.update_line_and_col(line, col)
+
+    def show_editor_notification(self, message):
+        self._noti.show_message(message)
+        self._noti.show()
 
     def show_search_widget(self):
         self._search_widget.show()

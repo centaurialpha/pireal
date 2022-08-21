@@ -23,14 +23,13 @@ import sys
 import os
 import logging
 
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication
 
-from PyQt5.QtGui import QIcon, QFont, QFontDatabase
+from PyQt6.QtGui import QIcon, QFont, QFontDatabase
 
-from PyQt5.QtCore import QTranslator
-from PyQt5.QtCore import QLocale
-from PyQt5.QtCore import QLibraryInfo
-
+from PyQt6.QtCore import QTranslator
+from PyQt6.QtCore import QLocale
+from PyQt6.QtCore import QLibraryInfo
 
 from pireal.gui.theme import apply_theme
 from pireal.settings import SETTINGS
@@ -66,7 +65,8 @@ def start_pireal(args):
 
     # Add Font Awesome
     family = QFontDatabase.applicationFontFamilies(
-        QFontDatabase.addApplicationFont(":font/awesome")
+        # FIXME
+        QFontDatabase.addApplicationFont("src/pireal/resources/images/font-awesome.ttf")
     )[0]
     font = QFont(family)
     font.setStyleName("Solid")
@@ -74,7 +74,7 @@ def start_pireal(args):
     # Install translators
     # Qt translations
     system_locale_name = QLocale.system().name()
-    qt_languages_path = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
+    qt_languages_path = QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
     qt_translator = QTranslator()
     translator_loaded = qt_translator.load(
         os.path.join(qt_languages_path, f"qt_{SETTINGS.language}.qm")
@@ -98,4 +98,4 @@ def start_pireal(args):
     pireal_gui = Pireal(check_updates)
     pireal_gui.show()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

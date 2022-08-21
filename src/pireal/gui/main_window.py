@@ -21,7 +21,7 @@
 
 import webbrowser
 
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QSystemTrayIcon,
@@ -32,9 +32,10 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QApplication,
 )
-from PyQt5.QtGui import QIcon
+from PyQt6.QtGui import QIcon
 
-from PyQt5.QtCore import (
+
+from PyQt6.QtCore import (
     QSettings,
     QThread,
     Qt,
@@ -96,13 +97,13 @@ class _StatusBar(QFrame):
         # Right widgets
         execute_button = QToolButton()
         execute_button.setAutoRaise(True)
-        execute_button.setFocusPolicy(Qt.NoFocus)
+        execute_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         execute_button.setText("\uf04b")
         execute_button.clicked.connect(lambda: self.playClicked.emit())
         right_layout.addWidget(execute_button)
         dark_mode_button = QToolButton()
         dark_mode_button.setAutoRaise(True)
-        dark_mode_button.setFocusPolicy(Qt.NoFocus)
+        dark_mode_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         dark_mode_button.setCheckable(True)
         dark_mode_button.setChecked(SETTINGS.dark_mode)
         dark_mode_button.setText("\uf186")
@@ -110,23 +111,23 @@ class _StatusBar(QFrame):
         right_layout.addWidget(dark_mode_button)
         settings_button = QToolButton()
         settings_button.setAutoRaise(True)
-        settings_button.setFocusPolicy(Qt.NoFocus)
+        settings_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         settings_button.setText("\uf013")
         settings_button.clicked.connect(lambda: self.gearClicked.emit())
         right_layout.addWidget(settings_button)
 
         fullscreen_button = QToolButton()
         fullscreen_button.setAutoRaise(True)
-        fullscreen_button.setFocusPolicy(Qt.NoFocus)
+        fullscreen_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         fullscreen_button.setText("\uf065")
         fullscreen_button.setCheckable(True)
         fullscreen_button.setChecked(self._main_window.isFullScreen())
         fullscreen_button.toggled.connect(lambda v: self.expandClicked.emit(v))
         right_layout.addWidget(fullscreen_button)
 
-        layout.addWidget(left_widget, 0, 0, 0, 1, Qt.AlignLeft)
-        layout.addWidget(mid_widget, 0, 1, 0, 1, Qt.AlignCenter)
-        layout.addWidget(right_widget, 0, 2, 0, 1, Qt.AlignRight)
+        layout.addWidget(left_widget, 0, 0, 0, 1, Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(mid_widget, 0, 1, 0, 1, Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(right_widget, 0, 2, 0, 1, Qt.AlignmentFlag.AlignRight)
 
         layout.setContentsMargins(2, 0, 2, 0)
 
@@ -157,7 +158,7 @@ class Pireal(QMainWindow):
         self.setWindowTitle("Pireal")
         self.setMinimumSize(880, 600)
         # Load window geometry
-        qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
         window_maximized = qsettings.value("window_max", True)
         if window_maximized:
             self.showMaximized()
@@ -167,7 +168,7 @@ class Pireal(QMainWindow):
             position = qsettings.value("window_pos")
             self.move(position)
 
-        # Menu bar
+        # Menu bar)
         menubar = self.menuBar()
         self.__load_menubar(menubar)
         # Central widget
@@ -208,7 +209,7 @@ class Pireal(QMainWindow):
 
     @Slot(QSystemTrayIcon.ActivationReason)
     def _on_system_tray_clicked(self, reason):
-        if reason == QSystemTrayIcon.Trigger:
+        if reason == QSystemTrayIcon.ActivationReason.Trigger:
             self.open_download_release()
             self.tray.hide()
 
@@ -305,10 +306,6 @@ class Pireal(QMainWindow):
                     if callable(func):
                         qaction.triggered.connect(func)
 
-    def __show_status_message(self, msg):
-        status = Pireal.get_service("status")
-        status.show_message(msg)
-
     @Slot()
     def _on_updater_finished(self):
         if self._updater.version:
@@ -316,7 +313,7 @@ class Pireal(QMainWindow):
             self.tray.showMessage(
                 tr.TR_MSG_UPDATES,
                 tr.TR_MSG_UPDATES_BODY.format(self._updater.version),
-                QSystemTrayIcon.Information,
+                QSystemTrayIcon.MessageIcon.Information,
                 10000,
             )
 
@@ -340,7 +337,7 @@ class Pireal(QMainWindow):
         from pireal.gui.dialogs import about_dialog
 
         dialog = about_dialog.AboutDialog(self)
-        dialog.exec_()
+        dialog.exec()
 
     def report_issue(self):
         """Open in the browser the page to create new  issue"""
@@ -355,15 +352,11 @@ class Pireal(QMainWindow):
         else:
             self.menuBar().show()
 
-    def show_error_message(self, text, syntax_error=True):
-        self._msg_error_widget.show_msg(text, syntax_error)
-        self._msg_error_widget.show()
-
     def closeEvent(self, event):
         central_widget = Pireal.get_service("central")
 
         # Qt settings
-        qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
 
         qsettings.setValue("last_open_folder", central_widget.last_open_folder)
         qsettings.setValue("recent_databases", central_widget.recent_databases)
@@ -387,11 +380,13 @@ class Pireal(QMainWindow):
                     self,
                     tr.TR_MSG_SAVE_CHANGES,
                     tr.TR_MSG_SAVE_CHANGES_BODY,
-                    QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel,
+                    QMessageBox.StandardButton.Yes
+                    | QMessageBox.StandardButton.No
+                    | QMessageBox.StandardButton.Cancel,
                 )
-                if ret == QMessageBox.Yes:
+                if ret == QMessageBox.StandardButton.Yes:
                     central_widget.save_database()
-                elif ret == QMessageBox.Cancel:
+                elif ret == QMessageBox.StandardButton.Cancel:
                     event.ignore()
             # Query files
             unsaved_editors = central_widget.get_unsaved_queries()
@@ -401,11 +396,13 @@ class Pireal(QMainWindow):
                     self,
                     tr.TR_QUERY_NOT_SAVED,
                     tr.TR_QUERY_NOT_SAVED_BODY.format(files=text),
-                    QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel,
+                    QMessageBox.StandardButton.Yes
+                    | QMessageBox.StandardButton.No
+                    | QMessageBox.StandardButton.Cancel,
                 )
 
-                if ret == QMessageBox.Yes:
+                if ret == QMessageBox.StandardButton.Yes:
                     for editor in unsaved_editors:
                         central_widget.save_query(editor)
-                elif ret == QMessageBox.Cancel:
+                elif ret == QMessageBox.StandardButton.Cancel:
                     event.ignore()

@@ -5,4 +5,5 @@
 .coverage*
 pireal.egg-*
 venv/
+.venv/
 .tox/

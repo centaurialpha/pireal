@@ -19,18 +19,18 @@
 
 import logging
 
-from PyQt5.QtWidgets import QTableView
-from PyQt5.QtWidgets import QHeaderView
-from PyQt5.QtWidgets import QAbstractItemView
-from PyQt5.QtWidgets import QItemDelegate
-from PyQt5.QtWidgets import QInputDialog
+from PyQt6.QtWidgets import QTableView
+from PyQt6.QtWidgets import QHeaderView
+from PyQt6.QtWidgets import QAbstractItemView
+from PyQt6.QtWidgets import QItemDelegate
+from PyQt6.QtWidgets import QInputDialog
 
-from PyQt5.QtGui import QColor
+from PyQt6.QtGui import QColor
 
-from PyQt5.QtCore import QAbstractTableModel
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore import QModelIndex
-from PyQt5.QtCore import pyqtSlot as Slot
+from PyQt6.QtCore import QAbstractTableModel
+from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QModelIndex
+from PyQt6.QtCore import pyqtSlot as Slot
 from pireal import translations as tr
 
 from pireal.gui.theme import get_color
@@ -57,26 +57,26 @@ class RelationModel(QAbstractTableModel):
             return 0
         return self.relation.degree()
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if not index.isValid():
             return None
 
         row, column = index.row(), index.column()
         data = self.relation.content
-        if role == Qt.DisplayRole or role == Qt.EditRole:
+        if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
             return data[row][column]
-        elif role == Qt.TextColorRole:
+        elif role == Qt.ItemDataRole.DecorationRole:
             value = data[row][column]
             if value == "null":
                 return self._null_text_color
         return None
 
     def headerData(self, section, orientation, role):
-        if role == Qt.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole:
             return self.relation.header[section]
 
     def setHeaderData(self, section, orientation, value, role):
-        if role == Qt.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole:
             old_value = self.relation.header[section]
             if value != old_value:
                 self.relation.header[section] = value
@@ -86,11 +86,11 @@ class RelationModel(QAbstractTableModel):
     def flags(self, index):
         flags = super().flags(index)
         if self.editable:
-            flags |= Qt.ItemIsEditable
+            flags |= Qt.ItemFlag.ItemIsEditable
         return flags
 
     def setData(self, index, value, role):
-        if index.isValid() and role == Qt.EditRole:
+        if index.isValid() and role == Qt.ItemDataRole.EditRole:
             current_value = self.data(index)
             if current_value != value:
                 self.relation.update(index.row(), index.column(), value)
@@ -114,10 +114,10 @@ class View(QTableView):
         super(View, self).__init__()
         # self.setAlternatingRowColors(CONFIG.get('alternatingRowColors'))
         self.verticalHeader().hide()
-        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         # Scroll content per pixel
-        self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
-        self.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
         self.horizontalHeader().setHighlightSections(False)
 
     def resizeEvent(self, event):
@@ -129,19 +129,19 @@ class View(QTableView):
 
         header = self.horizontalHeader()
         for column in range(header.count()):
-            header.setSectionResizeMode(column, QHeaderView.ResizeToContents)
+            header.setSectionResizeMode(column, QHeaderView.ResizeMode.ResizeToContents)
             width = header.sectionSize(column)
-            header.setSectionResizeMode(column, QHeaderView.Interactive)
+            header.setSectionResizeMode(column, QHeaderView.ResizeMode.Interactive)
             header.resizeSection(column, width)
         self.horizontalHeader().setMinimumHeight(32)
 
 
 class Header(QHeaderView):
-    def __init__(self, orientation=Qt.Horizontal, parent=None):
+    def __init__(self, orientation=Qt.Orientation.Horizontal, parent=None):
         super(Header, self).__init__(orientation, parent)
         self.editable = True
         self.setSectionsClickable(True)
-        self.setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 
         # Connections
         self.sectionDoubleClicked[int].connect(self._on_section_double_clicked)
@@ -154,7 +154,7 @@ class Header(QHeaderView):
             self, tr.TR_INPUT_DIALOG_HEADER_TITLE, tr.TR_INPUT_DIALOG_HEADER_BODY
         )
         if ok:
-            self.model().setHeaderData(index, Qt.Horizontal, name.strip())
+            self.model().setHeaderData(index, Qt.Orientation.Horizontal, name.strip())
 
 
 class Delegate(QItemDelegate):
@@ -168,10 +168,10 @@ class Delegate(QItemDelegate):
     def setModelData(self, editor, model, index):
         data = editor.text().strip()
         if data:
-            model.setData(index, data, Qt.EditRole)
+            model.setData(index, data, Qt.ItemDataRole.EditRole)
 
     def setEditorData(self, editor, index):
-        text = index.model().data(index, Qt.DisplayRole)
+        text = index.model().data(index, Qt.ItemDataRole.DisplayRole)
         editor.setText(text)
 
 

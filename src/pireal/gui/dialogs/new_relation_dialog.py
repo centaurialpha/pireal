@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QMessageBox,
     QDialog,
     QVBoxLayout,
@@ -27,9 +27,9 @@ from PyQt5.QtWidgets import (
     QSpacerItem,
     QSizePolicy,
 )
-from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore import pyqtSignal as Signal
+from PyQt6.QtGui import QStandardItemModel
+from PyQt6.QtCore import Qt
+from PyQt6.QtCore import pyqtSignal as Signal
 
 from pireal.core import relation
 from pireal.gui.model_view_delegate import View, Header
@@ -70,11 +70,11 @@ class NewRelationDialog(QDialog):
         header = Header()
         self._view.setHorizontalHeader(header)
         self._view.setModel(QStandardItemModel(0, 2))
-        header.model().setHeaderData(0, Qt.Horizontal, self.tr("Field 1"))
-        header.model().setHeaderData(1, Qt.Horizontal, self.tr("Field 2"))
+        header.model().setHeaderData(0, Qt.Orientation.Horizontal, self.tr("Field 1"))
+        header.model().setHeaderData(1, Qt.Orientation.Horizontal, self.tr("Field 2"))
         # Botones para crear/cancelar
         hhbox = QHBoxLayout()
-        hhbox.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
+        hhbox.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding))
         btn_create = QPushButton(tr.TR_RELATION_DIALOG_CREATE)
         hhbox.addWidget(btn_create)
         btn_cancel = QPushButton(tr.TR_CANCEL)
@@ -104,9 +104,9 @@ class NewRelationDialog(QDialog):
                 self,
                 tr.TR_RELATION_DIALOG_CONFIRM_DELETE_TUPLE,
                 tr.TR_RELATION_DIALOG_CONFIRM_DELETE_TUPLE_BODY,
-                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             )
-            if r == QMessageBox.Yes:
+            if r == QMessageBox.StandardButton.Yes:
                 selection = selection.selection()
                 rows = set([index.row() for index in selection.indexes()])
                 rows = sorted(list(rows))

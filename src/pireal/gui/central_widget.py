@@ -22,16 +22,16 @@ import csv
 import logging
 from collections import defaultdict
 
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QVBoxLayout
-from PyQt5.QtWidgets import QStackedWidget
-from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtWidgets import QShortcut
+from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QVBoxLayout
+from PyQt6.QtWidgets import QStackedWidget
+from PyQt6.QtWidgets import QFileDialog
+from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtGui import QShortcut
 
-from PyQt5.QtGui import QKeySequence
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore import QSettings
+from PyQt6.QtGui import QKeySequence
+from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QSettings
 
 
 from pireal import settings
@@ -66,14 +66,14 @@ class CentralWidget(QWidget):
 
         self.created = False
 
-        qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
         # Acá cacheo la última carpeta accedida
         self._last_open_folder = qsettings.value("last_open_folder", type=str)
         self._recent_dbs = qsettings.value("recent_databases", type=list)
 
         Pireal.load_service("central", self)
 
-        esc_short = QShortcut(QKeySequence(Qt.Key_Escape), self)
+        esc_short = QShortcut(QKeySequence(Qt.Key.Key_Escape), self)
         esc_short.activated.connect(self._hide_search)
 
     def _hide_search(self):
@@ -290,11 +290,13 @@ class CentralWidget(QWidget):
                 self,
                 tr.TR_MSG_SAVE_CHANGES,
                 tr.TR_MSG_SAVE_CHANGES_BODY,
-                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel,
+                QMessageBox.StandardButton.Yes
+                | QMessageBox.StandardButton.No
+                | QMessageBox.StandardButton.Cancel,
             )
-            if ret == QMessageBox.Cancel:
+            if ret == QMessageBox.StandardButton.Cancel:
                 return
-            if ret == QMessageBox.Yes:
+            if ret == QMessageBox.StandardButton.Yes:
                 self.save_database()
 
         # Check if editor is modified
@@ -308,11 +310,13 @@ class CentralWidget(QWidget):
                         self,
                         tr.TR_MSG_FILE_MODIFIED,
                         tr.TR_MSG_FILE_MODIFIED_BODY.format(weditor.name),
-                        QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel,
+                        QMessageBox.StandardButton.Yes
+                        | QMessageBox.StandardButton.No
+                        | QMessageBox.StandardButton.Cancel,
                     )
-                    if ret == QMessageBox.Cancel:
+                    if ret == QMessageBox.StandardButton.Cancel:
                         return
-                    if ret == QMessageBox.Yes:
+                    if ret == QMessageBox.StandardButton.Yes:
                         self.save_query(weditor)
 
         self.stacked.removeWidget(db)
@@ -434,7 +438,7 @@ class CentralWidget(QWidget):
         """Show settings dialog on stacked"""
 
         settings_dialog = preferences.SettingsDialog(self)
-        settings_dialog.exec_()
+        settings_dialog.exec()
 
     def widget(self, index):
         """Returns the widget at the given index"""
@@ -527,9 +531,9 @@ class CentralWidget(QWidget):
             self,
             tr.TR_MSG_REMOVE_TUPLES,
             tr.TR_MSG_REMOVE_TUPLES_BODY,
-            QMessageBox.Yes | QMessageBox.Cancel,
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel,
         )
-        if r == QMessageBox.Cancel:
+        if r == QMessageBox.StandardButton.Cancel:
             return
         tw = self.get_active_db().table_widget
         tw.delete_tuple()
