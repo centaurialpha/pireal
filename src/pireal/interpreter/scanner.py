@@ -18,7 +18,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 
-class Scanner(object):
+class Scanner:
     """
     The Scanner is used to step through text character by character
     and keep track of the line and column number of each passed character
@@ -26,14 +26,14 @@ class Scanner(object):
 
     __slots__ = ("lineno", "colno", "index", "_text")
 
-    def __init__(self, text):
+    def __init__(self, text: str):
         self._text = text
         self.index = 0
         self.lineno = 1
         self.colno = 1
 
     @property
-    def char(self):
+    def char(self) -> str | None:
         """Returns a character in the current index"""
 
         if self.index < len(self._text):
@@ -42,13 +42,13 @@ class Scanner(object):
         # End of file
         return None
 
-    def peek(self):
+    def peek(self) -> str | None:
         peek_pos = self.index + 1
         if peek_pos > len(self._text) - 1:
             return None
         return self._text[peek_pos]
 
-    def next(self):
+    def next(self) -> None:
         """Move on to the next character in the scanned text"""
 
         if self.char == "\n":
@@ -60,13 +60,13 @@ class Scanner(object):
             self.colno += 1
         self.index += 1
 
-    def next_char(self):
+    def next_char(self) -> str | None:
         """Returns the next character in the source text"""
 
         self.next()
         return self.char
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<Scanner at {line}:{col} - Character: {char}>".format(
             line=self.lineno, col=self.colno, char=self.char
         )

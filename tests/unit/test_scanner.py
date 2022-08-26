@@ -86,10 +86,12 @@ def test_repr(scanner_bot):
     assert repr(sc) == "<Scanner at 1:3 - Character: r>"
 
 
-class ScannerTestCase(unittest.TestCase):
-    def test_peek(self):
-        sc = Scanner("gabox")
-
-        self.assertEqual(sc.peek(), "a")
+def test_peek(scanner_bot):
+    sc = scanner_bot("ola k ace")
+    assert sc.char == "o"
+    assert sc.peek() == "l"
+    assert sc.char == "o"
+    for _ in range(8):
         sc.next()
-        self.assertEqual(sc.peek(), "b")
+    assert sc.char == "e"
+    assert sc.peek() is None
