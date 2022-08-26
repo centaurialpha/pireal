@@ -1,108 +1,111 @@
 import unittest
 import datetime
 
+import pytest
+
 from pireal.interpreter.lexer import (
     Lexer,
     Token,
 )
-from pireal.interpreter.exceptions import InvalidSyntaxError
+from pireal.interpreter.exceptions import InvalidSyntaxError, MissingQuoteError
 from pireal.interpreter.tokens import TokenTypes
 from pireal.interpreter.scanner import Scanner
 
 
-class LexerTestCase(unittest.TestCase):
-    def setUp(self):
-        pass
+@pytest.fixture()
+def lexer():
+    def _make_lexer(code):
+        sc = Scanner(code)
+        return Lexer(sc)
 
-    def test_get_number(self):
-        numbers = ["28", "3.14156", "111111", "1.33"]
-        expected_tokens = [
-            Token(TokenTypes.INTEGER, 28),
-            Token(TokenTypes.REAL, 3.14156),
-            Token(TokenTypes.INTEGER, 111111),
-            Token(TokenTypes.REAL, 1.33),
-        ]
+    return _make_lexer
 
-        for number, expected_token in zip(numbers, expected_tokens):
-            with self.subTest(number=number):
-                lex = Lexer(Scanner(number))
-                current_token = lex.get_number()
 
-                self.assertEqual(current_token, expected_token)
+@pytest.mark.parametrize(
+    "text,expected",
+    [
+        ("asd123", Token(TokenTypes.ID, "asd123")),
+        ("asd123&asd", Token(TokenTypes.ID, "asd123")),
+        ("select", Token(TokenTypes.SELECT, "select")),
+        ("_asd123", Token(TokenTypes.ID, "_asd123")),
+    ],
+)
+def test_get_id_or_keyword(lexer, text, expected):
+    lex = lexer(text)
+    token = lex.get_identifier_or_keyword()
+    assert expected.value == token.value
+    assert expected.type == token.type
 
-    def test_next_token(self):
-        text = (
-            "% comentario\n"
-            "; , < > ( ) ="  # single characters
-            "<= >= <> :="
-            "query_1234 qqq "
-            "select project product intersect union difference njoin louter router fouter "
-            "and or "
-            "1234 22.22 "
-            "'gabox' '20/01/1991' '15:15'"
-        )
-        lex = Lexer(Scanner(text))
-        expected_tokens = (
-            Token(TokenTypes.SEMI, ";"),
-            Token(TokenTypes.COMMA, ","),
-            Token(TokenTypes.LESS, "<"),
-            Token(TokenTypes.GREATER, ">"),
-            Token(TokenTypes.LPAREN, "("),
-            Token(TokenTypes.RPAREN, ")"),
-            Token(TokenTypes.EQUAL, "="),
-            Token(TokenTypes.LEQUAL, "<="),
-            Token(TokenTypes.GEQUAL, ">="),
-            Token(TokenTypes.NOTEQUAL, "<>"),
-            Token(TokenTypes.ASSIGNMENT, ":="),
-            Token(TokenTypes.ID, "query_1234"),
-            Token(TokenTypes.ID, "qqq"),
-            Token(TokenTypes.SELECT, "select"),
-            Token(TokenTypes.PROJECT, "project"),
-            Token(TokenTypes.PRODUCT, "product"),
-            Token(TokenTypes.INTERSECT, "intersect"),
-            Token(TokenTypes.UNION, "union"),
-            Token(TokenTypes.DIFFERENCE, "difference"),
-            Token(TokenTypes.NJOIN, "njoin"),
-            Token(TokenTypes.LEFT_OUTER_JOIN, "louter"),
-            Token(TokenTypes.RIGHT_OUTER_JOIN, "router"),
-            Token(TokenTypes.FULL_OUTER_JOIN, "fouter"),
-            Token(TokenTypes.AND, "and"),
-            Token(TokenTypes.OR, "or"),
-            Token(TokenTypes.INTEGER, 1234),
-            Token(TokenTypes.REAL, 22.22),
-            Token(TokenTypes.STRING, "gabox"),
-            Token(TokenTypes.DATE, datetime.date(day=20, month=1, year=1991)),
-            Token(TokenTypes.TIME, datetime.time(hour=15, minute=15)),
-            Token(TokenTypes.EOF, None),
-        )
 
-        for expected_token in expected_tokens:
-            with self.subTest(token=expected_token):
-                current_token = lex.next_token()
-                self.assertEqual(current_token, expected_token)
+@pytest.mark.parametrize(
+    "text,token_types",
+    [
+        ("select         hola123", [TokenTypes.SELECT, TokenTypes.ID]),
+        ("_hola123  hola      ", [TokenTypes.ID, TokenTypes.ID]),
+    ],
+)
+def test_skip_whitespace(lexer, text, token_types):
+    lex = lexer(text)
+    for token_type in token_types:
+        token = lex.next_token()
+        assert token.type == token_type
 
-    def test_syntax_error(self):
-        lex = Lexer(Scanner("12 / id * 2"))
+
+def test_skip_comments(lexer):
+    lex = lexer("hola\n123\n%select")
+    assert lex.next_token().type == TokenTypes.ID
+    assert lex.next_token().type == TokenTypes.INTEGER
+    assert lex.next_token().type == TokenTypes.EOF
+    assert lex.next_token().type == TokenTypes.EOF
+
+
+@pytest.mark.parametrize(
+    "text,expected_token_type",
+    [
+        ("1234", TokenTypes.INTEGER),
+        ("0.1", TokenTypes.REAL),
+    ],
+)
+def test_get_number(lexer, text, expected_token_type):
+    lex = lexer(text)
+    assert lex.get_number().type == expected_token_type
+
+
+@pytest.mark.parametrize(
+    "text,expected_token_type",
+    [
+        ("'1234'", TokenTypes.STRING),
+        ("'hola que haces'", TokenTypes.STRING),
+        ("'20/01/1991'", TokenTypes.DATE),
+        ("'10:58'", TokenTypes.TIME),
+    ],
+)
+def test_get_string(lexer, text, expected_token_type):
+    lex = lexer(text)
+    assert lex.next_token().type == expected_token_type
+
+
+def test_analize_string_missing_quote_error(lexer):
+    lex = lexer("'hola que haces")
+    with pytest.raises(MissingQuoteError):
+        lex.analize_string()
+
+
+def test_assignment(lexer):
+    lex = lexer(":= =: ::")
+    token = lex.next_token()
+    assert token.type == TokenTypes.ASSIGNMENT
+    assert lex.next_token().type == TokenTypes.EQUAL
+    with pytest.raises(InvalidSyntaxError):
         lex.next_token()
-        with self.assertRaises(InvalidSyntaxError):
-            lex.next_token()
 
-    def test_get_identifier_or_keyword(self):
-        keywords_and_ids = [
-            "id",
-            "hola_como_estas",
-            "select",
-            "query_123",
-        ]
-        expected_tokens = [
-            Token(TokenTypes.ID, "id"),
-            Token(TokenTypes.ID, "hola_como_estas"),
-            Token(TokenTypes.SELECT, "select"),
-            Token(TokenTypes.ID, "query_123"),
-        ]
-        for word, expected_token in zip(keywords_and_ids, expected_tokens):
-            with self.subTest(identifier=word):
-                lex = Lexer(Scanner(word))
-                token = lex.get_identifier_or_keyword()
 
-                self.assertEqual(token, expected_token)
+def test_operators(lexer):
+    lex = lexer("<> << <= >>=")
+    token = lex.next_token()
+    assert token.type == TokenTypes.NOTEQUAL
+    assert lex.next_token().type == TokenTypes.LESS
+    assert lex.next_token().type == TokenTypes.LESS
+    assert lex.next_token().type == TokenTypes.LEQUAL
+    assert lex.next_token().type == TokenTypes.GREATER
+    assert lex.next_token().type == TokenTypes.GEQUAL

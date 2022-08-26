@@ -16,10 +16,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
+from __future__ import annotations
 
 import enum
+import datetime
 from dataclasses import dataclass
-from typing import Union
 
 
 class TokenTypes(enum.Enum):
@@ -63,6 +64,8 @@ class TokenTypes(enum.Enum):
     AND = "and"
     OR = "or"  # no cambiar
 
+    UNKNOWN = "unknown"
+
 
 def _build(start_token, end_token):
     token_type_list = list(TokenTypes)
@@ -85,9 +88,9 @@ def _build_reserved_keywords():
 @dataclass(eq=False)
 class Token:
     type: TokenTypes
-    value: Union[int, float, str]
-    line: int = None
-    col: int = None
+    value: int | float | str | datetime.date | datetime.time | None
+    line: int | None = None
+    col: int | None = None
 
     def __eq__(self, other):
         return self.type == other.type and self.value == other.value

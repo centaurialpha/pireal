@@ -25,16 +25,15 @@ from pireal.interpreter.tokens import (
     TokenTypes,
     RESERVED_KEYWORDS,
 )
-
+from pireal.interpreter.scanner import Scanner
 from pireal.interpreter.exceptions import MissingQuoteError, InvalidSyntaxError
-
 from pireal.interpreter.utils import (
     is_date,
     is_time,
 )
 
 
-class Lexer(object):
+class Lexer:
     """This is the first stage of analysis.
 
     The Lexer serves to break up the source text into chuncks, "tokens".
@@ -56,7 +55,7 @@ class Lexer(object):
 
     QUOTES = ('"', "'")
 
-    def __init__(self, scanner):
+    def __init__(self, scanner: Scanner):
         self.sc = scanner
 
     def _skip_whitespace(self):
@@ -68,10 +67,12 @@ class Lexer(object):
             self.sc.next()
         self.sc.next()
 
-    def get_identifier_or_keyword(self):
+    def get_identifier_or_keyword(self) -> Token:
         """Handle identifiers and reserved keywords"""
 
-        token = Token(type=None, value=None, line=self.sc.lineno, col=self.sc.colno)
+        token = Token(
+            type=TokenTypes.UNKNOWN, value=None, line=self.sc.lineno, col=self.sc.colno
+        )
 
         var = ""
         while self.sc.char is not None and not self.sc.char.isspace():
@@ -97,10 +98,12 @@ class Lexer(object):
         token.value = var
         return token
 
-    def get_number(self):
+    def get_number(self) -> Token:
         """Returns a multidigit integer or float"""
 
-        token = Token(type=None, value=None, line=self.sc.lineno, col=self.sc.colno)
+        token = Token(
+            type=TokenTypes.UNKNOWN, value=None, line=self.sc.lineno, col=self.sc.colno
+        )
 
         number = ""
         while self.sc.char is not None and self.sc.char.isdigit():
@@ -123,31 +126,39 @@ class Lexer(object):
 
         return token
 
-    def _get_string(self):
-        """Handle string inside quotes"""
-        self.sc.next()  # consume first quote
-
-        saved_lineno = self.sc.lineno
-        save_col = self.sc.colno
-
+    def analize_string(self) -> Token:
         string = ""
-        while True:
-            # FIXME: check complementary
-            if self.sc.char in Lexer.QUOTES:
-                break
-            try:
-                string += self.sc.char
-            except TypeError:
-                raise MissingQuoteError(
-                    "Missing quote on line: '{0}'", saved_lineno + 1, save_col
-                )
+        count = 0
+        while self.sc.char is not None:
+            if self.sc.char in ("'", '"'):
+                count += 1
+                self.sc.next()
+                if self.sc.char is None:
+                    break
+
+            string += self.sc.char
             self.sc.next()
 
-        self.sc.next()  # consume second quote
+        if count % 2 != 0:
+            raise MissingQuoteError("Faltan comillas", lineno=1, col=1)
 
-        return string
+        # Is date? is time? or just string?
+        ok, date = is_date(string)
+        if ok:
+            return Token(
+                type=TokenTypes.DATE, value=date, line=self.sc.lineno, col=self.sc.colno
+            )
 
-    def next_token(self):
+        ok, time = is_time(string)
+        if ok:
+            return Token(
+                type=TokenTypes.TIME, value=time, line=self.sc.lineno, col=self.sc.colno
+            )
+        return Token(
+            type=TokenTypes.STRING, value=string, line=self.sc.lineno, col=self.sc.colno
+        )
+
+    def next_token(self) -> Token:
         """Lexical analyzer.
 
         This method is responsible for breaking a sentence apart
@@ -156,7 +167,7 @@ class Lexer(object):
 
         while self.sc.char is not None:
             # Recognize identifiers and keywords
-            if self.sc.char.isalpha():
+            if self.sc.char.isalpha() or self.sc.char.startswith("_"):
                 return self.get_identifier_or_keyword()
 
             # Ignore any whitespace characters
@@ -221,29 +232,8 @@ class Lexer(object):
 
             # Strings, dates, times
             if self.sc.char in Lexer.QUOTES:
-                string = self._get_string()
-                ok, date = is_date(string)
-                if ok:
-                    return Token(
-                        type=TokenTypes.DATE,
-                        value=date,
-                        line=self.sc.lineno,
-                        col=self.sc.colno,
-                    )
-                ok, time = is_time(string)
-                if ok:
-                    return Token(
-                        type=TokenTypes.TIME,
-                        value=time,
-                        line=self.sc.lineno,
-                        col=self.sc.colno,
-                    )
-                return Token(
-                    type=TokenTypes.STRING,
-                    value=string,
-                    line=self.sc.lineno,
-                    col=self.sc.colno,
-                )
+                token = self.analize_string()
+                return token
 
             # Single-character
             try:
