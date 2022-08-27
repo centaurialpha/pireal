@@ -121,10 +121,13 @@ class Parser(object):
 
     def expression(self):
         if self.token.type is TokenTypes.PROJECT:
+            print("PROJECT")
             node = self.project_expression()
         elif self.token.type is TokenTypes.SELECT:
+            print("SELECT")
             node = self.select_expression()
         elif self.token.type is TokenTypes.LPAREN:
+            print("PAREN")
             self.consume(TokenTypes.LPAREN)
             node = self.expression()
             self.consume(TokenTypes.RPAREN)

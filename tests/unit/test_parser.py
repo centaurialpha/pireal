@@ -1,5 +1,6 @@
-import unittest
 import datetime
+
+import pytest
 
 from pireal.interpreter.scanner import Scanner
 from pireal.interpreter.lexer import Lexer, Token
@@ -9,256 +10,110 @@ from pireal.interpreter.tokens import TokenTypes, BINARY_OPERATORS
 from pireal.interpreter.exceptions import ConsumeError
 
 
-class ParserTestCase(unittest.TestCase):
-    def test_compound(self):
-        query = "q := qq; q2 := qqq;"
-        parser = Parser(Lexer(Scanner(query)))
+def test_mix_boolean_expression():
+    query = "name = 'gabox' or age >= 18 and age <= 30"
+    parser = Parser(Lexer(Scanner(query)))
 
-        node = parser.compound()
+    node = parser.boolean_expression()
 
-        self.assertIsInstance(node, ast.Compound)
-        self.assertEqual(len(node.children), 2)
-
-    def test_assignment(self):
-        query = "q:=qq;"
-        parser = Parser(Lexer(Scanner(query)))
-
-        node = parser.assignment()
-
-        expected_node = ast.Assignment(
-            rname=ast.Variable(Token(TokenTypes.ID, "q")),
-            query=ast.Variable(Token(TokenTypes.ID, "qq")),
-        )
-
-        self.assertEqual(node.rname, expected_node.rname)
-        self.assertEqual(node.query, expected_node.query)
-
-    def test_binary_expression(self):
-        query = "q1 njoin q2"
-        queries = ["q1 {} q2".format(op.value) for op in BINARY_OPERATORS.values()]
-
-        for query, op in zip(queries, BINARY_OPERATORS.values()):
-            parser = Parser(Lexer(Scanner(query)))
-            node = parser.expression()
-
-            expected_node = ast.BinaryOp(
-                left=ast.Variable(Token(TokenTypes.ID, "q1")),
-                op=op,
-                right=ast.Variable(Token(TokenTypes.ID, "q2")),
-            )
-
-            self.assertEqual(node, expected_node)
-
-    def test_nested_binary_expression(self):
-        query = "q1 njoin (project id, name(q))"
-        parser = Parser(Lexer(Scanner(query)))
-
-        node = parser.expression()
-
-        expected_node = ast.BinaryOp(
-            left=ast.Variable(Token(TokenTypes.ID, "q1")),
-            op=TokenTypes.NJOIN,
-            right=ast.ProjectExpr(
-                attrs=[
-                    ast.Variable(Token(TokenTypes.ID, "id")),
-                    ast.Variable(Token(TokenTypes.ID, "name")),
-                ],
-                expr=ast.Variable(Token(TokenTypes.ID, "q")),
+    expected_node = ast.BooleanExpression(
+        left_formula=ast.BooleanExpression(
+            left_formula=ast.Condition(
+                ast.Variable(Token(TokenTypes.ID, "name")),
+                Token(TokenTypes.EQUAL, "="),
+                ast.String(Token(TokenTypes.STRING, "gabox")),
             ),
-        )
+            operator=TokenTypes.OR,
+            right_formula=ast.Condition(
+                ast.Variable(Token(TokenTypes.ID, "age")),
+                Token(TokenTypes.GEQUAL, ">="),
+                ast.Number(Token(TokenTypes.INTEGER, 18)),
+            ),
+        ),
+        operator=TokenTypes.AND,
+        right_formula=ast.Condition(
+            ast.Variable(Token(TokenTypes.ID, "age")),
+            Token(TokenTypes.LEQUAL, "<="),
+            ast.Number(Token(TokenTypes.INTEGER, 30)),
+        ),
+    )
 
-        self.assertEqual(node, expected_node)
+    assert node == expected_node
 
-    # def test_nested_expression(self):
-    #     query = 'select id = 1 (project name, id (q1))'
-    #     parser = Parser(Lexer(Scanner(query)))
 
-    #     node = parser.expression()
+def test_consume_error():
+    query = "q := select id=1 (personas)"
+    parser = Parser(Lexer(Scanner(query)))
+    with pytest.raises(ConsumeError):
+        parser.parse()
 
-    #     self.assertIsInstance(node, ast.SelectExpr)
-    #     self.assertIsInstance(node.expr, ast.ProjectExpr)
+def test_consume_expression():
+    query = "select id=1 (personas)"
+    parser = Parser(Lexer(Scanner(query)))
 
-    def test_literal(self):
-        queries = ["1", "3.14", '"20/01/1991"', '"14:14"', '"hola como estas"']
-        expected_nodes = [
-            ast.Number(Token(TokenTypes.INTEGER, 1)),
-            ast.Number(Token(TokenTypes.REAL, 3.14)),
-            ast.Date(Token(TokenTypes.DATE, datetime.date(1991, 1, 20))),
-            ast.Time(Token(TokenTypes.TIME, datetime.time(14, 14))),
-            ast.String(Token(TokenTypes.STRING, "hola como estas")),
-        ]
+    node = parser.expression()
+    expected_node = ast.SelectExpr(
+        cond=ast.Condition(
+            op1=ast.Variable(Token(TokenTypes.ID, "id")),
+            operator=Token(TokenTypes.EQUAL, "="),
+            op2=ast.Number(Token(TokenTypes.INTEGER, 1))
+        ),
+        expr=ast.Variable(Token(TokenTypes.ID, "personas")),
+    )
 
-        for query, expected_node in zip(queries, expected_nodes):
-            parser = Parser(Lexer(Scanner(query)))
+    assert node == expected_node
 
-            node = parser.literal()
 
-            self.assertEqual(node, expected_node)
+def test_consume_project():
+    query = "project name,age (personas)"
+    parser = Parser(Lexer(Scanner(query)))
 
-    def test_operand(self):
-        queries = ["3.14", "query_1234"]
-        expected_nodes = [
-            ast.Number(Token(TokenTypes.REAL, 3.14)),
-            ast.Variable(Token(TokenTypes.ID, "query_1234")),
-        ]
+    node = parser.expression()
 
-        for query, expected_node in zip(queries, expected_nodes):
-            parser = Parser(Lexer(Scanner(query)))
-
-            node = parser.operand()
-
-            self.assertEqual(node, expected_node)
-
-    def test_attributes(self):
-        query = "id, name, age, attr1, attr2"
-        parser = Parser(Lexer(Scanner(query)))
-
-        node = parser.attributes()
-
-        expected_nodes = [
-            ast.Variable(Token(TokenTypes.ID, "id")),
+    expected_node = ast.ProjectExpr(
+        attrs=[
             ast.Variable(Token(TokenTypes.ID, "name")),
             ast.Variable(Token(TokenTypes.ID, "age")),
-            ast.Variable(Token(TokenTypes.ID, "attr1")),
-            ast.Variable(Token(TokenTypes.ID, "attr2")),
-        ]
+        ],
+        expr=ast.Variable(Token(TokenTypes.ID, "personas"))
+    )
 
-        self.assertListEqual(node, expected_nodes)
+    assert node == expected_node
 
-    def test_simple_boolean_expression(self):
-        query = "id <= 13"
-        parser = Parser(Lexer(Scanner(query)))
 
-        node = parser.boolean_expression()
+def test_consume_nested_expression():
+    query = "select id='1' (project name,age (personas))"
+    parser = Parser(Lexer(Scanner(query)))
 
-        expected_node = ast.Condition(
-            ast.Variable(Token(TokenTypes.ID, "id")),
-            Token(TokenTypes.LEQUAL, "<="),
-            ast.Number(Token(TokenTypes.INTEGER, 13)),
-        )
+    node = parser.expression()
 
-        self.assertEqual(node, expected_node)
-
-    def test_and_boolean_expression(self):
-        query = "age > 30 and age < 40"
-        parser = Parser(Lexer(Scanner(query)))
-
-        node = parser.boolean_expression()
-
-        expected_node = ast.BooleanExpression(
-            left_formula=ast.Condition(
+    expected_node = ast.SelectExpr(
+        cond=ast.Condition(
+            op1=ast.Variable(Token(TokenTypes.ID, "id")),
+            operator=Token(TokenTypes.EQUAL, "="),
+            op2=ast.String(Token(TokenTypes.STRING, '1')),
+        ),
+        expr=ast.ProjectExpr(
+            attrs=[
+                ast.Variable(Token(TokenTypes.ID, "name")),
                 ast.Variable(Token(TokenTypes.ID, "age")),
-                Token(TokenTypes.GREATER, ">"),
-                ast.Number(Token(TokenTypes.INTEGER, 30)),
-            ),
-            operator=TokenTypes.AND,
-            right_formula=ast.Condition(
-                ast.Variable(Token(TokenTypes.ID, "age")),
-                Token(TokenTypes.LESS, "<"),
-                ast.Number(Token(TokenTypes.INTEGER, 40)),
-            ),
-        )
+            ],
+            expr=ast.Variable(Token(TokenTypes.ID, "personas"))
+        ),
+    )
 
-        self.assertEqual(node, expected_node)
-
-    @unittest.skip(reason="Fix later")
-    def test_mix_boolean_expression(self):
-        query = 'name = "gabox" or age >= 18 and age <= 30'
-        parser = Parser(Lexer(Scanner(query)))
-
-        node = parser.boolean_expression()
-
-        expected_node = ast.BooleanExpression(
-            left_formula=ast.BooleanExpression(
-                left_formula=ast.Condition(
-                    ast.Variable(Token(TokenTypes.ID, "name")),
-                    Token(TokenTypes.EQUAL, "="),
-                    ast.String(Token(TokenTypes.STRING, "gabox")),
-                ),
-                operator=TokenTypes.OR,
-                right_formula=ast.Condition(
-                    ast.Variable(Token(TokenTypes.ID, "age")),
-                    Token(TokenTypes.GEQUAL, ">="),
-                    ast.Number(Token(TokenTypes.INTEGER, 18)),
-                ),
-            ),
-            operator=TokenTypes.AND,
-            right_formula=ast.Condition(
-                ast.Variable(Token(TokenTypes.ID, "age")),
-                Token(TokenTypes.LEQUAL, "<="),
-                ast.Number(Token(TokenTypes.INTEGER, 30)),
-            ),
-        )
-
-        self.assertEqual(node, expected_node)
-
-    def test_consume(self):
-        query = "q1 :="
-        parser = Parser(Lexer(Scanner(query)))
-
-        parser.consume(TokenTypes.ID)
-        with self.assertRaises(ConsumeError):
-            parser.consume(TokenTypes.SELECT)
-        parser.consume(TokenTypes.ASSIGNMENT)
+    assert node == expected_node
 
 
-class SelectExpressionTestCase(unittest.TestCase):
-    def test_simple(self):
-        query = "select id = 1 (q)"
-        parser = Parser(Lexer(Scanner(query)))
+def test_consume_assignment():
+    query = "q := personas"
+    parser = Parser(Lexer(Scanner(query)))
 
-        node = parser.select_expression()
+    node = parser.assignment()
 
-        expected_node = ast.SelectExpr(
-            cond=ast.Condition(
-                ast.Variable(Token(TokenTypes.ID, "id")),
-                Token(TokenTypes.EQUAL, "="),
-                ast.Number(Token(TokenTypes.INTEGER, 1)),
-            ),
-            expr=ast.Variable(Token(TokenTypes.ID, "q")),
-        )
-        self.assertEqual(node, expected_node)
+    expected_node = ast.Assignment(
+        rname=ast.Variable(Token(TokenTypes.ID, "q")),
+        query=ast.Variable(Token(TokenTypes.ID, "personas"))
+    )
 
-    # def test_and_operator(self):
-    #     query = 'select id = 1 and age = 20 (q)'
-    #     parser = Parser(Lexer(Scanner(query)))
-
-    #     node = parser.select_expression()
-
-    #     self.assertIsInstance(node, ast.SelectExpr)
-    #     self.assertEqual(len(node.condition.conditions), 2)
-    #     self.assertEqual(node.condition.ops, ['and'])
-
-    # def test_or_operator(self):
-    #     query = 'select id = 1 or age = 20 (q)'
-    #     parser = Parser(Lexer(Scanner(query)))
-
-    #     node = parser.select_expression()
-
-    #     self.assertIsInstance(node, ast.SelectExpr)
-    #     self.assertEqual(len(node.condition.conditions), 2)
-    #     self.assertEqual(node.condition.ops, ['or'])
-
-
-@unittest.skip
-class ProjectExpressionTestCase(unittest.TestCase):
-    def test_simple(self):
-        query = "project name (algo)"
-        parser = Parser(Lexer(Scanner(query)))
-
-        node = parser.project_expression()
-
-        self.assertIsInstance(node, ast.ProjectExpr)
-        self.assertEqual(len(node.attrs), 1)
-
-    def test_multiple_attributes(self):
-        query = "project name, id, age (algo)"
-        parser = Parser(Lexer(Scanner(query)))
-
-        expected_attrs = ["name", "id", "age"]
-
-        node = parser.project_expression()
-
-        self.assertIsInstance(node, ast.ProjectExpr)
-        for index, expected_attr in enumerate(expected_attrs):
-            self.assertEqual(node.attrs[index].token.value, expected_attr)
+    assert node == expected_node

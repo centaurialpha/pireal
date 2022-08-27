@@ -127,20 +127,22 @@ class Lexer:
         return token
 
     def analize_string(self) -> Token:
+        self.sc.next()
         string = ""
-        count = 0
+        count = 1
         while self.sc.char is not None:
-            if self.sc.char in ("'", '"'):
-                count += 1
-                self.sc.next()
-                if self.sc.char is None:
+            if self.sc.char == "'":
+                count -= 1
+                if count == 0:
                     break
+                self.sc.next()
 
             string += self.sc.char
             self.sc.next()
 
-        if count % 2 != 0:
+        if count == 1:
             raise MissingQuoteError("Faltan comillas", lineno=1, col=1)
+        self.sc.next()
 
         # Is date? is time? or just string?
         ok, date = is_date(string)
@@ -231,7 +233,7 @@ class Lexer:
                 return self.get_number()
 
             # Strings, dates, times
-            if self.sc.char in Lexer.QUOTES:
+            if self.sc.char == "'":
                 token = self.analize_string()
                 return token
 
