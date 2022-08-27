@@ -36,4 +36,5 @@ jobs:
 
       - name: Unit Tests
         run: |
-          make test
+          make test-interpreter
+          make test-unit

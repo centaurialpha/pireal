@@ -33,7 +33,7 @@ format:
 	@black src/ tests/
 
 test-unit:
-	pytest -v tests/unit --cov pireal --cov-report term-missing
+	pytest -v tests/unit -m "not interpreter"
 
 test-interpreter:
 	python -m pytest -v -m interpreter --cov=pireal.interpreter --cov-report term-missing
