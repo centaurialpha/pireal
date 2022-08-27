@@ -6,8 +6,10 @@ from pireal.interpreter.scanner import Scanner
 from pireal.interpreter.lexer import Lexer, Token
 from pireal.interpreter.parser import Parser, Interpreter
 from pireal.interpreter import rast as ast
-from pireal.interpreter.tokens import TokenTypes, BINARY_OPERATORS
+from pireal.interpreter.tokens import TokenTypes
 from pireal.interpreter.exceptions import ConsumeError
+
+pytestmark = pytest.mark.interpreter
 
 
 def test_mix_boolean_expression():

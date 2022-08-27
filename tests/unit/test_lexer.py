@@ -1,6 +1,3 @@
-import unittest
-import datetime
-
 import pytest
 
 from pireal.interpreter.lexer import (
@@ -10,6 +7,8 @@ from pireal.interpreter.lexer import (
 from pireal.interpreter.exceptions import InvalidSyntaxError, MissingQuoteError
 from pireal.interpreter.tokens import TokenTypes
 from pireal.interpreter.scanner import Scanner
+
+pytestmark = pytest.mark.interpreter
 
 
 @pytest.fixture()

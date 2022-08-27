@@ -1,20 +1,17 @@
 PYTEST = pytest tests
 
 help:
-	@echo "test 	 		-- run tests"
-	@echo "test-gui  		-- run tests for GUI"
+	@echo "test 	 			-- run tests"
+	@echo "test-unit 	 		-- run unit tests"
+	@echo "test-interpreter		-- run tests for Scanner, Lexer, Parser and Interpreter"
 	@echo "test-integration 	-- run integration tests"
-	@echo "flake8			-- run flake8"
-	@echo "dist 			-- run python setup.py sdist"
-	@echo "deb 			-- build a .deb package"
-	@echo "rc                       -- buil resources"
+	@echo "flake8				-- run flake8"
+	@echo "deb 					-- build a .deb package"
 
 rc:
 	pyrcc5 pireal/resources/resources.qrc -o pireal/resources.py
 
 clean:
-	rm -rf `find -name "*pyc"`
-	rm -rf `find -name "*pyo"`
 	rm -rf .pybuild/
 	rm -rf debian/debhelper-build-stamp
 	rm -rf debian/.debhelper
@@ -38,17 +35,13 @@ format:
 test-unit:
 	pytest -v tests/unit --cov pireal --cov-report term-missing
 
-test-gui:
-	@$(PYTEST) -v -m gui
+test-interpreter:
+	python -m pytest -v -m interpreter --cov=pireal.interpreter --cov-report term-missing
 
 test-integration:
 	pytest -v tests/integration -s
 
 test: test-unit test-integration
-
-dist: clean
-	python setup.py sdist
-	mv dist/* ../
 
 deb:
 	debuild -b -uc -us

@@ -20,10 +20,10 @@
 """Test para el Scanner"""
 
 import pytest
-import unittest
 
-from pireal.interpreter.scanner import Scanner
 from pireal.interpreter import scanner
+
+pytestmark = pytest.mark.interpreter
 
 
 @pytest.fixture
