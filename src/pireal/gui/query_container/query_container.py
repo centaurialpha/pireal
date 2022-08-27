@@ -23,7 +23,6 @@ from PyQt6.QtWidgets import QWidget
 from PyQt6.QtWidgets import QVBoxLayout
 from PyQt6.QtWidgets import QHBoxLayout
 from PyQt6.QtWidgets import QSplitter
-from PyQt6.QtWidgets import QMessageBox
 from PyQt6.QtWidgets import QStackedWidget
 from PyQt6.QtWidgets import QDialog
 from PyQt6.QtWidgets import QPushButton
@@ -195,8 +194,8 @@ class QueryContainer(QWidget):
             try:
                 new_relation = eval(expression, {}, relations)
             except Exception as reason:
-                QMessageBox.critical(
-                    self, tr.TR_QUERY_ERROR, self.parse_error(str(reason))
+                self.currentWidget()._editor_widget.show_editor_notification(
+                    self.parse_error(str(reason))
                 )
                 return
             relations[relation_name] = new_relation
