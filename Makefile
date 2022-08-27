@@ -47,7 +47,7 @@ deb:
 	debuild -b -uc -us
 
 install:
-	python setup.py install
+	pip install .
 
 pip-install:
 	@pip install -r requirements.txt -r requirements-dev.txt
