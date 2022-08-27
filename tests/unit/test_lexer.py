@@ -32,8 +32,7 @@ def lexer():
 def test_get_id_or_keyword(lexer, text, expected):
     lex = lexer(text)
     token = lex.get_identifier_or_keyword()
-    assert expected.value == token.value
-    assert expected.type == token.type
+    assert expected == token
 
 
 @pytest.mark.parametrize(
@@ -47,15 +46,15 @@ def test_skip_whitespace(lexer, text, token_types):
     lex = lexer(text)
     for token_type in token_types:
         token = lex.next_token()
-        assert token.type == token_type
+        assert token.type is token_type
 
 
 def test_skip_comments(lexer):
     lex = lexer("hola\n123\n%select")
-    assert lex.next_token().type == TokenTypes.ID
-    assert lex.next_token().type == TokenTypes.INTEGER
-    assert lex.next_token().type == TokenTypes.EOF
-    assert lex.next_token().type == TokenTypes.EOF
+    assert lex.next_token().type is TokenTypes.ID
+    assert lex.next_token().type is TokenTypes.INTEGER
+    assert lex.next_token().type is TokenTypes.EOF
+    assert lex.next_token().type is TokenTypes.EOF
 
 
 @pytest.mark.parametrize(
@@ -67,7 +66,7 @@ def test_skip_comments(lexer):
 )
 def test_get_number(lexer, text, expected_token_type):
     lex = lexer(text)
-    assert lex.get_number().type == expected_token_type
+    assert lex.get_number().type is expected_token_type
 
 
 @pytest.mark.parametrize(
@@ -81,7 +80,7 @@ def test_get_number(lexer, text, expected_token_type):
 )
 def test_get_string(lexer, text, expected_token_type):
     lex = lexer(text)
-    assert lex.next_token().type == expected_token_type
+    assert lex.next_token().type is expected_token_type
 
 
 def test_analize_string_missing_quote_error(lexer):
@@ -93,8 +92,8 @@ def test_analize_string_missing_quote_error(lexer):
 def test_assignment(lexer):
     lex = lexer(":= =: ::")
     token = lex.next_token()
-    assert token.type == TokenTypes.ASSIGNMENT
-    assert lex.next_token().type == TokenTypes.EQUAL
+    assert token.type is TokenTypes.ASSIGNMENT
+    assert lex.next_token().type is TokenTypes.EQUAL
     with pytest.raises(InvalidSyntaxError):
         lex.next_token()
 
@@ -102,9 +101,9 @@ def test_assignment(lexer):
 def test_operators(lexer):
     lex = lexer("<> << <= >>=")
     token = lex.next_token()
-    assert token.type == TokenTypes.NOTEQUAL
-    assert lex.next_token().type == TokenTypes.LESS
-    assert lex.next_token().type == TokenTypes.LESS
-    assert lex.next_token().type == TokenTypes.LEQUAL
-    assert lex.next_token().type == TokenTypes.GREATER
-    assert lex.next_token().type == TokenTypes.GEQUAL
+    assert token.type is TokenTypes.NOTEQUAL
+    assert lex.next_token().type is TokenTypes.LESS
+    assert lex.next_token().type is TokenTypes.LESS
+    assert lex.next_token().type is TokenTypes.LEQUAL
+    assert lex.next_token().type is TokenTypes.GREATER
+    assert lex.next_token().type is TokenTypes.GEQUAL
