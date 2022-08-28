@@ -41,7 +41,7 @@ class AboutDialog(QDialog):
         vbox = QVBoxLayout(self)
         # Banner
         banner = QLabel()
-        banner.setPixmap(QPixmap(":img/icon"))
+        banner.setPixmap(QPixmap("icons:pireal_icon.png"))
         banner.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         vbox.addWidget(banner)
 

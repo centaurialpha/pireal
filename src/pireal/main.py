@@ -48,7 +48,6 @@ ROOT_DIR = Path(__file__).parent
 RESOURCES_DIR = ROOT_DIR / "resources"
 IMAGES_DIR = RESOURCES_DIR / "images"
 
-print(ROOT_DIR)
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
@@ -91,7 +90,7 @@ def start_pireal(args):
     app = QApplication(sys.argv)
     app.setApplicationName("Pireal")
     app.setApplicationDisplayName("Pireal")
-    app.setWindowIcon(QIcon(":img/icon"))
+    app.setWindowIcon(QIcon("icons:pireal_icon.png"))
 
     SETTINGS.load()
 
