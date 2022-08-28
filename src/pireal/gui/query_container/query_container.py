@@ -161,6 +161,7 @@ class QueryContainer(QWidget):
         # Restore
         relations.clear()
         self.currentWidget().clear_results()
+        table_widget._tabs.setCurrentIndex(0)
 
         editor_widget.show_run_cursor()
 
