@@ -28,14 +28,14 @@ def test_mix_boolean_expression():
             operator=TokenTypes.OR,
             right_formula=ast.Condition(
                 ast.Variable(Token(TokenTypes.ID, "age")),
-                Token(TokenTypes.GEQUAL, ">="),
+                Token(TokenTypes.GREATHER_EQUAL, ">="),
                 ast.Number(Token(TokenTypes.INTEGER, 18)),
             ),
         ),
         operator=TokenTypes.AND,
         right_formula=ast.Condition(
             ast.Variable(Token(TokenTypes.ID, "age")),
-            Token(TokenTypes.LEQUAL, "<="),
+            Token(TokenTypes.LESS_EQUAL, "<="),
             ast.Number(Token(TokenTypes.INTEGER, 30)),
         ),
     )
@@ -265,14 +265,14 @@ def test_visit_boolean_expression():
             operator=TokenTypes.OR,
             right_formula=ast.Condition(
                 ast.Variable(Token(TokenTypes.ID, "age")),
-                Token(TokenTypes.GEQUAL, ">="),
+                Token(TokenTypes.GREATHER_EQUAL, ">="),
                 ast.Number(Token(TokenTypes.INTEGER, 18)),
             ),
         ),
         operator=TokenTypes.AND,
         right_formula=ast.Condition(
             ast.Variable(Token(TokenTypes.ID, "age")),
-            Token(TokenTypes.LEQUAL, "<="),
+            Token(TokenTypes.LESS_EQUAL, "<="),
             ast.Number(Token(TokenTypes.INTEGER, 30)),
         ),
     )

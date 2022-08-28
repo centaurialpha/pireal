@@ -124,10 +124,10 @@ class Parser(object):
             node = self.project_expression()
         elif self.token.type is TokenTypes.SELECT:
             node = self.select_expression()
-        elif self.token.type is TokenTypes.LPAREN:
-            self.consume(TokenTypes.LPAREN)
+        elif self.token.type is TokenTypes.LEFT_PARENTHESIS:
+            self.consume(TokenTypes.LEFT_PARENTHESIS)
             node = self.expression()
-            self.consume(TokenTypes.RPAREN)
+            self.consume(TokenTypes.RIGHT_PARENTHESIS)
         elif self.token.type is TokenTypes.ID:
             node = self.variable()
             if self.token.value in BINARY_OPERATORS:
@@ -151,9 +151,9 @@ class Parser(object):
     def project_expression(self):
         self.consume(TokenTypes.PROJECT)
         attributes = self.attributes()
-        self.consume(TokenTypes.LPAREN)
+        self.consume(TokenTypes.LEFT_PARENTHESIS)
         expr = self.expression()
-        self.consume(TokenTypes.RPAREN)
+        self.consume(TokenTypes.RIGHT_PARENTHESIS)
 
         node = ast.ProjectExpr(attributes, expr)
         return node
@@ -161,9 +161,9 @@ class Parser(object):
     def select_expression(self):
         self.consume(TokenTypes.SELECT)
         boolean_expr = self.boolean_expression()
-        self.consume(TokenTypes.LPAREN)
+        self.consume(TokenTypes.LEFT_PARENTHESIS)
         expr = self.expression()
-        self.consume(TokenTypes.RPAREN)
+        self.consume(TokenTypes.RIGHT_PARENTHESIS)
 
         node = ast.SelectExpr(boolean_expr, expr)
         return node
@@ -230,9 +230,9 @@ class Parser(object):
             TokenTypes.EQUAL,
             TokenTypes.NOTEQUAL,
             TokenTypes.LESS,
-            TokenTypes.LEQUAL,
+            TokenTypes.LESS_EQUAL,
             TokenTypes.GREATER,
-            TokenTypes.GEQUAL,
+            TokenTypes.GREATHER_EQUAL,
         ]
         index = operators.index(node.type)
         op = operators[index]

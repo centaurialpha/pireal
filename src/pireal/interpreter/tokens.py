@@ -29,12 +29,12 @@ class TokenTypes(enum.Enum):
     COMMA = ","
     LESS = "<"
     GREATER = ">"
-    LPAREN = "("
-    RPAREN = ")"
+    LEFT_PARENTHESIS = "("
+    RIGHT_PARENTHESIS = ")"
     EQUAL = "="
 
-    LEQUAL = "<="
-    GEQUAL = ">="
+    LESS_EQUAL = "<="
+    GREATHER_EQUAL = ">="
     NOTEQUAL = "<>"
     ASSIGNMENT = ":="
 

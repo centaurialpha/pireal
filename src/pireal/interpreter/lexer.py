@@ -208,8 +208,8 @@ class Lexer:
 
             if self.sc.char == "<" and self.sc.peek() == "=":
                 token = Token(
-                    type=TokenTypes.LEQUAL,
-                    value=TokenTypes.LEQUAL.value,
+                    type=TokenTypes.LESS_EQUAL,
+                    value=TokenTypes.LESS_EQUAL.value,
                     line=self.sc.lineno,
                     col=self.sc.colno,
                 )
@@ -219,8 +219,8 @@ class Lexer:
 
             if self.sc.char == ">" and self.sc.peek() == "=":
                 token = Token(
-                    type=TokenTypes.GEQUAL,
-                    value=TokenTypes.GEQUAL.value,
+                    type=TokenTypes.GREATHER_EQUAL,
+                    value=TokenTypes.GREATHER_EQUAL.value,
                     line=self.sc.lineno,
                     col=self.sc.colno,
                 )

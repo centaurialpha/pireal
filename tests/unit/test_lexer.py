@@ -104,6 +104,6 @@ def test_operators(lexer):
     assert token.type is TokenTypes.NOTEQUAL
     assert lex.next_token().type is TokenTypes.LESS
     assert lex.next_token().type is TokenTypes.LESS
-    assert lex.next_token().type is TokenTypes.LEQUAL
+    assert lex.next_token().type is TokenTypes.LESS_EQUAL
     assert lex.next_token().type is TokenTypes.GREATER
-    assert lex.next_token().type is TokenTypes.GEQUAL
+    assert lex.next_token().type is TokenTypes.GREATHER_EQUAL
