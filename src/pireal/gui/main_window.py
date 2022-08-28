@@ -197,7 +197,6 @@ class Pireal(QMainWindow):
             self.tray.setToolTip(tr.TR_TOOLTIP_VERSION_AVAILABLE)
             self.tray.activated.connect(self._on_system_tray_clicked)
             self.tray.messageClicked.connect(self._on_system_tray_message_clicked)
-            self.tray.show()
 
             updater_thread = QThread(self)
             self._updater = Updater()
