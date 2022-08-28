@@ -36,6 +36,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import (
     QPixmap,
+    QIcon,
 )
 from PyQt6.QtCore import (
     QAbstractListModel,
@@ -201,7 +202,8 @@ class StartPage(QWidget):
         hbox_footer = QHBoxLayout()
         powered_by_lbl = QLabel("Powered by: ")
         hbox_footer.addWidget(powered_by_lbl)
-        python_logo = QPixmap(":img/python")
+        # python_logo = QPixmap(":img/python")
+        python_logo = QPixmap("icons:python-logo.png")
         python_logo_lbl = QLabel()
         python_logo_lbl.setPixmap(python_logo)
         hbox_footer.addWidget(python_logo_lbl, alignment=Qt.AlignmentFlag.AlignLeft)

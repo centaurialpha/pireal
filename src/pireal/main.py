@@ -22,6 +22,8 @@
 import sys
 import os
 import logging
+import platform
+from pathlib import Path
 
 from PyQt6.QtWidgets import QApplication
 
@@ -30,28 +32,61 @@ from PyQt6.QtGui import QIcon, QFont, QFontDatabase
 from PyQt6.QtCore import QTranslator
 from PyQt6.QtCore import QLocale
 from PyQt6.QtCore import QLibraryInfo
+from PyQt6.QtCore import QDir
+from PyQt6.QtCore import QT_VERSION_STR
 
 from pireal.gui.theme import apply_theme
 from pireal.settings import SETTINGS
+from pireal.core import cliparser
+from pireal import __version__
+from pireal.dirs import create_app_dirs
+from pireal.core import logger as _logger
 
 logger = logging.getLogger("main")
+
+ROOT_DIR = Path(__file__).parent
+RESOURCES_DIR = ROOT_DIR / "resources"
+IMAGES_DIR = RESOURCES_DIR / "images"
+
+print(ROOT_DIR)
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+
+def run():
+    QDir.addSearchPath("icons", str(IMAGES_DIR))
+
+    # Parse CLI
+    args = cliparser.get_cli().parse_args()
+    if args.version:
+        print(__version__)
+        sys.exit(0)
+
+    # Creo los dirs antes de leer logs. see #84
+    create_app_dirs()
+
+    # Set up logger
+    _logger.set_up(verbose=args.verbose)
+
+    start_pireal(args)
 
 
 def start_pireal(args):
 
     # OS
-    # if settings.IS_LINUX:
-    #     system, os_name = platform.uname()[:2]
-    # else:
-    #     system = platform.uname()[0]
-    #     os_name = platform.uname()[2]
-    # # Python version
-    # python_version = platform.python_version()
+    if platform.system() == "Linux":
+        system, os_name = platform.uname()[:2]
+    else:
+        system = platform.uname()[0]
+        os_name = platform.uname()[2]
 
-    # print(f'Running Pireal {__version__}...\n'
-    #       f'Python {python_version} on {system}-{os_name}, Qt {QT_VERSION_STR}')
-    # logger.info('Running Pireal %s with Python %s on %r',
-    #             __version__, sys.version_info, sys.platform)
+    # Python version
+    python_version = platform.python_version()
+
+    logger.info("Running pireal %s...", __version__)
+    logger.info(
+        "Python %s on %s-%s, Qt %s", python_version, system, os_name, QT_VERSION_STR
+    )
 
     app = QApplication(sys.argv)
     app.setApplicationName("Pireal")
@@ -64,13 +99,16 @@ def start_pireal(args):
     apply_theme(app)
 
     # Add Font Awesome
-    family = QFontDatabase.applicationFontFamilies(
-        # FIXME
-        QFontDatabase.addApplicationFont("src/pireal/resources/images/font-awesome.ttf")
-    )[0]
-    font = QFont(family)
-    font.setStyleName("Solid")
-    app.setFont(font)
+    try:
+        family = QFontDatabase.applicationFontFamilies(
+            QFontDatabase.addApplicationFont(str(IMAGES_DIR / "font-awesome.ttf"))
+        )[0]
+    except IndexError as exc:
+        print(exc)
+    else:
+        font = QFont(family)
+        font.setStyleName("Solid")
+        app.setFont(font)
     # Install translators
     # Qt translations
     system_locale_name = QLocale.system().name()
@@ -90,6 +128,7 @@ def start_pireal(args):
     translator = QTranslator()
     if translator.load(f":lang/{SETTINGS.language}"):
         app.installTranslator(translator)
+
     # Load services
     from pireal.gui import central_widget  # noqa
     from pireal.gui.main_window import Pireal
