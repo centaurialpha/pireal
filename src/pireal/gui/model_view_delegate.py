@@ -65,7 +65,7 @@ class RelationModel(QAbstractTableModel):
         data = self.relation.content
         if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
             return data[row][column]
-        elif role == Qt.ItemDataRole.DecorationRole:
+        elif role == Qt.ItemDataRole.ForegroundRole:
             value = data[row][column]
             if value == "null":
                 return self._null_text_color

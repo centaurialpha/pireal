@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015-2019 Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2022 Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -19,34 +19,32 @@
 
 """Run Pireal user interface"""
 
-import sys
-import os
 import logging
+import os
 import platform
+import sys
 from pathlib import Path
 
+from PyQt6.QtCore import (QT_VERSION_STR, QDir, QLibraryInfo, QLocale,
+                          QTranslator)
+from PyQt6.QtGui import QFont, QFontDatabase, QIcon
 from PyQt6.QtWidgets import QApplication
 
-from PyQt6.QtGui import QIcon, QFont, QFontDatabase
-
-from PyQt6.QtCore import QTranslator
-from PyQt6.QtCore import QLocale
-from PyQt6.QtCore import QLibraryInfo
-from PyQt6.QtCore import QDir
-from PyQt6.QtCore import QT_VERSION_STR
-
+from pireal import __version__
+from pireal.core import cliparser
+from pireal.core import logger as _logger
+from pireal.dirs import create_app_dirs
+from pireal.gui.main_window import Pireal
 from pireal.gui.theme import apply_theme
 from pireal.settings import SETTINGS
-from pireal.core import cliparser
-from pireal import __version__
-from pireal.dirs import create_app_dirs
-from pireal.core import logger as _logger
 
 logger = logging.getLogger("main")
 
 ROOT_DIR = Path(__file__).parent
 RESOURCES_DIR = ROOT_DIR / "resources"
 IMAGES_DIR = RESOURCES_DIR / "images"
+LANGUAGES_DIR = RESOURCES_DIR / "lang"
+
 
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
@@ -54,6 +52,7 @@ if ROOT_DIR not in sys.path:
 
 def run():
     QDir.addSearchPath("icons", str(IMAGES_DIR))
+    QDir.addSearchPath("languages", str(LANGUAGES_DIR))
 
     # Parse CLI
     args = cliparser.get_cli().parse_args()
@@ -71,7 +70,6 @@ def run():
 
 
 def start_pireal(args):
-
     # OS
     if platform.system() == "Linux":
         system, os_name = platform.uname()[:2]
@@ -98,16 +96,12 @@ def start_pireal(args):
     apply_theme(app)
 
     # Add Font Awesome
-    try:
-        family = QFontDatabase.applicationFontFamilies(
-            QFontDatabase.addApplicationFont(str(IMAGES_DIR / "font-awesome.ttf"))
-        )[0]
-    except IndexError as exc:
-        print(exc)
-    else:
-        font = QFont(family)
-        font.setStyleName("Solid")
-        app.setFont(font)
+    family = QFontDatabase.applicationFontFamilies(
+        QFontDatabase.addApplicationFont(str(IMAGES_DIR / "font-awesome.ttf"))
+    )[0]
+    font = QFont(family)
+    font.setStyleName("Solid")
+    app.setFont(font)
     # Install translators
     # Qt translations
     system_locale_name = QLocale.system().name()
@@ -125,12 +119,8 @@ def start_pireal(args):
     app.installTranslator(qt_translator)
     # App translator
     translator = QTranslator()
-    if translator.load(f":lang/{SETTINGS.language}"):
+    if translator.load(f"languages:{SETTINGS.language}"):
         app.installTranslator(translator)
-
-    # Load services
-    from pireal.gui import central_widget  # noqa
-    from pireal.gui.main_window import Pireal
 
     check_updates = not args.no_check_updates
     pireal_gui = Pireal(check_updates)

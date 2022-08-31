@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2022 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -33,14 +33,14 @@ from PyQt6.QtGui import QKeySequence
 from PyQt6.QtCore import Qt
 from PyQt6.QtCore import QSettings
 
-
+import pireal
 from pireal import settings
 from pireal.core import (
     file_manager,
     pfile,
 )
-from pireal.gui.main_window import Pireal
-from pireal.gui import start_page, database_container
+from pireal.gui import start_page
+from pireal.gui.database_container import DatabaseContainer
 from pireal.gui.dialogs import (
     preferences,
     new_relation_dialog,
@@ -55,29 +55,29 @@ logger = logging.getLogger(__name__)
 
 
 class CentralWidget(QWidget):
+    """HOLA QUE ONDA"""
     def __init__(self):
         QWidget.__init__(self)
         box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 0, 0)
         box.setSpacing(0)
 
-        self.stacked = QStackedWidget()
-        box.addWidget(self.stacked)
+        self.stack = QStackedWidget()
+        box.addWidget(self.stack)
 
         self.created = False
 
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
         # Acá cacheo la última carpeta accedida
         self._last_open_folder = qsettings.value("last_open_folder", type=str)
-        self._recent_dbs = qsettings.value("recent_databases", type=list)
-
-        Pireal.load_service("central", self)
+        self._recent_db_containers = qsettings.value("recent_databases", type=list)
 
         esc_short = QShortcut(QKeySequence(Qt.Key.Key_Escape), self)
         esc_short.activated.connect(self._hide_search)
 
     def _hide_search(self):
-        db_container = self.get_active_db()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
         if db_container is None:
             return
         query_container = db_container.query_container
@@ -85,32 +85,32 @@ class CentralWidget(QWidget):
             query_container.set_editor_focus()
 
     @property
-    def recent_databases(self) -> list:
-        return self._recent_dbs
+    def recent_databases(self) -> list[str]:
+        return self._recent_db_containers
 
     def remember_recent_database(self, path: str):
         # TODO: FEISIMO
-        if path.endswith("pireal/resources/samples/database.pdb"):
+        if path.endswith("pireal/resources/samples/database.pdb_container"):
             return
 
-        if path in self._recent_dbs:
-            self._recent_dbs.remove(path)
+        if path in self._recent_db_containers:
+            self._recent_db_containers.remove(path)
         logger.debug("adding %s to recent databases", path)
-        self._recent_dbs.insert(0, path)
+        self._recent_db_containers.insert(0, path)
 
-    def remove_db_from_recents(self, path: str):
-        if path in self._recent_dbs:
+    def remove_db_container_from_recents(self, path: str):
+        if path in self._recent_db_containers:
             logger.debug("removing %s from recent databases", path)
-            self._recent_dbs.remove(path)
+            self._recent_db_containers.remove(path)
 
     @property
     def last_open_folder(self):
         return self._last_open_folder
 
-    def rdb_to_pdb(self):
-        from src.gui import rdb_pdb_tool
+    def rdb_container_to_pdb_container(self):
+        from src.gui import rdb_container_pdb_container_tool
 
-        dialog = rdb_pdb_tool.RDBPDBTool(self)
+        dialog = rdb_container_pdb_container_tool.Rdb_containerPdb_containerTool(self)
         dialog.exec_()
 
     def create_database(self):
@@ -118,30 +118,30 @@ class CentralWidget(QWidget):
         only have one database open at time."""
 
         if self.created:
-            return self.__say_about_one_db_at_time()
-        db_filepath = DBInputDialog.ask_db_name(parent=self)
-        if not db_filepath:
+            return self.__say_about_one_db_container_at_time()
+        db_container_filepath = db_containerInputDialog.ask_db_container_name(parent=self)
+        if not db_container_filepath:
             logger.debug("database name not provided")
             return
 
-        pireal = Pireal.get_service("pireal")
-        db_container = database_container.DatabaseContainer()
-        pfile_object = pfile.File(db_filepath)
-        db_container.pfile = pfile_object
-        self.add_widget(db_container)
-        pireal.change_title(file_manager.get_basename(db_filepath))
-        self.created = True
-        logger.debug("database=%s has been created", db_filepath)
+        # # pireal = Pireal.get_service("pireal")
+        # db_container = database_container.DatabaseContainer()
+        # pfile_object = pfile.File(db_container_filepath)
+        # db_container.pfile = pfile_object
+        # self.add_widget(db_container)
+        # pireal.change_title(file_manager.get_basename(db_container_filepath))
+        # self.created = True
+        # logger.debug("database=%s has been created", db_container_filepath)
 
-    def __say_about_one_db_at_time(self):
+    def __say_about_one_db_container_at_time(self):
         logger.warning("Oops! One database at a time please")
-        QMessageBox.information(self, tr.TR_MSG_INFORMATION, tr.TR_MSG_ONE_DB_AT_TIME)
+        QMessageBox.information(self, tr.TR_MSG_INFORMATION, tr.TR_MSG_ONE_db_container_AT_TIME)
 
     def open_database(self, filename="", remember=True):
         """This function opens a database and set this on the UI"""
         logger.debug("Triying to open database...")
         if self.created:
-            return self.__say_about_one_db_at_time()
+            return self.__say_about_one_db_container_at_time()
 
         # If not filename provide, then open dialog to select
         if not filename:
@@ -150,7 +150,7 @@ class CentralWidget(QWidget):
                 directory = os.path.expanduser("~")
             else:
                 directory = self._last_open_folder
-            filter_ = settings.get_extension_filter(".pdb")
+            filter_ = settings.get_extension_filter(".pdb_container")
             filename, _ = QFileDialog.getOpenFileName(
                 self, tr.TR_OPEN_DATABASE, directory, filter_
             )
@@ -162,43 +162,47 @@ class CentralWidget(QWidget):
         # If filename provide
         try:
             logger.debug("Triying to open the database file %s", filename)
-            # Read pdb file
+            # Read pdb_container file
             pfile_object = pfile.File(filename)
-            db_data = pfile_object.read()
+            db_container_data = pfile_object.read()
             # Create a dict to manipulate data more easy
-            db_data = self.__sanitize_data(db_data)
+            db_container_data = self.__sanitize_data(db_container_data)
             logger.debug("Database loaded successful")
         except Exception as reason:
             logger.exception("The database file could not be opened: %s", filename)
             QMessageBox.information(self, tr.TR_MSG_DB_NOT_OPENED, str(reason))
             return
 
-        # Create a database container widget
-        db_container = database_container.DatabaseContainer()
+        db_container = DatabaseContainer()
+        pireal_instance = pireal.get_pireal_instance()
+        pireal_instance.db_container = db_container
+        # db_container = pireal_instance._db_container
+        db_container.create_database(db_container_data)
 
-        try:
-            db_container.create_database(db_data)
-        except Exception as reason:
-            logger.exception("Error creating the database")
-            QMessageBox.information(self, "Error", str(reason))
-            return
+        pireal_instance.status_bar.show_message(tr.TR_STATUS_DB_LOADED.format(filename))
 
-        pireal = Pireal.get_service("pireal")
-        pireal.status_bar.show_message(tr.TR_STATUS_DB_LOADED.format(filename))
-
-        # Set the PFile object to the new database
-        db_container.pfile = pfile_object
         # Add data base container to stacked
         self.add_widget(db_container)
-        # Database name
-        db_name = file_manager.get_basename(filename)
+
+        # try:
+        #     db_container.create_database(db_container_data)
+        # except Exception as reason:
+        #     logger.exception("Error creating the database")
+        #     QMessageBox.information(self, "Error", str(reason))
+        #     return
+
+        # Set the PFile object to the new database
+        # db_container.pfile = pfile_object
+        # # Database name
+        db_container_name = file_manager.get_basename(filename)
         # Update title with the new database name, and enable some actions
-        pireal.status_bar.show_message(tr.TR_STATUS_DB_CONNECTED.format(db_name))
+        pireal_instance.status_bar.show_message(tr.TR_STATUS_DB_CONNECTED.format(db_container_name))
         if remember:
             # Add to recent databases
             self.remember_recent_database(filename)
             # Remember the folder
             self._last_open_folder = file_manager.get_path(filename)
+
         self.created = True
 
     def open_query(self, filename="", remember=True):
@@ -221,19 +225,20 @@ class CentralWidget(QWidget):
         self.new_query(filename)
 
     def save_query(self, editor=None):
-        db = self.get_active_db()
-        if db is None:
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
             return
-        fname = db.save_query(editor)
+        fname = db_container.save_query(editor)
         if fname:
-            pireal = Pireal.get_service("pireal")
-            pireal.status_bar.show_message(tr.TR_STATUS_QUERY_SAVED.format(fname))
+            pireal_instance.status_bar.show_message(tr.TR_STATUS_QUERY_SAVED.format(fname))
 
     def save_query_as(self):
-        db = self.get_active_db()
-        if db is None:
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
             return
-        db.save_query_as()
+        db_container.save_query_as()
 
     def __sanitize_data(self, data):
         """
@@ -270,33 +275,39 @@ class CentralWidget(QWidget):
     def remove_last_widget(self):
         """Remove last widget from stacked"""
 
-        widget = self.stacked.widget(self.stacked.count() - 1)
-        self.stacked.removeWidget(widget)
+        widget = self.stack.widget(self.stack.count() - 1)
+        self.stack.removeWidget(widget)
 
     def close_query(self):
-        db = self.get_active_db()
-        if db is None:
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
             return
-        db.query_container.close_query()
 
-    def close_database(self):
+        db_container.query_container.close_query()
+
+    def close_database(self) -> None:
         """Close the database and return to the main widget"""
 
-        db = self.get_active_db()
-        query_container = db.query_container
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
 
-        if db.modified:
+        query_container = db_container.query_container
+
+        if db_container.modified:
             ret = QMessageBox.question(
                 self,
                 tr.TR_MSG_SAVE_CHANGES,
                 tr.TR_MSG_SAVE_CHANGES_BODY,
-                QMessageBox.StandardButton.Yes
-                | QMessageBox.StandardButton.No
-                | QMessageBox.StandardButton.Cancel,
+                QMessageBox.Standardb_containerutton.Yes
+                | QMessageBox.Standardb_containerutton.No
+                | QMessageBox.Standardb_containerutton.Cancel,
             )
-            if ret == QMessageBox.StandardButton.Cancel:
+            if ret == QMessageBox.Standardb_containerutton.Cancel:
                 return
-            if ret == QMessageBox.StandardButton.Yes:
+            if ret == QMessageBox.Standardb_containerutton.Yes:
                 self.save_database()
 
         # Check if editor is modified
@@ -310,97 +321,116 @@ class CentralWidget(QWidget):
                         self,
                         tr.TR_MSG_FILE_MODIFIED,
                         tr.TR_MSG_FILE_MODIFIED_BODY.format(weditor.name),
-                        QMessageBox.StandardButton.Yes
-                        | QMessageBox.StandardButton.No
-                        | QMessageBox.StandardButton.Cancel,
+                        QMessageBox.Standardb_containerutton.Yes
+                        | QMessageBox.Standardb_containerutton.No
+                        | QMessageBox.Standardb_containerutton.Cancel,
                     )
-                    if ret == QMessageBox.StandardButton.Cancel:
+                    if ret == QMessageBox.Standardb_containerutton.Cancel:
                         return
-                    if ret == QMessageBox.StandardButton.Yes:
+                    if ret == QMessageBox.Standardb_containerutton.Yes:
                         self.save_query(weditor)
 
-        self.stacked.removeWidget(db)
+        self.stack.removeWidget(db_container)
 
-        pireal = Pireal.get_service("pireal")
-        pireal.change_title()  # Título en la ventana principal 'Pireal'
+        pireal_instance.db_container = None
+        pireal_instance = pireal.get_pireal_instance()
+        pireal_instance.change_title()  # Título en la ventana principal 'Pireal'
         self.created = False
-        del db
 
     def new_query(self, filename=""):
-        db_container = self.get_active_db()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+
         db_container.new_query(filename)
         # Enable editor actions
         # FIXME: refactoring
 
     def execute_queries(self):
-        db_container = self.get_active_db()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+
         db_container.execute_queries()
 
     def execute_selection(self):
-        db_container = self.get_active_db()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+
         db_container.execute_selection()
 
     def save_database(self):
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
 
-        db = self.get_active_db()
-        if not db.modified:
+        if not db_container.modified:
             return
 
         # Get relations dict
-        relations = db.table_widget.relations
+        relations = db_container.table_widget.relations
         # Generate content
         content = file_manager.generate_database(relations)
-        db.pfile.save(data=content)
-        filename = db.pfile.filename
+        db_container.pfile.save(data=content)
+        filename = db_container.pfile.filename
 
-        pireal = Pireal.get_service("pireal")
-        pireal.status_bar.show_message(tr.TR_STATUS_DB_SAVED.format(filename))
+        pireal_instance = pireal.get_pireal_instance()
+        pireal_instance.status_bar.show_message(tr.TR_STATUS_db_container_SAVED.format(filename))
 
-        db.modified = False
+        db_container.modified = False
 
     def save_database_as(self):
-        db = self.get_active_db()
-        if db is None:
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
             return
-        filter_ = settings.get_extension_filter(".pdb")
+
+        filter_ = settings.get_extension_filter(".pdb_container")
         filename, _ = QFileDialog.getSaveFileName(
-            self, tr.TR_MSG_SAVE_DB_AS, db.pfile.filename, filter_
+            self, tr.TR_MSG_SAVE_db_container_AS, db_container.pfile.filename, filter_
         )
         if not filename:
             return
         # Get relations
-        relations = db.table_widget.relations
+        relations = db_container.table_widget.relations
         # Content
         content = file_manager.generate_database(relations)
         # Si no se provee la extensión, le agrego
         if not os.path.splitext(filename)[1]:
-            filename += ".pdb"
-        db.pfile.save(content, filename)
-        pireal = Pireal.get_service("pireal")
-        pireal.status_bar.show_message(tr.TR_STATUS_DB_SAVED.format(db.pfile.filename))
+            filename += ".pdb_container"
+        db_container.pfile.save(content, filename)
+        pireal_instance.status_bar.show_message(tr.TR_STATUS_db_container_SAVED.format(db_container.pfile.filename))
 
-        db.modified = False
+        db_container.modified = False
 
     def remove_relation(self):
-        db = self.get_active_db()
-        if db is None:
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
             return
-        if db.delete_relation():
-            db.modified = True
+
+        if db_container.delete_relation():
+            db_container.modified = True
 
     def create_relation(self):
-        def _create_relation(relation, relation_name):
-            db = self.get_active_db()
-            lateral = Pireal.get_service("lateral_widget")
-            table = db.create_table(relation, relation_name)
-            db.table_widget.add_table(relation, relation_name, table)
-            relation.name = relation_name
-            lateral.add_item(relation, rtype=RelationItemType.Normal)
-            db.modified = True
-
-        db = self.get_active_db()
-        if db is None:
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
             return
+
+        def _create_relation(relation, relation_name):
+            # lateral = Pireal.get_service("lateral_widget")
+            table = db_container.create_table(relation, relation_name)
+            db_container.table_widget.add_table(relation, relation_name, table)
+            relation.name = relation_name
+            db_container.lateral_widget.add_item(relation, rtype=RelationItemType.Normal)
+            db_container.modified = True
+
         dialog = new_relation_dialog.NewRelationDialog(self)
         dialog.created.connect(_create_relation)
         dialog.show()
@@ -408,6 +438,7 @@ class CentralWidget(QWidget):
     def load_relation(self, filename=""):
         """Load Relation file"""
 
+        filenames = []
         if not filename:
             if self._last_open_folder is None:
                 directory = os.path.expanduser("~")
@@ -424,7 +455,11 @@ class CentralWidget(QWidget):
 
         # Save folder
         self._last_open_folder = file_manager.get_path(filenames[0])
-        db_container = self.get_active_db()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+
         if db_container.load_relation(filenames):
             db_container.modified = True
 
@@ -443,108 +478,140 @@ class CentralWidget(QWidget):
     def widget(self, index):
         """Returns the widget at the given index"""
 
-        return self.stacked.widget(index)
+        return self.stack.widget(index)
 
     def add_widget(self, widget):
         """Appends and show the given widget to the Stacked"""
 
-        index = self.stacked.addWidget(widget)
-        self.stacked.setCurrentIndex(index)
+        index = self.stack.addWidget(widget)
+        self.stack.setCurrentIndex(index)
 
     def _settings_closed(self):
-        self.stacked.removeWidget(self.widget(1))
-        self.stacked.setCurrentWidget(self.stacked.currentWidget())
+        self.stack.removeWidget(self.widget(1))
+        self.stack.setCurrentWidget(self.stack.currentWidget())
 
-    def get_active_db(self):
-        """Return an instance of DatabaseContainer widget if the
-        stacked contains an DatabaseContainer in last index or None if it's
-        not an instance of DatabaseContainer"""
+    # def get_active_db_container(self) -> database_container.DatabaseContainer | None:
+    #     """Return an instance of DatabaseContainer widget if the
+    #     stacked contains an DatabaseContainer in last index or None if it's
+    #     not an instance of DatabaseContainer"""
 
-        index = self.stacked.count() - 1
-        widget = self.widget(index)
-        if isinstance(widget, database_container.DatabaseContainer):
-            return widget
-        return None
+    #     index = self.stack.count() - 1
+    #     widget = self.widget(index)
+    #     if isinstance(widget, database_container.DatabaseContainer):
+    #         return widget
+    #     return None
 
     def get_unsaved_queries(self):
-        query_container = self.get_active_db().query_container
-        return query_container.get_unsaved_queries()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+        return db_container.query_container.get_unsaved_queries()
 
     def undo_action(self):
-        query_container = self.get_active_db().query_container
-        query_container.undo()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+        db_container.query_container.undo()
 
     def redo_action(self):
-        query_container = self.get_active_db().query_container
-        query_container.redo()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+        db_container.query_container.redo()
 
     def cut_action(self):
-        query_container = self.get_active_db().query_container
-        query_container.cut()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+        db_container.query_container.cut()
 
     def copy_action(self):
-        query_container = self.get_active_db().query_container
-        query_container.copy()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+        db_container.query_container.copy()
 
     def paste_action(self):
-        query_container = self.get_active_db().query_container
-        query_container.paste()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+        db_container.query_container.paste()
 
     def zoom_in(self):
-        query_container = self.get_active_db().query_container
-        query_container.zoom_in()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+        db_container.query_container.zoom_in()
 
     def zoom_out(self):
-        query_container = self.get_active_db().query_container
-        query_container.zoom_out()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+        db_container.query_container.zoom_out()
 
     def comment(self):
-        query_container = self.get_active_db().query_container
-        query_container.comment()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+        db_container.query_container.comment()
 
     def uncomment(self):
-        query_container = self.get_active_db().query_container
-        query_container.uncomment()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+        db_container.query_container.uncomment()
 
     def add_tuple(self):
-        lateral = Pireal.get_service("lateral_widget")
-        if lateral.relation_list.has_item() == 0:
-            return
-        # rname = lateral.relation_list.item_text(lateral.relation_list.row())
-        rname = lateral.relation_list.current_text()
-        from src.gui.dialogs.edit_relation_dialog import EditRelationDialog
+        pass
+        # pireal_instance = pireal.get_pireal_instance()
+        # lateral = Pireal.get_service("lateral_widget")
+        # if lateral.relation_list.has_item() == 0:
+        #     return
+        # # rname = lateral.relation_list.item_text(lateral.relation_list.row())
+        # rname = lateral.relation_list.current_text()
+        # from src.gui.dialogs.edit_relation_dialog import EditRelationDialog
 
-        dialog = EditRelationDialog(rname, self)
-        tw = self.get_active_db().table_widget
-        dialog.sendData.connect(tw.insert_rows)
-        dialog.show()
+        # dialog = EditRelationDialog(rname, self)
+        # tw = self.get_active_db_container().table_widget
+        # dialog.sendData.connect(tw.insert_rows)
+        # dialog.show()
 
-    def add_column(self):
-        tw = self.get_active_db().table_widget
-        tw.add_column()
+    # def add_column(self):
+    #     tw = self.get_active_db_container().table_widget
+    #     tw.add_column()
 
-    def delete_tuple(self):
-        lateral = Pireal.get_service("lateral_widget")
-        if lateral.relation_list.has_item() == 0:
-            return
-        r = QMessageBox.question(
-            self,
-            tr.TR_MSG_REMOVE_TUPLES,
-            tr.TR_MSG_REMOVE_TUPLES_BODY,
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel,
-        )
-        if r == QMessageBox.StandardButton.Cancel:
-            return
-        tw = self.get_active_db().table_widget
-        tw.delete_tuple()
+    # def delete_tuple(self):
+    #     lateral = Pireal.get_service("lateral_widget")
+    #     if lateral.relation_list.has_item() == 0:
+    #         return
+    #     r = QMessageBox.question(
+    #         self,
+    #         tr.TR_MSG_REMOVE_TUPLES,
+    #         tr.TR_MSG_REMOVE_TUPLES_BODY,
+    #         QMessageBox.Standardb_containerutton.Yes | QMessageBox.Standardb_containerutton.Cancel,
+    #     )
+    #     if r == QMessageBox.Standardb_containerutton.Cancel:
+    #         return
+    #     tw = self.get_active_db_container().table_widget
+    #     tw.delete_tuple()
 
-    def delete_column(self):
-        tw = self.get_active_db().table_widget
-        tw.delete_column()
+    # def delete_column(self):
+    #     tw = self.get_active_db_container().table_widget
+    #     tw.delete_column()
 
     def search(self):
-        query_container = self.get_active_db().query_container
-        query_container.search()
-
-
-central = CentralWidget()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+        db_container.query_container.search()

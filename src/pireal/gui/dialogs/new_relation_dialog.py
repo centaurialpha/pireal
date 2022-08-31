@@ -33,7 +33,7 @@ from PyQt6.QtCore import pyqtSignal as Signal
 
 from pireal.core import relation
 from pireal.gui.model_view_delegate import View, Header
-from pireal.gui.main_window import Pireal
+# from pireal.gui.main_window import Pireal
 from pireal import translations as tr
 
 

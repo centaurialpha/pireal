@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2022 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -28,18 +28,18 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtCore import QSettings
 from PyQt6.QtCore import pyqtSlot as Slot
 
-from pireal.gui import (
-    table_widget,
-    lateral_widget,
-)
+from pireal.gui.lateral_widget import LateralWidget
+from pireal.gui.table_widget import TableWidget
 from pireal.gui.model_view_delegate import create_view
 from pireal.gui.lateral_widget import RelationItemType
 
-from pireal.gui.query_container import query_container
+from pireal.gui.query_container.query_container import (
+    QueryContainer,
+    QueryWidget,
+)
 from pireal.core import relation, pfile, file_manager
 from pireal.dirs import DATA_SETTINGS
 from pireal import translations as tr
-from pireal.gui.main_window import Pireal
 from pireal import settings
 
 logger = logging.getLogger(__name__)
@@ -50,9 +50,9 @@ class DatabaseContainer(QSplitter):
         QSplitter.__init__(self, orientation)
         self.pfile = None
 
-        self.lateral_widget = lateral_widget.LateralWidget()
-        self.table_widget = table_widget.TableWidget()
-        self.query_container = query_container.QueryContainer(self)
+        self.lateral_widget = LateralWidget()
+        self.table_widget = TableWidget()
+        self.query_container = QueryContainer(self)
 
         self._vsplitter = QSplitter(Qt.Orientation.Vertical)
         self._vsplitter.addWidget(self.table_widget)
@@ -67,6 +67,7 @@ class DatabaseContainer(QSplitter):
         # Connections
         # FIXME
         self.lateral_widget.relationClicked.connect(self._on_relation_clicked)
+        self.lateral_widget.resultClicked.connect(self.table_widget._on_result_list_clicked)
 
         # lambda i: self.table_widget.stacked.setCurrentIndex(i))
         # For change table widget item when up/down
@@ -157,9 +158,9 @@ class DatabaseContainer(QSplitter):
             self,
             tr.TR_MSG_CONFIRMATION,
             tr.TR_MSG_REMOVE_RELATION.format(name),
-            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         )
-        if ret == QMessageBox.Yes:
+        if ret == QMessageBox.StandardButton.Yes:
             self.lateral_widget.remove_relation(index)
             self.table_widget.remove_table(index)
             self.table_widget.remove_relation(name)
@@ -171,7 +172,7 @@ class DatabaseContainer(QSplitter):
         if editor_tab_at != -1:
             self.query_container.set_focus_editor_tab(editor_tab_at)
         else:
-            query_widget = query_container.QueryWidget()
+            query_widget = QueryWidget()
             # Create object file
             ffile = pfile.File(filename)
             editor = query_widget.get_editor()

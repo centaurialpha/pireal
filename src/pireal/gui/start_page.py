@@ -36,7 +36,6 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import (
     QPixmap,
-    QIcon,
 )
 from PyQt6.QtCore import (
     QAbstractListModel,
@@ -48,11 +47,12 @@ from PyQt6.QtCore import (
     pyqtSlot as Slot,
 )
 
+import pireal
+
 from pireal.dirs import (
     DATA_SETTINGS,
     EXAMPLES_DIR,
 )
-from pireal.gui.main_window import Pireal
 from pireal import translations as tr
 
 logger = logging.getLogger(__name__)
@@ -236,20 +236,20 @@ class StartPage(QWidget):
         btn_example.clicked.connect(self._open_example)
 
     def _new_database(self):
-        central_widget = Pireal.get_service("central")
-        central_widget.create_database()
+        pireal_instance = pireal.get_pireal_instance()
+        pireal_instance.central_widget.create_database()
 
-    def _open_database(self, path=None):
-        central_widget = Pireal.get_service("central")
-        central_widget.open_database(path)
+    def _open_database(self, path: str):
+        pireal_instance = pireal.get_pireal_instance()
+        pireal_instance.central_widget.open_database(path)
 
     def _open_example(self):
-        central_widget = Pireal.get_service("central")
+        pireal_instance = pireal.get_pireal_instance()
         logger.info("DATABASE: %s", str(EXAMPLES_DIR / "database.pdb"))
-        central_widget.open_database(str(EXAMPLES_DIR / "database.pdb"))
-        central_widget.open_query(str(EXAMPLES_DIR / "queries.pqf"))
+        pireal_instance.central_widget.open_database(str(EXAMPLES_DIR / "database.pdb"))
+        pireal_instance.central_widget.open_query(str(EXAMPLES_DIR / "queries.pqf"))
 
-        QTimer.singleShot(1300, central_widget.execute_queries)
+        QTimer.singleShot(1300, pireal_instance.central_widget.execute_queries)
 
     @Slot(QModelIndex)
     def _on_listview_item_double_clicked(self, index):

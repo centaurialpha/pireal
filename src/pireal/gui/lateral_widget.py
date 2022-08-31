@@ -34,7 +34,7 @@ from PyQt6.QtCore import Qt, QRect, QModelIndex
 from PyQt6.QtCore import QAbstractListModel
 from PyQt6.QtCore import pyqtSignal as Signal
 
-from pireal.gui.main_window import Pireal
+import pireal
 from pireal import translations as tr
 
 
@@ -218,8 +218,6 @@ class LateralWidget(QSplitter):
         self._results_list.view.clicked.connect(
             lambda i: self.resultClicked.emit(i.row())
         )
-
-        Pireal.load_service("lateral_widget", self)
 
     def current_index(self):
         index = self._relations_list.view.currentIndex()

@@ -37,7 +37,7 @@ class TabWidget(QTabWidget):
         editor = self.currentWidget().get_editor()
         if editor.modified:
             msgbox = QMessageBox(self)
-            msgbox.setIcon(QMessageBox.Question)
+            msgbox.setIcon(QMessageBox.Icon.Question)
             msgbox.setWindowTitle(self.tr("Archivo modificado"))
             msgbox.setText(
                 self.tr(
@@ -45,9 +45,9 @@ class TabWidget(QTabWidget):
                     "guardar. Quiere mantenerlos?".format(editor.name)
                 )
             )
-            cancel_btn = msgbox.addButton(self.tr("Cancelar"), QMessageBox.RejectRole)
-            msgbox.addButton(self.tr("No"), QMessageBox.NoRole)
-            yes_btn = msgbox.addButton(self.tr("Si"), QMessageBox.YesRole)
+            cancel_btn = msgbox.addButton(self.tr("Cancelar"), QMessageBox.ButtonRole.RejectRole)
+            msgbox.addButton(self.tr("No"), QMessageBox.ButtonRole.NoRole)
+            yes_btn = msgbox.addButton(self.tr("Si"), QMessageBox.ButtonRole.YesRole)
             msgbox.exec_()
             r = msgbox.clickedButton()
             if r == cancel_btn:

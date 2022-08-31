@@ -32,7 +32,7 @@ from PyQt6.QtGui import QFontDatabase
 from PyQt6.QtCore import Qt
 
 from pireal.settings import SETTINGS
-from pireal.gui.main_window import Pireal
+# from pireal.gui.main_window import Pireal
 from pireal import translations as tr
 
 

@@ -26,7 +26,6 @@ from PyQt6.QtWidgets import QMenu
 from PyQt6.QtCore import Qt
 from pireal.gui.model_view_delegate import create_view
 
-from pireal.gui.main_window import Pireal
 from pireal import translations as tr
 
 
@@ -61,11 +60,14 @@ class TableWidget(QSplitter):
         btn_split.clicked.connect(self._unsplit)
         self._other_tab.setCornerWidget(btn_split)
 
-        lateral_widget = Pireal.get_service("lateral_widget")
-        lateral_widget.resultClicked.connect(self._on_result_list_clicked)
-        lateral_widget.resultSelectionChanged.connect(
-            lambda index: self.stacked_result.setCurrentIndex(index)
-        )
+        # pireal_instance = pireal.get_pireal_instance()
+        # db_container = pireal_instance.central_widget.get_active_db()
+        # assert db_container is not None
+        # lateral_widget = db_container.lateral_widget
+        # lateral_widget.resultClicked.connect(self._on_result_list_clicked)
+        # lateral_widget.resultSelectionChanged.connect(
+        #     lambda index: self.stacked_result.setCurrentIndex(index)
+        # )
 
     def insert_rows(self, tuplas):
         current_view = self.current_table()

@@ -32,6 +32,8 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtCore import QSettings
 
 from PyQt6.QtCore import pyqtSignal as Signal
+
+import pireal
 from pireal.interpreter import parser
 from pireal.interpreter.exceptions import (
     InvalidSyntaxError,
@@ -39,7 +41,7 @@ from pireal.interpreter.exceptions import (
     DuplicateRelationNameError,
     ConsumeError,
 )
-from pireal.gui.main_window import Pireal
+# from pireal.gui.main_window import Pireal
 from pireal.gui.query_container import editor
 from pireal.gui.query_container import tab_widget
 from pireal.gui.lateral_widget import RelationItemType
@@ -75,8 +77,8 @@ class QueryContainer(QWidget):
         if self.currentWidget() is not None:
             self._tabs.remove_tab(self.current_index())
             self.__hide()
-            pireal = Pireal.get_service("pireal")
-            pireal.status_bar._line_col_label.hide()
+            # pireal = Pireal.get_service("pireal")
+            # pireal.status_bar._line_col_label.hide()
 
     def set_focus_editor_tab(self, index):
         self._tabs.setCurrentIndex(index)
@@ -155,8 +157,12 @@ class QueryContainer(QWidget):
         else:
             query = editor_widget.toPlainText()
         relations = self.currentWidget().relations
-        central = Pireal.get_service("central")
-        table_widget = central.get_active_db().table_widget
+
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+        table_widget = db_container.table_widget
 
         # Restore
         relations.clear()
@@ -345,10 +351,14 @@ class QueryWidget(QWidget):
         super().showEvent(event)
 
     def clear_results(self):
-        central_widget = Pireal.get_service("central")
-        lateral_widget = Pireal.get_service("lateral_widget")
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+
+        lateral_widget = db_container.lateral_widget
         lateral_widget.clear_results()
-        table_widget = central_widget.get_active_db().table_widget
+        table_widget = db_container.table_widget
         i = table_widget.stacked_result.count()
         while i >= 0:
             widget = table_widget.stacked_result.widget(i)
@@ -359,11 +369,14 @@ class QueryWidget(QWidget):
             i -= 1
 
     def add_table(self, rela, rname):
-        central_widget = Pireal.get_service("central")
-        lateral_widget = Pireal.get_service("lateral_widget")
-        db = central_widget.get_active_db()
-        _view = db.create_table(rela, rname, editable=False)
-        table_widget = central_widget.get_active_db().table_widget
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
+        if db_container is None:
+            return
+
+        lateral_widget = db_container.lateral_widget
+        table_widget = db_container.table_widget
+        _view = db_container.create_table(rela, rname, editable=False)
         index = table_widget.stacked_result.addWidget(_view)
         table_widget.stacked_result.setCurrentIndex(index)
         rela.name = rname
@@ -406,8 +419,8 @@ class EditorWidget(QWidget):
     def _on_cursor_position_changed(self):
         line = self._editor.textCursor().blockNumber() + 1
         col = self._editor.textCursor().columnNumber() + 1
-        pireal = Pireal.get_service("pireal")
-        pireal.status_bar.update_line_and_col(line, col)
+        # pireal = Pireal.get_service("pireal")
+        # pireal.status_bar.update_line_and_col(line, col)
 
     def show_editor_notification(self, message):
         self._noti.show_message(message)
