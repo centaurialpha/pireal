@@ -37,11 +37,11 @@ from pireal.gui.query_container.query_container import (
     QueryContainer,
     QueryWidget,
 )
+import pireal
 from pireal.core import relation, pfile, file_manager
 from pireal.dirs import DATA_SETTINGS
 from pireal import translations as tr
 from pireal import settings
-
 logger = logging.getLogger(__name__)
 
 
@@ -67,7 +67,9 @@ class DatabaseContainer(QSplitter):
         # Connections
         # FIXME
         self.lateral_widget.relationClicked.connect(self._on_relation_clicked)
-        self.lateral_widget.resultClicked.connect(self.table_widget._on_result_list_clicked)
+        self.lateral_widget.resultClicked.connect(
+            self.table_widget._on_result_list_clicked
+        )
 
         # lambda i: self.table_widget.stacked.setCurrentIndex(i))
         # For change table widget item when up/down
@@ -221,8 +223,8 @@ class DatabaseContainer(QSplitter):
         # Write the file
         editor.pfile.save(data=content, path=filename)
         editor.saved()
-        pireal = Pireal.get_service("pireal")
-        pireal.status_bar.show_message(tr.TR_STATUS_QUERY_SAVED.format(filename))
+        pireal_instance = pireal.get_pireal_instance()
+        pireal_instance.status_bar.show_message(tr.TR_STATUS_QUERY_SAVED.format(filename))
 
     def execute_queries(self):
         self.query_container.execute_queries()

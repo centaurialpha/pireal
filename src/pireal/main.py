@@ -25,8 +25,7 @@ import platform
 import sys
 from pathlib import Path
 
-from PyQt6.QtCore import (QT_VERSION_STR, QDir, QLibraryInfo, QLocale,
-                          QTranslator)
+from PyQt6.QtCore import QT_VERSION_STR, QDir, QLibraryInfo, QLocale, QTranslator
 from PyQt6.QtGui import QFont, QFontDatabase, QIcon
 from PyQt6.QtWidgets import QApplication
 

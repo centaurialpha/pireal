@@ -45,7 +45,9 @@ class TabWidget(QTabWidget):
                     "guardar. Quiere mantenerlos?".format(editor.name)
                 )
             )
-            cancel_btn = msgbox.addButton(self.tr("Cancelar"), QMessageBox.ButtonRole.RejectRole)
+            cancel_btn = msgbox.addButton(
+                self.tr("Cancelar"), QMessageBox.ButtonRole.RejectRole
+            )
             msgbox.addButton(self.tr("No"), QMessageBox.ButtonRole.NoRole)
             yes_btn = msgbox.addButton(self.tr("Si"), QMessageBox.ButtonRole.YesRole)
             msgbox.exec_()

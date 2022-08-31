@@ -34,7 +34,6 @@ from PyQt6.QtCore import Qt, QRect, QModelIndex
 from PyQt6.QtCore import QAbstractListModel
 from PyQt6.QtCore import pyqtSignal as Signal
 
-import pireal
 from pireal import translations as tr
 
 

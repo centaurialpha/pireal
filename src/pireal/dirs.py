@@ -32,6 +32,7 @@ _ROOT_DIR = Path(__file__).resolve().parent.parent
 _HOME_DIR = Path.home()
 
 EXAMPLES_DIR = _ROOT_DIR / "pireal" / "resources" / "samples"
+EXAMPLE_DB_FILENAME = EXAMPLES_DIR / "database.pdb"
 
 
 def _data_dir() -> Path:

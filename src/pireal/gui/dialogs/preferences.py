@@ -31,8 +31,8 @@ from PyQt6.QtGui import QFontDatabase
 
 from PyQt6.QtCore import Qt
 
+import pireal
 from pireal.settings import SETTINGS
-# from pireal.gui.main_window import Pireal
 from pireal import translations as tr
 
 
@@ -110,8 +110,8 @@ class SettingsDialog(QDialog):
         SETTINGS.font_family = self._combo_font_family.currentText()
         SETTINGS.font_size = int(self._combo_font_size.currentText())
 
-        central = Pireal.get_service("central")
-        db_container = central.get_active_db()
+        pireal_instance = pireal.get_pireal_instance()
+        db_container = pireal_instance.db_container
         if db_container is not None:
             if db_container.query_container.currentWidget() is not None:
                 editor = db_container.query_container.currentWidget().get_editor()

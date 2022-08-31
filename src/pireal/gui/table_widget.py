@@ -113,8 +113,9 @@ class TableWidget(QSplitter):
         menu.exec_(self.mapToGlobal(position))
 
     def __new_relation(self):
-        central_service = Pireal.get_service("central")
-        central_service.create_new_relation()
+        pass
+        # central_service = Pireal.get_service("central")
+        # central_service.create_new_relation()
 
     def count(self):
         return self.stacked.count()

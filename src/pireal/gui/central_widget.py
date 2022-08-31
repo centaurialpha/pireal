@@ -20,6 +20,7 @@
 import os
 import csv
 import logging
+from pathlib import Path
 from collections import defaultdict
 
 from PyQt6.QtWidgets import QWidget
@@ -34,6 +35,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtCore import QSettings
 
 import pireal
+from pireal.dirs import EXAMPLE_DB_FILENAME
 from pireal import settings
 from pireal.core import (
     file_manager,
@@ -56,6 +58,7 @@ logger = logging.getLogger(__name__)
 
 class CentralWidget(QWidget):
     """HOLA QUE ONDA"""
+
     def __init__(self):
         QWidget.__init__(self)
         box = QVBoxLayout(self)
@@ -88,9 +91,8 @@ class CentralWidget(QWidget):
     def recent_databases(self) -> list[str]:
         return self._recent_db_containers
 
-    def remember_recent_database(self, path: str):
-        # TODO: FEISIMO
-        if path.endswith("pireal/resources/samples/database.pdb_container"):
+    def remember_recent_database(self, path: str | Path):
+        if path == str(EXAMPLE_DB_FILENAME):
             return
 
         if path in self._recent_db_containers:
@@ -119,7 +121,9 @@ class CentralWidget(QWidget):
 
         if self.created:
             return self.__say_about_one_db_container_at_time()
-        db_container_filepath = db_containerInputDialog.ask_db_container_name(parent=self)
+        db_container_filepath = DBInputDialog.ask_db_name(
+            parent=self
+        )
         if not db_container_filepath:
             logger.debug("database name not provided")
             return
@@ -135,7 +139,9 @@ class CentralWidget(QWidget):
 
     def __say_about_one_db_container_at_time(self):
         logger.warning("Oops! One database at a time please")
-        QMessageBox.information(self, tr.TR_MSG_INFORMATION, tr.TR_MSG_ONE_db_container_AT_TIME)
+        QMessageBox.information(
+            self, tr.TR_MSG_INFORMATION, tr.TR_MSG_ONE_db_container_AT_TIME
+        )
 
     def open_database(self, filename="", remember=True):
         """This function opens a database and set this on the UI"""
@@ -176,7 +182,6 @@ class CentralWidget(QWidget):
         db_container = DatabaseContainer()
         pireal_instance = pireal.get_pireal_instance()
         pireal_instance.db_container = db_container
-        # db_container = pireal_instance._db_container
         db_container.create_database(db_container_data)
 
         pireal_instance.status_bar.show_message(tr.TR_STATUS_DB_LOADED.format(filename))
@@ -196,7 +201,9 @@ class CentralWidget(QWidget):
         # # Database name
         db_container_name = file_manager.get_basename(filename)
         # Update title with the new database name, and enable some actions
-        pireal_instance.status_bar.show_message(tr.TR_STATUS_DB_CONNECTED.format(db_container_name))
+        pireal_instance.status_bar.show_message(
+            tr.TR_STATUS_DB_CONNECTED.format(db_container_name)
+        )
         if remember:
             # Add to recent databases
             self.remember_recent_database(filename)
@@ -231,7 +238,9 @@ class CentralWidget(QWidget):
             return
         fname = db_container.save_query(editor)
         if fname:
-            pireal_instance.status_bar.show_message(tr.TR_STATUS_QUERY_SAVED.format(fname))
+            pireal_instance.status_bar.show_message(
+                tr.TR_STATUS_QUERY_SAVED.format(fname)
+            )
 
     def save_query_as(self):
         pireal_instance = pireal.get_pireal_instance()
@@ -380,7 +389,9 @@ class CentralWidget(QWidget):
         filename = db_container.pfile.filename
 
         pireal_instance = pireal.get_pireal_instance()
-        pireal_instance.status_bar.show_message(tr.TR_STATUS_db_container_SAVED.format(filename))
+        pireal_instance.status_bar.show_message(
+            tr.TR_STATUS_db_container_SAVED.format(filename)
+        )
 
         db_container.modified = False
 
@@ -404,7 +415,9 @@ class CentralWidget(QWidget):
         if not os.path.splitext(filename)[1]:
             filename += ".pdb_container"
         db_container.pfile.save(content, filename)
-        pireal_instance.status_bar.show_message(tr.TR_STATUS_db_container_SAVED.format(db_container.pfile.filename))
+        pireal_instance.status_bar.show_message(
+            tr.TR_STATUS_db_container_SAVED.format(db_container.pfile.filename)
+        )
 
         db_container.modified = False
 
@@ -428,7 +441,9 @@ class CentralWidget(QWidget):
             table = db_container.create_table(relation, relation_name)
             db_container.table_widget.add_table(relation, relation_name, table)
             relation.name = relation_name
-            db_container.lateral_widget.add_item(relation, rtype=RelationItemType.Normal)
+            db_container.lateral_widget.add_item(
+                relation, rtype=RelationItemType.Normal
+            )
             db_container.modified = True
 
         dialog = new_relation_dialog.NewRelationDialog(self)
@@ -598,7 +613,8 @@ class CentralWidget(QWidget):
     #         self,
     #         tr.TR_MSG_REMOVE_TUPLES,
     #         tr.TR_MSG_REMOVE_TUPLES_BODY,
-    #         QMessageBox.Standardb_containerutton.Yes | QMessageBox.Standardb_containerutton.Cancel,
+    #         QMessageBox.Standardb_containerutton.Yes |
+    #         QMessageBox.Standardb_containerutton.Cancel,
     #     )
     #     if r == QMessageBox.Standardb_containerutton.Cancel:
     #         return

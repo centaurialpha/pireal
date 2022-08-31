@@ -31,9 +31,10 @@ from PyQt6.QtGui import QStandardItemModel
 from PyQt6.QtCore import Qt
 from PyQt6.QtCore import pyqtSignal as Signal
 
+import pireal
 from pireal.core import relation
 from pireal.gui.model_view_delegate import View, Header
-# from pireal.gui.main_window import Pireal
+
 from pireal import translations as tr
 
 
@@ -134,8 +135,8 @@ class NewRelationDialog(QDialog):
                 self, "Error", tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME
             )
             return
-        central = Pireal.get_service("central")
-        if relation_name in central.get_active_db().table_widget.relations:
+        pireal_instance = pireal.get_pireal_instance()
+        if relation_name in pireal_instance.central_widget.get_active_db().table_widget.relations:
             QMessageBox.information(
                 self, "Error", tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name)
             )

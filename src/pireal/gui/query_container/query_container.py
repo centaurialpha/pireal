@@ -41,6 +41,7 @@ from pireal.interpreter.exceptions import (
     DuplicateRelationNameError,
     ConsumeError,
 )
+
 # from pireal.gui.main_window import Pireal
 from pireal.gui.query_container import editor
 from pireal.gui.query_container import tab_widget
@@ -315,8 +316,10 @@ class QueryWidget(QWidget):
         box.addWidget(self._editor_splitter)
 
     def show_relation(self, item):
-        central_widget = Pireal.get_service("central")
-        table_widget = central_widget.get_active_db().table_widget
+        pireal_instance = pireal.get_pireal_instance()
+        if pireal_instance.db_container is None:
+            return
+        table_widget = pireal_instance.db_container.table_widget
         rela = self.relations[item.name]
         dialog = QDialog(self)
         dialog.resize(700, 500)
@@ -419,8 +422,8 @@ class EditorWidget(QWidget):
     def _on_cursor_position_changed(self):
         line = self._editor.textCursor().blockNumber() + 1
         col = self._editor.textCursor().columnNumber() + 1
-        # pireal = Pireal.get_service("pireal")
-        # pireal.status_bar.update_line_and_col(line, col)
+        pireal_instance = pireal.get_pireal_instance()
+        pireal_instance.status_bar.update_line_and_col(line, col)
 
     def show_editor_notification(self, message):
         self._noti.show_message(message)
