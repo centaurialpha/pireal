@@ -53,12 +53,8 @@ pytest==7.1.2
 pytest-cov==3.0.0
     # via -r requirements-dev.in
 tomli==2.0.1
-    # via
-    #   black
-    #   build
-    #   coverage
-    #   pytest
-wheel==0.37.1
+    # via pytest
+wheel==0.38.1
     # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
