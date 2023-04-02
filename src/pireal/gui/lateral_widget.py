@@ -46,7 +46,6 @@ class RelationItemType(enum.Enum):
 
 
 class RelationModel(QAbstractListModel):
-
     NameRole = Qt.ItemDataRole.UserRole + 1
     CardinalityRole = NameRole + 1
     DegreeRole = CardinalityRole + 1

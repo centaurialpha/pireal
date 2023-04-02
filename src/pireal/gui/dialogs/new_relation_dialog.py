@@ -39,7 +39,6 @@ from pireal import translations as tr
 
 
 class NewRelationDialog(QDialog):
-
     created = Signal(object, str)
 
     def __init__(self, parent=None):
@@ -136,7 +135,10 @@ class NewRelationDialog(QDialog):
             )
             return
         pireal_instance = pireal.get_pireal_instance()
-        if relation_name in pireal_instance.central_widget.get_active_db().table_widget.relations:
+        if (
+            relation_name
+            in pireal_instance.central_widget.get_active_db().table_widget.relations
+        ):
             QMessageBox.information(
                 self, "Error", tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name)
             )

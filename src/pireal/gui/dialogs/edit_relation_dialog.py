@@ -35,7 +35,6 @@ from pireal.settings import CONFIG
 
 
 class EditRelationDialog(QDialog):
-
     sendData = pyqtSignal(list)
 
     def __init__(self, rname, parent=None):

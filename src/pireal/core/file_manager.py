@@ -41,7 +41,6 @@ def get_basename(filename):
 
 
 def get_path(filename):
-
     return os.path.dirname(filename)
 
 
