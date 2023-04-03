@@ -107,7 +107,6 @@ def test_invalid_field_in_projection(relation_fixture):
 
 
 def test_selection(relation_fixture):
-
     r1, _, _ = relation_fixture
     expected = {("23", "Rodrigo", "Belén")}
     assert r1.select("id==23").content == expected
@@ -197,7 +196,6 @@ def test_product_duplicate_field_error(relation_fixture):
 
 
 def test_njoin(relation_fixture):
-
     r1, r2, _ = relation_fixture
     expected = {
         ("1", "Gabriel", "Belén", "Python"),

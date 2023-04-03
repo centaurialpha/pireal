@@ -121,9 +121,7 @@ class CentralWidget(QWidget):
 
         if self.created:
             return self.__say_about_one_db_container_at_time()
-        db_container_filepath = DBInputDialog.ask_db_name(
-            parent=self
-        )
+        db_container_filepath = DBInputDialog.ask_db_name(parent=self)
         if not db_container_filepath:
             logger.debug("database name not provided")
             return

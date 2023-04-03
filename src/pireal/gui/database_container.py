@@ -42,6 +42,7 @@ from pireal.core import relation, pfile, file_manager
 from pireal.dirs import DATA_SETTINGS
 from pireal import translations as tr
 from pireal import settings
+
 logger = logging.getLogger(__name__)
 
 
@@ -224,7 +225,9 @@ class DatabaseContainer(QSplitter):
         editor.pfile.save(data=content, path=filename)
         editor.saved()
         pireal_instance = pireal.get_pireal_instance()
-        pireal_instance.status_bar.show_message(tr.TR_STATUS_QUERY_SAVED.format(filename))
+        pireal_instance.status_bar.show_message(
+            tr.TR_STATUS_QUERY_SAVED.format(filename)
+        )
 
     def execute_queries(self):
         self.query_container.execute_queries()

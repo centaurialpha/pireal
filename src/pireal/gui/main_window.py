@@ -326,7 +326,6 @@ class Pireal(QMainWindow):
             self.menuBar().show()
 
     def closeEvent(self, event):
-
         # Qt settings
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
 

@@ -394,7 +394,6 @@ class QueryWidget(QWidget):
 
 
 class EditorWidget(QWidget):
-
     editorModified = Signal(bool)
 
     def __init__(self, parent=None):
