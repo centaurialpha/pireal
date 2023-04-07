@@ -1,5 +1,35 @@
+[project]
+name = "pireal"
+dynamic = ["version"]
+description = "Relational Algebra Interpreter"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "COPYING"}
+authors = [
+    {name = "Gabriel Acosta", email = "acostadariogabriel@gmail.com"}
+]
+maintainers = [
+    {name = "Gabriel Acosta", email = "acostadariogabriel@gmail.com"}
+]
+classifiers = [
+    "Environment :: X11 Applications",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Education",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "PyQt6"
+]
+
+[project.scripts]
+pireal = "pireal.main:run"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [build-system]
-requires = ["setuptools", "setuptools_scm[toml]>=6.2"]
+requires = ["setuptools", "setuptools_scm[toml]>=6.2", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
