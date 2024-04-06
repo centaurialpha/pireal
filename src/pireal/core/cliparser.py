@@ -23,7 +23,14 @@ import argparse
 def get_cli():
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--database", help="Database file")
-    parser.add_argument("-v", "--verbose", action="store_true", help="Verbose")
+    parser.add_argument(
+        "-l",
+        "--log-level",
+        default="INFO",
+        type=str.upper,
+        choices=("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"),
+        help="Set logger level",
+    )
     parser.add_argument("--version", action="store_true", help="Version")
     parser.add_argument(
         "--no-check-updates", action="store_true", help="Disable check for updates"

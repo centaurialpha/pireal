@@ -25,17 +25,21 @@ import platform
 import sys
 from pathlib import Path
 
-from PyQt6.QtCore import QT_VERSION_STR, QDir, QLibraryInfo, QLocale, QTranslator
-from PyQt6.QtGui import QFont, QFontDatabase, QIcon
-from PyQt6.QtWidgets import QApplication
-
 from pireal import __version__
 from pireal.core import cliparser
-from pireal.core import logger as _logger
 from pireal.dirs import create_app_dirs
 from pireal.gui.main_window import Pireal
 from pireal.gui.theme import apply_theme
 from pireal.settings import SETTINGS
+
+from PyQt6.QtCore import QDir, QLibraryInfo, QLocale, QT_VERSION_STR, QTranslator
+from PyQt6.QtGui import QFont, QFontDatabase, QIcon
+from PyQt6.QtWidgets import QApplication
+
+try:
+    from rich.logging import RichHandler as logger_handler
+except ImportError:
+    from logging import StreamHandler as logger_handler
 
 logger = logging.getLogger("main")
 
@@ -47,6 +51,14 @@ LANGUAGES_DIR = RESOURCES_DIR / "lang"
 
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
+
+
+def setup_logger(level: int):
+    FORMAT = "[%(asctime)s] [%(levelname)-6s]: %(name)s:%(funcName)-5s %(message)s"
+    TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+    logging.basicConfig(
+        level=level, format=FORMAT, datefmt=TIME_FORMAT, handlers=[logger_handler()]
+    )
 
 
 def run():
@@ -62,8 +74,7 @@ def run():
     # Creo los dirs antes de leer logs. see #84
     create_app_dirs()
 
-    # Set up logger
-    _logger.set_up(verbose=args.verbose)
+    setup_logger(level=args.log_level)
 
     start_pireal(args)
 

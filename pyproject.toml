@@ -24,6 +24,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest", "pytest-cov"]
+extras = ["rich"]
 
 [project.scripts]
 pireal = "pireal.main:run"
