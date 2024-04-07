@@ -17,14 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtGui import (
-    QSyntaxHighlighter,
-    QTextCharFormat,
-    QFont,
-    QTextBlockUserData,
-    QColor,
-)
 from PyQt6.QtCore import QRegularExpression
+from PyQt6.QtGui import (
+    QColor,
+    QFont,
+    QSyntaxHighlighter,
+    QTextBlockUserData,
+    QTextCharFormat,
+)
 
 from pireal.gui.theme import get_editor_color
 
@@ -105,7 +105,6 @@ class Highlighter(QSyntaxHighlighter):
 
     def highlightBlock(self, text):
         """Reimplementation"""
-
         block_data = TextBlockData()
         # Paren
         # index = self.paren.indexIn(text, 0)

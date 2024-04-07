@@ -19,18 +19,19 @@
 
 import os
 
-from PyQt6.QtWidgets import QDialog
-from PyQt6.QtWidgets import QDialogButtonBox
-from PyQt6.QtWidgets import QFormLayout
-from PyQt6.QtWidgets import QLineEdit
-from PyQt6.QtWidgets import QStyle
-from PyQt6.QtWidgets import QFileDialog
-
-from PyQt6.QtCore import pyqtSlot as Slot
 from PyQt6.QtCore import Qt
+from PyQt6.QtCore import pyqtSlot as Slot
+from PyQt6.QtWidgets import (
+    QDialog,
+    QDialogButtonBox,
+    QFileDialog,
+    QFormLayout,
+    QLineEdit,
+    QStyle,
+)
 
-from pireal import translations as tr
 from pireal import dirs
+from pireal import translations as tr
 
 PIREAL_DB_EXTENSION = ".pdb"
 

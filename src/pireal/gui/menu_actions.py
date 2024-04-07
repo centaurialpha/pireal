@@ -17,8 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-"""
-This module contains an ordered dictionary, in turn this has a dictionary
+"""This module contains an ordered dictionary, in turn this has a dictionary
 with the name and a list of items with properties as an icon , shortcut,
 slot for each item in a menu.
 

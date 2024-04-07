@@ -20,21 +20,14 @@
 # This module is responsible for organizing called "tokens" pieces,
 # each of these tokens has a meaning in language
 
-from pireal.interpreter.tokens import (
-    Token,
-    TokenTypes,
-    RESERVED_KEYWORDS,
-)
+from pireal.interpreter.exceptions import InvalidSyntaxError, MissingQuoteError
 from pireal.interpreter.scanner import Scanner
-from pireal.interpreter.exceptions import MissingQuoteError, InvalidSyntaxError
-from pireal.interpreter.utils import (
-    is_date,
-    is_time,
-)
+from pireal.interpreter.tokens import RESERVED_KEYWORDS, Token, TokenTypes
+from pireal.interpreter.utils import is_date, is_time
 
 
 class Lexer:
-    """This is the first stage of analysis.
+    """First stage of analysis.
 
     The Lexer serves to break up the source text into chuncks, "tokens".
     It calls the Scanner to get characters one at a time and organizes them
@@ -68,8 +61,7 @@ class Lexer:
         self.sc.next()
 
     def get_identifier_or_keyword(self) -> Token:
-        """Handle identifiers and reserved keywords"""
-
+        """Handle identifiers and reserved keywords."""
         token = Token(
             type=TokenTypes.UNKNOWN, value=None, line=self.sc.lineno, col=self.sc.colno
         )
@@ -99,8 +91,7 @@ class Lexer:
         return token
 
     def get_number(self) -> Token:
-        """Returns a multidigit integer or float"""
-
+        """Return a multidigit integer or float."""
         token = Token(
             type=TokenTypes.UNKNOWN, value=None, line=self.sc.lineno, col=self.sc.colno
         )
@@ -166,7 +157,6 @@ class Lexer:
         This method is responsible for breaking a sentence apart
         into tokens. One token at a time
         """
-
         while self.sc.char is not None:
             # Recognize identifiers and keywords
             if self.sc.char.isalpha() or self.sc.char.startswith("_"):
@@ -241,7 +231,9 @@ class Lexer:
             try:
                 token_type = TokenTypes(self.sc.char)
             except ValueError:
-                raise InvalidSyntaxError(self.sc.lineno, self.sc.colno, self.sc.char)
+                raise InvalidSyntaxError(
+                    self.sc.lineno, self.sc.colno, self.sc.char
+                ) from None
             else:
                 token = Token(
                     type=token_type,

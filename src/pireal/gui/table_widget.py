@@ -17,16 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtWidgets import QSplitter
-from PyQt6.QtWidgets import QTabWidget
-from PyQt6.QtWidgets import QToolButton
-from PyQt6.QtWidgets import QStackedWidget
-from PyQt6.QtWidgets import QMenu
-
 from PyQt6.QtCore import Qt
-from pireal.gui.model_view_delegate import create_view
+from PyQt6.QtWidgets import QMenu, QSplitter, QStackedWidget, QTabWidget, QToolButton
 
 from pireal import translations as tr
+from pireal.gui.model_view_delegate import create_view
 
 
 class TableWidget(QSplitter):
@@ -139,7 +134,6 @@ class TableWidget(QSplitter):
 
     def add_table(self, rela, name, table):
         """Add new table from New Relation Dialog"""
-
         self.add_relation(name, rela)
         self.stacked.addWidget(table)
 
@@ -174,7 +168,6 @@ class TableWidget(QSplitter):
 
     def delete_column(self):
         """Elimina la/las columnas seleccionadas"""
-
         current_view = self.current_table()
         if current_view is not None:
             model = current_view.model()
@@ -193,5 +186,4 @@ class TableWidget(QSplitter):
 
     def create_table(self, rela, editable=True):
         """Se crea la vista y el modelo"""
-
         return create_view(rela, editable=editable)

@@ -17,22 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Sidebar widget with line numbers
+"""Sidebar widget with line numbers.
 
 based on:
 john.nachtimwald.com/2009/08/19/better-qplaintextedit-with-line-numbers/
 """
 
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtGui import QColor, QFontMetrics, QPainter, QPen
 from PyQt6.QtWidgets import QFrame
-from PyQt6.QtGui import (
-    QFontMetrics,
-    QPainter,
-    QPen,
-    QColor,
-)
-from PyQt6.QtCore import Qt
-from PyQt6.QtCore import QSize
 
 from pireal.gui.theme import get_editor_color
 
@@ -69,9 +62,7 @@ class Sidebar(QFrame):
 
     def __calculate_width(self):
         digits = len(str(max(1, self.editor.blockCount())))
-        fmetrics_width = QFontMetrics(
-            self.editor.document().defaultFont()
-        ).horizontalAdvance("9")
+        fmetrics_width = QFontMetrics(self.editor.document().defaultFont()).horizontalAdvance("9")
         return 5 + fmetrics_width * digits + 3
 
     def paintEvent(self, event):
@@ -79,7 +70,6 @@ class Sidebar(QFrame):
 
         :param event: QEvent
         """
-
         painter = QPainter(self)
         painter.fillRect(event.rect(), self._background_color)
         width = self.width() - 8
@@ -97,6 +87,4 @@ class Sidebar(QFrame):
                 painter.setFont(font_bold)
             else:
                 painter.setFont(font)
-            painter.drawText(
-                5, int(top), width, height, Qt.AlignmentFlag.AlignRight, str(line + 1)
-            )
+            painter.drawText(5, int(top), width, height, Qt.AlignmentFlag.AlignRight, str(line + 1))

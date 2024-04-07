@@ -1,5 +1,5 @@
 class AST(object):
-    """Base class for all nodes"""
+    """Base class for all nodes."""
 
     def __eq__(self, other):
         attrs = [attr for attr in dir(self) if not attr.startswith("_")]
@@ -86,7 +86,7 @@ class Compound(AST):
 
 
 class NodeVisitor(object):
-    """Visitor pattern
+    """Visitor pattern.
 
     A node visitor base class that walks the abstract syntax tree and calls
     a visitor function for every node found. This function may return a value
@@ -103,13 +103,11 @@ class NodeVisitor(object):
     """
 
     def visit(self, node):
-        """Visit a node"""
-
+        """Visit a node."""
         method_name = "visit_" + node.__class__.__name__
         visitor = getattr(self, method_name, self._generic_visit)
         return visitor(node)
 
     def _generic_visit(self, node):
-        """Called if not explicit visitor function exists for a node"""
-
-        raise Exception("No visit_{} method".format(node.__class__.__name__))
+        """Call if not explicit visitor function exists for a node."""
+        raise Exception(f"No visit_{node.__class__.__name__} method")

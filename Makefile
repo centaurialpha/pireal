@@ -5,8 +5,6 @@ help:
 	@echo "test-unit 	 		-- run unit tests"
 	@echo "test-interpreter		-- run tests for Scanner, Lexer, Parser and Interpreter"
 	@echo "test-integration 	-- run integration tests"
-	@echo "flake8				-- run flake8"
-	@echo "deb 					-- build a .deb package"
 
 rc:
 	pyrcc5 pireal/resources/resources.qrc -o pireal/resources.py
@@ -23,14 +21,8 @@ clean:
 	rm -rf pireal.egg-info
 	rm -rf build/
 
-flake8:
-	flake8 src/pireal --config=.flake8
-
-format-check:
-	@black src/ tests/ --check
-
-format:
-	@black src/ tests/
+check:
+	ruff check
 
 test-unit:
 	pytest -v tests/unit -m "not interpreter"

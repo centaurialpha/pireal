@@ -21,8 +21,9 @@ from __future__ import annotations
 
 
 class Scanner:
-    """
-    The Scanner is used to step through text character by character
+    """The Scanner.
+
+    Is used to step through text character by character
     and keep track of the line and column number of each passed character
     """
 
@@ -36,8 +37,7 @@ class Scanner:
 
     @property
     def char(self) -> str | None:
-        """Returns a character in the current index"""
-
+        """Return a character in the current index."""
         if self.index < len(self._text):
             return self._text[self.index]
 
@@ -51,8 +51,7 @@ class Scanner:
         return self._text[peek_pos]
 
     def next(self) -> None:
-        """Move on to the next character in the scanned text"""
-
+        """Move on to the next character in the scanned text."""
         if self.char == "\n":
             # We are in a new line, therefore we increase the line
             # number and restart the column number
@@ -63,8 +62,7 @@ class Scanner:
         self.index += 1
 
     def next_char(self) -> str | None:
-        """Returns the next character in the source text"""
-
+        """Return the next character in the source text."""
         self.next()
         return self.char
 

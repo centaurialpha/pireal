@@ -18,8 +18,8 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 from __future__ import annotations
 
-import enum
 import datetime
+import enum
 from dataclasses import dataclass
 
 

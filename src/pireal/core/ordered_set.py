@@ -14,8 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
-"""
-OrderedSet implementation.
+"""OrderedSet implementation.
+
 Based on https://code.activestate.com/recipes/576694/ by Raymond Hettinger
 Based on https://github.com/LuminosoInsight/ordered-set
 """
@@ -25,6 +25,7 @@ from collections.abc import MutableSet, Sequence
 
 class OrderedSet(MutableSet):
     """Custom set that remembers its order.
+
     Yes, it may seem anti-mathematical (?, but this is real life
     """
 

@@ -17,40 +17,32 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import os
 import csv
 import logging
-from pathlib import Path
+import os
 from collections import defaultdict
+from pathlib import Path
 
-from PyQt6.QtWidgets import QWidget
-from PyQt6.QtWidgets import QVBoxLayout
-from PyQt6.QtWidgets import QStackedWidget
-from PyQt6.QtWidgets import QFileDialog
-from PyQt6.QtWidgets import QMessageBox
-from PyQt6.QtGui import QShortcut
-
-from PyQt6.QtGui import QKeySequence
-from PyQt6.QtCore import Qt
-from PyQt6.QtCore import QSettings
+from PyQt6.QtCore import QSettings, Qt
+from PyQt6.QtGui import QKeySequence, QShortcut
+from PyQt6.QtWidgets import (
+    QFileDialog,
+    QMessageBox,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
 import pireal
-from pireal.dirs import EXAMPLE_DB_FILENAME
 from pireal import settings
-from pireal.core import (
-    file_manager,
-    pfile,
-)
+from pireal import translations as tr
+from pireal.core import file_manager, pfile
+from pireal.dirs import DATA_SETTINGS, EXAMPLE_DB_FILENAME
 from pireal.gui import start_page
 from pireal.gui.database_container import DatabaseContainer
-from pireal.gui.dialogs import (
-    preferences,
-    new_relation_dialog,
-)
+from pireal.gui.dialogs import new_relation_dialog, preferences
 from pireal.gui.dialogs.new_database_dialog import DBInputDialog
 from pireal.gui.lateral_widget import RelationItemType
-from pireal.dirs import DATA_SETTINGS
-from pireal import translations as tr
 
 # Logger
 logger = logging.getLogger(__name__)
@@ -117,8 +109,8 @@ class CentralWidget(QWidget):
 
     def create_database(self):
         """Show a wizard widget to create a new database,
-        only have one database open at time."""
-
+        only have one database open at time.
+        """
         if self.created:
             return self.__say_about_one_db_container_at_time()
         db_container_filepath = DBInputDialog.ask_db_name(parent=self)
@@ -248,11 +240,9 @@ class CentralWidget(QWidget):
         db_container.save_query_as()
 
     def __sanitize_data(self, data):
-        """
-        Este método convierte el contenido de la base de datos a un
+        """Este método convierte el contenido de la base de datos a un
         diccionario para un mejor manejo despues
         """
-
         # FIXME: controlar cuando al final de la línea hay una coma
         data_dict = defaultdict(list)
         for line_count, line in enumerate(data.splitlines()):
@@ -281,7 +271,6 @@ class CentralWidget(QWidget):
 
     def remove_last_widget(self):
         """Remove last widget from stacked"""
-
         widget = self.stack.widget(self.stack.count() - 1)
         self.stack.removeWidget(widget)
 
@@ -295,7 +284,6 @@ class CentralWidget(QWidget):
 
     def close_database(self) -> None:
         """Close the database and return to the main widget"""
-
         pireal_instance = pireal.get_pireal_instance()
         db_container = pireal_instance.db_container
         if db_container is None:
@@ -450,7 +438,6 @@ class CentralWidget(QWidget):
 
     def load_relation(self, filename=""):
         """Load Relation file"""
-
         filenames = []
         if not filename:
             if self._last_open_folder is None:
@@ -478,24 +465,20 @@ class CentralWidget(QWidget):
 
     def add_start_page(self):
         """This function adds the Start Page to the stacked widget"""
-
         sp = start_page.StartPage()
         self.add_widget(sp)
 
     def show_settings(self):
         """Show settings dialog on stacked"""
-
         settings_dialog = preferences.SettingsDialog(self)
         settings_dialog.exec()
 
     def widget(self, index):
         """Returns the widget at the given index"""
-
         return self.stack.widget(index)
 
     def add_widget(self, widget):
         """Appends and show the given widget to the Stacked"""
-
         index = self.stack.addWidget(widget)
         self.stack.setCurrentIndex(index)
 

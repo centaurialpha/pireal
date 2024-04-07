@@ -1,5 +1,4 @@
-from PyQt6.QtGui import QColor
-from PyQt6.QtGui import QPalette
+from PyQt6.QtGui import QColor, QPalette
 
 from pireal.settings import SETTINGS
 

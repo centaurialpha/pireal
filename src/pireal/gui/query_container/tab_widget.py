@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtWidgets import QTabWidget, QMessageBox
 from PyQt6.QtCore import pyqtSignal as Signal
+from PyQt6.QtWidgets import QMessageBox, QTabWidget
 
 
 class TabWidget(QTabWidget):

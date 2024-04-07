@@ -17,18 +17,18 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtWidgets import QDialog
-from PyQt6.QtWidgets import QVBoxLayout
-from PyQt6.QtWidgets import QHBoxLayout
-from PyQt6.QtWidgets import QPlainTextEdit
-from PyQt6.QtWidgets import QLabel
-from PyQt6.QtWidgets import QPushButton
-from PyQt6.QtWidgets import QStyle
-from PyQt6.QtWidgets import QMessageBox
-
-from PyQt6.QtGui import QFont
-
 from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import (
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QMessageBox,
+    QPlainTextEdit,
+    QPushButton,
+    QStyle,
+    QVBoxLayout,
+)
 
 from pireal.gui.main_window import Pireal
 from pireal.settings import CONFIG

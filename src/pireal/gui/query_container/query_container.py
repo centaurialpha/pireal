@@ -19,36 +19,33 @@
 
 import re
 
-from PyQt6.QtWidgets import QWidget
-from PyQt6.QtWidgets import QVBoxLayout
-from PyQt6.QtWidgets import QHBoxLayout
-from PyQt6.QtWidgets import QSplitter
-from PyQt6.QtWidgets import QStackedWidget
-from PyQt6.QtWidgets import QDialog
-from PyQt6.QtWidgets import QPushButton
-from PyQt6.QtWidgets import QLineEdit
-
-from PyQt6.QtCore import Qt
-from PyQt6.QtCore import QSettings
-
+from PyQt6.QtCore import QSettings, Qt
 from PyQt6.QtCore import pyqtSignal as Signal
-
-import pireal
-from pireal.interpreter import parser
-from pireal.interpreter.exceptions import (
-    InvalidSyntaxError,
-    MissingQuoteError,
-    DuplicateRelationNameError,
-    ConsumeError,
+from PyQt6.QtWidgets import (
+    QDialog,
+    QHBoxLayout,
+    QLineEdit,
+    QPushButton,
+    QSplitter,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
 )
 
-# from pireal.gui.main_window import Pireal
-from pireal.gui.query_container import editor
-from pireal.gui.query_container import tab_widget
-from pireal.gui.lateral_widget import RelationItemType
-
+import pireal
 from pireal import translations as tr
 from pireal.dirs import DATA_SETTINGS
+from pireal.gui.lateral_widget import RelationItemType
+
+# from pireal.gui.main_window import Pireal
+from pireal.gui.query_container import editor, tab_widget
+from pireal.interpreter import parser
+from pireal.interpreter.exceptions import (
+    ConsumeError,
+    DuplicateRelationNameError,
+    InvalidSyntaxError,
+    MissingQuoteError,
+)
 
 
 class QueryContainer(QWidget):
@@ -86,14 +83,11 @@ class QueryContainer(QWidget):
 
     def current_index(self):
         """This property holds the index position of the current tab page"""
-
         return self._tabs.currentIndex()
 
     def tab_text(self, index):
+        """Returns the label text for the tab on the page at position index
         """
-        Returns the label text for the tab on the page at position index
-        """
-
         return self._tabs.tabText(index)
 
     def __hide(self):
@@ -149,7 +143,6 @@ class QueryContainer(QWidget):
 
     def execute_queries(self, query=""):
         """This function executes queries"""
-
         # If text is selected, then this text is the query,
         # otherwise the query is all text that has the editor
         editor_widget = self.currentWidget().get_editor()
@@ -227,7 +220,6 @@ class QueryContainer(QWidget):
     @staticmethod
     def parse_error(text):
         """Replaces quotes by <b></b> tag"""
-
         return re.sub(r"\'(.*?)\'", r"<b>\1</b>", text)
 
     def __add_table(self, rela, rname):
@@ -338,7 +330,6 @@ class QueryWidget(QWidget):
 
     def save_sizes(self):
         """Save sizes of Splitters"""
-
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.IniFormat)
         qsettings.setValue(
             "result_splitter_query_sizes", self.result_splitter.saveState()

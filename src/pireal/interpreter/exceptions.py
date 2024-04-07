@@ -22,11 +22,11 @@
 
 
 class InterpreterError(Exception):
-    """Excepción básica para errores generados por el intérprete"""
+    """Excepción básica para errores generados por el intérprete."""
 
 
 class MissingQuoteError(InterpreterError):
-    """Excepción para comillas faltantes en strings"""
+    """Excepción para comillas faltantes en strings."""
 
     def __init__(self, msg, lineno, col):
         InterpreterError.__init__(self, msg.format(lineno))
@@ -35,7 +35,7 @@ class MissingQuoteError(InterpreterError):
 
 
 class InvalidSyntaxError(InterpreterError):
-    """Excepción para errores de sintáxis generados por el Lexer"""
+    """Excepción para errores de sintáxis generados por el Lexer."""
 
     def __init__(self, lineno, col, char, msg="Invalid syntax on '{0}':'{1}'"):
         InterpreterError.__init__(self, msg.format(lineno, col))
@@ -45,8 +45,6 @@ class InvalidSyntaxError(InterpreterError):
 
 
 class ConsumeError(InterpreterError):
-    """Excepción para errores generados por el Parser cuando no se espera
-    un determinado símbolo del lenguaje"""
 
     def __init__(self, expected, got, lineno, msg=None):
         if msg is None:
@@ -61,8 +59,6 @@ class ConsumeError(InterpreterError):
 
 
 class DuplicateRelationNameError(InterpreterError):
-    """Excepción para errores generados por el Interpreter cuando se
-    usa un nombre que ya existe en el SCOPE"""
 
     def __init__(self, rname):
         super().__init__()

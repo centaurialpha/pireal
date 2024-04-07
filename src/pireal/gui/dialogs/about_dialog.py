@@ -19,17 +19,18 @@
 
 from datetime import datetime
 
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import (
     QDialog,
-    QVBoxLayout,
-    QLabel,
     QHBoxLayout,
-    QSpacerItem,
-    QSizePolicy,
+    QLabel,
     QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
 )
-from PyQt6.QtGui import QPixmap
-from PyQt6.QtCore import Qt
+
 from pireal import __version__, gui
 from pireal import translations as tr
 

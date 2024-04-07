@@ -19,18 +19,12 @@
 
 import os
 
-from PyQt6.QtCore import QObject
+from PyQt6.QtCore import QFile, QIODevice, QObject, QTextStream
 from PyQt6.QtCore import pyqtSignal as Signal
-from PyQt6.QtCore import QFile
-from PyQt6.QtCore import QTextStream
-
-# from PyQt6.QtCore import QTextCodec
-from PyQt6.QtCore import QIODevice
 
 
 class File(QObject):
-
-    """This class represents an object file"""
+    """Represents an object file."""
 
     fileSaved = Signal(str)
 
@@ -43,8 +37,7 @@ class File(QObject):
 
     @property
     def display_name(self):
-        """Returns only the file name with extension, without the path"""
-
+        """Returns only the file name with extension, without the path."""
         return os.path.basename(self.filename)
 
     def save(self, data, path=None):
@@ -68,6 +61,5 @@ class File(QObject):
 
     def read(self):
         """Reads the file and returns the content"""
-
         with open(self.filename, encoding="utf-8") as f:
             return f.read()

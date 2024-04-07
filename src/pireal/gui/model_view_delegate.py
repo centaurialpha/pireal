@@ -19,20 +19,18 @@
 
 import logging
 
-from PyQt6.QtWidgets import QTableView
-from PyQt6.QtWidgets import QHeaderView
-from PyQt6.QtWidgets import QAbstractItemView
-from PyQt6.QtWidgets import QItemDelegate
-from PyQt6.QtWidgets import QInputDialog
-
-from PyQt6.QtGui import QColor
-
-from PyQt6.QtCore import QAbstractTableModel
-from PyQt6.QtCore import Qt
-from PyQt6.QtCore import QModelIndex
+from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt
 from PyQt6.QtCore import pyqtSlot as Slot
-from pireal import translations as tr
+from PyQt6.QtGui import QColor
+from PyQt6.QtWidgets import (
+    QAbstractItemView,
+    QHeaderView,
+    QInputDialog,
+    QItemDelegate,
+    QTableView,
+)
 
+from pireal import translations as tr
 from pireal.gui.theme import get_color
 
 logger = logging.getLogger("gui.model_view_delegate")
@@ -126,7 +124,6 @@ class View(QTableView):
 
     def adjust_columns(self):
         """Resize all sections to content and user interactive"""
-
         header = self.horizontalHeader()
         for column in range(header.count()):
             header.setSectionResizeMode(column, QHeaderView.ResizeMode.ResizeToContents)

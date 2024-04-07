@@ -23,7 +23,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov"]
+dev = ["pytest", "pytest-cov", "ruff"]
 extras = ["rich"]
 
 [project.scripts]
@@ -37,3 +37,11 @@ requires = ["setuptools", "setuptools_scm[toml]>=6.2", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = [ "A", "B", "C90", "D", "E", "EM", "F", "I", "N", "PTH", "RUF", "W",]
+ignore = ["D103", "D102", "D101", "D100", "D107", "D104", "D105", "EM101", "N802", "N815", "EM102"]
+exclude = ["windows/*", "tests/*"]

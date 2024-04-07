@@ -17,23 +17,23 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtWidgets import QDialog
-from PyQt6.QtWidgets import QVBoxLayout
-from PyQt6.QtWidgets import QGridLayout
-from PyQt6.QtWidgets import QLabel
-from PyQt6.QtWidgets import QComboBox
-from PyQt6.QtWidgets import QFontComboBox
-from PyQt6.QtWidgets import QCheckBox
-from PyQt6.QtWidgets import QGroupBox
-from PyQt6.QtWidgets import QDialogButtonBox
-
-from PyQt6.QtGui import QFontDatabase
-
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFontDatabase
+from PyQt6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QFontComboBox,
+    QGridLayout,
+    QGroupBox,
+    QLabel,
+    QVBoxLayout,
+)
 
 import pireal
-from pireal.settings import SETTINGS
 from pireal import translations as tr
+from pireal.settings import SETTINGS
 
 
 class SettingsDialog(QDialog):

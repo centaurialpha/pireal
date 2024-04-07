@@ -17,10 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Metadata
-"""
-
 __author__ = "Gabriel Acosta"
 __email__ = "acostadariogabriel at gmail"
 __source_code__ = "https://github.com/centaurialpha/pireal"

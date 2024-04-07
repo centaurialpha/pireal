@@ -18,39 +18,37 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import os
+from pathlib import Path
 
 
 def get_extension(filename):
-    """This function returns the extension of filename
+    """Return the extension of filename.
 
     :param filename: Filename path
     :returns: The extension file
     """
-
-    return os.path.splitext(filename)[-1]
+    return Path(filename).suffix
 
 
 def get_basename(filename):
-    """This function returns the base name of filename
+    """Return the base name of filename.
 
     :param filename: Filename, for example: "/home/gabo/file.rpf"
     :returns: The base name, for example: "file"
     """
-
-    return os.path.splitext(os.path.basename(filename))[0]
+    return Path(filename).stem
 
 
 def get_path(filename):
-    return os.path.dirname(filename)
+    return Path(filename).parent
 
 
 def generate_database(relations):
-    """This function generates the content of the database
+    """Generate the content of the database.
 
     :param relations: Dictionary with relations (Relation Object)
     :returns: The content of the database
     """
-
     content = ""
     for relation_name, relation in list(relations.items()):
         content += "@%s:" % relation_name
@@ -65,8 +63,4 @@ def generate_database(relations):
 
 
 def get_files_from_folder(path):
-    return [
-        os.path.splitext(f)[0]
-        for f in os.listdir(path)
-        if os.path.isfile(os.path.join(path, f))
-    ]
+    return [f.stem for f in os.listdir(path) if (path / f).is_file()]

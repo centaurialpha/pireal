@@ -30,15 +30,10 @@ jobs:
             sudo apt-get install -y libgles2-mesa-dev
           fi
 
-      - name: Check Format
+      - name: Lint
         if: runner.os == 'Linux'
         run: |
-          make format-check
-
-      - name: Flake8
-        if: runner.os == 'Linux'
-        run: |
-          make flake8
+          make check
 
       - name: Unit Tests
         run: |

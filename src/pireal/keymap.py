@@ -17,13 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-"""
-KEYMAP is a dictionary, the keys are the names of the
-slots of the QAction's, and values are the key sequence.
-"""
-
 from PyQt6.QtGui import QKeySequence
-
 
 KEYMAP = {
     "create_database": QKeySequence("Ctrl + n"),

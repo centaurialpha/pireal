@@ -17,15 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-"""
-This module contains variables and functions related to directories used by Pireal
-"""
+"""Contains variables and functions related to directories used by Pireal."""
 
 import platform
 from pathlib import Path
 
 from PyQt6.QtCore import QStandardPaths
-
 
 _ROOT_DIR = Path(__file__).resolve().parent.parent
 
@@ -36,8 +33,7 @@ EXAMPLE_DB_FILENAME = EXAMPLES_DIR / "database.pdb"
 
 
 def _data_dir() -> Path:
-    """Return the app data dir for Pireal"""
-
+    """Return the app data dir for Pireal."""
     pireal_dir_name = ".pireal"
 
     if platform.system() == "Linux":
@@ -58,8 +54,7 @@ def _data_dir() -> Path:
 
 
 def _get_databases_location() -> Path:
-    """Return the path used for store the user databases"""
-
+    """Return the path used for store the user databases."""
     db_dir = (
         Path(
             QStandardPaths.writableLocation(
@@ -80,6 +75,6 @@ DATABASES_DIR = _get_databases_location()
 
 
 def create_app_dirs():
-    """Create all dirs needed by Pireal"""
+    """Create all dirs needed by Pireal."""
     for d in (_data_dir(), LOGS_DIR, DATABASES_DIR):
         d.mkdir(exist_ok=True)

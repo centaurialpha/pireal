@@ -17,12 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 import logging
+from urllib.error import URLError
+from urllib.request import urlopen
 
 from pkg_resources import parse_version
-from urllib.request import urlopen
-from urllib.error import URLError
-
-from PyQt6.QtCore import QObject, pyqtSignal as Signal
+from PyQt6.QtCore import QObject
+from PyQt6.QtCore import pyqtSignal as Signal
 
 from pireal import __version__
 

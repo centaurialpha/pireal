@@ -20,28 +20,19 @@
 import csv
 import logging
 
-from PyQt6.QtWidgets import QSplitter
-from PyQt6.QtWidgets import QFileDialog
-from PyQt6.QtWidgets import QMessageBox
-
-from PyQt6.QtCore import Qt
-from PyQt6.QtCore import QSettings
+from PyQt6.QtCore import QSettings, Qt
 from PyQt6.QtCore import pyqtSlot as Slot
+from PyQt6.QtWidgets import QFileDialog, QMessageBox, QSplitter
 
-from pireal.gui.lateral_widget import LateralWidget
-from pireal.gui.table_widget import TableWidget
-from pireal.gui.model_view_delegate import create_view
-from pireal.gui.lateral_widget import RelationItemType
-
-from pireal.gui.query_container.query_container import (
-    QueryContainer,
-    QueryWidget,
-)
 import pireal
-from pireal.core import relation, pfile, file_manager
-from pireal.dirs import DATA_SETTINGS
-from pireal import translations as tr
 from pireal import settings
+from pireal import translations as tr
+from pireal.core import file_manager, pfile, relation
+from pireal.dirs import DATA_SETTINGS
+from pireal.gui.lateral_widget import LateralWidget, RelationItemType
+from pireal.gui.model_view_delegate import create_view
+from pireal.gui.query_container.query_container import QueryContainer, QueryWidget
+from pireal.gui.table_widget import TableWidget
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +79,6 @@ class DatabaseContainer(QSplitter):
 
     def dbname(self):
         """Return display name"""
-
         return self.pfile.display_name
 
     def is_new(self):
@@ -120,7 +110,6 @@ class DatabaseContainer(QSplitter):
 
     def create_table(self, relation_obj, relation_name, editable=True):
         """Se crea la vista, el model y el delegado para @relation_obj"""
-
         return create_view(relation_obj, editable=editable)
 
     @Slot(bool)
@@ -257,7 +246,6 @@ class DatabaseContainer(QSplitter):
 
     def save_sizes(self):
         """Save sizes of Splitters"""
-
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
         qsettings.setValue("vsplitter_sizes", self._vsplitter.saveState())
         qsettings.setValue("hsplitter_sizes", self.saveState())

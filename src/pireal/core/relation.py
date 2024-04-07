@@ -20,18 +20,18 @@
 
 # This module is based on Relational: <https://github.com/ltworf/relational>
 
-import re
 import itertools
+import re
 
-from pireal.utils import eval_expr
-from pireal.core.rtypes import RType
 from pireal.core.ordered_set import OrderedSet
+from pireal.core.rtypes import RType
+from pireal.utils import eval_expr
 
 IS_VALID_FIELD_NAME = re.compile("^[_á-úa-zA-Z][_á-úa-zA-Z0-9]*$")
 
 
 class Error(Exception):
-    """Base exception"""
+    """Base exception."""
 
 
 class FieldError(Error):
@@ -43,7 +43,7 @@ class FieldError(Error):
 
 
 class InvalidFieldNameError(FieldError):
-    """Excepción lanzada cuando un nombre de campo no es válido"""
+    """Excepción lanzada cuando un nombre de campo no es válido."""
 
     def __init__(self, campo, msg=None):
         super().__init__(
@@ -59,7 +59,7 @@ class DuplicateFieldError(FieldError):
 
 
 class FieldNotInHeaderError(FieldError):
-    """Excepción lanzada cuando un campo no existe en la relación"""
+    """Excepción lanzada cuando un campo no existe en la relación."""
 
     def __init__(self, campo, relacion, msg=None):
         super().__init__(
@@ -69,8 +69,11 @@ class FieldNotInHeaderError(FieldError):
 
 
 class WrongSizeError(Error):
-    """Excepción lanzada cuando se trata de insertar un tamaño de
-    tuplas diferente a los que acepta la relación"""
+    """Wrong Size.
+
+    Excepción lanzada cuando se trata de insertar un tamaño de
+    tuplas diferente a los que acepta la relación
+    """
 
     def __init__(self, expected, got, msg=None):
         if msg is None:
@@ -89,13 +92,13 @@ class UnionCompatibleError(Error):
 
 
 def union_compatible(operation):
-    """Decorador que comprueba que dos relaciones sean compatibles"""
+    """Decorador que comprueba que dos relaciones sean compatibles."""
 
     def inner(self, *args, **kwargs):
         header_other = args[0].header
         if len(self._header) != len(header_other):
             raise UnionCompatibleError(
-                "Union not compatible for '{}'".format(operation.__name__)
+                f"Union not compatible for '{operation.__name__}'"
             )
         return operation(self, *args, **kwargs)
 
@@ -134,8 +137,7 @@ class Relation(object):
         self.content[row] = tuple(old)
 
     def append_row(self):
-        """Agrega una fila/tupla al final"""
-
+        """Agrega una fila/tupla al final."""
         nulls = []
         for _ in range(self.degree()):
             nulls.append("null ({})".format(self._null_count))
@@ -143,28 +145,25 @@ class Relation(object):
         self.insert(tuple(nulls))
 
     def cardinality(self):
-        """Devuelve la cantidad de filas de la relación"""
-
+        """Devuelve la cantidad de filas de la relación."""
         return len(self.content)
 
     def degree(self):
-        """Devuelve el grado de la relación"""
-
+        """Devuelve el grado de la relación."""
         return len(self._header)
 
     def project(self, *args):
-        """
-        The project operator returns a new relation.
+        """Return a new relation.
+
         Extract columns (attributes) resulting in a vertical subset of
         attributes of the relation
         """
-
         indexes = []
         for arg in args:
             try:
                 indexes.append(self._header.index(arg))
             except ValueError as reason:
-                raise FieldNotInHeaderError(str(reason).split()[0], self.name)
+                raise FieldNotInHeaderError(str(reason).split()[0], self.name) from None
         # New fields
         header = [self._header[i] for i in indexes]
         # New relation
@@ -177,11 +176,10 @@ class Relation(object):
         return new_relation
 
     def select(self, expression):
-        """
-        The select operator returns a new relation with the tuples that
-        satisfy an expression.
-        """
+        """Return a new relation.
 
+        with the tuples thatsatisfy an expression.
+        """
         new_relation = Relation()
         new_relation.header = self._header
 
@@ -254,11 +252,11 @@ class Relation(object):
 
     @union_compatible
     def union(self, other_relation):
-        """
-        The union is defined as: R ∪ S. Returns the set of tuples in R,
+        """R U S.
+
+        Returns the set of tuples in R,
         or S, or both. R and S must be compatible unions.
         """
-
         new_relation = Relation()
         new_relation.header = self._header
         content = self.content.union(other_relation.content)
@@ -270,11 +268,11 @@ class Relation(object):
 
     @union_compatible
     def difference(self, other_relation):
-        """
-        The difference is defined as: R - S. It is the set of all tuples
+        """R - S.
+
+        It is the set of all tuples
         in R, but not in S. R and S must be compatible unions
         """
-
         new_relation = Relation()
         new_relation.header = self._header
         content = self.content - other_relation.content
@@ -284,11 +282,11 @@ class Relation(object):
 
     @union_compatible
     def intersect(self, other_relation):
-        """
-        The intersection is defined as: R ∩ S. corresponds to the set of
+        """R ∩ S.
+
+        Corresponds to the set of
         all tuples in R and S, R and S compatible unions.
         """
-
         new_relation = Relation()
         new_relation.header = self._header
         content = self.content.intersection(other_relation.content)
@@ -299,14 +297,14 @@ class Relation(object):
         return new_relation
 
     def product(self, other_relation):
-        """
-        The cartesian product is defined as: R x S, its outline
+        """R x S.
+
+        its outline
         corresponds to a combination of all tuples in R with each S
         tuples, and attributes corresponding to those of R followed by S.
 
         This method throws an exception when you are duplicate field names
         """
-
         for field in self._header:
             if field in other_relation.header:
                 raise DuplicateFieldError(field)
@@ -321,8 +319,6 @@ class Relation(object):
         return new_relation
 
     def __str__(self):
-        """Magic method. Returns a representation of the relation"""
-
         header = ""
         for field in self._header:
             header += "|  " + field.center(10) + "  "

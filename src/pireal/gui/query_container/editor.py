@@ -17,21 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtGui import QColor, QFont, QTextCharFormat, QTextCursor, QTextDocument
 from PyQt6.QtWidgets import (
+    QFrame,
+    QHBoxLayout,
+    QLabel,
     QPlainTextEdit,
     QTextEdit,
-    QFrame,
-    QLabel,
-    QHBoxLayout,
     QToolButton,
 )
-from PyQt6.QtGui import QTextCharFormat, QTextCursor, QFont, QColor, QTextDocument
-from PyQt6.QtCore import Qt, QTimer
 
 from pireal.gui.query_container import highlighter, sidebar
 from pireal.gui.theme import get_editor_color
 from pireal.settings import SETTINGS
-
 
 BRACKETS = "()"
 OPOSITE_BRACKET = {
@@ -206,7 +205,6 @@ class Editor(QPlainTextEdit):
 
         :returns: filename of PFile
         """
-
         return self.pfile.filename
 
     @property
@@ -228,7 +226,8 @@ class Editor(QPlainTextEdit):
 
     def word_under_cursor(self, cursor=None):
         """Returns QTextCursor that contains a word under passed cursor
-        or actual cursor"""
+        or actual cursor
+        """
         if cursor is None:
             cursor = self.textCursor()
         start_pos = end_pos = cursor.position()
@@ -312,7 +311,6 @@ class Editor(QPlainTextEdit):
 
     def show_run_cursor(self):
         """Highlight momentarily a piece of code. Tomado de Ninja-IDE"""
-
         cursor = self.textCursor()
         if cursor.hasSelection():
             # Get selection range
@@ -342,7 +340,6 @@ class Editor(QPlainTextEdit):
 
     def comment(self):
         """Comment one or more lines"""
-
         tcursor = self.textCursor()
         block_start = self.document().findBlock(tcursor.selectionStart())
         block_end = self.document().findBlock(tcursor.selectionEnd()).next()
@@ -360,7 +357,6 @@ class Editor(QPlainTextEdit):
 
     def uncomment(self):
         """Uncomment one or more lines"""
-
         tcursor = self.textCursor()
         block_start = self.document().findBlock(tcursor.selectionStart())
         block_end = self.document().findBlock(tcursor.selectionEnd()).next()

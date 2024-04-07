@@ -16,7 +16,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
-"""
+"""BNF.
+
 <Compound>          : <Query>
                     | <Query> <Compund>
 <Query>             : <Assignment> SEMI
@@ -59,20 +60,17 @@
                     | TIME
 """
 
-from pireal.interpreter.tokens import (
-    TokenTypes,
-    BINARY_OPERATORS,
-)
-from pireal.interpreter.exceptions import ConsumeError
-from pireal.interpreter.exceptions import DuplicateRelationNameError
-
-from pireal.interpreter.scanner import Scanner
-from pireal.interpreter.lexer import Lexer
 from pireal.interpreter import rast as ast
+from pireal.interpreter.exceptions import ConsumeError, DuplicateRelationNameError
+from pireal.interpreter.lexer import Lexer
+from pireal.interpreter.scanner import Scanner
+from pireal.interpreter.tokens import BINARY_OPERATORS, TokenTypes
 
 
 class Parser(object):
-    """The Parser is the part that really understands the syntax of
+    """The Parser.
+
+    Is the part that really understands the syntax of
     the language. It calls the Lexer to get tokens and processes the tokens
     per the syntax of the language.
     """
@@ -83,10 +81,10 @@ class Parser(object):
 
     def consume(self, token_type):
         """Consume a token of a given type and get the next token.
+
         If the current token is not of the expected type, then
         raise an error
         """
-
         if self.token.type == token_type:
             self.token = self.lexer.next_token()
         else:
@@ -240,7 +238,7 @@ class Parser(object):
         return node
 
     def attributes(self):
-        """Return a list of ast.Variable nodes"""
+        """Return a list of ast.Variable nodes."""
         node = self.variable()
 
         attribute_list = [node]
@@ -252,7 +250,9 @@ class Parser(object):
 
 
 class Interpreter(ast.NodeVisitor):
-    """Este objeto es el encargado de 'visitar' los nodos con el
+    """Visitor.
+
+    Este objeto es el encargado de 'visitar' los nodos con el
     método Interpreter.to_python(), que convierte a un string que luego
     es evaluado como código Python
 

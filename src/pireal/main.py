@@ -17,13 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-"""Run Pireal user interface"""
+"""Run Pireal user interface."""
 
 import logging
-import os
 import platform
 import sys
 from pathlib import Path
+
+from PyQt6.QtCore import QT_VERSION_STR, QDir, QLibraryInfo, QLocale, QTranslator
+from PyQt6.QtGui import QFont, QFontDatabase, QIcon
+from PyQt6.QtWidgets import QApplication
 
 from pireal import __version__
 from pireal.core import cliparser
@@ -32,14 +35,10 @@ from pireal.gui.main_window import Pireal
 from pireal.gui.theme import apply_theme
 from pireal.settings import SETTINGS
 
-from PyQt6.QtCore import QDir, QLibraryInfo, QLocale, QT_VERSION_STR, QTranslator
-from PyQt6.QtGui import QFont, QFontDatabase, QIcon
-from PyQt6.QtWidgets import QApplication
-
 try:
-    from rich.logging import RichHandler as logger_handler
+    from rich.logging import RichHandler as LoggerHandler
 except ImportError:
-    from logging import StreamHandler as logger_handler
+    from logging import StreamHandler as LoggerHandler
 
 logger = logging.getLogger("main")
 
@@ -54,10 +53,10 @@ if ROOT_DIR not in sys.path:
 
 
 def setup_logger(level: int):
-    FORMAT = "[%(asctime)s] [%(levelname)-6s]: %(name)s:%(funcName)-5s %(message)s"
-    TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+    fmt = "[%(asctime)s] [%(levelname)-6s]: %(name)s:%(funcName)-5s %(message)s"
+    time_format = "%Y-%m-%d %H:%M:%S"
     logging.basicConfig(
-        level=level, format=FORMAT, datefmt=TIME_FORMAT, handlers=[logger_handler()]
+        level=level, format=fmt, datefmt=time_format, handlers=[LoggerHandler()]
     )
 
 
@@ -115,15 +114,17 @@ def start_pireal(args):
     # Install translators
     # Qt translations
     system_locale_name = QLocale.system().name()
-    qt_languages_path = QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
+    qt_languages_path = Path(
+        QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
+    )
     qt_translator = QTranslator()
     translator_loaded = qt_translator.load(
-        os.path.join(qt_languages_path, f"qt_{SETTINGS.language}.qm")
+        str(qt_languages_path / f"qt_{SETTINGS.language}.qm")
     )
     if not translator_loaded:
         qt_translator.load(
-            os.path.join(
-                qt_languages_path, "qt_{}.qml".format(system_locale_name.split("_")[0])
+            str(
+                qt_languages_path / "qt_{}.qml".format(system_locale_name.split("_")[0])
             )
         )
     app.installTranslator(qt_translator)

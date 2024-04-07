@@ -17,50 +17,49 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-""" Pireal Main Window """
+"""Pireal Main Window."""
 
 import webbrowser
 
+from PyQt6.QtCore import (
+    QSettings,
+    Qt,
+    QThread,
+    QTimer,
+)
+from PyQt6.QtCore import (
+    pyqtSignal as Signal,
+)
+from PyQt6.QtCore import (
+    pyqtSlot as Slot,
+)
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import (
+    QApplication,
+    QFrame,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
     QMainWindow,
     QMessageBox,
     QSystemTrayIcon,
-    QFrame,
-    QGridLayout,
-    QLabel,
     QToolButton,
-    QHBoxLayout,
-    QApplication,
-)
-from PyQt6.QtGui import QIcon
-
-from PyQt6.QtCore import (
-    QSettings,
-    QThread,
-    Qt,
-    QTimer,
-    pyqtSlot as Slot,
-    pyqtSignal as Signal,
 )
 
 import pireal
-from pireal import keymap
+from pireal import __version__, keymap
+from pireal import translations as tr
+from pireal.dirs import DATA_SETTINGS
+from pireal.gui import menu_actions
 from pireal.gui.central_widget import CentralWidget
 from pireal.gui.database_container import DatabaseContainer
-from pireal.gui.updater import Updater
-from pireal.gui import (
-    menu_actions,
-)
-
-from pireal.settings import SETTINGS
 from pireal.gui.theme import apply_theme
-from pireal import __version__
-from pireal.dirs import DATA_SETTINGS
-from pireal import translations as tr
+from pireal.gui.updater import Updater
+from pireal.settings import SETTINGS
 
 
 class _StatusBar(QFrame):
-    """Status bar divide in three areas"""
+    """Status bar divide in three areas."""
 
     playClicked = Signal()
     gearClicked = Signal()
@@ -145,9 +144,7 @@ class _StatusBar(QFrame):
 
 
 class Pireal(QMainWindow):
-
-    """
-    Main Window class
+    """Main Window class.
 
     This class is responsible for installing all application services.
     """
@@ -247,10 +244,6 @@ class Pireal(QMainWindow):
         webbrowser.open_new("https://github.com/centaurialpha/pireal/releases/latest")
 
     def __load_menubar(self, menubar):
-        """
-        This method installs the menubar and toolbar, menus and QAction's,
-        also connects to a slot each QAction.
-        """
         menu_bar = self.menuBar()
 
         for menu in menu_actions.MENU:
@@ -300,26 +293,22 @@ class Pireal(QMainWindow):
         self.setWindowTitle(_title)
 
     def about_qt(self):
-        """Show about qt dialog"""
-
+        """Show about qt dialog."""
         QMessageBox.aboutQt(self)
 
     def about_pireal(self):
-        """Show the bout Pireal dialog"""
-
+        """Show the bout Pireal dialog."""
         from pireal.gui.dialogs import about_dialog
 
         dialog = about_dialog.AboutDialog(self)
         dialog.exec()
 
     def report_issue(self):
-        """Open in the browser the page to create new  issue"""
-
+        """Open in the browser the page to create new issue."""
         webbrowser.open("http://github.com/centaurialpha/pireal/issues/new")
 
     def show_hide_menubar(self):
-        """Change visibility of menu bar"""
-
+        """Change visibility of menu bar."""
         if self.menuBar().isVisible():
             self.menuBar().hide()
         else:

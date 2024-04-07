@@ -20,22 +20,28 @@
 import enum
 from collections import namedtuple
 
-from PyQt6.QtWidgets import QListView
-from PyQt6.QtWidgets import QVBoxLayout
-from PyQt6.QtWidgets import QFrame
-from PyQt6.QtWidgets import QLabel
-from PyQt6.QtWidgets import QSplitter
-from PyQt6.QtWidgets import QStyledItemDelegate
-from PyQt6.QtWidgets import QStyleOptionViewItem
-from PyQt6.QtWidgets import QStyle
-from PyQt6.QtWidgets import QSizePolicy
-
-from PyQt6.QtCore import Qt, QRect, QModelIndex
-from PyQt6.QtCore import QAbstractListModel
-from PyQt6.QtCore import pyqtSignal as Signal
+from PyQt6.QtCore import (
+    QAbstractListModel,
+    QModelIndex,
+    QRect,
+    Qt,
+)
+from PyQt6.QtCore import (
+    pyqtSignal as Signal,
+)
+from PyQt6.QtWidgets import (
+    QFrame,
+    QLabel,
+    QListView,
+    QSizePolicy,
+    QSplitter,
+    QStyle,
+    QStyledItemDelegate,
+    QStyleOptionViewItem,
+    QVBoxLayout,
+)
 
 from pireal import translations as tr
-
 
 RelationItem = namedtuple("RelationItem", "name cardinality degree")
 
@@ -176,8 +182,7 @@ class RelationListView(QFrame):
 
 
 class LateralWidget(QSplitter):
-    """
-    Widget que contiene la lista de relaciones y la lista de relaciones
+    """Widget que contiene la lista de relaciones y la lista de relaciones
     del resultado de consultas
     """
 

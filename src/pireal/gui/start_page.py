@@ -21,39 +21,35 @@ import logging
 import os
 from datetime import datetime
 
-from PyQt6.QtWidgets import (
-    QWidget,
-    QLabel,
-    QFrame,
-    QPushButton,
-    QVBoxLayout,
-    QHBoxLayout,
-    QListView,
-    QSizePolicy,
-    QStyledItemDelegate,
-    QStyleOptionViewItem,
-    QStyle,
-)
-from PyQt6.QtGui import (
-    QPixmap,
-)
 from PyQt6.QtCore import (
     QAbstractListModel,
-    Qt,
-    QRect,
     QModelIndex,
+    QRect,
     QSettings,
+    Qt,
     QTimer,
+)
+from PyQt6.QtCore import (
     pyqtSlot as Slot,
+)
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import (
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QListView,
+    QPushButton,
+    QSizePolicy,
+    QStyle,
+    QStyledItemDelegate,
+    QStyleOptionViewItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 import pireal
-
-from pireal.dirs import (
-    DATA_SETTINGS,
-    EXAMPLES_DIR,
-)
 from pireal import translations as tr
+from pireal.dirs import DATA_SETTINGS, EXAMPLES_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +76,8 @@ class RecentDBModel(QAbstractListModel):
 
 class RecentDBDelegate(QStyledItemDelegate):
     """Custom delegate that show database name and database path
-    in same item"""
+    in same item
+    """
 
     def paint(self, painter, option, index):
         opt = QStyleOptionViewItem(option)

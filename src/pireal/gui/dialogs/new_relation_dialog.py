@@ -17,25 +17,24 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtWidgets import (
-    QMessageBox,
-    QDialog,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLineEdit,
-    QPushButton,
-    QSpacerItem,
-    QSizePolicy,
-)
-from PyQt6.QtGui import QStandardItemModel
 from PyQt6.QtCore import Qt
 from PyQt6.QtCore import pyqtSignal as Signal
+from PyQt6.QtGui import QStandardItemModel
+from PyQt6.QtWidgets import (
+    QDialog,
+    QHBoxLayout,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+)
 
 import pireal
-from pireal.core import relation
-from pireal.gui.model_view_delegate import View, Header
-
 from pireal import translations as tr
+from pireal.core import relation
+from pireal.gui.model_view_delegate import Header, View
 
 
 class NewRelationDialog(QDialog):
@@ -91,7 +90,6 @@ class NewRelationDialog(QDialog):
 
     def __add_tuple(self):
         """Agrega una tupla/fila al final de la tabla"""
-
         model = self._view.model()
         model.insertRow(model.rowCount())
 
