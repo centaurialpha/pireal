@@ -22,6 +22,7 @@
 import logging
 import platform
 import sys
+from logging import StreamHandler
 from pathlib import Path
 
 from PyQt6.QtCore import QT_VERSION_STR, QDir, QLibraryInfo, QLocale, QTranslator
@@ -34,11 +35,6 @@ from pireal.dirs import create_app_dirs
 from pireal.gui.main_window import Pireal
 from pireal.gui.theme import apply_theme
 from pireal.settings import SETTINGS
-
-try:
-    from rich.logging import RichHandler as LoggerHandler
-except ImportError:
-    from logging import StreamHandler as LoggerHandler
 
 logger = logging.getLogger("main")
 
@@ -56,7 +52,7 @@ def setup_logger(level: int):
     fmt = "[%(asctime)s] [%(levelname)-6s]: %(name)s:%(funcName)-5s %(message)s"
     time_format = "%Y-%m-%d %H:%M:%S"
     logging.basicConfig(
-        level=level, format=fmt, datefmt=time_format, handlers=[LoggerHandler()]
+        level=level, format=fmt, datefmt=time_format, handlers=[StreamHandler()]
     )
 
 
