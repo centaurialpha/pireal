@@ -8,34 +8,54 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.11", "3.12"]
     defaults:
       run:
         shell: bash
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v2
+
+      - name: Install Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version-file: "pyproject.toml"
 
       - name: Prepare Environment
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
-          pip install .
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+          uv sync --frozen
+          if [ "${{ matrix.os}}" == "ubuntu-latest" ]; then
             sudo apt-get update -y
             sudo apt-get install -y libgles2-mesa-dev
           fi
 
-      - name: Lint
-        if: runner.os == 'Linux'
+      - name: Run Tests
         run: |
-          make check
+          uv run pytest -vvx
+      # - uses: actions/checkout@v4
+      # - name: Set up Python ${{ matrix.python-version }}
+      #   uses: actions/setup-python@v2
+      #   with:
+      #     python-version: ${{ matrix.python-version }}
 
-      - name: Unit Tests
-        run: |
-          make test-interpreter
-          make test-unit
+      # - name: Prepare Environment
+      #   run: |
+      #     python -m pip install --upgrade pip
+      #     pip install -r requirements-dev.txt
+      #     pip install .
+      #     if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+      #       sudo apt-get update -y
+      #       sudo apt-get install -y libgles2-mesa-dev
+      #     fi
+
+      # - name: Lint
+      #   if: runner.os == 'Linux'
+      #   run: |
+      #     make check
+
+      # - name: Unit Tests
+      #   run: |
+      #     make test-interpreter
+      #     make test-unit

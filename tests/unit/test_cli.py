@@ -34,7 +34,7 @@ def test_parser_help(parser):
 
 
 def test_parser_args_valid(parser):
-    cmd = ["-d file.pdb", "--database lalala", "-v", "--verbose", "--version"]
+    cmd = ["-d file.pdb", "--database lalala", "-l DEBUG", "--version"]
     for line in cmd:
         cmdline = shlex.split(line)
         parser.parse_args(cmdline)

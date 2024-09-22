@@ -1,7 +1,8 @@
+from pathlib import Path
+
 import pytest
 
-from pireal.core import file_manager
-from pireal.core import relation
+from pireal.core import file_manager, relation
 
 
 @pytest.mark.parametrize(
@@ -25,29 +26,29 @@ def test_get_extension(filename, expected):
     ],
 )
 def test_get_basename(filename, name):
-    assert file_manager.get_basename(filename) == name
+    assert str(file_manager.get_basename(filename)) == name
 
 
 @pytest.mark.parametrize(
     "filename, path",
     [
-        ("/home/gabo/archivo.py", "/home/gabo"),
-        ("/path/path/blabla/file.extension", "/path/path/blabla"),
-        ("/hola/como/estas/que_onda.qda", "/hola/como/estas"),
+        (Path("/home/gabo/archivo.py"), Path("/home/gabo")),
+        (Path("/path/path/blabla/file.extension"), Path("/path/path/blabla")),
+        (Path("/hola/como/estas/que_onda.qda"), Path("/hola/como/estas")),
     ],
 )
 def test_get_path(filename, path):
     assert file_manager.get_path(filename) == path
 
 
-def test_get_files_from_folder(tmpdir):
+def test_get_files_from_folder(tmp_path: Path):
     files = ("archivo.py", "archivo2.py", "archivo3.py")
-    assert len(tmpdir.listdir()) == 0
+    assert len(list(tmp_path.iterdir())) == 0
     for f in files:
-        path = tmpdir.join(f)
-        path.write("Some content")
-    assert len(tmpdir.listdir()) == len(files)
-    _files = file_manager.get_files_from_folder(tmpdir.strpath)
+        path = tmp_path / f
+        path.write_text("Some content")
+    assert len(list(tmp_path.iterdir())) == len(files)
+    _files = file_manager.get_files_from_folder(tmp_path)
     assert len(_files) == len(files)
 
 

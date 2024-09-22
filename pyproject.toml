@@ -1,47 +1,42 @@
 [project]
 name = "pireal"
-dynamic = ["version"]
+version = "4.0"
 description = "Relational Algebra Interpreter"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {file = "COPYING"}
-authors = [
-    {name = "Gabriel Acosta", email = "acostadariogabriel@gmail.com"}
-]
+license = { file = "COPYING" }
+authors = [{ name = "Gabriel Acosta", email = "acostadariogabriel@gmail.com" }]
 maintainers = [
-    {name = "Gabriel Acosta", email = "acostadariogabriel@gmail.com"}
+        { name = "Gabriel Acosta", email = "acostadariogabriel@gmail.com" },
 ]
 classifiers = [
-    "Environment :: X11 Applications",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Topic :: Education",
-    "Topic :: Utilities",
+        "Environment :: X11 Applications",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3",
+        "Topic :: Education",
+        "Topic :: Utilities",
 ]
 dependencies = [
-    "PyQt6"
+    "packaging>=24.1",
+    "pyqt6>=6.7.1",
 ]
-
-[project.optional-dependencies]
-dev = ["pytest", "pytest-cov", "ruff"]
-extras = ["rich"]
 
 [project.scripts]
 pireal = "pireal.main:run"
 
-[tool.setuptools.packages.find]
-where = ["src"]
-
 [build-system]
-requires = ["setuptools", "setuptools_scm[toml]>=6.2", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools_scm]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 100
 
 [tool.ruff.lint]
-select = [ "A", "B", "C90", "D", "E", "EM", "F", "I", "N", "PTH", "RUF", "W",]
-ignore = ["D103", "D102", "D101", "D100", "D107", "D104", "D105", "EM101", "N802", "N815", "EM102"]
 exclude = ["windows/*", "tests/*"]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest-cov>=5.0.0",
+    "pytest>=8.3.3",
+    "ruff>=0.6.7",
+]

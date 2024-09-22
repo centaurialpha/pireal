@@ -205,8 +205,8 @@ class Relation(object):
         indexes_or = [other_relation.header.index(i) for i in sharedf]
 
         for i, j in itertools.product(self.content, other_relation.content):
-            for k, l in itertools.product(indexes_r, indexes_or):
-                if i[k] == j[l]:
+            for k, L in itertools.product(indexes_r, indexes_or):
+                if i[k] == j[L]:
                     new_relation.insert(i + j)
         # Project para eliminar campos repetidos
         return new_relation.project(*final_fields)
@@ -228,14 +228,14 @@ class Relation(object):
         for i in self.content:
             added = False
             for j in other_relation.content:
-                for k, l in itertools.product(indexes_r, indexes_or):
-                    if i[k] == j[l]:
+                for k, L in itertools.product(indexes_r, indexes_or):
+                    if i[k] == j[L]:
                         # Esto es un producto cartesiano con la
                         # condición equi-join
                         new_relation.insert(i + j)
                         added = True
             if not added:
-                nulls = ["null" for i in range(len(other_relation.header))]
+                nulls = ["null" for _ in range(len(other_relation.header))]
                 new_relation.insert(tuple(list(i) + nulls))
 
         return new_relation.project(*final_fields)

@@ -20,7 +20,7 @@ import logging
 from urllib.error import URLError
 from urllib.request import urlopen
 
-from pkg_resources import parse_version
+from packaging.version import parse
 from PyQt6.QtCore import QObject
 from PyQt6.QtCore import pyqtSignal as Signal
 
@@ -41,8 +41,8 @@ class Updater(QObject):
     def check_updates(self):
         logger.info("Checking for updates...")
         try:
-            web_version = parse_version(urlopen(URL).read().decode().strip())
-            version = parse_version(__version__)
+            web_version = parse(urlopen(URL).read().decode().strip())
+            version = parse(__version__)
             if version < web_version:
                 self.version = web_version
                 logger.info("new version found: %s", self.version)

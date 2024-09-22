@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import os
 from pathlib import Path
 
 
@@ -62,5 +61,6 @@ def generate_database(relations):
     return content
 
 
-def get_files_from_folder(path):
-    return [f.stem for f in os.listdir(path) if (path / f).is_file()]
+def get_files_from_folder(path: Path) -> list[Path]:
+    # return [f.stem for f in os.listdir(path) if (path / f).is_file()]
+    return [file for file in path.iterdir() if (path / file).is_file()]

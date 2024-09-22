@@ -20,14 +20,13 @@
 # This necesary for sphinx
 from typing import cast
 
-from pkg_resources import DistributionNotFound, get_distribution
-
-try:
-    __version__ = get_distribution("pireal").version
-except DistributionNotFound:
-    # package is not installed
-    pass
-
+# from pkg_resources import DistributionNotFound, get_distribution
+# try:
+#     __version__ = get_distribution("pireal").version
+# except DistributionNotFound:
+#     # package is not installed
+#     pass
+__version__ = "4.0.0"
 from pireal.gui.main_window import Pireal
 
 instance = None

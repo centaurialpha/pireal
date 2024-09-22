@@ -35,11 +35,11 @@ class OrderedSet(MutableSet):
         if iterable is not None:
             self |= iterable
 
-    def add(self, key):
-        if key not in self._map:
-            self._map[key] = len(self._items)
-            self._items.append(key)
-        return self._map[key]
+    def add(self, value):
+        if value not in self._map:
+            self._map[value] = len(self._items)
+            self._items.append(value)
+        return self._map[value]
 
     def intersection(self, other):
         common = (item for item in self if item in other)
@@ -83,11 +83,11 @@ class OrderedSet(MutableSet):
         self._items[index] = data
         self._map[data] = index
 
-    def discard(self, key):
-        if key in self:
-            i = self._map[key]
+    def discard(self, value):
+        if value in self:
+            i = self._map[value]
             del self._items[i]
-            del self._map[key]
+            del self._map[value]
             for k, v in self._map.items():
                 if v >= i:
                     self._map[k] = v - 1
