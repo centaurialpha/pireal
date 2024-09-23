@@ -30,9 +30,7 @@ jobs:
           fi
 
       - name: Run Tests
-        run: |
-          uv run pytest -vvx
-      # - name: Lint
-      #   if: runner.os == 'Linux'
-      #   run: |
-      #     make check
+        run: uv run pytest -vvx
+
+      - name: Lint
+        run: uv run ruff check
