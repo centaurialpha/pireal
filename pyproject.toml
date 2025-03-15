@@ -3,9 +3,11 @@ name = "pireal"
 version = "4.0"
 description = "Relational Algebra Interpreter"
 readme = "README.md"
-requires-python = ">=3.10"
-license = { file = "COPYING" }
-authors = [{ name = "Gabriel Acosta", email = "acostadariogabriel@gmail.com" }]
+requires-python = ">=3.12"
+license = {file = "COPYING"}
+authors = [
+    {name = "Gabriel Acosta", email = "acostadariogabriel@gmail.com"}
+]
 maintainers = [
         { name = "Gabriel Acosta", email = "acostadariogabriel@gmail.com" },
 ]
@@ -17,26 +19,34 @@ classifiers = [
         "Topic :: Utilities",
 ]
 dependencies = [
-    "packaging>=24.1",
-    "pyqt6>=6.7.1",
+    "packaging>=24.2",
+    "pyqt6>=6.8.1",
 ]
 
 [project.scripts]
 pireal = "pireal.main:run"
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
-[tool.ruff]
-line-length = 100
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pireal"]
 
 [tool.ruff.lint]
 exclude = ["windows/*", "tests/*"]
 
-[tool.uv]
-dev-dependencies = [
-    "pytest-cov>=5.0.0",
-    "pytest>=8.3.3",
-    "ruff>=0.6.7",
+[dependency-groups]
+dev = [
+    "hatch-vcs>=0.4.0",
+    "hatchling>=1.27.0",
+    "pytest>=8.3.5",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "interpreter: mark a test as a interpreter."
 ]

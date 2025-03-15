@@ -8,29 +8,28 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.12"]
     defaults:
       run:
         shell: bash
 
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v2
 
-      - name: Install Python ${{ matrix.python-version }}
-        run: uv python install ${{ matrix.python-version }}
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.6.6"
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
 
-      - name: Prepare Environment
+      - name: Install the project
         run: |
-          uv sync --frozen
-          if [ "${{ matrix.os}}" == "ubuntu-latest" ]; then
+          uv sync --all-extras --dev
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
             sudo apt-get update -y
             sudo apt-get install -y libgles2-mesa-dev
           fi
 
       - name: Run Tests
         run: uv run pytest -vvx
-
-      - name: Lint
-        run: uv run ruff check
