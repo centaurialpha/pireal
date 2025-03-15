@@ -68,7 +68,6 @@ wheels = [
 
 [[package]]
 name = "pireal"
-version = "4.0"
 source = { editable = "." }
 dependencies = [
     { name = "packaging" },
