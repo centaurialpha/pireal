@@ -17,16 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-# This necesary for sphinx
+from importlib.metadata import version
 from typing import cast
 
-# from pkg_resources import DistributionNotFound, get_distribution
-# try:
-#     __version__ = get_distribution("pireal").version
-# except DistributionNotFound:
-#     # package is not installed
-#     pass
-__version__ = "4.0.0"
+__version__ = version("pireal")
+
 from pireal.gui.main_window import Pireal
 
 instance = None
