@@ -57,7 +57,7 @@ class SettingManager:
         self._font_family: str = self._qs.value("font_family")
         self._font_size: int = self._qs.value("font_size", defaultValue=12, type=int)
         self._dark_mode: bool = self._qs.value(
-            "dark_mode", defaultValue=True, type=bool
+            "dark_mode", defaultValue=False, type=bool
         )
 
     @property

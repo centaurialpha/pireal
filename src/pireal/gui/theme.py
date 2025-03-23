@@ -64,6 +64,7 @@ EDITOR_LIGHT = {
 # FIXME: se llama repetidas veces
 # En lugar de llamar siempre a esta funcion, guardar referencia
 def get_editor_color(key):
+    print(SETTINGS.dark_mode)
     if SETTINGS.dark_mode:
         return EDITOR_DARK[key]
     return EDITOR_LIGHT[key]

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015-2025 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -19,17 +19,16 @@
 
 import enum
 from collections import namedtuple
-from typing import Optional, cast
 
 from PyQt6.QtCore import (
-    QAbstractItemModel,
     QAbstractListModel,
     QModelIndex,
     QRect,
     Qt,
-    pyqtSignal,
 )
-from PyQt6.QtGui import QPainter
+from PyQt6.QtCore import (
+    pyqtSignal as Signal,
+)
 from PyQt6.QtWidgets import (
     QFrame,
     QLabel,
@@ -42,10 +41,11 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
 )
 
+from pireal import translations as tr
+
 RelationItem = namedtuple("RelationItem", "name cardinality degree")
 
 
-# FIXME: mejores nombres
 class RelationItemType(enum.Enum):
     Normal = "normal"
     Result = "result"
@@ -80,8 +80,7 @@ class RelationModel(QAbstractListModel):
         self._relations.clear()
         self.endResetModel()
 
-    def rowCount(self, parent: QModelIndex = QModelIndex()) -> int:
-        _ = parent
+    def rowCount(self, index):
         return len(self._relations)
 
     def data(self, index, role=Qt.ItemDataRole.DisplayRole):
@@ -107,56 +106,20 @@ class RelationModel(QAbstractListModel):
         }
 
 
-class RelationListView(QFrame):
-    def __init__(self, header_text="", parent=None):
-        super().__init__(parent)
-        self.setFrameShape(QFrame.Shape.StyledPanel)
-        self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(3, 3, 3, 3)
-        layout.setSpacing(0)
-        header_lbl = QLabel(header_text)
-        font = header_lbl.font()
-        font.setPointSize(12)
-        header_lbl.setFont(font)
-        layout.addWidget(
-            header_lbl,
-            alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter,
-        )
-        self.view = QListView()
-        layout.addWidget(self.view)
-
-
 class RelationDelegate(QStyledItemDelegate):
-    def paint(
-        self,
-        painter: Optional[QPainter],
-        option: "QStyleOptionViewItem",
-        index: QModelIndex,
-    ) -> None:
-        if painter is None:
-            return
-
-        model: QAbstractItemModel | None = index.model()
-        if model is None:
-            return
-
-        model = cast(RelationModel, model)
-
+    def paint(self, painter, option, index):
         opt = QStyleOptionViewItem(option)
         self.initStyleOption(opt, index)
 
+        model = index.model()
         relation_name = model.data(index, model.NameRole)
         cardinality = model.data(index, model.CardinalityRole)
         degree = model.data(index, model.DegreeRole)
 
-        style = opt.widget.style()
         opt.text = ""
-        if style is not None:
-            style.drawControl(
-                QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget
-            )
+        opt.widget.style().drawControl(
+            QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget
+        )
 
         rect = opt.rect
 
@@ -198,19 +161,50 @@ class RelationDelegate(QStyledItemDelegate):
         return size
 
 
-class LateralWidget(QSplitter):
-    relationClicked = pyqtSignal(int)
-    resultClicked = pyqtSignal(int)
+class RelationListView(QFrame):
+    def __init__(self, header_text="", parent=None):
+        super().__init__(parent)
+        self.setFrameShape(QFrame.Shape.StyledPanel)
+        self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
 
-    def __init__(self):
-        super().__init__(orientation=Qt.Orientation.Vertical)
-        self._relations_list = RelationListView("Relaciones")
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(3, 3, 3, 3)
+        header_lbl = QLabel(header_text)
+        font = header_lbl.font()
+        font.setPointSize(12)
+        header_lbl.setFont(font)
+        layout.addWidget(
+            header_lbl,
+            alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter,
+        )
+        self.view = QListView()
+        layout.addWidget(self.view)
+
+
+class LateralWidget(QSplitter):
+    """Widget que contiene la lista de relaciones y la lista de relaciones
+    del resultado de consultas
+    """
+
+    relationClicked = Signal(int)
+    relationSelectionChanged = Signal(int)
+
+    resultClicked = Signal(int)
+    resultSelectionChanged = Signal(int)
+
+    newRowsRequested = Signal(list)
+
+    def __init__(self, parent=None):
+        QSplitter.__init__(self, parent)
+        self.setOrientation(Qt.Orientation.Vertical)
+        # Lista de relaciones de la base de datos
+        self._relations_list = RelationListView(tr.TR_RELATIONS)
         self._relations_model = RelationModel()
         self._relations_list.view.setModel(self._relations_model)
         self._relations_list.view.setItemDelegate(RelationDelegate())
         self.addWidget(self._relations_list)
-
-        self._results_list = RelationListView("Resultados")
+        # Lista de relaciones del resultado de consultas
+        self._results_list = RelationListView(tr.TR_RESULTS)
         self._results_model = RelationModel()
         self._results_list.view.setModel(self._results_model)
         self._results_list.view.setItemDelegate(RelationDelegate())
@@ -222,18 +216,34 @@ class LateralWidget(QSplitter):
         }
 
         self._relations_list.view.clicked.connect(
-            lambda index: self.relationClicked.emit(index.row())
+            lambda i: self.relationClicked.emit(i.row())
         )
         self._results_list.view.clicked.connect(
-            lambda index: self.resultClicked.emit(index.row())
+            lambda i: self.resultClicked.emit(i.row())
         )
 
-    def add_item(self, relation, relation_type: RelationItemType) -> None:
+    def current_index(self):
+        index = self._relations_list.view.currentIndex()
+        return index.row()
+
+    def current_text(self):
+        index = self.current_index()
+        relation = self._relations_model.relation_by_index(index)
+        return relation.name
+
+    def remove_relation(self, index):
+        self._relations_model.remove_relation(index)
+
+    def add_item(self, relation, rtype: RelationItemType.Normal):
+        """Add relation to list of relations or results depending on rtype"""
         item = RelationItem(relation.name, relation.cardinality(), relation.degree())
-        self._models[relation_type].add_relation(item)
+
+        self._models[rtype].add_relation(item)
 
     def clear(self):
+        """Clear list of relations"""
         self._relations_model.clear()
 
     def clear_results(self):
+        """Clear list of results"""
         self._results_model.clear()

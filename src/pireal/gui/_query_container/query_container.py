@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2025 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -17,6 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from importlib.metadata import version
+from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget
+from pireal.registry import AutoRegistered
 
-__version__ = version("pireal")
+
+class QueryContainer(AutoRegistered, QWidget):
+    registry_name = "query-container"
+
+    def __init__(self, parent=None):
+        QWidget.__init__(self, parent)
+        box = QVBoxLayout(self)
+        box.addWidget(QLabel("OLA"))
