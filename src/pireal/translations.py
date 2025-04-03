@@ -19,14 +19,16 @@
 
 from PyQt6.QtCore import QCoreApplication
 
-tr = QCoreApplication.translate
+
+def tr(context: str, text: str) -> str:
+    return QCoreApplication.translate(context, text)
 
 ###############################################################################
 # START PAGE
 ###############################################################################
-TR_OPEN_DB = QCoreApplication.translate("Pireal", "Open Database")
-TR_NEW_DB = QCoreApplication.translate("Pireal", "New Database")
-TR_EXAMPLE_DB = QCoreApplication.translate("Pireal", "Example")
+TR_OPEN_DB = tr("Pireal", "Open Database")
+TR_NEW_DB = tr("Pireal", "New Database")
+TR_EXAMPLE_DB = tr("Pireal", "Example")
 
 ###############################################################################
 # MENU BAR

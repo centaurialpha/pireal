@@ -32,6 +32,7 @@ build-backend = "hatchling.build"
 
 [tool.hatch.version]
 source = "vcs"
+path = "pireal/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pireal"]

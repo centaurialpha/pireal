@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2025 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -31,10 +31,11 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
 )
 
-import pireal
 from pireal import translations as tr
 from pireal.core import relation
 from pireal.gui.model_view_delegate import Header, View
+from pireal.gui.table_widget import TableWidget
+from pireal.registry import Registry
 
 
 class NewRelationDialog(QDialog):
@@ -69,8 +70,8 @@ class NewRelationDialog(QDialog):
         header = Header()
         self._view.setHorizontalHeader(header)
         self._view.setModel(QStandardItemModel(0, 2))
-        header.model().setHeaderData(0, Qt.Orientation.Horizontal, self.tr("Field 1"))
-        header.model().setHeaderData(1, Qt.Orientation.Horizontal, self.tr("Field 2"))
+        header.model().setHeaderData(0, Qt.Orientation.Horizontal, self.tr("Field_1"))
+        header.model().setHeaderData(1, Qt.Orientation.Horizontal, self.tr("Field_2"))
         # Botones para crear/cancelar
         hhbox = QHBoxLayout()
         hhbox.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding))
@@ -132,11 +133,8 @@ class NewRelationDialog(QDialog):
                 self, "Error", tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME
             )
             return
-        pireal_instance = pireal.get_pireal_instance()
-        if (
-            relation_name
-            in pireal_instance.central_widget.get_active_db().table_widget.relations
-        ):
+        table_widget = Registry.get("table-widget", TableWidget)
+        if relation_name in table_widget.relations:
             QMessageBox.information(
                 self, "Error", tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name)
             )

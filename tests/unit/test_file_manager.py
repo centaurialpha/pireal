@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from pireal.core import file_manager, relation
+from pireal.utils import sanitize_data
 
 
 @pytest.mark.parametrize(
@@ -64,3 +65,28 @@ def test_generate_database():
     expected = "@persona:id,name\n1,Gabriel\n23,Rodrigo\n"
 
     # assert expected in file_manager.generate_database(relations)
+
+
+def test_sanitize_data():
+    data = (
+        "@t1:a,b,c\n"
+        "1234,hola,chau\n"
+        "4321,chau,hola\n\n"
+        "@t2:d,e,f,g\n"
+        "4321,AAA,BBB,CCC\n"
+    )
+    expected = {
+        "tables": [
+            {
+                "header": ["a", "b", "c"],
+                "name": "t1",
+                "tuples": {("1234", "hola", "chau"), ("4321", "chau", "hola")},
+            },
+            {
+                "header": ["d", "e", "f", "g"],
+                "name": "t2",
+                "tuples": {("4321", "AAA", "BBB", "CCC")},
+            },
+        ]
+    }
+    assert expected == sanitize_data(data)

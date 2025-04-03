@@ -20,7 +20,7 @@
 import argparse
 
 
-def get_cli():
+def get_cli() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--database", help="Database file")
     parser.add_argument(

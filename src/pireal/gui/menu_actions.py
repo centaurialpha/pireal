@@ -28,6 +28,13 @@ from pireal import translations as tr
 
 Action = namedtuple("Action", ["name", "slot", "is_checkable"], defaults=(False,))
 
+menu_file = {
+    "name": "File",
+    "actions": (
+        "Database",
+        Action("New Database", "controller:create_database", is_checkable=False),
+    )
+}
 m_file = {
     "name": tr.TR_MENU_FILE,
     "actions": (

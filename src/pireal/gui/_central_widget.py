@@ -38,18 +38,20 @@ from pireal import settings
 from pireal import translations as tr
 from pireal.core import file_manager, pfile
 from pireal.dirs import DATA_SETTINGS, EXAMPLE_DB_FILENAME
-from pireal.gui import start_page
-from pireal.gui.database_container import DatabaseContainer
-from pireal.gui.dialogs import new_relation_dialog, preferences
-from pireal.gui.dialogs.new_database_dialog import DBInputDialog
-from pireal.gui.lateral_widget import RelationItemType
+
+# from pireal.gui import start_page
+# from pireal.gui.database_container import DatabaseContainer
+# from pireal.gui.dialogs import new_relation_dialog, preferences
+# from pireal.gui.dialogs.new_database_dialog import DBInputDialog
+# from pireal.gui.lateral_widget import RelationItemType
+from pireal.registry import AutoRegistered
 
 # Logger
 logger = logging.getLogger(__name__)
 
 
-class CentralWidget(QWidget):
-    """HOLA QUE ONDA"""
+class CentralWidget(AutoRegistered, QWidget):
+    registry_name = "central"
 
     def __init__(self):
         QWidget.__init__(self)
@@ -67,8 +69,8 @@ class CentralWidget(QWidget):
         self._last_open_folder = qsettings.value("last_open_folder", type=str)
         self._recent_db_containers = qsettings.value("recent_databases", type=list)
 
-        esc_short = QShortcut(QKeySequence(Qt.Key.Key_Escape), self)
-        esc_short.activated.connect(self._hide_search)
+        # esc_short = QShortcut(QKeySequence(Qt.Key.Key_Escape), self)
+        # esc_short.activated.connect(self._hide_search)
 
     def _hide_search(self):
         pireal_instance = pireal.get_pireal_instance()

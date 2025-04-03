@@ -20,7 +20,7 @@
 from pathlib import Path
 
 
-def get_extension(filename):
+def get_extension(filename: str) -> str:
     """Return the extension of filename.
 
     :param filename: Filename path
@@ -29,7 +29,7 @@ def get_extension(filename):
     return Path(filename).suffix
 
 
-def get_basename(filename):
+def get_basename(filename: str) -> str:
     """Return the base name of filename.
 
     :param filename: Filename, for example: "/home/gabo/file.rpf"
@@ -38,7 +38,7 @@ def get_basename(filename):
     return Path(filename).stem
 
 
-def get_path(filename):
+def get_path(filename: str) -> Path:
     return Path(filename).parent
 
 
@@ -62,5 +62,4 @@ def generate_database(relations):
 
 
 def get_files_from_folder(path: Path) -> list[Path]:
-    # return [f.stem for f in os.listdir(path) if (path / f).is_file()]
     return [file for file in path.iterdir() if (path / file).is_file()]
