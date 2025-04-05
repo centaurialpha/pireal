@@ -20,6 +20,7 @@
 from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import QFileDialog, QStackedWidget, QVBoxLayout, QWidget
 
+from pireal.core.pireal_file import File
 from pireal.gui.database_container import DatabaseContainer
 from pireal.gui.lateral_widget import LateralWidget, RelationItemType
 from pireal.gui.table_widget import TableWidget
@@ -71,8 +72,8 @@ class Controller(QWidget):
             if not filename:
                 return
 
-        with open(filename) as fp:
-            content = sanitize_data(fp.read())
+        file = File(filename)
+        content = sanitize_data(file.read())
 
         database_container = Registry.get("database-container", DatabaseContainer)
         database_container.create_database(content)

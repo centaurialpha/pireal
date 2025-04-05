@@ -5,7 +5,8 @@ from PyQt6.QtWidgets import QSplitter
 
 from pireal.core.relation import Relation
 from pireal.dirs import DATA_SETTINGS
-from pireal.gui.db import DB
+from pireal.core.db import DB
+from pireal.core.pireal_file import File
 from pireal.gui.lateral_widget import LateralWidget, RelationItemType
 from pireal.gui.model_view_delegate import Delegate, RelationModel, View
 from pireal.gui.query_widget import QueryWidget
@@ -87,11 +88,11 @@ class DatabaseContainer(QSplitter):
 
     def new_query(self, filename: str) -> None:
         query_widget = Registry.get("query-widget", QueryWidget)
-        editor = query_widget.create_editor()
 
+        file = File(filename)
+        editor = query_widget.create_editor(file)
         if filename:
-            with open(filename) as fp:
-                content = fp.read()
+            content = file.read()
             editor.setText(content)
 
     def execute_queries(self):

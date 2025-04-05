@@ -2,7 +2,7 @@ from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import QSplitter, QStackedWidget, QTabWidget
 
 from pireal.core.relation import Relation
-from pireal.gui.db import DB
+from pireal.core.db import DB
 from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.model_view_delegate import create_view
 from pireal.registry import Registry

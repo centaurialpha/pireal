@@ -1,4 +1,4 @@
-from typing import cast
+from typing import Optional, cast
 
 from PyQt6.QtWidgets import (
     QHBoxLayout,
@@ -10,6 +10,7 @@ from PyQt6.QtWidgets import (
 )
 
 from pireal import translations as tr
+from pireal.core.pireal_file import File
 from pireal.gui.editor import Editor
 
 
@@ -26,10 +27,14 @@ class QueryWidget(QWidget):
         box.addWidget(self._editor_tabs)
 
     def add_editor(self, editor: "EditorWidget"):
-        self._editor_tabs.addTab(editor, "queonda")
+        tab_text = editor.file.display_name
+        index = self._editor_tabs.addTab(editor, tab_text)
+        self._editor_tabs.setTabToolTip(index, editor.file.path)
 
-    def create_editor(self) -> "EditorWidget":
+    def create_editor(self, file: Optional[File] = None) -> "EditorWidget":
         editor = EditorWidget()
+        if file is not None:
+            editor.file = file
         self.add_editor(editor)
         return editor
 
@@ -53,6 +58,16 @@ class EditorWidget(QWidget):
         self._search_widget = SearchWidget(self.editor)
         self._search_widget.hide()
         vbox.addWidget(self._search_widget)
+
+        self._file: File
+
+    @property
+    def file(self) -> File:
+        return self._file
+
+    @file.setter
+    def file(self, file: File) -> None:
+        self._file = file
 
     def text(self) -> str:
         return self.editor.toPlainText()
