@@ -30,41 +30,38 @@ DARK = {
 
 LIGHT = {"Highlight": "#7742539e", "BrightText": "#ec7875", "Dark": "#dddddd"}
 
-EDITOR_DARK = {
-    # Editor
-    "background": "#282a36",
-    "foreground": "#f8f8f2",
-    "sidebar_background": "#282a36",
-    "sidebar_foreground": "#6272a4",
-    "current_line": "#383b4c",
-    # Hihglighter
-    "keyword": "#7ce4fb",
-    "number": "#bd93f9",
-    "string": "#f1fa8c",
-    "comment": "#6272a4",
-    "operator": "#ffffff",
-    "variable": "#ffb86c",
-}
-
 EDITOR_LIGHT = {
     "background": "#ffffff",
-    "foreground": "#000000",
-    "sidebar_background": "#ffffff",
-    "sidebar_foreground": "#000000",
-    "current_line": "#eeeeee",
-    "keyword": "#808000",
-    "number": "#000080",
-    "string": "#008000",
-    "comment": "#008000",
-    "operator": "#000000",
-    "variable": "#800000",
+    "foreground": "#282a36",
+    "sidebar_background": "#f0f0f0",
+    "sidebar_foreground": "#44475a",
+    "current_line": "#eaeaea",
+    "keyword": "#9c27b0",
+    "number": "#bd93f9",
+    "string": "#2a9d8f",
+    "comment": "#6272a4",
+    "operator": "#ff5555",
+    "variable": "#5c6bc0",
+}
+
+EDITOR_DARK = {
+    "background": "#282a36",
+    "foreground": "#f8f8f2",
+    "sidebar_background": "#21222c",
+    "sidebar_foreground": "#f8f8f2",
+    "current_line": "#44475a",
+    "keyword": "#c792ea",
+    "number": "#bd93f9",
+    "string": "#50fa7b",
+    "comment": "#6272a4",
+    "operator": "#ff5555",
+    "variable": "#8be9fd",
 }
 
 
 # FIXME: se llama repetidas veces
 # En lugar de llamar siempre a esta funcion, guardar referencia
 def get_editor_color(key):
-    print(SETTINGS.dark_mode)
     if SETTINGS.dark_mode:
         return EDITOR_DARK[key]
     return EDITOR_LIGHT[key]
