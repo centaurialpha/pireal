@@ -17,7 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
+from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtWidgets import QFileDialog, QStackedWidget, QVBoxLayout, QWidget
 
 from pireal.gui.database_container import DatabaseContainer
 from pireal.gui.lateral_widget import LateralWidget, RelationItemType
@@ -48,11 +49,13 @@ class Controller(QWidget):
             index = self._stack.addWidget(widget)
         self._stack.setCurrentIndex(index)
 
+    @pyqtSlot()
     def create_database(self):
         database_widget = Registry.get("database-container", DatabaseContainer)
         self.add_widget(database_widget)
 
-    def open_database(self, filename):
+    @pyqtSlot()
+    def open_database(self, filename: str = ""):
         """
         - si ya hay una db abierta, avisar y no hacer nada.
         - si no se proporciona un archivo, abrir el file dialog para seleccionar.
@@ -63,6 +66,11 @@ class Controller(QWidget):
         - actualizar el titulo de la ventana con el nombre del archivo.
         - agregar la db a la lista de recientes.
         """
+        if not filename:
+            filename, _ = QFileDialog.getOpenFileName(self, "Ola", "")
+            if not filename:
+                return
+
         with open(filename) as fp:
             content = sanitize_data(fp.read())
 
@@ -70,17 +78,21 @@ class Controller(QWidget):
         database_container.create_database(content)
         self.add_widget(database_container)
 
+    @pyqtSlot()
     def open_query(self, filename="", remember=True):
         self.new_query(filename)
 
-    def new_query(self, filename: str):
+    @pyqtSlot()
+    def new_query(self, filename: str = ""):
         database_widget = Registry.get("database-container", DatabaseContainer)
         database_widget.new_query(filename)
 
+    @pyqtSlot()
     def execute_queries(self) -> None:
         database_widget = Registry.get("database-container", DatabaseContainer)
         database_widget.execute_queries()
 
+    @pyqtSlot()
     def create_relation(self):
         def _create(relation, relation_name):
             relation.name = relation_name

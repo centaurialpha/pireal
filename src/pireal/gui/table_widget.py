@@ -2,6 +2,7 @@ from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import QSplitter, QStackedWidget, QTabWidget
 
 from pireal.core.relation import Relation
+from pireal.gui.db import DB
 from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.model_view_delegate import create_view
 from pireal.registry import Registry
@@ -20,8 +21,6 @@ class TableWidget(QSplitter):
         self._stacked_results = QStackedWidget()
         self._tabs.addTab(self._stacked_results, "Results")
 
-        self.relations = {}
-
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
         lateral_widget.resultClicked.connect(self._on_result_list_clicked)
 
@@ -29,15 +28,11 @@ class TableWidget(QSplitter):
     def _on_result_list_clicked(self, index):
         self._stacked_results.setCurrentIndex(index)
 
-    def add_relation(self, rela):
-        if self.relations.get(rela.name, None) is None:
-            self.relations[rela.name] = rela
-            return True
-        return False
-
     def add_table_to_workspace(self, relation: Relation, editable=True):
+        db = Registry.get("db", DB)
+
         view = create_view(relation, editable=editable)
-        self.add_relation(relation)
+        db.add(relation)
         self._stacked.addWidget(view)
         self._update_tab_text(index=0)
 

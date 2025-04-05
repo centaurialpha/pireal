@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QApplication
 
 from pireal.gui.controller import Controller
 from pireal.gui.database_container import DatabaseContainer
+from pireal.gui.db import DB
 from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.main_window import Pireal
 from pireal.gui.query_widget import QueryWidget
@@ -24,6 +25,9 @@ class Application:
         self._initialize_widgets()
 
     def _initialize_widgets(self):
+        database = DB()
+        self._registry.register("db", database)
+
         controller = Controller()
         self._registry.register("controller", controller)
 

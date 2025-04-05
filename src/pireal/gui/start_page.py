@@ -47,7 +47,6 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-import pireal
 from pireal import translations as tr
 from pireal.dirs import DATA_SETTINGS, EXAMPLES_DIR
 from pireal.gui.controller import Controller
@@ -242,8 +241,8 @@ class StartPage(QWidget):
         #     central_widget.create_database()
 
     def _open_database(self, path: str):
-        pireal_instance = pireal.get_pireal_instance()
-        pireal_instance.central_widget.open_database(path)
+        controller = Registry.get("controller", Controller)
+        controller.open_database()
 
     def _open_example(self):
         controller = Registry.get("controller", Controller)

@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QSplitter
 
 from pireal.core.relation import Relation
 from pireal.dirs import DATA_SETTINGS
+from pireal.gui.db import DB
 from pireal.gui.lateral_widget import LateralWidget, RelationItemType
 from pireal.gui.model_view_delegate import Delegate, RelationModel, View
 from pireal.gui.query_widget import QueryWidget
@@ -36,6 +37,7 @@ class DatabaseContainer(QSplitter):
         self.addWidget(self._vsplitter)
 
         self._relations: Dict[str, Relation] = {}
+        self._database = Registry.get("db", DB)
 
         lateral_widget.relationClicked.connect(self._on_relation_clicked)
 
@@ -55,6 +57,8 @@ class DatabaseContainer(QSplitter):
 
             # FIXME: feo
             rela.name = table_name
+
+            self._database.add(rela)
 
             table_widget.add_table_to_workspace(rela)
 
@@ -102,8 +106,9 @@ class DatabaseContainer(QSplitter):
 
         editor.editor.show_run_cursor()
 
+        # FIXME: probar project cod_curso (inscripto) algo raro.
         # FIXME: borrar y eliminar los items (lateral y table)
-        self._relations.clear()
+        # self._database.clear()
         lateral_widget.clear_results()
         i = table_widget._stacked_results.count()
         while i >= 0:
@@ -113,13 +118,10 @@ class DatabaseContainer(QSplitter):
                 widget.deleteLater()
             i -= 1
 
+        self._database.clear_query_results()
         result = parse(queries)
 
-        self._relations.update(table_widget.relations)
-
         for relation_name, expression in result.items():
-            new_relation = eval(expression, {}, self._relations)
-            self._relations[relation_name] = new_relation
+            new_relation = self._database.eval_query(expression, relation_name)
             table_widget.add_table_to_results(new_relation)
-            new_relation.name = relation_name
             lateral_widget.add_item(new_relation, RelationItemType.Result)
