@@ -29,8 +29,9 @@ from PyQt6.QtWidgets import (
 )
 
 from pireal.gui import highlighter, sidebar
-from pireal.gui.theme import get_color, get_editor_color
+from pireal.gui.theme import get_editor_color
 from pireal.settings import SETTINGS
+
 # from pireal.settings import SETTINGS
 
 BRACKETS = "()"
@@ -200,30 +201,14 @@ class Editor(QPlainTextEdit):
             bottom = top + self.blockBoundingRect(block).height()
             block_number += 1
 
-    @property
-    def filename(self):
-        """This function returns the filename of RFile object
-
-        :returns: filename of PFile
-        """
-        return self.pfile.filename
-
-    @property
-    def name(self):
-        return self.pfile.display_name
-
-    @property
-    def is_new(self):
-        return self.pfile.is_new
-
-    def resizeEvent(self, event):
-        super(Editor, self).resizeEvent(event)
+    def resizeEvent(self, e):
+        super(Editor, self).resizeEvent(e)
         self._sidebar.redimensionar()
         self._sidebar.update_viewport()
 
-    def paintEvent(self, event):
+    def paintEvent(self, e):
         self._update_visible_blocks()
-        super().paintEvent(event)
+        super().paintEvent(e)
 
     def word_under_cursor(self, cursor=None):
         """Returns QTextCursor that contains a word under passed cursor
@@ -298,8 +283,8 @@ class Editor(QPlainTextEdit):
         font.setPointSize(point_size)
         self.setFont(font)
 
-    def setFont(self, font):
-        super().setFont(font)
+    def setFont(self, a0):
+        super().setFont(a0)
         self._sidebar.update_viewport()
         self._sidebar.redimensionar()
 
@@ -336,44 +321,52 @@ class Editor(QPlainTextEdit):
 
     def saved(self):
         self.modified = False
-        self.document().setModified(self.modified)
+        document = self.document()
+        if document is not None:
+            document.setModified(self.modified)
         self.setFocus()
 
     def comment(self):
         """Comment one or more lines"""
         tcursor = self.textCursor()
-        block_start = self.document().findBlock(tcursor.selectionStart())
-        block_end = self.document().findBlock(tcursor.selectionEnd()).next()
+        document = self.document()
+        if document is not None:
+            block_start = document.findBlock(tcursor.selectionStart())
+            block_end = document.findBlock(tcursor.selectionEnd()).next()
 
-        tcursor.beginEditBlock()
+            tcursor.beginEditBlock()
 
-        while block_start != block_end:
-            if block_start.text():
-                tcursor.setPosition(block_start.position())
-                if block_start.text()[0] != "%":
-                    tcursor.insertText("% ")
-            block_start = block_start.next()
+            while block_start != block_end:
+                if block_start.text():
+                    tcursor.setPosition(block_start.position())
+                    if block_start.text()[0] != "%":
+                        tcursor.insertText("% ")
+                block_start = block_start.next()
 
-        tcursor.endEditBlock()
+            tcursor.endEditBlock()
 
     def uncomment(self):
         """Uncomment one or more lines"""
         tcursor = self.textCursor()
-        block_start = self.document().findBlock(tcursor.selectionStart())
-        block_end = self.document().findBlock(tcursor.selectionEnd()).next()
+        document = self.document()
+        if document is not None:
+            block_start = document.findBlock(tcursor.selectionStart())
+            block_end = document.findBlock(tcursor.selectionEnd()).next()
 
-        tcursor.beginEditBlock()
+            tcursor.beginEditBlock()
 
-        while block_start != block_end:
-            if block_start.text():
-                tcursor.setPosition(block_start.position())
-                if block_start.text()[0] == "%":
-                    tcursor.deleteChar()
-            block_start = block_start.next()
+            while block_start != block_end:
+                if block_start.text():
+                    tcursor.setPosition(block_start.position())
+                    if block_start.text()[0] == "%":
+                        tcursor.deleteChar()
+                block_start = block_start.next()
 
-        tcursor.endEditBlock()
+            tcursor.endEditBlock()
 
-    def find_text(self, search: str, cs=False, wo=False, backward=False, find_next=True):
+    def find_text(
+        self, search: str, cs=False, wo=False, backward=False, find_next=True
+    ):
         flags = QTextDocument.FindFlag(0)
         if cs:
             flags = QTextDocument.FindFlag.FindCaseSensitively
