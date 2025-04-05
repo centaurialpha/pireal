@@ -83,10 +83,12 @@ class Controller(QWidget):
 
     def create_relation(self):
         def _create(relation, relation_name):
+            relation.name = relation_name
+
             lateral_widget = Registry.get("lateral-widget", LateralWidget)
             table_widget = Registry.get("table-widget", TableWidget)
+
             table_widget.add_table_to_workspace(relation)
-            relation.name = relation_name
             lateral_widget.add_item(relation, relation_type=RelationItemType.Normal)
 
 

@@ -65,6 +65,7 @@ file_menu.add_item(Action(tr.TR_MENU_FILE_OPEN_DB, "controller:open_database"))
 file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_DB, ""))
 file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_DB, ""))
 file_menu.add_item(Action(tr.TR_MENU_FILE_CLOSE_DB, ""))
+file_menu.add_item(Action(tr.TR_MENU_FILE_NEW_QUERY, "controller:new_query"))
 
 scheme_menu = Menu("Esquema")
 scheme_menu.add_item(Action(tr.TR_MENU_SCHEME_CREATE_RELATION, "controller:create_relation"))
