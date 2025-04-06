@@ -1,6 +1,7 @@
 from PyQt6.QtGui import QColor, QPalette
 
 from pireal.settings import SETTINGS
+from pireal.core import settings
 
 DARK = {
     "Window": "#171a21",
@@ -62,7 +63,7 @@ EDITOR_DARK = {
 # FIXME: se llama repetidas veces
 # En lugar de llamar siempre a esta funcion, guardar referencia
 def get_editor_color(key):
-    if SETTINGS.dark_mode:
+    if settings.DARK_MODE:
         return EDITOR_DARK[key]
     return EDITOR_LIGHT[key]
 
