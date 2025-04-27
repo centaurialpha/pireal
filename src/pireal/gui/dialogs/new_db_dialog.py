@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015-2021 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2025 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -17,10 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import os
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtCore import pyqtSlot as Slot
+from pathlib import Path
+
+from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtWidgets import (
     QDialog,
     QDialogButtonBox,
@@ -30,76 +30,67 @@ from PyQt6.QtWidgets import (
     QStyle,
 )
 
-from pireal import dirs
 from pireal import translations as tr
 
-PIREAL_DB_EXTENSION = ".pdb"
 
-
-class DBInputDialog(QDialog):
-    def __init__(self, parent=None):
+class NewDBInputDialog(QDialog):
+    def __init__(self, parent=None, location: str = "", name: str = ""):
         super().__init__(parent)
         self.setWindowTitle(tr.TR_DB_DIALOG_TITLE)
         self.setMinimumWidth(500)
+
+        # Form
         layout = QFormLayout(self)
-        layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
         self._line_db_name = QLineEdit()
-        layout.addRow(tr.TR_DB_DIALOG_DB_NAME, self._line_db_name)
         self._line_db_location = QLineEdit()
-        self._line_db_location.setText(str(dirs.DATABASES_DIR))
+        self._line_db_location.setText("/home/gabox/")
         self._line_db_location.setReadOnly(True)
+        style = self.style()
+        assert style is not None
         choose_dir_action = self._line_db_location.addAction(
-            self.style().standardIcon(QStyle.StandardPixmap.SP_DirIcon),
+            style.standardIcon(QStyle.StandardPixmap.SP_DirIcon),
             QLineEdit.ActionPosition.TrailingPosition,
         )
-        layout.addRow(tr.TR_DB_DIALOG_DB_LOCATION, self._line_db_location)
-        self._line_db_path = QLineEdit()
-        self._line_db_path.setReadOnly(True)
-        layout.addRow(tr.TR_DB_DIALOG_DB_FILENAME, self._line_db_path)
-        self._line_db_path.setText(str(dirs.DATABASES_DIR))
+        self._line_db_filename = QLineEdit()
+        self._line_db_filename.setReadOnly(True)
+        self._line_db_filename.setText("/home/gabox/")
 
+        layout.addRow(tr.TR_DB_DIALOG_DB_NAME, self._line_db_name)
+        layout.addRow(tr.TR_DB_DIALOG_DB_LOCATION, self._line_db_location)
+        layout.addRow(tr.TR_DB_DIALOG_DB_FILENAME, self._line_db_filename)
+
+        # Buttons
         button_box = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel,
             Qt.Orientation.Horizontal,
         )
         layout.addWidget(button_box)
-        self._button_ok = button_box.button(QDialogButtonBox.StandardButton.Ok)
 
         button_box.accepted.connect(self.accept)
         button_box.rejected.connect(self.reject)
-
         choose_dir_action.triggered.connect(self._choose_db_dir)
-        self._line_db_name.textChanged.connect(self._update_db_path)
-        self._line_db_location.textChanged.connect(self._update_db_path)
-        self._line_db_name.textChanged.connect(self._validate)
+        self._line_db_name.textChanged.connect(self._update_db_filename)
+        self._line_db_location.textChanged.connect(self._update_db_filename)
 
-    @Slot()
-    def _update_db_path(self):
+    @pyqtSlot()
+    def _update_db_filename(self):
         db_name = self._line_db_name.text().strip()
         if db_name:
-            db_name += PIREAL_DB_EXTENSION
-        db_path = os.path.join(self._line_db_location.text(), db_name)
-        self._line_db_path.setText(db_path)
+            db_name = f"{db_name}.pdb"
+        db_filename = Path(self._line_db_location.text()) / db_name
+        self._line_db_filename.setText(str(db_filename))
 
-    @property
-    def db_path(self) -> str:
-        return self._line_db_path.text()
-
-    @Slot()
+    @pyqtSlot()
     def _choose_db_dir(self):
         location = QFileDialog.getExistingDirectory(self, tr.TR_DB_DIALOG_SELECT_FOLDER)
         if location:
             self._line_db_location.setText(location)
-            # TODO: update PIREAL_DATABASES in settings
 
-    @classmethod
-    def ask_db_name(cls, parent=None) -> str:
-        dialog = cls(parent=parent)
-        ret = dialog.exec()
-        if ret:
-            return dialog.db_path
-        return ""
+    @staticmethod
+    def ask_db_name(parent=None, location: str = "", name: str = ""):
+        dialog = NewDBInputDialog(parent, location, name)
+        result = dialog.exec()
 
-    def _validate(self):
-        exist = os.path.exists(self._line_db_path.text().strip())
-        self._button_ok.setEnabled(not exist)
+        if result == QDialog.DialogCode.Accepted:
+            return ""
+        return

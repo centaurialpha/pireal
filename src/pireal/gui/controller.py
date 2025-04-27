@@ -22,11 +22,12 @@ from PyQt6.QtWidgets import QFileDialog, QStackedWidget, QVBoxLayout, QWidget
 
 from pireal.core.pireal_file import File
 from pireal.gui.database_container import DatabaseContainer
+from pireal.gui.dialogs.new_db_dialog import NewDBInputDialog
+from pireal.gui.dialogs.new_relation_dialog import NewRelationDialog
 from pireal.gui.lateral_widget import LateralWidget, RelationItemType
 from pireal.gui.table_widget import TableWidget
 from pireal.registry import Registry
 from pireal.utils import sanitize_data
-from pireal.gui.dialogs.new_relation_dialog import NewRelationDialog
 
 
 class Controller(QWidget):
@@ -52,6 +53,10 @@ class Controller(QWidget):
 
     @pyqtSlot()
     def create_database(self):
+        database_filepath = NewDBInputDialog.ask_db_name(parent=self)
+        if database_filepath is None:
+            return
+        print(database_filepath)
         database_widget = Registry.get("database-container", DatabaseContainer)
         self.add_widget(database_widget)
 
@@ -103,7 +108,6 @@ class Controller(QWidget):
 
             table_widget.add_table_to_workspace(relation)
             lateral_widget.add_item(relation, relation_type=RelationItemType.Normal)
-
 
         new_relation_dialog = NewRelationDialog()
         new_relation_dialog.created.connect(_create)
