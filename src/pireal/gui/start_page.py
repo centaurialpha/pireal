@@ -236,9 +236,6 @@ class StartPage(QWidget):
     def _new_database(self):
         controller = Registry.get("controller", Controller)
         controller.create_database()
-        # central_widget = Pireal.get_widget("central-widget", CentralWidget)
-        # if central_widget is not None:
-        #     central_widget.create_database()
 
     def _open_database(self, path: str):
         controller = Registry.get("controller", Controller)
