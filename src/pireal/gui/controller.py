@@ -56,7 +56,6 @@ class Controller(QWidget):
         database_filepath = NewDBInputDialog.ask_db_name(parent=self)
         if database_filepath is None:
             return
-        print(database_filepath)
         database_widget = Registry.get("database-container", DatabaseContainer)
         self.add_widget(database_widget)
 

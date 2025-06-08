@@ -3,10 +3,10 @@ from typing import Dict
 from PyQt6.QtCore import QSettings, Qt, pyqtSlot
 from PyQt6.QtWidgets import QSplitter
 
-from pireal.core.relation import Relation
-from pireal.dirs import DATA_SETTINGS
 from pireal.core.db import DB
 from pireal.core.pireal_file import File
+from pireal.core.relation import Relation
+from pireal.dirs import DATA_SETTINGS
 from pireal.gui.lateral_widget import LateralWidget, RelationItemType
 from pireal.gui.model_view_delegate import Delegate, RelationModel, View
 from pireal.gui.query_widget import QueryWidget

@@ -31,6 +31,7 @@ from PyQt6.QtWidgets import (
 )
 
 from pireal import translations as tr
+from pireal.dirs import DATABASES_DIR
 
 
 class NewDBInputDialog(QDialog):
@@ -42,8 +43,9 @@ class NewDBInputDialog(QDialog):
         # Form
         layout = QFormLayout(self)
         self._line_db_name = QLineEdit()
+        self._line_db_name.setText(name)
         self._line_db_location = QLineEdit()
-        self._line_db_location.setText("/home/gabox/")
+        self._line_db_location.setText(location or str(DATABASES_DIR))
         self._line_db_location.setReadOnly(True)
         style = self.style()
         assert style is not None
@@ -53,7 +55,7 @@ class NewDBInputDialog(QDialog):
         )
         self._line_db_filename = QLineEdit()
         self._line_db_filename.setReadOnly(True)
-        self._line_db_filename.setText("/home/gabox/")
+        self._line_db_filename.setText(self.filename())
 
         layout.addRow(tr.TR_DB_DIALOG_DB_NAME, self._line_db_name)
         layout.addRow(tr.TR_DB_DIALOG_DB_LOCATION, self._line_db_location)
@@ -72,13 +74,15 @@ class NewDBInputDialog(QDialog):
         self._line_db_name.textChanged.connect(self._update_db_filename)
         self._line_db_location.textChanged.connect(self._update_db_filename)
 
-    @pyqtSlot()
-    def _update_db_filename(self):
+    def filename(self) -> str:
         db_name = self._line_db_name.text().strip()
         if db_name:
             db_name = f"{db_name}.pdb"
-        db_filename = Path(self._line_db_location.text()) / db_name
-        self._line_db_filename.setText(str(db_filename))
+        return str(Path(self._line_db_location.text()) / db_name)
+
+    @pyqtSlot()
+    def _update_db_filename(self):
+        self._line_db_filename.setText(self.filename())
 
     @pyqtSlot()
     def _choose_db_dir(self):
@@ -91,6 +95,9 @@ class NewDBInputDialog(QDialog):
         dialog = NewDBInputDialog(parent, location, name)
         result = dialog.exec()
 
-        if result == QDialog.DialogCode.Accepted:
-            return ""
+        if (
+            result == QDialog.DialogCode.Accepted
+            and dialog._line_db_name.text().strip()
+        ):
+            return dialog._line_db_filename.text()
         return
