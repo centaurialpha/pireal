@@ -1,11 +1,12 @@
 import argparse
 import sys
 
+import structlog
 from PyQt6.QtWidgets import QApplication
 
+from pireal.core.db import DB
 from pireal.gui.controller import Controller
 from pireal.gui.database_container import DatabaseContainer
-from pireal.core.db import DB
 from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.main_window import Pireal
 from pireal.gui.query_widget import QueryWidget
@@ -17,12 +18,15 @@ from pireal.settings import SETTINGS
 
 class Application:
     def __init__(self, args: argparse.Namespace):
+        self._logger = structlog.get_logger()
         self._args = args
         self._app = QApplication(sys.argv)
         SETTINGS.load()
         self._registry = Registry()
 
+        self._logger.info("widgets_initialization")
         self._initialize_widgets()
+        self._logger.info("widgets_initialized")
 
     def _initialize_widgets(self):
         database = DB()
@@ -50,7 +54,6 @@ class Application:
 
         self._main_window.setCentralWidget(controller)
 
-        # central_widget.add_widget(database_container)
         controller.add_widget(start_page)
 
     def run(self):

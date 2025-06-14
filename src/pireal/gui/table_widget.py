@@ -1,8 +1,16 @@
 from PyQt6.QtCore import Qt, pyqtSlot
-from PyQt6.QtWidgets import QLabel, QSplitter, QStackedWidget, QTabWidget
+from PyQt6.QtWidgets import (
+    QLabel,
+    QPushButton,
+    QSplitter,
+    QStackedWidget,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
-from pireal.core.relation import Relation
 from pireal.core.db import DB
+from pireal.core.relation import Relation
 from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.model_view_delegate import create_view
 from pireal.registry import Registry
@@ -21,17 +29,49 @@ class TableWidget(QSplitter):
         self._stacked_results = QStackedWidget()
         self._tabs.addTab(self._stacked_results, "Results")
 
-        self._placeholder = QLabel("📄 Crea una nueva relación o tabla")
-        self._placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self._placeholder.setStyleSheet("font-size: 18px; color: #888;")
-        self._stacked.addWidget(self._placeholder)
+        self._placeholder_widget = QWidget()
+        layout = QVBoxLayout(self._placeholder_widget)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        placeholder_label = QLabel(
+            "🛸 Espacio vacío detectado. \n¿Cargamos la primera relación?"
+        )
+        placeholder_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        placeholder_label.setStyleSheet("font-size: 18px; color: #888;")
+
+        placeholder_button = QPushButton("Nueva relación")
+        placeholder_button.setStyleSheet("""
+            QPushButton {
+                font-size: 16px;
+                padding: 8px;
+                border-radius: 8px;
+                background-color: #4CAF50;
+                color: white;
+            }
+            QPushButton:hover {
+                background-color: #45A049;
+            }
+        """)
+        layout.addWidget(placeholder_label)
+        layout.addSpacing(15)
+        layout.addWidget(placeholder_button)
+
+        self._stacked.addWidget(self._placeholder_widget)
 
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
         lateral_widget.resultClicked.connect(self._on_result_list_clicked)
+        placeholder_button.clicked.connect(self._on_placeholder_button_clicked)
 
     @pyqtSlot(int)
     def _on_result_list_clicked(self, index):
         self._stacked_results.setCurrentIndex(index)
+
+    @pyqtSlot()
+    def _on_placeholder_button_clicked(self):
+        from pireal.gui.controller import Controller
+
+        controller = Registry.get("controller", Controller)
+        controller.create_relation()
 
     def add_table_to_workspace(self, relation: Relation, editable=True):
         db = Registry.get("db", DB)

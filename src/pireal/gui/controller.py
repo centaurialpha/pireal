@@ -18,8 +18,15 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt6.QtCore import pyqtSlot
-from PyQt6.QtWidgets import QFileDialog, QStackedWidget, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import (
+    QFileDialog,
+    QMessageBox,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
+from pireal.core.db import DB
 from pireal.core.pireal_file import File
 from pireal.gui.database_container import DatabaseContainer
 from pireal.gui.dialogs.new_db_dialog import NewDBInputDialog
@@ -53,9 +60,18 @@ class Controller(QWidget):
 
     @pyqtSlot()
     def create_database(self):
+        db = Registry.get("db", DB)
+
+        if db.is_active:
+            self._show_one_database_warning()
+            return
+
         database_filepath = NewDBInputDialog.ask_db_name(parent=self)
         if database_filepath is None:
             return
+
+        db.is_active = True
+
         database_widget = Registry.get("database-container", DatabaseContainer)
         self.add_widget(database_widget)
 
@@ -71,6 +87,11 @@ class Controller(QWidget):
         - actualizar el titulo de la ventana con el nombre del archivo.
         - agregar la db a la lista de recientes.
         """
+        db = Registry.get("db", DB)
+        if db.is_active:
+            self._show_one_database_warning()
+            return
+
         if not filename:
             filename, _ = QFileDialog.getOpenFileName(self, "Ola", "")
             if not filename:
@@ -82,6 +103,8 @@ class Controller(QWidget):
         database_container = Registry.get("database-container", DatabaseContainer)
         database_container.create_database(content)
         self.add_widget(database_container)
+
+        db.is_active = True
 
     @pyqtSlot()
     def open_query(self, filename="", remember=True):
@@ -111,3 +134,8 @@ class Controller(QWidget):
         new_relation_dialog = NewRelationDialog()
         new_relation_dialog.created.connect(_create)
         new_relation_dialog.exec()
+
+    def _show_one_database_warning(self):
+        QMessageBox.information(
+            self, "ola", "Solo se puede tener una base de datos abierta a la vez."
+        )

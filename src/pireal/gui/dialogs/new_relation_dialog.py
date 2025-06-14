@@ -70,8 +70,10 @@ class NewRelationDialog(QDialog):
         header = Header()
         self._view.setHorizontalHeader(header)
         self._view.setModel(QStandardItemModel(0, 2))
-        header.model().setHeaderData(0, Qt.Orientation.Horizontal, self.tr("Field_1"))
-        header.model().setHeaderData(1, Qt.Orientation.Horizontal, self.tr("Field_2"))
+        model = header.model()
+        assert model is not None
+        model.setHeaderData(0, Qt.Orientation.Horizontal, self.tr("Field_1"))
+        model.setHeaderData(1, Qt.Orientation.Horizontal, self.tr("Field_2"))
         # Botones para crear/cancelar
         hhbox = QHBoxLayout()
         hhbox.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding))
@@ -82,21 +84,28 @@ class NewRelationDialog(QDialog):
         box.addLayout(hhbox)
 
         # Conexiones
-        btn_add_tuple.clicked.connect(self.__add_tuple)
-        btn_delete_tuple.clicked.connect(self.__delete_tuple)
-        btn_add_column.clicked.connect(self.__add_column)
-        btn_delete_column.clicked.connect(self.__delete_column)
+        btn_add_tuple.clicked.connect(self._add_tuple)
+        btn_delete_tuple.clicked.connect(self._delete_tuple)
+        btn_add_column.clicked.connect(self._add_column)
+        btn_delete_column.clicked.connect(self._delete_column)
         btn_cancel.clicked.connect(self.close)
         btn_create.clicked.connect(self._create)
 
-    def __add_tuple(self):
+    def _add_tuple(self):
         """Agrega una tupla/fila al final de la tabla"""
         model = self._view.model()
+        assert model is not None
+
         model.insertRow(model.rowCount())
 
-    def __delete_tuple(self):
+    def _delete_tuple(self):
         model = self._view.model()
+        if model is None:
+            return
+
         selection = self._view.selectionModel()
+        if selection is None:
+            return
 
         if selection.hasSelection():
             r = QMessageBox.question(
@@ -117,14 +126,19 @@ class NewRelationDialog(QDialog):
                         model.removeRows(current, 1)
                     i -= 1
 
-    def __add_column(self):
+    def _add_column(self):
         model = self._view.model()
+        if model is None:
+            return
         model.insertColumn(model.columnCount())
 
-    def __delete_column(self):
+    def _delete_column(self):
         model = self._view.model()
+        if model is None:
+            return
+
         if model.columnCount() >= 2:
-            model.takeColumn(model.columnCount() - 1)
+            model.removeColumn(model.columnCount() - 1)
 
     def _create(self):
         relation_name = self._line_relation_name.text().strip()

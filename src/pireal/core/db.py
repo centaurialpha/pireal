@@ -27,6 +27,7 @@ from pireal.core.relation import Relation
 
 class DB(QObject):
     hasModified = pyqtSignal(bool)
+    databaseStateChanged = pyqtSignal(bool)
 
     def __init__(self):
         super().__init__()
@@ -34,6 +35,20 @@ class DB(QObject):
         self._query_results: List[str] = []
 
         self._modified = False
+        self._is_active = False
+
+    @property
+    def is_active(self) -> bool:
+        return self._is_active
+
+    @is_active.setter
+    def is_active(self, value: bool) -> None:
+        if value != self._is_active:
+            if not value:
+                # Solo limpiar cuando se desactiva
+                self.clear()
+            self._is_active = value
+            self.databaseStateChanged.emit(value)
 
     def add(self, relation: Relation) -> None:
         self._relations[relation.name] = relation

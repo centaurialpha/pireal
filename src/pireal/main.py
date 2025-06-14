@@ -19,7 +19,7 @@
 
 """Run Pireal user interface."""
 
-import logging
+import structlog
 import platform
 import sys
 from logging import StreamHandler
@@ -35,7 +35,7 @@ from pireal.core import cliparser
 from pireal.dirs import create_app_dirs
 from pireal.gui.main_window import Pireal
 
-logger = logging.getLogger("main")
+logger = structlog.get_logger()
 
 ROOT_DIR = Path(__file__).parent
 RESOURCES_DIR = ROOT_DIR / "resources"
@@ -48,11 +48,12 @@ if ROOT_DIR not in sys.path:
 
 
 def setup_logger(level: int):
-    fmt = "[%(asctime)s] [%(levelname)-6s]: %(name)s:%(funcName)-5s %(message)s"
-    time_format = "%Y-%m-%d %H:%M:%S"
-    logging.basicConfig(
-        level=level, format=fmt, datefmt=time_format, handlers=[StreamHandler()]
-    )
+    pass
+    # fmt = "[%(asctime)s] [%(levelname)-6s]: %(name)s:%(funcName)-5s %(message)s"
+    # time_format = "%Y-%m-%d %H:%M:%S"
+    # logging.basicConfig(
+    #     level=level, format=fmt, datefmt=time_format, handlers=[StreamHandler()]
+    # )
 
 
 def run():
