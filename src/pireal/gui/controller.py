@@ -26,6 +26,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
+from pireal import translations as tr
 from pireal.core.db import DB
 from pireal.core.pireal_file import File
 from pireal.gui.database_container import DatabaseContainer
@@ -105,6 +106,22 @@ class Controller(QWidget):
         self.add_widget(database_container)
 
         db.is_active = True
+
+    @pyqtSlot()
+    def close_database(self):
+        db = Registry.get("db", DB)
+        print(db.modified, db)
+
+        if db.modified:
+            value = QMessageBox.question(
+                self,
+                tr.TR_MSG_SAVE_CHANGES,
+                tr.TR_MSG_SAVE_CHANGES_BODY,
+                QMessageBox.StandardButton.Yes
+                | QMessageBox.StandardButton.No
+                | QMessageBox.StandardButton.Cancel,
+            )
+        db.is_active = False
 
     @pyqtSlot()
     def open_query(self, filename="", remember=True):

@@ -54,6 +54,10 @@ class DB(QObject):
         self._relations[relation.name] = relation
         self.modified = True
 
+    def load(self, relation: Relation) -> None:
+        """Cargar relación sin marcar como modificado (para carga inicial)"""
+        self._relations[relation.name] = relation
+
     def remove(self, relation_name: str) -> None:
         del self._relations[relation_name]
         self.modified = True
@@ -105,7 +109,7 @@ class DB(QObject):
     def eval_query(self, expression: str, name: str) -> Relation:
         relation = eval(expression, {}, self._relations)
         relation.name = name
-        self.add(relation)
+        self.load(relation)
 
         if name not in self._query_results:
             self._query_results.append(name)

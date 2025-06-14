@@ -59,11 +59,15 @@ class DatabaseContainer(QSplitter):
             # FIXME: feo
             rela.name = table_name
 
-            self._database.add(rela)
+            self._database.load(rela)
 
+            # FIXME: acá se hace un add por lo tanto se modifica la db, utilizar load
             table_widget.add_table_to_workspace(rela)
 
             lateral_widget.add_item(rela, RelationItemType.Normal)
+
+        self._database.modified = False
+        print(self._database.modified, self._database)
 
     @pyqtSlot(int)
     def _on_relation_clicked(self, row: int):
