@@ -67,7 +67,6 @@ class DatabaseContainer(QSplitter):
             lateral_widget.add_item(rela, RelationItemType.Normal)
 
         self._database.modified = False
-        print(self._database.modified, self._database)
 
     @pyqtSlot(int)
     def _on_relation_clicked(self, row: int):

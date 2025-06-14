@@ -1,5 +1,10 @@
+from typing import Optional
+
+from PyQt6.QtCore import QSettings
+from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import QMainWindow
 
+from pireal.dirs import DATA_SETTINGS
 from pireal.gui.controller import Controller
 from pireal.gui.menu import MenuBuilder
 from pireal.gui.status_bar import StatusBar
@@ -31,3 +36,11 @@ class Pireal(QMainWindow):
     @classmethod
     def instance(cls):
         return cls._instance
+
+    def closeEvent(self, a0: Optional[QCloseEvent]) -> None:
+        controller = Registry.get("controller", Controller)
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
+
+        qsettings.setValue("recent_databases", controller.recent_databases)
+
+        return super().closeEvent(a0)

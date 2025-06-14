@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtCore import QSettings, pyqtSlot
 from PyQt6.QtWidgets import (
     QFileDialog,
     QMessageBox,
@@ -29,6 +29,7 @@ from PyQt6.QtWidgets import (
 from pireal import translations as tr
 from pireal.core.db import DB
 from pireal.core.pireal_file import File
+from pireal.dirs import DATA_SETTINGS
 from pireal.gui.database_container import DatabaseContainer
 from pireal.gui.dialogs.new_db_dialog import NewDBInputDialog
 from pireal.gui.dialogs.new_relation_dialog import NewRelationDialog
@@ -53,11 +54,26 @@ class Controller(QWidget):
         self._stack = QStackedWidget()
         box.addWidget(self._stack)
 
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
+        self._recent_databases: list[str] = qsettings.value(
+            "recent_databases", type=list
+        )
+
     def add_widget(self, widget):
         index = self._stack.indexOf(widget)
         if index == -1:
             index = self._stack.addWidget(widget)
         self._stack.setCurrentIndex(index)
+
+    @property
+    def recent_databases(self) -> list[str]:
+        return self._recent_databases
+
+    def add_db_to_recents(self, db_filepath: str) -> None:
+        if db_filepath in self._recent_databases:
+            self._recent_databases.remove(db_filepath)
+
+        self._recent_databases.insert(0, db_filepath)
 
     @pyqtSlot()
     def create_database(self):
@@ -104,6 +120,8 @@ class Controller(QWidget):
         database_container = Registry.get("database-container", DatabaseContainer)
         database_container.create_database(content)
         self.add_widget(database_container)
+
+        self.add_db_to_recents(filename)
 
         db.is_active = True
 

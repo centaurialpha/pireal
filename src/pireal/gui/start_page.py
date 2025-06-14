@@ -84,11 +84,18 @@ class RecentDBDelegate(QStyledItemDelegate):
         opt = QStyleOptionViewItem(option)
         self.initStyleOption(opt, index)
 
-        db_name = index.model().data(index, Qt.ItemDataRole.DisplayRole)
-        db_path = index.model().data(index, Qt.ItemDataRole.UserRole)
+        model = index.model()
+        if model is None:
+            return
+
+        db_name = model.data(index, Qt.ItemDataRole.DisplayRole)
+        db_path = model.data(index, Qt.ItemDataRole.UserRole)
 
         opt.text = ""
-        opt.widget.style().drawControl(
+        style = opt.widget.style()
+        if style is None:
+            return
+        style.drawControl(
             QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget
         )
 
@@ -124,7 +131,7 @@ class RecentDBDelegate(QStyledItemDelegate):
                 int(rect.height() / 2),
             ),
             opt.displayAlignment,
-            db_path,
+            str(db_path),
         )
 
     def sizeHint(self, option, index):
