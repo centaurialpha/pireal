@@ -110,7 +110,6 @@ class Controller(QWidget):
     @pyqtSlot()
     def close_database(self):
         db = Registry.get("db", DB)
-        print(db.modified, db)
 
         if db.modified:
             value = QMessageBox.question(
