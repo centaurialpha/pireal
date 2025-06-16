@@ -60,6 +60,9 @@ class Controller(QWidget):
         box.addWidget(self._stack)
 
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
+        self._last_open_folder: str = qsettings.value(
+            "last_open_folder", type=str
+        ) or str(Path.home())
         self._recent_databases: list[str] = qsettings.value(
             "recent_databases", type=list
         )
@@ -75,6 +78,15 @@ class Controller(QWidget):
     @property
     def recent_databases(self) -> list[str]:
         return self._recent_databases.copy()
+
+    def _remember_folder(self, filepath: str):
+        """Actualiza la última carpeta usada basada en la ruta del archivo"""
+        if filepath:
+            folder = str(Path(filepath).parent)
+            self._last_open_folder = folder
+
+            qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
+            qsettings.setValue("last_open_folder", folder)
 
     def add_db_to_recents(self, db_filepath: str) -> None:
         if Path(db_filepath).resolve() == EXAMPLE_DB_FILENAME.resolve():
@@ -142,7 +154,9 @@ class Controller(QWidget):
 
         if not filename:
             self._logger.info("filename_not_provided")
-            filename, _ = QFileDialog.getOpenFileName(self, "Ola", "")
+            filename, _ = QFileDialog.getOpenFileName(
+                self, "Ola", self._last_open_folder, ""
+            )
             if not filename:
                 self._logger.info("filename_not_selected")
                 return
@@ -155,6 +169,7 @@ class Controller(QWidget):
         database_container.create_database(content)
         self.add_widget(database_container)
 
+        self._remember_folder(filename)
         self.add_db_to_recents(filename)
 
         db.is_active = True
@@ -177,6 +192,14 @@ class Controller(QWidget):
 
     @pyqtSlot()
     def open_query(self, filename="", remember=True):
+        if not filename:
+            filename, _ = QFileDialog.getOpenFileName(
+                self, "open quiery", self._last_open_folder, ""
+            )
+            if not filename:
+                return
+
+        self._remember_folder(filename)
         self.new_query(filename)
 
     @pyqtSlot()
