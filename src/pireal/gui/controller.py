@@ -17,6 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+from pathlib import Path
+
+import structlog
 from PyQt6.QtCore import QSettings, pyqtSlot
 from PyQt6.QtWidgets import (
     QFileDialog,
@@ -29,7 +32,7 @@ from PyQt6.QtWidgets import (
 from pireal import translations as tr
 from pireal.core.db import DB
 from pireal.core.pireal_file import File
-from pireal.dirs import DATA_SETTINGS
+from pireal.dirs import DATA_SETTINGS, EXAMPLE_DB_FILENAME
 from pireal.gui.database_container import DatabaseContainer
 from pireal.gui.dialogs.new_db_dialog import NewDBInputDialog
 from pireal.gui.dialogs.new_relation_dialog import NewRelationDialog
@@ -48,6 +51,8 @@ class Controller(QWidget):
 
     def __init__(self):
         super().__init__()
+        self._logger = structlog.get_logger().bind(component=self.__class__.__name__)
+
         box = QVBoxLayout(self)
         box.setContentsMargins(1, 1, 1, 1)
 
@@ -59,6 +64,8 @@ class Controller(QWidget):
             "recent_databases", type=list
         )
 
+        self._logger.info("intialized")
+
     def add_widget(self, widget):
         index = self._stack.indexOf(widget)
         if index == -1:
@@ -67,13 +74,32 @@ class Controller(QWidget):
 
     @property
     def recent_databases(self) -> list[str]:
-        return self._recent_databases
+        return self._recent_databases.copy()
 
     def add_db_to_recents(self, db_filepath: str) -> None:
-        if db_filepath in self._recent_databases:
-            self._recent_databases.remove(db_filepath)
+        if Path(db_filepath).resolve() == EXAMPLE_DB_FILENAME.resolve():
+            self._logger.debug("skipping_example_db", filepath=db_filepath)
+            return
 
-        self._recent_databases.insert(0, db_filepath)
+        self._logger.info(
+            "adding_to_recent_databases",
+            filepath=db_filepath,
+            current_count=len(self.recent_databases),
+        )
+
+        normalized_path = str(Path(db_filepath).resolve())
+
+        if normalized_path in self._recent_databases:
+            self._recent_databases.remove(normalized_path)
+
+        self._recent_databases.insert(0, normalized_path)
+        self._recent_databases = self._recent_databases[:10]  # FIXME: constant
+
+        self._logger.debug(
+            "recent_databases_updated",
+            filepath=normalized_path,
+            new_count=len(self.recent_databases),
+        )
 
     @pyqtSlot()
     def create_database(self):
@@ -93,7 +119,7 @@ class Controller(QWidget):
         self.add_widget(database_widget)
 
     @pyqtSlot()
-    def open_database(self, filename: str = ""):
+    def open_database(self, filename: str | Path = ""):
         """
         - si ya hay una db abierta, avisar y no hacer nada.
         - si no se proporciona un archivo, abrir el file dialog para seleccionar.
@@ -104,16 +130,24 @@ class Controller(QWidget):
         - actualizar el titulo de la ventana con el nombre del archivo.
         - agregar la db a la lista de recientes.
         """
+
+        if isinstance(filename, Path):
+            filename = str(filename)
+
         db = Registry.get("db", DB)
         if db.is_active:
+            self._logger.warning("database_already_active")
             self._show_one_database_warning()
             return
 
         if not filename:
+            self._logger.info("filename_not_provided")
             filename, _ = QFileDialog.getOpenFileName(self, "Ola", "")
             if not filename:
+                self._logger.info("filename_not_selected")
                 return
 
+        self._logger.info("opening_database", filename=filename)
         file = File(filename)
         content = sanitize_data(file.read())
 
@@ -124,6 +158,7 @@ class Controller(QWidget):
         self.add_db_to_recents(filename)
 
         db.is_active = True
+        self._logger.info("database_opened")
 
     @pyqtSlot()
     def close_database(self):

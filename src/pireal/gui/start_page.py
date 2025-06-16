@@ -20,6 +20,7 @@
 import logging
 import os
 from datetime import datetime
+from typing import Optional
 
 from PyQt6.QtCore import (
     QAbstractListModel,
@@ -32,7 +33,7 @@ from PyQt6.QtCore import (
 from PyQt6.QtCore import (
     pyqtSlot as Slot,
 )
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QPainter, QPixmap
 from PyQt6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -80,13 +81,21 @@ class RecentDBDelegate(QStyledItemDelegate):
     in same item
     """
 
-    def paint(self, painter, option, index):
-        opt = QStyleOptionViewItem(option)
-        self.initStyleOption(opt, index)
+    def paint(
+        self,
+        painter: Optional[QPainter],
+        option: "QStyleOptionViewItem",
+        index: QModelIndex,
+    ) -> None:
+        if painter is None:
+            return
 
         model = index.model()
         if model is None:
             return
+
+        opt = QStyleOptionViewItem(option)
+        self.initStyleOption(opt, index)
 
         db_name = model.data(index, Qt.ItemDataRole.DisplayRole)
         db_path = model.data(index, Qt.ItemDataRole.UserRole)
