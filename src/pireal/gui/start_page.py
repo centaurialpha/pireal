@@ -255,7 +255,7 @@ class StartPage(QWidget):
 
     def _open_database(self, path: str):
         controller = Registry.get("controller", Controller)
-        controller.open_database()
+        controller.open_database(path)
 
     def _open_example(self):
         controller = Registry.get("controller", Controller)
