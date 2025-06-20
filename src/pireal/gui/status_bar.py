@@ -2,7 +2,7 @@
 from PyQt6.QtCore import QTimer, Qt, pyqtSignal
 from PyQt6.QtWidgets import QFrame, QGridLayout, QHBoxLayout, QLabel, QMainWindow, QToolButton
 
-from pireal.settings import SETTINGS
+from pireal.settings import settings
 from pireal import __version__
 
 
@@ -56,7 +56,7 @@ class StatusBar(QFrame):
         dark_mode_button.setAutoRaise(True)
         dark_mode_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         dark_mode_button.setCheckable(True)
-        dark_mode_button.setChecked(SETTINGS.dark_mode)
+        dark_mode_button.setChecked(settings.dark_mode)
         dark_mode_button.setText('\uf186')
         dark_mode_button.toggled.connect(lambda v: self.moonClicked.emit(v))
         right_layout.addWidget(dark_mode_button)

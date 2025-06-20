@@ -45,6 +45,7 @@ exclude = ["windows/*", "tests/*"]
 dev = [
     "hatch-vcs>=0.4.0",
     "hatchling>=1.27.0",
+    "ipython>=9.3.0",
     "pytest>=8.3.5",
 ]
 

@@ -12,18 +12,20 @@ from pireal.gui.main_window import Pireal
 from pireal.gui.query_widget import QueryWidget
 from pireal.gui.start_page import StartPage
 from pireal.gui.table_widget import TableWidget
+from pireal.gui.theme import apply_theme
 from pireal.registry import Registry
-from pireal.settings import SETTINGS
+from pireal.settings import settings
 
 
 class Application:
     def __init__(self, args: argparse.Namespace):
+
         self._logger = structlog.get_logger()
         self._args = args
         self._app = QApplication(sys.argv)
-        SETTINGS.load()
+        settings.load()
+        apply_theme(self._app)
         self._registry = Registry()
-
         self._logger.info("widgets_initialization")
         self._initialize_widgets()
         self._logger.info("widgets_initialized")

@@ -33,7 +33,7 @@ from PyQt6.QtCore import (
 from PyQt6.QtCore import (
     pyqtSlot as Slot,
 )
-from PyQt6.QtGui import QPainter, QPixmap
+from PyQt6.QtGui import QColor, QPainter, QPixmap
 from PyQt6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -196,10 +196,13 @@ class StartPage(QWidget):
             QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred
         )
         vbox_recent_dbs = QVBoxLayout(frame_recent_dbs)
-        vbox_recent_dbs.addWidget(
-            QLabel("Recent Databases"), alignment=Qt.AlignmentFlag.AlignHCenter
-        )
+        label = QLabel("Recenssssssssssssssssssssssssss")
+        vbox_recent_dbs.addWidget(label, alignment=Qt.AlignmentFlag.AlignHCenter)
         self._recent_dbs_list = QListView()
+        pal = self._recent_dbs_list.palette()
+        pal.setColor(pal.ColorRole.Base, QColor("#ff0000"))
+        self._recent_dbs_list.setAutoFillBackground(True)
+        self._recent_dbs_list.setPalette(pal)
         self._recent_dbs_list.setMinimumWidth(550)
         vbox_recent_dbs.addWidget(
             self._recent_dbs_list, alignment=Qt.AlignmentFlag.AlignHCenter

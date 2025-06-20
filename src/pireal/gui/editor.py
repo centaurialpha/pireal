@@ -30,9 +30,7 @@ from PyQt6.QtWidgets import (
 
 from pireal.gui import highlighter, sidebar
 from pireal.gui.theme import get_editor_color
-from pireal.settings import SETTINGS
-
-# from pireal.settings import SETTINGS
+from pireal.settings import settings
 
 BRACKETS = "()"
 OPOSITE_BRACKET = {
@@ -159,12 +157,12 @@ class Editor(QPlainTextEdit):
         self.__visible_blocks = []
         self.modified = False
         # Highlight current line
-        self._highlight_line = SETTINGS.match_parenthesis
+        self._highlight_line = settings.match_parenthesis
         self._highlight_line_color = QColor(get_editor_color("current_line"))
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
-        self.set_font(SETTINGS.font_family, SETTINGS.font_size)
+        self.set_font(settings.font_family, settings.font_size)
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
         self.word_separators = [")", "("]
@@ -253,7 +251,7 @@ class Editor(QPlainTextEdit):
     def __cursor_position_changed(self):
         self.clear_selections("current_line")
 
-        if SETTINGS.highlight_current_line:
+        if settings.highlight_current_line:
             _selection = QTextEdit.ExtraSelection()
             _selection.format.setBackground(self._highlight_line_color)
             _selection.format.setProperty(
@@ -264,7 +262,7 @@ class Editor(QPlainTextEdit):
             self.add_selection("current_line", [_selection])
 
         # Paren matching
-        if SETTINGS.match_parenthesis:
+        if settings.match_parenthesis:
             self.clear_selections("parenthesis")
             cursor_column_index = self.textCursor().positionInBlock()
             bracket_selections = self._bracket_highlighter.extra_selections(
@@ -425,7 +423,7 @@ class Editor(QPlainTextEdit):
             self.update_selections()
 
     def re_paint(self):
-        self.set_font(SETTINGS.font_family, SETTINGS.font_size)
+        self.set_font(settings.font_family, settings.font_size)
         self._highlight_line_color = QColor(get_editor_color("current_line"))
         self._sidebar.re_paint()
         pal = self.palette()

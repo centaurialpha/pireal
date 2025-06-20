@@ -1,31 +1,30 @@
 from PyQt6.QtGui import QColor, QPalette
 
-from pireal.settings import SETTINGS
-from pireal.core import settings
+# from pireal.core import settings
 
 DARK = {
-    "Window": "#171a21",
-    "WindowText": "#ffffff",
-    "WindowTextDisabled": "#7f7f7f",
-    "Base": "#282a36",
-    "AlternateBase": "#1c1e26",
-    "ToolTipBase": "#2e3139",
-    "ToolTipText": "#ffffff",
-    "Text": "#dddddd",
-    "TextDisabled": "#505050",
-    "Dark": "#232323",
-    "Shadow": "#323228",
-    "Button": "#191a1f",
-    "ButtonText": "#ffffff",
-    "ButtonTextDisabled": "#7f7f7f",
-    "BrightText": "#ec7875",
-    "Link": "#2a82da",
-    "Highlight": "#42539e",
-    "Mid": "#404040",
-    "Midlight": "#ff0000",
-    "HighlightDisabled": "#505050",
-    "HighlightedText": "#f1f1f1",
-    "HighlightedTextDisabled": "#7f7f7f",
+    "Window": "#3c3c3c",
+    "WindowText": "#d8e3e3",
+    # "WindowTextDisabled": "#7f7f7f",
+    # "Base": "#ff0000",
+    # "AlternateBase": "#1c1e26",
+    # "ToolTipBase": "#2e3139",
+    # "ToolTipText": "#ffffff",
+    # "Text": "#dddddd",
+    # "TextDisabled": "#505050",
+    # "Dark": "#232323",
+    # "Shadow": "#323228",
+    # "Button": "#191a1f",
+    # "ButtonText": "#ffffff",
+    # "ButtonTextDisabled": "#7f7f7f",
+    # "BrightText": "#ec7875",
+    # "Link": "#2a82da",
+    # "Highlight": "#42539e",
+    # "Mid": "#404040",
+    # "Midlight": "#ff0000",
+    # "HighlightDisabled": "#505050",
+    # "HighlightedText": "#f1f1f1",
+    # "HighlightedTextDisabled": "#7f7f7f",
 }
 
 
@@ -63,17 +62,20 @@ EDITOR_DARK = {
 # FIXME: se llama repetidas veces
 # En lugar de llamar siempre a esta funcion, guardar referencia
 def get_editor_color(key):
-    if settings.DARK_MODE:
-        return EDITOR_DARK[key]
-    return EDITOR_LIGHT[key]
+    return EDITOR_DARK[key]
+    # if settings.DARK_MODE:
+    #     return EDITOR_DARK[key]
+    # return EDITOR_LIGHT[key]
 
 
 def apply_theme(app):
-    if SETTINGS.dark_mode:
-        theme = DARK
-    else:
-        theme = LIGHT
-        app.setPalette(app.style().standardPalette())
+    print("ASDASDz")
+    # if not SETTINGS.dark_mode:
+    #     theme = DARK
+    # else:
+    #     theme = LIGHT
+    #     app.setPalette(app.style().standardPalette())
+    theme = DARK
     palette = QPalette()
     for role_name, color in theme.items():
         if role_name.endswith("Disabled"):
@@ -91,10 +93,11 @@ def apply_theme(app):
 
 
 def get_color(name: str):
-    if SETTINGS.dark_mode:
-        colors = DARK
-    else:
-        colors = LIGHT
+    colors = DARK
+    # if SETTINGS.dark_mode:
+    #     colors = DARK
+    # else:
+    #     colors = LIGHT
     color = colors[name]
     if not isinstance(color, QColor):
         color = QColor(color)
