@@ -7,6 +7,11 @@ from pireal import translations as tr
 
 
 @dataclass
+class Section:
+    name: str
+
+
+@dataclass
 class Action:
     name: str
     target: str
@@ -18,7 +23,7 @@ class Action:
 @dataclass
 class Menu:
     name: str
-    items: List[Union["Menu", Action, str]] = field(default_factory=list)
+    items: List[Union["Menu", Action, Section, str]] = field(default_factory=list)
 
     def add_item(self, item):
         self.items.append(item)
@@ -35,8 +40,8 @@ class MenuBuilder:
         for menu in menus:
             qmenu = menu_bar.addMenu(menu.name)
             for item in menu.items:
-                if item == "separator":
-                    qmenu.addSeparator()
+                if isinstance(item, Section):
+                    qmenu.addSection(item.name)
                 elif isinstance(item, Action):
                     qaction = QAction(item.name, self.main_window)
                     qaction.setCheckable(item.is_checkable)
@@ -53,21 +58,32 @@ class MenuBuilder:
                             qaction.triggered.connect(slot)
 
                     qmenu.addAction(qaction)
+                elif item == "separator":
+                    qmenu.addSeparator()
 
         return menu_bar
 
 
 file_menu = Menu("Archivo")
+file_menu.add_item(Section("Database"))
 file_menu.add_item(
     Action(tr.TR_MENU_FILE_NEW_DB, "controller:create_database", shorcut="Ctrl+n")
 )
-file_menu.add_item(Action(tr.TR_MENU_FILE_OPEN_DB, "controller:open_database"))
-file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_DB, ""))
+file_menu.add_item(Action(tr.TR_MENU_FILE_OPEN_DB, "controller:open_database", shorcut="Ctrl+0"))
+file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_DB, "", shorcut="Ctrl+s"))
 file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_DB, ""))
 file_menu.add_item(
-    Action(tr.TR_MENU_FILE_CLOSE_DB, "controller:close_database", shorcut="Ctrl+Shift+w")
+    Action(
+        tr.TR_MENU_FILE_CLOSE_DB, "controller:close_database", shorcut="Ctrl+w"
+    )
 )
-file_menu.add_item(Action(tr.TR_MENU_FILE_NEW_QUERY, "controller:new_query"))
+file_menu.add_item(Section("Query"))
+file_menu.add_item(Action(tr.TR_MENU_FILE_NEW_QUERY, "controller:new_query", shorcut="Ctrl+t"))
+file_menu.add_item(Action(tr.TR_MENU_FILE_OPEN_QUERY, "controller:open_query", shorcut="Ctrl+Shift+o"))
+file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_QUERY, "controller:save_query", shorcut="Ctrl+Shift+s"))
+file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_QUERY, "controller:save_query_as"))
+file_menu.add_item(Action(tr.TR_MENU_FILE_CLOSE_QUERY, "controller:close_query"))
+# file_menu.add_item(Action(tr.TR_MENU_FILE_QUIT))
 
 scheme_menu = Menu("Esquema")
 scheme_menu.add_item(

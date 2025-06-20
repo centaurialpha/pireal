@@ -208,6 +208,18 @@ class Controller(QWidget):
         database_widget.new_query(filename)
 
     @pyqtSlot()
+    def save_query(self):
+        pass
+
+    @pyqtSlot()
+    def save_query_as(self):
+        pass
+
+    @pyqtSlot()
+    def close_query(self):
+        pass
+
+    @pyqtSlot()
     def execute_queries(self) -> None:
         database_widget = Registry.get("database-container", DatabaseContainer)
         database_widget.execute_queries()
