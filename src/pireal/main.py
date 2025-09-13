@@ -67,15 +67,6 @@ def setup_logging(level: int):
     logging.basicConfig(level=level, handlers=[console_handler, file_handler])
 
 
-def setup_logger(level: int):
-    pass
-    # fmt = "[%(asctime)s] [%(levelname)-6s]: %(name)s:%(funcName)-5s %(message)s"
-    # time_format = "%Y-%m-%d %H:%M:%S"
-    # logging.basicConfig(
-    #     level=level, format=fmt, datefmt=time_format, handlers=[StreamHandler()]
-    # )
-
-
 def run():
     QDir.addSearchPath("icons", str(IMAGES_DIR))
     QDir.addSearchPath("languages", str(LANGUAGES_DIR))
