@@ -20,6 +20,7 @@
 """Run Pireal user interface."""
 
 import logging
+import logging.handlers
 import platform
 import sys
 from pathlib import Path
@@ -31,7 +32,7 @@ from PyQt6.QtWidgets import QApplication
 from pireal import __version__
 from pireal.app import Application
 from pireal.core import cliparser
-from pireal.dirs import create_app_dirs
+from pireal.dirs import LOGS_DIR, create_app_dirs
 from pireal.gui.main_window import Pireal
 
 logger = logging.getLogger()
@@ -44,6 +45,26 @@ LANGUAGES_DIR = RESOURCES_DIR / "lang"
 
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
+
+
+def setup_logging(level: int):
+    console_fmt = "[%(levelname)-6s]: %(name)s:%(funcName)s - %(message)s"
+    file_fmt = "[%(asctime)s] [%(levelname)-6s] [%(process)d]: %(name)s:%(funcName)s:%(lineno)d - %(message)s"
+    time_format = "%Y-%m-%d %H:%M:%S"
+
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(logging.Formatter(console_fmt))
+
+    log_file = LOGS_DIR / "pireal.log"
+
+    file_handler = logging.handlers.RotatingFileHandler(
+        log_file, maxBytes=10 * 1024 * 1024, backupCount=5, encoding="utf-8"
+    )
+    if log_file.exists() and log_file.stat().st_size > 0:
+        file_handler.doRollover()  # Force rotation on startup
+    file_handler.setFormatter(logging.Formatter(file_fmt, datefmt=time_format))
+
+    logging.basicConfig(level=level, handlers=[console_handler, file_handler])
 
 
 def setup_logger(level: int):
@@ -68,7 +89,7 @@ def run():
     # Creo los dirs antes de leer logs. see #84
     create_app_dirs()
 
-    setup_logger(level=args.log_level)
+    setup_logging(level=args.log_level)
 
     start_pireal(args)
 
