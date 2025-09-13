@@ -19,10 +19,9 @@
 
 """Run Pireal user interface."""
 
-import structlog
+import logging
 import platform
 import sys
-from logging import StreamHandler
 from pathlib import Path
 
 from PyQt6.QtCore import QT_VERSION_STR, QDir
@@ -35,7 +34,7 @@ from pireal.core import cliparser
 from pireal.dirs import create_app_dirs
 from pireal.gui.main_window import Pireal
 
-logger = structlog.get_logger()
+logger = logging.getLogger()
 
 ROOT_DIR = Path(__file__).parent
 RESOURCES_DIR = ROOT_DIR / "resources"

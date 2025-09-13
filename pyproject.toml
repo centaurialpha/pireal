@@ -21,7 +21,6 @@ classifiers = [
 dependencies = [
     "packaging>=24.2",
     "pyqt6>=6.8.1",
-    "structlog>=25.4.0",
 ]
 
 [project.scripts]

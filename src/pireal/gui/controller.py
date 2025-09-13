@@ -17,9 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from pathlib import Path
 
-import structlog
 from PyQt6.QtCore import QSettings, pyqtSlot
 from PyQt6.QtWidgets import (
     QFileDialog,
@@ -41,6 +41,8 @@ from pireal.gui.table_widget import TableWidget
 from pireal.registry import Registry
 from pireal.utils import sanitize_data
 
+logger = logging.getLogger(__name__)
+
 
 class Controller(QWidget):
     """
@@ -51,7 +53,6 @@ class Controller(QWidget):
 
     def __init__(self):
         super().__init__()
-        self._logger = structlog.get_logger().bind(component=self.__class__.__name__)
 
         box = QVBoxLayout(self)
         box.setContentsMargins(1, 1, 1, 1)
@@ -66,8 +67,6 @@ class Controller(QWidget):
         self._recent_databases: list[str] = qsettings.value(
             "recent_databases", type=list
         )
-
-        self._logger.info("intialized")
 
     def add_widget(self, widget):
         index = self._stack.indexOf(widget)
@@ -90,13 +89,13 @@ class Controller(QWidget):
 
     def add_db_to_recents(self, db_filepath: str) -> None:
         if Path(db_filepath).resolve() == EXAMPLE_DB_FILENAME.resolve():
-            self._logger.debug("skipping_example_db", filepath=db_filepath)
+            logger.debug("Skipping example database: '%s'", db_filepath)
             return
 
-        self._logger.info(
-            "adding_to_recent_databases",
-            filepath=db_filepath,
-            current_count=len(self.recent_databases),
+        logger.info(
+            "Adding to recent databases, filepath='%s' - current_count='%d'",
+            db_filepath,
+            len(self.recent_databases),
         )
 
         normalized_path = str(Path(db_filepath).resolve())
@@ -107,10 +106,10 @@ class Controller(QWidget):
         self._recent_databases.insert(0, normalized_path)
         self._recent_databases = self._recent_databases[:10]  # FIXME: constant
 
-        self._logger.debug(
-            "recent_databases_updated",
-            filepath=normalized_path,
-            new_count=len(self.recent_databases),
+        logger.debug(
+            "Recent databases updated, filepath='%s' - new_count='%d'",
+            normalized_path,
+            len(self.recent_databases),
         )
 
     @pyqtSlot()
@@ -148,20 +147,20 @@ class Controller(QWidget):
 
         db = Registry.get("db", DB)
         if db.is_active:
-            self._logger.warning("database_already_active")
+            logger.warning("Database already active")
             self._show_one_database_warning()
             return
 
         if not filename:
-            self._logger.info("filename_not_provided")
+            logger.info("Filename not provided")
             filename, _ = QFileDialog.getOpenFileName(
                 self, "Ola", self._last_open_folder, ""
             )
             if not filename:
-                self._logger.info("filename_not_selected")
+                logger.info("Filename not selected")
                 return
 
-        self._logger.info("opening_database", filename=filename)
+        logger.info("Opening database '%s'", filename)
         file = File(filename)
         content = sanitize_data(file.read())
 
@@ -173,7 +172,7 @@ class Controller(QWidget):
         self.add_db_to_recents(filename)
 
         db.is_active = True
-        self._logger.info("database_opened")
+        logger.info("Database opened")
 
     @pyqtSlot()
     def close_database(self):

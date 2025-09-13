@@ -1,7 +1,7 @@
 import argparse
+import logging
 import sys
 
-import structlog
 from PyQt6.QtWidgets import QApplication
 
 from pireal.core.db import DB
@@ -14,10 +14,11 @@ from pireal.gui.start_page import StartPage
 from pireal.gui.table_widget import TableWidget
 from pireal.registry import Registry
 
+logger = logging.getLogger(__name__)
+
 
 class Application:
     def __init__(self, args: argparse.Namespace):
-        self._logger = structlog.get_logger()
         self._args = args
 
         self._app = QApplication(sys.argv)
@@ -30,18 +31,18 @@ class Application:
     def _initialize_settings(self):
         from pireal.settings import settings
 
-        self._logger.info("loading_settings")
+        logger.info("Loading settings...")
         settings.load()
 
     def _initialize_theme(self):
         from pireal.theme import theme_manager
 
-        self._logger.info("applying_theme")
+        logger.info("Applying theme...")
         theme_manager.initialize()
         theme_manager.apply_theme(self._app)
 
     def _initialize_widgets(self):
-        self._logger.info("widgets_initialization")
+        logger.info("Widgets initialization")
 
         database = DB()
         self._registry.register("db", database)
@@ -69,7 +70,7 @@ class Application:
         self._main_window.setCentralWidget(controller)
 
         controller.add_widget(start_page)
-        self._logger.info("widgets_initialized")
+        logger.info("Widgets initialized")
 
     def run(self):
         self._main_window.show()
