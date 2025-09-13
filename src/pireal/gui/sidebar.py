@@ -27,7 +27,7 @@ from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QColor, QFontMetrics, QPainter, QPen
 from PyQt6.QtWidgets import QFrame
 
-from pireal.gui.theme import get_editor_color
+from pireal.theme import theme_manager
 
 
 class Sidebar(QFrame):
@@ -39,12 +39,12 @@ class Sidebar(QFrame):
 
         self.editor.blockCountChanged.connect(self.update_viewport)
         self.editor.updateRequest.connect(self.update)
-        self._background_color = QColor(get_editor_color("sidebar_background"))
-        self._foreground_color = QColor(get_editor_color("sidebar_foreground"))
+        self._background_color = QColor(theme_manager.get_editor_color("sidebar_background"))
+        self._foreground_color = QColor(theme_manager.get_editor_color("sidebar_foreground"))
 
     def re_paint(self):
-        self._background_color = QColor(get_editor_color("sidebar_background"))
-        self._foreground_color = QColor(get_editor_color("sidebar_foreground"))
+        self._background_color = QColor(theme_manager.get_editor_color("sidebar_background"))
+        self._foreground_color = QColor(theme_manager.get_editor_color("sidebar_foreground"))
 
     def sizeHint(self):
         return QSize(self.__calculate_width(), 0)

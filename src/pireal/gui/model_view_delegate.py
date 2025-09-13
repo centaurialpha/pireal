@@ -31,7 +31,8 @@ from PyQt6.QtWidgets import (
 )
 
 from pireal import translations as tr
-from pireal.gui.theme import get_color
+
+from pireal.theme import theme_manager
 
 logger = logging.getLogger("gui.model_view_delegate")
 
@@ -41,7 +42,7 @@ class RelationModel(QAbstractTableModel):
         super().__init__()
         self.editable = True
         self.relation = relation_object
-        self._null_text_color = QColor(get_color("BrightText"))
+        self._null_text_color = QColor(theme_manager.get_editor_color("BrightText"))
 
     def rowCount(self, parent=QModelIndex()):
         """Devuelve la cardinalidad de la relación"""

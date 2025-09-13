@@ -64,7 +64,6 @@ class Settings:
         self._loaded = False
 
     def load(self) -> None:
-        """Carga las configuraciones desde el archivo"""
         if self._loaded:
             return
 
@@ -78,7 +77,7 @@ class Settings:
         self.match_parenthesis: bool = self._qs.value(
             "match_parenthesis", True, type=bool
         )
-        self.dark_mode: bool = self._qs.value("dark_mode", False, type=bool)
+        self.dark_mode: bool = self._qs.value("dark_mode", True, type=bool)
 
         self._loaded = True
 

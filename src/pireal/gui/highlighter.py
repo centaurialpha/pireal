@@ -26,7 +26,7 @@ from PyQt6.QtGui import (
     QTextCharFormat,
 )
 
-from pireal.gui.theme import get_editor_color
+from pireal.theme import theme_manager
 
 
 class Highlighter(QSyntaxHighlighter):
@@ -57,7 +57,7 @@ class Highlighter(QSyntaxHighlighter):
         super(Highlighter, self).__init__(editor)
         # Keywords format
         keyword_format = QTextCharFormat()
-        keyword_format.setForeground(QColor(get_editor_color("keyword")))
+        keyword_format.setForeground(QColor(theme_manager.get_editor_color("keyword")))
         keyword_format.setFontWeight(QFont.Weight.Bold)
 
         # Rules
@@ -70,33 +70,33 @@ class Highlighter(QSyntaxHighlighter):
         var_format = QTextCharFormat()
         var_pattern = QRegularExpression(r"\w+\s*\:\=")
         var_format.setFontWeight(QFont.Weight.Bold)
-        var_format.setForeground(QColor(get_editor_color("variable")))
+        var_format.setForeground(QColor(theme_manager.get_editor_color("variable")))
 
         self._rules.append((var_pattern, var_format))
 
         op_format = QTextCharFormat()
         op_pattern = QRegularExpression("(\\:=|\\(|\\))|=|<|>")
-        op_format.setForeground(QColor(get_editor_color("operator")))
+        op_format.setForeground(QColor(theme_manager.get_editor_color("operator")))
         op_format.setFontWeight(QFont.Weight.Bold)
         self._rules.append((op_pattern, op_format))
         # Number format
         number_format = QTextCharFormat()
         number_pattern = QRegularExpression(r"\b([A-Z0-9]+)(?:[ _-](\d+))?\b")
         # number_pattern.setMinimal(True)
-        number_format.setForeground(QColor(get_editor_color("number")))
+        number_format.setForeground(QColor(theme_manager.get_editor_color("number")))
         self._rules.append((number_pattern, number_format))
 
         # String format
         string_format = QTextCharFormat()
         string_pattern = QRegularExpression("'.*'")
         # string_pattern.setMinimal(True)
-        string_format.setForeground(QColor(get_editor_color("string")))
+        string_format.setForeground(QColor(theme_manager.get_editor_color("string")))
         self._rules.append((string_pattern, string_format))
 
         # Comment format
         comment_format = QTextCharFormat()
         comment_pattern = QRegularExpression("%[^\n]*")
-        comment_format.setForeground(QColor(get_editor_color("comment")))
+        comment_format.setForeground(QColor(theme_manager.get_editor_color("comment")))
         comment_format.setFontItalic(True)
         self._rules.append((comment_pattern, comment_format))
 
