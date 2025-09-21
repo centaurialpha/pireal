@@ -2,6 +2,7 @@
 from PyQt6.QtCore import QTimer, Qt, pyqtSignal
 from PyQt6.QtWidgets import QFrame, QGridLayout, QHBoxLayout, QLabel, QMainWindow, QToolButton
 
+from pireal.helpers import Font
 from pireal.settings import settings
 from pireal import __version__
 
@@ -37,6 +38,7 @@ class StatusBar(QFrame):
         right_widget.setLayout(right_layout)
         right_layout.setContentsMargins(0, 0, 0, 0)
 
+        fa = Font.instance()
         # Left widgets
         self._messages_label = QLabel()
         self._messages_label.setText(f'Pireal v{__version__}')
@@ -49,7 +51,8 @@ class StatusBar(QFrame):
         execute_button = QToolButton()
         execute_button.setAutoRaise(True)
         execute_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        execute_button.setText('\uf04b')
+        # execute_button.setText('\uf04b')
+        execute_button.setIcon(fa.icon("\uf04b", color="red"))
         execute_button.clicked.connect(lambda: self.playClicked.emit())
         right_layout.addWidget(execute_button)
         dark_mode_button = QToolButton()
@@ -57,7 +60,8 @@ class StatusBar(QFrame):
         dark_mode_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         dark_mode_button.setCheckable(True)
         dark_mode_button.setChecked(settings.dark_mode)
-        dark_mode_button.setText('\uf186')
+        # dark_mode_button.setText('\uf186')
+        dark_mode_button.setIcon(fa.icon("\uf186", color="red"))
         dark_mode_button.toggled.connect(lambda v: self.moonClicked.emit(v))
         right_layout.addWidget(dark_mode_button)
         settings_button = QToolButton()

@@ -82,39 +82,29 @@ def run():
 
     setup_logging(level=args.log_level)
 
-    start_pireal(args)
-
-
-def start_pireal(args):
-    app = Application(args)
-    app.run()
-
-
-def _start_pireal(args):
-    # OS
+    logger = logging.getLogger(__name__)
     if platform.system() == "Linux":
         system, os_name = platform.uname()[:2]
     else:
         system = platform.uname()[0]
         os_name = platform.uname()[2]
 
-    # Python version
     python_version = platform.python_version()
 
-    logger.info("Running pireal %s...", __version__)
+    logger.info("Running Pireal %s...", __version__)
     logger.info(
-        "Python %s on %s-%s, Qt %s", python_version, system, os_name, QT_VERSION_STR
+        "Python %s on %s-%s, Qt %s", python_version, os_name, system, QT_VERSION_STR
     )
 
+    app = Application(args)
+    app.run()
+
+
+def _start_pireal(args):
     app = QApplication(sys.argv)
     app.setApplicationName("Pireal")
     app.setApplicationDisplayName("Pireal")
     app.setWindowIcon(QIcon("icons:pireal_icon.png"))
-
-    # SETTINGS.load()
-
-    # app.setStyle("fusion")
-    # apply_theme(app)
 
     # # Add Font Awesome
     # family = QFontDatabase.applicationFontFamilies(
