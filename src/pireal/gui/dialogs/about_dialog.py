@@ -63,7 +63,7 @@ class AboutDialog(QDialog):
         vbox.addWidget(description)
 
         abuelo_agui_lbl = QLabel(
-            'In memory of my grandpa, Agui <span style="color: #EC7875"> </span>'
+            'Dedicated to Marisel, a wonderul woman who inspires me<span style="color: #EC7875"> </span>'
         )
         font = abuelo_agui_lbl.font()
         font.setPointSize(8)

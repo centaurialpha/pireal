@@ -69,18 +69,24 @@ file_menu.add_item(Section("Database"))
 file_menu.add_item(
     Action(tr.TR_MENU_FILE_NEW_DB, "controller:create_database", shorcut="Ctrl+n")
 )
-file_menu.add_item(Action(tr.TR_MENU_FILE_OPEN_DB, "controller:open_database", shorcut="Ctrl+0"))
+file_menu.add_item(
+    Action(tr.TR_MENU_FILE_OPEN_DB, "controller:open_database", shorcut="Ctrl+0")
+)
 file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_DB, "", shorcut="Ctrl+s"))
 file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_DB, ""))
 file_menu.add_item(
-    Action(
-        tr.TR_MENU_FILE_CLOSE_DB, "controller:close_database", shorcut="Ctrl+w"
-    )
+    Action(tr.TR_MENU_FILE_CLOSE_DB, "controller:close_database", shorcut="Ctrl+w")
 )
 file_menu.add_item(Section("Query"))
-file_menu.add_item(Action(tr.TR_MENU_FILE_NEW_QUERY, "controller:new_query", shorcut="Ctrl+t"))
-file_menu.add_item(Action(tr.TR_MENU_FILE_OPEN_QUERY, "controller:open_query", shorcut="Ctrl+Shift+o"))
-file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_QUERY, "controller:save_query", shorcut="Ctrl+Shift+s"))
+file_menu.add_item(
+    Action(tr.TR_MENU_FILE_NEW_QUERY, "controller:new_query", shorcut="Ctrl+t")
+)
+file_menu.add_item(
+    Action(tr.TR_MENU_FILE_OPEN_QUERY, "controller:open_query", shorcut="Ctrl+Shift+o")
+)
+file_menu.add_item(
+    Action(tr.TR_MENU_FILE_SAVE_QUERY, "controller:save_query", shorcut="Ctrl+Shift+s")
+)
 file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_QUERY, "controller:save_query_as"))
 file_menu.add_item(Action(tr.TR_MENU_FILE_CLOSE_QUERY, "controller:close_query"))
 # file_menu.add_item(Action(tr.TR_MENU_FILE_QUIT))
@@ -90,4 +96,6 @@ scheme_menu.add_item(
     Action(tr.TR_MENU_SCHEME_CREATE_RELATION, "controller:create_relation")
 )
 
-menus = [file_menu, scheme_menu]
+help_menu = Menu("Ayuda")
+help_menu.add_item(Action(tr.TR_MENU_HELP_ABOUT_PIREAL, "controller:about_pireal"))
+menus = [file_menu, scheme_menu, help_menu]

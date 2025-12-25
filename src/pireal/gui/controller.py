@@ -238,6 +238,13 @@ class Controller(QWidget):
         new_relation_dialog.created.connect(_create)
         new_relation_dialog.exec()
 
+    @pyqtSlot()
+    def about_pireal(self):
+        from pireal.gui.dialogs.about_dialog import AboutDialog
+
+        dialog = AboutDialog(self)
+        dialog.exec()
+
     def _show_one_database_warning(self):
         QMessageBox.information(
             self, "ola", "Solo se puede tener una base de datos abierta a la vez."
