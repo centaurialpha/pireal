@@ -17,7 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-"""Run Pireal user interface."""
+"""
+Pireal - Interactive Relational Algebra Learning Tool
+
+Entry point for the application.
+"""
 
 import logging
 import logging.handlers
@@ -47,10 +51,16 @@ if ROOT_DIR not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 
-def setup_logging(level: int):
+def setup_logger(level: int = logging.INFO) -> None:
+    """
+    Configure application logging.
+
+    Args:
+        level: Logging level (default: INFO)
+    """
     console_fmt = "[%(levelname)-6s]: %(name)s:%(funcName)s - %(message)s"
     file_fmt = "[%(asctime)s] [%(levelname)-6s] [%(process)d]: %(name)s:%(funcName)s:%(lineno)d - %(message)s"
-    time_format = "%Y-%m-%d %H:%M:%S"
+    date_format = "%Y-%m-%d %H:%M:%S"
 
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(logging.Formatter(console_fmt))
@@ -62,9 +72,12 @@ def setup_logging(level: int):
     )
     if log_file.exists() and log_file.stat().st_size > 0:
         file_handler.doRollover()  # Force rotation on startup
-    file_handler.setFormatter(logging.Formatter(file_fmt, datefmt=time_format))
+    file_handler.setFormatter(logging.Formatter(file_fmt, datefmt=date_format))
 
     logging.basicConfig(level=level, handlers=[console_handler, file_handler])
+
+    logger.info("Logging initialized at level %s", logging.getLevelName(level))
+    logger.info("Log file: %s", log_file)
 
 
 def run():
@@ -80,7 +93,7 @@ def run():
     # Creo los dirs antes de leer logs. see #84
     create_app_dirs()
 
-    setup_logging(level=args.log_level)
+    setup_logger(level=args.log_level)
 
     logger = logging.getLogger(__name__)
     if platform.system() == "Linux":
