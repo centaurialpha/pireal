@@ -5,6 +5,7 @@ import sys
 from PyQt6.QtWidgets import QApplication
 
 from pireal.core.db import DB
+from pireal.dirs import THEMES_DIR
 from pireal.gui.controller import Controller
 from pireal.gui.database_container import DatabaseContainer
 from pireal.gui.lateral_widget import LateralWidget
@@ -35,11 +36,17 @@ class Application:
         settings.load()
 
     def _initialize_theme(self):
-        from pireal.theme import theme_manager
+        from pireal.gui.theme.manager import get_theme_manager
+        from pireal.settings import settings
 
-        logger.info("Applying theme...")
-        theme_manager.initialize()
-        theme_manager.apply_theme(self._app)
+        manager = get_theme_manager(custom_themes_dir=THEMES_DIR)
+        theme_id = settings.theme
+
+        try:
+            manager.apply(theme_id)
+        except ValueError:
+            manager.apply("dark")
+            settings.theme = "dark"
 
     def _initialize_widgets(self):
         logger.info("Widgets initialization")

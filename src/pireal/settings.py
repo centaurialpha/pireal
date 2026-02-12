@@ -79,6 +79,9 @@ class Settings:
         )
         self.dark_mode: bool = self._qs.value("dark_mode", True, type=bool)
 
+        default_theme = "dark" if self.dark_mode else "light"
+        self.theme: str = self._qs.value("theme", default_theme)
+
         self._loaded = True
 
     def save(self) -> None:
@@ -91,6 +94,7 @@ class Settings:
         self._qs.setValue("highlight_current_line", self.highlight_current_line)
         self._qs.setValue("match_parenthesis", self.match_parenthesis)
         self._qs.setValue("dark_mode", self.dark_mode)
+        self._qs.setValue("theme", self.theme)
 
         self._qs.sync()
 

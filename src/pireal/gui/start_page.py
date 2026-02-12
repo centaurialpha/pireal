@@ -52,7 +52,6 @@ from pireal import translations as tr
 from pireal.dirs import DATA_SETTINGS, EXAMPLES_DIR
 from pireal.gui.controller import Controller
 from pireal.registry import Registry
-from pireal.theme import theme_manager
 
 logger = logging.getLogger(__name__)
 
@@ -127,37 +126,37 @@ class RecentDBDelegate(QStyledItemDelegate):
         painter.restore()
 
     def _draw_background(self, painter, rect, state):
-        if state & QStyle.StateFlag.State_Selected:
-            bg_color = QColor(theme_manager.get_color("Highlight"))
-            border_color = QColor(theme_manager.get_color("Shadow"))
-        elif state & QStyle.StateFlag.State_MouseOver:
-            bg_color = QColor(theme_manager.get_color("AlternateBase"))
-            border_color = QColor(theme_manager.get_color("Mid"))
-        else:
-            bg_color = QColor(theme_manager.get_color("Base"))
-            border_color = QColor(theme_manager.get_color("Dark"))
+        # if state & QStyle.StateFlag.State_Selected:
+        #     # bg_color = QColor(theme_manager.get_color("Highlight"))
+        #     # border_color = QColor(theme_manager.get_color("Shadow"))
+        # elif state & QStyle.StateFlag.State_MouseOver:
+        #     bg_color = QColor(theme_manager.get_color("AlternateBase"))
+        #     border_color = QColor(theme_manager.get_color("Mid"))
+        # else:
+        #     bg_color = QColor(theme_manager.get_color("Base"))
+        #     border_color = QColor(theme_manager.get_color("Dark"))
 
-        # painter.setBrush(QBrush(bg_color))
-        pen = QPen(border_color)
-        painter.setPen(pen)
+        # # painter.setBrush(QBrush(bg_color))
+        # pen = QPen(border_color)
+        # painter.setPen(pen)
 
         painter.drawRect(rect)
 
     def _draw_content(self, painter, rect, title, subtitle, state):
         """Dibuja el contenido usando roles estándar de Qt."""
 
-        if state & QStyle.StateFlag.State_Selected:
-            title_color = QColor(theme_manager.get_color("HighlightedText"))
-        else:
-            title_color = QColor(theme_manager.get_color("Text"))
+        # if state & QStyle.StateFlag.State_Selected:
+        #     title_color = QColor(theme_manager.get_color("HighlightedText"))
+        # else:
+        #     title_color = QColor(theme_manager.get_color("Text"))
 
-        subtitle_color = QColor(theme_manager.get_color("Light"))
+        # subtitle_color = QColor(theme_manager.get_color("Light"))
 
         font = painter.font()
         font.setBold(True)
         font.setPointSize(12)
         painter.setFont(font)
-        painter.setPen(QPen(title_color))
+        # painter.setPen(QPen(title_color))
 
         title_height = rect.height() // 2
         subtitle_height = rect.height() - title_height
@@ -172,7 +171,7 @@ class RecentDBDelegate(QStyledItemDelegate):
         font.setBold(False)
         font.setPointSize(10)
         painter.setFont(font)
-        painter.setPen(QPen(subtitle_color))
+        # painter.setPen(QPen(subtitle_color))
 
         subtitle_rect = QRect(
             rect.left(), rect.top() + title_height, rect.width(), subtitle_height
@@ -201,9 +200,9 @@ class RecentDatabasesView(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         palette = self.palette()
-        palette.setColor(
-            QPalette.ColorRole.Window, QColor(theme_manager.get_color("AlternateBase"))
-        )
+        # palette.setColor(
+        #     QPalette.ColorRole.Window, QColor(theme_manager.get_color("AlternateBase"))
+        # )
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
@@ -212,7 +211,7 @@ class RecentDatabasesView(QFrame):
         vbox.addWidget(label, alignment=Qt.AlignmentFlag.AlignHCenter)
         self._recent_dbs_list = QListView()
         pal = self._recent_dbs_list.palette()
-        pal.setColor(pal.ColorRole.Base, QColor(theme_manager.get_color("Window")))
+        # pal.setColor(pal.ColorRole.Base, QColor(theme_manager.get_color("Window")))
         self._recent_dbs_list.setPalette(pal)
         self._recent_dbs_list.setAutoFillBackground(True)
         self._recent_dbs_list.setFrameShape(QListView.Shape.NoFrame)
