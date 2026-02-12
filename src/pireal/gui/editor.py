@@ -186,6 +186,8 @@ class Editor(QPlainTextEdit):
         pal.setColor(pal.ColorRole.Text, editor.get(EditorColorRole.FOREGROUND))
         self.setPalette(pal)
 
+        self.viewport().setPalette(pal)
+
         # Color de línea actual
         self._current_line_color = editor.get(EditorColorRole.CURRENT_LINE)
 
