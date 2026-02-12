@@ -143,6 +143,9 @@ class BracketHighlighter:
 class Editor(QPlainTextEdit):
     def __init__(self, pfile=None):
         super(Editor, self).__init__()
+        # Extra selections
+        self._selections = {}
+
         theme_manager = get_theme_manager()
         theme_manager.themeChanged.connect(self._on_theme_changed)
 
@@ -157,9 +160,6 @@ class Editor(QPlainTextEdit):
         self.pfile = pfile
         self.__visible_blocks = []
         self.modified = False
-        # Highlight current line
-        # self._highlight_line = settings.match_parenthesis
-        # self._highlight_line_color = QColor("#ff00ff")
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
@@ -167,14 +167,23 @@ class Editor(QPlainTextEdit):
         # Sidebar
         self._sidebar = sidebar.Sidebar(self)
         self.word_separators = [")", "("]
-        # Extra selections
-        self._selections = {}
-        # self.__cursor_position_changed()
         # Menu
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.blockCountChanged.connect(self.update)
         # Connection
-        self.cursorPositionChanged.connect(self._highlight_current_line)
+        self.cursorPositionChanged.connect(self._on_cursor_position_changed)
+
+    def _on_cursor_position_changed(self):
+        self._highlight_current_line()
+
+        if settings.match_parenthesis:
+            cursor_column_index = self.textCursor().positionInBlock()
+            bracket_selections = self._bracket_highlighter.extra_selections(
+                self.textCursor().block(), cursor_column_index
+            )
+            self.add_selection("parenthesis", bracket_selections)
+        else:
+            self.clear_selections("parenthesis")
 
     def _apply_theme(self, scheme: ColorScheme):
         """Aplica un ColorScheme al editor."""
@@ -204,11 +213,10 @@ class Editor(QPlainTextEdit):
 
     def _highlight_current_line(self):
         if not settings.highlight_current_line:
-            self.setExtraSelections([])
+            self.clear_selections("current_line")
             return
 
         extra_selections = []
-
         if not self.isReadOnly():
             selection = QTextEdit.ExtraSelection()
             selection.format.setBackground(self._current_line_color)
@@ -219,7 +227,7 @@ class Editor(QPlainTextEdit):
             selection.cursor.clearSelection()
             extra_selections.append(selection)
 
-        self.setExtraSelections(extra_selections)
+        self.add_selection("current_line", extra_selections)
 
     def _on_theme_changed(self, scheme: ColorScheme):
         self._apply_theme(scheme)
@@ -296,28 +304,6 @@ class Editor(QPlainTextEdit):
         cursor.setPosition(start_pos)
         cursor.setPosition(end_pos, QTextCursor.MoveMode.KeepAnchor)
         return cursor
-
-    # def __cursor_position_changed(self):
-    #     self.clear_selections("current_line")
-
-    #     if settings.highlight_current_line:
-    #         _selection = QTextEdit.ExtraSelection()
-    #         _selection.format.setBackground(self._highlight_line_color)
-    #         _selection.format.setProperty(
-    #             QTextCharFormat.Property.FullWidthSelection, True
-    #         )
-    #         _selection.cursor = self.textCursor()
-    #         _selection.cursor.clearSelection()
-    #         self.add_selection("current_line", [_selection])
-
-    #     # Paren matching
-    #     if settings.match_parenthesis:
-    #         self.clear_selections("parenthesis")
-    #         cursor_column_index = self.textCursor().positionInBlock()
-    #         bracket_selections = self._bracket_highlighter.extra_selections(
-    #             self.textCursor().block(), cursor_column_index
-    #         )
-    #         self.add_selection("parenthesis", bracket_selections)
 
     def set_font(self, font_family, size):
         font = QFont(font_family, size)
@@ -471,20 +457,11 @@ class Editor(QPlainTextEdit):
             self._selections[selection_name] = []
             self.update_selections()
 
-    def re_paint(self):
-        self.set_font(settings.font_family, settings.font_size)
-        # self._highlight_line_color = QColor(
-        #     theme_manager.get_editor_color("current_line")
-        # )
-        self._sidebar.re_paint()
-        pal = self.palette()
-        # pal.setColor(
-        #     pal.ColorRole.Text, QColor(theme_manager.get_editor_color("foreground"))
-        # )
-        # pal.setColor(
-        #     pal.ColorRole.Window, QColor(theme_manager.get_editor_color("background"))
-        # )
-        self.setPalette(pal)
-        self._highlighter = None
-        self._highlighter = highlighter.Highlighter(self.document())
-        self.__cursor_position_changed()
+    # def re_paint(self):
+    #     self.set_font(settings.font_family, settings.font_size)
+    #     self._sidebar.re_paint()
+    #     pal = self.palette()
+    #     self.setPalette(pal)
+    #     self._highlighter = None
+    #     self._highlighter = highlighter.Highlighter(self.document())
+    #     self._cursor_position_changed()
