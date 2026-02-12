@@ -72,6 +72,7 @@ CONFIG_FILE = _data_dir() / "config.ini"
 DATA_SETTINGS = _data_dir() / "data_settings.ini"
 LANGUAGES_DIR = _ROOT_DIR / "pireal" / "resources" / "lang"
 DATABASES_DIR = _get_databases_location()
+THEMES_DIR = _data_dir() / "themes"
 
 
 def create_app_dirs():

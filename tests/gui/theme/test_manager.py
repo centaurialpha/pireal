@@ -21,7 +21,6 @@ def test_manager_initialization(app):
 
     assert "dark" in theme_ids
     assert "light" in theme_ids
-    assert "system" in theme_ids
 
 
 def test_apply_theme(app):

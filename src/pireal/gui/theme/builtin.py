@@ -13,15 +13,15 @@ class DarkTheme:
 
     def color_scheme(self) -> ColorScheme:
         editor = EditorColors(
-            keyword=QColor("#F92672"),  # Rosa/magenta
-            variable=QColor("#A6E22E"),  # Verde
-            operator=QColor("#F92672"),  # Rosa
-            number=QColor("#AE81FF"),  # Púrpura
-            string=QColor("#E6DB74"),  # Amarillo
-            comment=QColor("#75715E"),  # Gris oliva
-            foreground=QColor("#F8F8F2"),  # Blanco hueso
-            background=QColor("#272822"),  # Gris oscuro
-            current_line=QColor("#3E3D32"),  # Gris medio
+            keyword=QColor("#F92672"),
+            variable=QColor("#A6E22E"),
+            operator=QColor("#F92672"),
+            number=QColor("#AE81FF"),
+            string=QColor("#E6DB74"),
+            comment=QColor("#75715E"),
+            foreground=QColor("#F8F8F2"),
+            background=QColor("#272822"),
+            current_line=QColor("#3E3D32"),
             line_number_fg=QColor("#90908A"),
             line_number_bg=QColor("#272822"),
             selection_bg=QColor("#49483E"),
@@ -78,12 +78,12 @@ class LightTheme:
 
     def color_scheme(self) -> ColorScheme:
         editor = EditorColors(
-            keyword=QColor("#0000FF"),  # Azul
-            variable=QColor("#008080"),  # Teal
-            operator=QColor("#000080"),  # Navy
-            number=QColor("#800080"),  # Púrpura
-            string=QColor("#008000"),  # Verde oscuro
-            comment=QColor("#808080"),  # Gris
+            keyword=QColor("#0000FF"),
+            variable=QColor("#008080"),
+            operator=QColor("#000080"),
+            number=QColor("#800080"),
+            string=QColor("#008000"),
+            comment=QColor("#808080"),
             foreground=QColor("#000000"),
             background=QColor("#FFFFFF"),
             current_line=QColor("#F0F0F0"),

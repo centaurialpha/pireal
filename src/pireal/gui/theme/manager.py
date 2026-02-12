@@ -92,8 +92,8 @@ class ThemeManager(QObject):
 _instance: ThemeManager | None = None
 
 
-def get_theme_manager() -> ThemeManager:
+def get_theme_manager(custom_themes_dir: Path | None = None) -> ThemeManager:
     global _instance
     if _instance is None:
-        _instance = ThemeManager()
+        _instance = ThemeManager(custom_themes_dir=custom_themes_dir)
     return _instance
