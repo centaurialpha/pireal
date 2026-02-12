@@ -1,0 +1,109 @@
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFontDatabase
+from PyQt6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QFontComboBox,
+    QGridLayout,
+    QGroupBox,
+    QLabel,
+    QVBoxLayout,
+)
+
+from pireal.settings import settings
+
+
+class SettingsDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+        self.setWindowTitle("Settings")
+
+        vbox = QVBoxLayout(self)
+        vbox.addWidget(self._build_general_group())
+        vbox.addWidget(self._build_editor_group())
+        vbox.addWidget(self._build_font_group())
+
+        button_box = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Save
+            | QDialogButtonBox.StandardButton.Cancel
+        )
+        button_box.rejected.connect(self.reject)
+        button_box.accepted.connect(self.accept)
+        vbox.addWidget(button_box)
+
+    def _build_general_group(self) -> QGroupBox:
+        group = QGroupBox("General")
+        layout = QGridLayout(group)
+
+        self._combo_languages = QComboBox()
+        self._languages = {"en": "English", "es": "Spanish"}
+        self._combo_languages.addItems(self._languages.values())
+        self._combo_languages.setCurrentText(self._languages[settings.language])
+
+        layout.addWidget(QLabel("Language"), 0, 0)
+        layout.addWidget(self._combo_languages, 0, 1)
+
+        return group
+
+    def _build_editor_group(self) -> QGroupBox:
+        group = QGroupBox("Editor")
+        layout = QGridLayout(group)
+
+        self._check_highlight_line = QCheckBox("Highlight Current Line")
+        self._check_highlight_line.setChecked(settings.highlight_current_line)
+
+        self._check_match_parenthesis = QCheckBox("Highlight Braces")
+        self._check_match_parenthesis.setChecked(settings.match_parenthesis)
+
+        layout.addWidget(self._check_highlight_line, 0, 0)
+        layout.addWidget(self._check_match_parenthesis, 0, 1)
+
+        return group
+
+    def _build_font_group(self) -> QGroupBox:
+        group = QGroupBox("Font")
+        layout = QGridLayout(group)
+
+        self._combo_font_family = QFontComboBox()
+        self._combo_font_family.setCurrentFont(
+            QFontDatabase.font(settings.font_family, "", settings.font_size)
+        )
+        self._combo_font_family.currentFontChanged.connect(self._update_font_sizes)
+
+        self._combo_font_size = QComboBox()
+        sizes = QFontDatabase.smoothSizes(settings.font_family, "")
+        if not sizes:
+            sizes = [8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 48, 64]
+
+        self._combo_font_size.addItems([str(s) for s in sizes])
+        self._combo_font_size.setCurrentText(str(settings.font_size))
+
+        layout.addWidget(QLabel("Family"), 0, 0)
+        layout.addWidget(self._combo_font_family, 0, 1)
+        layout.addWidget(QLabel("Size"), 0, 2)
+        layout.addWidget(self._combo_font_size, 0, 3)
+
+        return group
+
+    def accept(self):
+        for key, lang in self._languages.items():
+            if lang == self._combo_languages.currentText():
+                settings.language = key
+                break
+
+        settings.highlight_current_line = self._check_highlight_line.isChecked()
+        settings.match_parenthesis = self._check_match_parenthesis.isChecked()
+        settings.font_family = self._combo_font_family.currentText()
+        settings.font_size = int(self._combo_font_size.currentText())
+
+        super().accept()
+
+    def _update_font_sizes(self, font):
+        sizes = QFontDatabase.smoothSizes(font.family(), "")
+        if not sizes:
+            sizes = [8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 48, 64]
+        self._combo_font_size.clear()
+        self._combo_font_size.addItems([str(s) for s in sizes])

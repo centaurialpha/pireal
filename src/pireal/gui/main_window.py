@@ -4,13 +4,13 @@ from PyQt6.QtCore import QSettings
 from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import QMainWindow
 
-from pireal.settings import settings
 from pireal.dirs import DATA_SETTINGS
 from pireal.gui.controller import Controller
 from pireal.gui.menu import MenuBuilder
 from pireal.gui.status_bar import StatusBar
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.registry import Registry
+from pireal.settings import settings
 
 
 class Pireal(QMainWindow):
@@ -36,12 +36,19 @@ class Pireal(QMainWindow):
         theme_manager = get_theme_manager()
 
         self._status_bar.playClicked.connect(controller.execute_queries)
+        self._status_bar.gearClicked.connect(self._show_settings)
         self._status_bar.theme_button.set_themes(theme_manager.themes())
         self._status_bar.theme_button.themeRequested.connect(self._on_theme_requested)
 
     @classmethod
     def instance(cls):
         return cls._instance
+
+    def _show_settings(self):
+        from pireal.gui.dialogs.settings_dialog import SettingsDialog
+
+        dialog = SettingsDialog(self)
+        dialog.exec()
 
     def _on_theme_requested(self, theme_id: str):
         theme_manager = get_theme_manager()
