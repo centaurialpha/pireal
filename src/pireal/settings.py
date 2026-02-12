@@ -19,7 +19,7 @@
 
 import platform
 
-from PyQt6.QtCore import QSettings
+from PyQt6.QtCore import QObject, QSettings, pyqtSignal
 from PyQt6.QtGui import QFontDatabase
 
 from pireal.dirs import CONFIG_FILE
@@ -58,8 +58,11 @@ def _get_default_font() -> str:
     return "Courier"
 
 
-class Settings:
+class Settings(QObject):
+    settingsChanged = pyqtSignal(str)
+
     def __init__(self):
+        super().__init__()
         self._qs = QSettings(str(CONFIG_FILE), QSettings.Format.IniFormat)
         self._loaded = False
 
@@ -105,6 +108,7 @@ class Settings:
             save_value = list(value) if isinstance(value, tuple) else value
             self._qs.setValue(name, save_value)
             self._qs.sync()
+            self.settingsChanged.emit(name)
 
 
 settings = Settings()

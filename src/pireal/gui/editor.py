@@ -158,8 +158,8 @@ class Editor(QPlainTextEdit):
         self.__visible_blocks = []
         self.modified = False
         # Highlight current line
-        self._highlight_line = settings.match_parenthesis
-        self._highlight_line_color = QColor("#ff00ff")
+        # self._highlight_line = settings.match_parenthesis
+        # self._highlight_line_color = QColor("#ff00ff")
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
@@ -194,7 +194,19 @@ class Editor(QPlainTextEdit):
         # Re-highlight línea actual
         self._highlight_current_line()
 
+        settings.settingsChanged.connect(self._on_settings_changed)
+
+    def _on_settings_changed(self, key: str):
+        if key in ("font_family", "font_size"):
+            self.set_font(settings.font_family, settings.font_size)
+        elif key == "highlight_current_line":
+            self._highlight_current_line()
+
     def _highlight_current_line(self):
+        if not settings.highlight_current_line:
+            self.setExtraSelections([])
+            return
+
         extra_selections = []
 
         if not self.isReadOnly():
@@ -285,27 +297,27 @@ class Editor(QPlainTextEdit):
         cursor.setPosition(end_pos, QTextCursor.MoveMode.KeepAnchor)
         return cursor
 
-    def __cursor_position_changed(self):
-        self.clear_selections("current_line")
+    # def __cursor_position_changed(self):
+    #     self.clear_selections("current_line")
 
-        if settings.highlight_current_line:
-            _selection = QTextEdit.ExtraSelection()
-            _selection.format.setBackground(self._highlight_line_color)
-            _selection.format.setProperty(
-                QTextCharFormat.Property.FullWidthSelection, True
-            )
-            _selection.cursor = self.textCursor()
-            _selection.cursor.clearSelection()
-            self.add_selection("current_line", [_selection])
+    #     if settings.highlight_current_line:
+    #         _selection = QTextEdit.ExtraSelection()
+    #         _selection.format.setBackground(self._highlight_line_color)
+    #         _selection.format.setProperty(
+    #             QTextCharFormat.Property.FullWidthSelection, True
+    #         )
+    #         _selection.cursor = self.textCursor()
+    #         _selection.cursor.clearSelection()
+    #         self.add_selection("current_line", [_selection])
 
-        # Paren matching
-        if settings.match_parenthesis:
-            self.clear_selections("parenthesis")
-            cursor_column_index = self.textCursor().positionInBlock()
-            bracket_selections = self._bracket_highlighter.extra_selections(
-                self.textCursor().block(), cursor_column_index
-            )
-            self.add_selection("parenthesis", bracket_selections)
+    #     # Paren matching
+    #     if settings.match_parenthesis:
+    #         self.clear_selections("parenthesis")
+    #         cursor_column_index = self.textCursor().positionInBlock()
+    #         bracket_selections = self._bracket_highlighter.extra_selections(
+    #             self.textCursor().block(), cursor_column_index
+    #         )
+    #         self.add_selection("parenthesis", bracket_selections)
 
     def set_font(self, font_family, size):
         font = QFont(font_family, size)
@@ -346,7 +358,7 @@ class Editor(QPlainTextEdit):
             end_pos = cursor.position()
         # Create extra selection
         selection = QTextEdit.ExtraSelection()
-        selection.format.setBackground(self._highlight_line_color)
+        # selection.format.setBackground(self._highlight_line_color)
         selection.cursor = QTextCursor(cursor)
         selection.cursor.setPosition(start_pos)
         selection.cursor.setPosition(end_pos, QTextCursor.MoveMode.KeepAnchor)
