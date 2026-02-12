@@ -1,10 +1,62 @@
+from PyQt6.QtCore import Qt, QTimer, pyqtSignal
+from PyQt6.QtGui import QActionGroup
+from PyQt6.QtWidgets import (
+    QFrame,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QMenu,
+    QToolButton,
+)
 
-from PyQt6.QtCore import QTimer, Qt, pyqtSignal
-from PyQt6.QtWidgets import QFrame, QGridLayout, QHBoxLayout, QLabel, QMainWindow, QToolButton
-
-from pireal.helpers import Font
-from pireal.settings import settings
 from pireal import __version__
+from pireal.gui.theme.manager import get_theme_manager
+from pireal.helpers import Font
+
+
+class ThemeButton(QToolButton):
+    themeRequested = pyqtSignal(str)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setAutoRaise(True)
+        self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+    def set_themes(self, themes: list[tuple[str, str]]):
+        if len(themes) <= 2:
+            self._setup_toggle()
+        else:
+            self._setup_menu(themes)
+
+    def _setup_toggle(self):
+        self.setCheckable(True)
+        self.setChecked(get_theme_manager().current_id == "dark")
+        self.toggled.connect(self._on_toggled)
+
+    def _setup_menu(self, themes: list[tuple[str, str]]):
+        self.setCheckable(False)
+        self.setPopupMode(QToolButton.ToolButtonPopupMode.MenuButtonPopup)
+        menu = QMenu(self)
+        group = QActionGroup(menu)
+        group.setExclusive(True)
+        current_id = get_theme_manager().current_id
+        for theme_id, theme_name in themes:
+            if action := menu.addAction(theme_name):
+                action.setCheckable(True)
+                action.setChecked(theme_id == current_id)
+                group.addAction(action)
+                action.triggered.connect(
+                    lambda _, tid=theme_id: self._on_menu_action(tid)
+                )
+        self.setMenu(menu)
+
+    def _on_toggled(self, checked: bool):
+        theme_id = "dark" if checked else "light"
+        self.themeRequested.emit(theme_id)
+
+    def _on_menu_action(self, theme_id: str):
+        self.themeRequested.emit(theme_id)
 
 
 class StatusBar(QFrame):
@@ -12,7 +64,6 @@ class StatusBar(QFrame):
 
     playClicked = pyqtSignal()
     gearClicked = pyqtSignal()
-    moonClicked = pyqtSignal(bool)
     expandClicked = pyqtSignal(bool)
 
     def __init__(self, main_window: QMainWindow, parent=None):
@@ -41,10 +92,10 @@ class StatusBar(QFrame):
         fa = Font.instance()
         # Left widgets
         self._messages_label = QLabel()
-        self._messages_label.setText(f'Pireal v{__version__}')
+        self._messages_label.setText(f"Pireal v{__version__}")
         left_layout.addWidget(self._messages_label)
         # Mid widgets
-        self._line_col_label = QLabel('Line: 0, Col: 0')
+        self._line_col_label = QLabel("Line: 0, Col: 0")
         self._line_col_label.hide()
         mid_layout.addWidget(self._line_col_label)
         # Right widgets
@@ -55,26 +106,20 @@ class StatusBar(QFrame):
         execute_button.setIcon(fa.icon("\uf04b", color="red"))
         execute_button.clicked.connect(lambda: self.playClicked.emit())
         right_layout.addWidget(execute_button)
-        dark_mode_button = QToolButton()
-        dark_mode_button.setAutoRaise(True)
-        dark_mode_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        dark_mode_button.setCheckable(True)
-        dark_mode_button.setChecked(settings.dark_mode)
-        # dark_mode_button.setText('\uf186')
-        dark_mode_button.setIcon(fa.icon("\uf186", color="red"))
-        dark_mode_button.toggled.connect(lambda v: self.moonClicked.emit(v))
-        right_layout.addWidget(dark_mode_button)
+        self.theme_button = ThemeButton()
+        self.theme_button.setIcon(fa.icon("\uf186", color="red"))
+        right_layout.addWidget(self.theme_button)
         settings_button = QToolButton()
         settings_button.setAutoRaise(True)
         settings_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        settings_button.setText('\uf013')
+        settings_button.setText("\uf013")
         settings_button.clicked.connect(lambda: self.gearClicked.emit())
         right_layout.addWidget(settings_button)
 
         fullscreen_button = QToolButton()
         fullscreen_button.setAutoRaise(True)
         fullscreen_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        fullscreen_button.setText('\uf065')
+        fullscreen_button.setText("\uf065")
         fullscreen_button.setCheckable(True)
         fullscreen_button.setChecked(self._main_window.isFullScreen())
         fullscreen_button.toggled.connect(lambda v: self.expandClicked.emit(v))
@@ -94,4 +139,4 @@ class StatusBar(QFrame):
     def update_line_and_col(self, line, col):
         if not self._line_col_label.isVisible():
             self._line_col_label.show()
-        self._line_col_label.setText('Line: {}, Col: {}'.format(line, col))
+        self._line_col_label.setText("Line: {}, Col: {}".format(line, col))
