@@ -29,8 +29,9 @@ from PyQt6.QtWidgets import (
 )
 
 from pireal.gui import highlighter, sidebar
+from pireal.gui.theme.manager import get_theme_manager
+from pireal.gui.theme.schema import ColorScheme, EditorColorRole
 from pireal.settings import settings
-from pireal.theme import theme_manager
 
 BRACKETS = "()"
 OPOSITE_BRACKET = {
@@ -142,14 +143,10 @@ class BracketHighlighter:
 class Editor(QPlainTextEdit):
     def __init__(self, pfile=None):
         super(Editor, self).__init__()
-        pal = self.palette()
-        pal.setColor(
-            pal.ColorRole.Text, QColor(theme_manager.get_editor_color("foreground"))
-        )
-        pal.setColor(
-            pal.ColorRole.Base, QColor(theme_manager.get_editor_color("background"))
-        )
-        self.setPalette(pal)
+        theme_manager = get_theme_manager()
+        theme_manager.themeChanged.connect(self._on_theme_changed)
+
+        self._apply_theme(theme_manager.current_scheme)
 
         self._bracket_highlighter = BracketHighlighter()
 
@@ -162,9 +159,7 @@ class Editor(QPlainTextEdit):
         self.modified = False
         # Highlight current line
         self._highlight_line = settings.match_parenthesis
-        self._highlight_line_color = QColor(
-            theme_manager.get_editor_color("current_line")
-        )
+        self._highlight_line_color = QColor("#ff00ff")
         # Highlighter
         self._highlighter = highlighter.Highlighter(self.document())
         # Set document font
@@ -174,12 +169,46 @@ class Editor(QPlainTextEdit):
         self.word_separators = [")", "("]
         # Extra selections
         self._selections = {}
-        self.__cursor_position_changed()
+        # self.__cursor_position_changed()
         # Menu
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.blockCountChanged.connect(self.update)
         # Connection
-        self.cursorPositionChanged.connect(self.__cursor_position_changed)
+        self.cursorPositionChanged.connect(self._highlight_current_line)
+
+    def _apply_theme(self, scheme: ColorScheme):
+        """Aplica un ColorScheme al editor."""
+        editor = scheme.editor
+
+        # Colores del editor
+        pal = self.palette()
+        pal.setColor(pal.ColorRole.Base, editor.get(EditorColorRole.BACKGROUND))
+        pal.setColor(pal.ColorRole.Text, editor.get(EditorColorRole.FOREGROUND))
+        self.setPalette(pal)
+
+        # Color de línea actual
+        self._current_line_color = editor.get(EditorColorRole.CURRENT_LINE)
+
+        # Re-highlight línea actual
+        self._highlight_current_line()
+
+    def _highlight_current_line(self):
+        extra_selections = []
+
+        if not self.isReadOnly():
+            selection = QTextEdit.ExtraSelection()
+            selection.format.setBackground(self._current_line_color)
+            selection.format.setProperty(
+                QTextCharFormat.Property.FullWidthSelection, True
+            )
+            selection.cursor = self.textCursor()
+            selection.cursor.clearSelection()
+            extra_selections.append(selection)
+
+        self.setExtraSelections(extra_selections)
+
+    def _on_theme_changed(self, scheme: ColorScheme):
+        self._apply_theme(scheme)
 
     @property
     def visible_blocks(self):
@@ -430,17 +459,17 @@ class Editor(QPlainTextEdit):
 
     def re_paint(self):
         self.set_font(settings.font_family, settings.font_size)
-        self._highlight_line_color = QColor(
-            theme_manager.get_editor_color("current_line")
-        )
+        # self._highlight_line_color = QColor(
+        #     theme_manager.get_editor_color("current_line")
+        # )
         self._sidebar.re_paint()
         pal = self.palette()
-        pal.setColor(
-            pal.ColorRole.Text, QColor(theme_manager.get_editor_color("foreground"))
-        )
-        pal.setColor(
-            pal.ColorRole.Window, QColor(theme_manager.get_editor_color("background"))
-        )
+        # pal.setColor(
+        #     pal.ColorRole.Text, QColor(theme_manager.get_editor_color("foreground"))
+        # )
+        # pal.setColor(
+        #     pal.ColorRole.Window, QColor(theme_manager.get_editor_color("background"))
+        # )
         self.setPalette(pal)
         self._highlighter = None
         self._highlighter = highlighter.Highlighter(self.document())

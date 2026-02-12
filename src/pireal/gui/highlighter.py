@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015-2025 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2026 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -19,24 +19,16 @@
 
 from PyQt6.QtCore import QRegularExpression
 from PyQt6.QtGui import (
-    QColor,
     QFont,
     QSyntaxHighlighter,
-    QTextBlockUserData,
     QTextCharFormat,
 )
 
-from pireal.theme import theme_manager
+from pireal.gui.theme.manager import get_theme_manager
+from pireal.gui.theme.schema import ColorScheme, EditorColorRole
 
 
 class Highlighter(QSyntaxHighlighter):
-    """Syntax Highlighting
-
-    This class defines rules, a rule consists of a QRegExp pattern and a
-    QTextCharFormat instance.
-    """
-
-    # Keywords
     KEYWORDS = [
         "select",
         "project",
@@ -53,94 +45,82 @@ class Highlighter(QSyntaxHighlighter):
         "or",
     ]
 
-    def __init__(self, editor):
-        super(Highlighter, self).__init__(editor)
-        # Keywords format
-        keyword_format = QTextCharFormat()
-        keyword_format.setForeground(QColor(theme_manager.get_editor_color("keyword")))
-        keyword_format.setFontWeight(QFont.Weight.Bold)
+    def __init__(self, document):
+        super().__init__(document)
+        theme_manager = get_theme_manager()
+        theme_manager.themeChanged.connect(self._on_theme_changed)
 
-        # Rules
-        self._rules = [
-            (QRegularExpression("\\b" + pattern + "\\b"), keyword_format)
-            for pattern in Highlighter.KEYWORDS
-        ]
+        self._setup_formats(theme_manager.current_scheme)
 
-        # vars
-        var_format = QTextCharFormat()
-        var_pattern = QRegularExpression(r"\w+\s*\:\=")
-        var_format.setFontWeight(QFont.Weight.Bold)
-        var_format.setForeground(QColor(theme_manager.get_editor_color("variable")))
+    def _setup_formats(self, scheme: ColorScheme):
+        editor = scheme.editor
 
-        self._rules.append((var_pattern, var_format))
+        # Keywords
+        self._keyword_fmt = QTextCharFormat()
+        self._keyword_fmt.setForeground(editor.get(EditorColorRole.KEYWORD))
+        self._keyword_fmt.setFontWeight(QFont.Weight.Bold)
 
-        op_format = QTextCharFormat()
-        op_pattern = QRegularExpression("(\\:=|\\(|\\))|=|<|>")
-        op_format.setForeground(QColor(theme_manager.get_editor_color("operator")))
-        op_format.setFontWeight(QFont.Weight.Bold)
-        self._rules.append((op_pattern, op_format))
-        # Number format
-        number_format = QTextCharFormat()
-        number_pattern = QRegularExpression(r"\b([A-Z0-9]+)(?:[ _-](\d+))?\b")
-        # number_pattern.setMinimal(True)
-        number_format.setForeground(QColor(theme_manager.get_editor_color("number")))
-        self._rules.append((number_pattern, number_format))
+        # Variables
+        self._var_fmt = QTextCharFormat()
+        self._var_fmt.setForeground(editor.get(EditorColorRole.VARIABLE))
+        self._var_fmt.setFontWeight(QFont.Weight.Bold)
 
-        # String format
-        string_format = QTextCharFormat()
-        string_pattern = QRegularExpression("'.*'")
-        # string_pattern.setMinimal(True)
-        string_format.setForeground(QColor(theme_manager.get_editor_color("string")))
-        self._rules.append((string_pattern, string_format))
+        # Operators
+        self._op_fmt = QTextCharFormat()
+        self._op_fmt.setForeground(editor.get(EditorColorRole.OPERATOR))
+        self._op_fmt.setFontWeight(QFont.Weight.Bold)
 
-        # Comment format
-        comment_format = QTextCharFormat()
-        comment_pattern = QRegularExpression("%[^\n]*")
-        comment_format.setForeground(QColor(theme_manager.get_editor_color("comment")))
-        comment_format.setFontItalic(True)
-        self._rules.append((comment_pattern, comment_format))
+        # Numbers
+        self._number_fmt = QTextCharFormat()
+        self._number_fmt.setForeground(editor.get(EditorColorRole.NUMBER))
 
-        # Paren
-        # self.paren = QRegularExpression(r"\(|\)")
+        # Strings
+        self._string_fmt = QTextCharFormat()
+        self._string_fmt.setForeground(editor.get(EditorColorRole.STRING))
 
-    def highlightBlock(self, text):
-        """Reimplementation"""
-        block_data = TextBlockData()
-        # Paren
-        # index = self.paren.indexIn(text, 0)
-        # while index >= 0:
-        #     matched_paren = str(self.paren.capturedTexts()[0])
-        #     info = ParenInfo(matched_paren, index)
-        #     block_data.insert_paren_info(info)
-        #     index = self.paren.indexIn(text, index + 1)
+        # Comments
+        self._comment_fmt = QTextCharFormat()
+        self._comment_fmt.setForeground(editor.get(EditorColorRole.COMMENT))
+        self._comment_fmt.setFontItalic(True)
 
-        self.setCurrentBlockUserData(block_data)
+        # Compilar reglas
+        self._compile_rules()
 
-        for pattern, _format in self._rules:
-            match_iterator = pattern.globalMatch(text)
-            while match_iterator.hasNext():
-                match = match_iterator.next()
-                self.setFormat(match.capturedStart(), match.capturedLength(), _format)
+    def _compile_rules(self):
+        self._rules = []
 
-        self.setCurrentBlockState(0)
+        # Keywords
+        for kw in self.KEYWORDS:
+            pattern = QRegularExpression(rf"\b{kw}\b")
+            self._rules.append((pattern, self._keyword_fmt))
 
+        # Variables
+        var_pattern = QRegularExpression(r"\w+\s*:=")
+        self._rules.append((var_pattern, self._var_fmt))
 
-class TextBlockData(QTextBlockUserData):
-    def __init__(self):
-        super(TextBlockData, self).__init__()
-        self.paren = []
-        self.__valid = False
+        # Operators
+        op_pattern = QRegularExpression(r"(:=|\(|\))|=|<|>|<=|>=|!=")
+        self._rules.append((op_pattern, self._op_fmt))
 
-    def insert_paren_info(self, info):
-        self.__valid = True
-        self.paren.append(info)
+        # Numbers
+        num_pattern = QRegularExpression(r"\b\d+(\.\d+)?\b")
+        self._rules.append((num_pattern, self._number_fmt))
 
-    @property
-    def isValid(self):
-        return self.__valid
+        # Strings
+        str_pattern = QRegularExpression(r"'[^']*'|\"[^\"]*\"")
+        self._rules.append((str_pattern, self._string_fmt))
 
+        # Comments
+        comment_pattern = QRegularExpression(r"%[^\n]*")
+        self._rules.append((comment_pattern, self._comment_fmt))
 
-class ParenInfo(object):
-    def __init__(self, char, pos):
-        self.character = char
-        self.position = pos
+    def _on_theme_changed(self, scheme: ColorScheme):
+        self._setup_formats(scheme)
+        self.rehighlight()
+
+    def highlightBlock(self, text: str | None):
+        for pattern, fmt in self._rules:
+            iterator = pattern.globalMatch(text)
+            while iterator.hasNext():
+                match = iterator.next()
+                self.setFormat(match.capturedStart(), match.capturedLength(), fmt)

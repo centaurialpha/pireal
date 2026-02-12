@@ -27,7 +27,8 @@ from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QColor, QFontMetrics, QPainter, QPen
 from PyQt6.QtWidgets import QFrame
 
-from pireal.theme import theme_manager
+from pireal.gui.theme.manager import get_theme_manager
+from pireal.gui.theme.schema import ColorScheme, EditorColorRole
 
 
 class Sidebar(QFrame):
@@ -39,12 +40,22 @@ class Sidebar(QFrame):
 
         self.editor.blockCountChanged.connect(self.update_viewport)
         self.editor.updateRequest.connect(self.update)
-        self._background_color = QColor(theme_manager.get_editor_color("sidebar_background"))
-        self._foreground_color = QColor(theme_manager.get_editor_color("sidebar_foreground"))
 
-    def re_paint(self):
-        self._background_color = QColor(theme_manager.get_editor_color("sidebar_background"))
-        self._foreground_color = QColor(theme_manager.get_editor_color("sidebar_foreground"))
+        theme_manager = get_theme_manager()
+        theme_manager.themeChanged.connect(self._on_theme_changed)
+
+        self._apply_colors(theme_manager.current_scheme)
+
+    def _apply_colors(self, scheme: ColorScheme):
+        """Aplica colores desde un ColorScheme."""
+        editor = scheme.editor
+        self._background_color = editor.get(EditorColorRole.SIDEBAR_BACKGROUND)
+        self._foreground_color = editor.get(EditorColorRole.SIDEBAR_FOREGROUND)
+        self.update()  # Forzar repaint
+
+    def _on_theme_changed(self, scheme: ColorScheme):
+        """Handler de cambio de tema."""
+        self._apply_colors(scheme)
 
     def sizeHint(self):
         return QSize(self.__calculate_width(), 0)
@@ -62,7 +73,9 @@ class Sidebar(QFrame):
 
     def __calculate_width(self):
         digits = len(str(max(1, self.editor.blockCount())))
-        fmetrics_width = QFontMetrics(self.editor.document().defaultFont()).horizontalAdvance("9")
+        fmetrics_width = QFontMetrics(
+            self.editor.document().defaultFont()
+        ).horizontalAdvance("9")
         return 5 + fmetrics_width * digits + 3
 
     def paintEvent(self, event):
@@ -87,4 +100,6 @@ class Sidebar(QFrame):
                 painter.setFont(font_bold)
             else:
                 painter.setFont(font)
-            painter.drawText(5, int(top), width, height, Qt.AlignmentFlag.AlignRight, str(line + 1))
+            painter.drawText(
+                5, int(top), width, height, Qt.AlignmentFlag.AlignRight, str(line + 1)
+            )

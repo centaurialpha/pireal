@@ -35,11 +35,10 @@ class Application:
         settings.load()
 
     def _initialize_theme(self):
-        from pireal.theme import theme_manager
+        from pireal.gui.theme.manager import get_theme_manager
 
-        logger.info("Applying theme...")
-        theme_manager.initialize()
-        theme_manager.apply_theme(self._app)
+        manager = get_theme_manager()
+        manager.apply("light")
 
     def _initialize_widgets(self):
         logger.info("Widgets initialization")
