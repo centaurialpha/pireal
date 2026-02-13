@@ -96,9 +96,14 @@ class Sidebar(QFrame):
         current_line = self.editor.textCursor().blockNumber()
 
         for top, line, block in self.editor.visible_blocks:
-            if current_line == line:
+            if line + 1 == self.editor._error_line:
+                painter.setPen(QPen(QColor("#DD4040")))
+                painter.setFont(font_bold)
+            elif current_line == line:
+                painter.setPen(pen)
                 painter.setFont(font_bold)
             else:
+                painter.setPen(pen)
                 painter.setFont(font)
             painter.drawText(
                 5, int(top), width, height, Qt.AlignmentFlag.AlignRight, str(line + 1)
