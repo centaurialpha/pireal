@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtCore import QEvent, Qt, QTimer
 from PyQt6.QtGui import (
     QColor,
     QFont,
@@ -33,6 +33,7 @@ from PyQt6.QtWidgets import (
     QPlainTextEdit,
     QTextEdit,
     QToolButton,
+    QToolTip,
 )
 
 from pireal.gui import highlighter, sidebar
@@ -153,6 +154,9 @@ class Editor(QPlainTextEdit):
         super(Editor, self).__init__()
         # Extra selections
         self._selections = {}
+
+        self._error_line = -1
+        self._error_message = ""
 
         theme_manager = get_theme_manager()
         theme_manager.themeChanged.connect(self._on_theme_changed)
@@ -433,11 +437,25 @@ class Editor(QPlainTextEdit):
             if not found:
                 self.setTextCursor(cursor)
 
-    def highlight_error(self, linenumber):
+    def event(self, e: QEvent | None) -> bool:
+        if e.type() == e.Type.ToolTip:
+            cursor = self.cursorForPosition(e.pos())
+            line = cursor.blockNumber() + 1
+            if line == self._error_line:
+                QToolTip.showText(e.globalPos(), self._error_message)
+                return True
+        return super().event(e)
+
+    def highlight_error(self, linenumber, message="Syntax error"):
         if linenumber == -1:
-            # Borro la selección
             self.clear_selections("error")
+            self._error_line = -1
+            self._error_message = ""
             return
+
+        self._error_line = linenumber
+        self._error_message = message
+
         selection = QTextEdit.ExtraSelection()
         selection.cursor = self.textCursor()
         selection.cursor.movePosition(
@@ -448,9 +466,10 @@ class Editor(QPlainTextEdit):
             QTextCursor.MoveMode.MoveAnchor,
             linenumber - 1,
         )
-        selection.format.setProperty(QTextCharFormat.Property.FullWidthSelection, True)
-        selection.format.setBackground(QColor("#DD4040"))
-        selection.format.setForeground(QColor("#ffffff"))
+        selection.cursor.select(QTextCursor.SelectionType.LineUnderCursor)
+        selection.format.setUnderlineStyle(QTextCharFormat.UnderlineStyle.WaveUnderline)
+        selection.format.setUnderlineColor(QColor("#DD4040"))
+
         self.add_selection("error", [selection])
 
     def add_selection(self, selection_name, selections):

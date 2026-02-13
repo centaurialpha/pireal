@@ -11,6 +11,12 @@ from pireal.gui.lateral_widget import LateralWidget, RelationItemType
 from pireal.gui.model_view_delegate import Delegate, RelationModel, View
 from pireal.gui.query_widget import QueryWidget
 from pireal.gui.table_widget import TableWidget
+from pireal.interpreter.exceptions import (
+    ConsumeError,
+    DuplicateRelationNameError,
+    InvalidSyntaxError,
+    MissingQuoteError,
+)
 from pireal.registry import Registry
 
 
@@ -101,7 +107,6 @@ class DatabaseContainer(QSplitter):
 
     def execute_queries(self):
         from pireal.interpreter.parser import parse
-        from pireal.interpreter.sql_generator import SQLGenerator
 
         table_widget = Registry.get("table-widget", TableWidget)
         query_widget = Registry.get("query-widget", QueryWidget)
@@ -125,7 +130,14 @@ class DatabaseContainer(QSplitter):
             i -= 1
 
         self._database.clear_query_results()
-        result = parse(queries)
+        try:
+            result = parse(queries)
+            editor.editor.highlight_error(-1)
+        except (MissingQuoteError, InvalidSyntaxError, ConsumeError) as err:
+            editor.editor.highlight_error(err.lineno, message=str(err))
+            return
+        except DuplicateRelationNameError:
+            return
 
         for relation_name, expression in result.items():
             new_relation = self._database.eval_query(expression, relation_name)
