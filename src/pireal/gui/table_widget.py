@@ -1,4 +1,4 @@
-from PyQt6.QtCore import Qt, pyqtSlot
+from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -132,6 +132,8 @@ class _TableWidget(QSplitter):
 
 
 class TableWidget(QWidget):
+    sqlRequested = pyqtSignal()
+
     def __init__(self):
         super().__init__()
         layout = QVBoxLayout(self)
@@ -152,6 +154,15 @@ class TableWidget(QWidget):
         self._btn_split.setToolTip("Toggle split view")
         self._btn_split.toggled.connect(self._on_split_toggled)
         toolbar.addWidget(self._btn_split)
+
+        btn_sql = QToolButton()
+        btn_sql.setAutoRaise(True)
+        btn_sql.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        fa.apply_to(btn_sql, size=12)
+        btn_sql.setText("\uf121")
+        btn_sql.setToolTip("Show SQL")
+        btn_sql.clicked.connect(self.sqlRequested.emit)
+        toolbar.addWidget(btn_sql)
 
         layout.addLayout(toolbar)
 
