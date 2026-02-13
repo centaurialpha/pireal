@@ -1,4 +1,4 @@
-from typing import Optional, cast
+from typing import Optional
 
 from PyQt6.QtWidgets import (
     QHBoxLayout,
@@ -38,11 +38,32 @@ class QueryWidget(QWidget):
         self.add_editor(editor)
         return editor
 
+    def _show_sql(self):
+        from pireal.gui.dialogs.sql_dialog import SQLDialog
+        from pireal.interpreter.lexer import Lexer
+        from pireal.interpreter.parser import Parser
+        from pireal.interpreter.scanner import Scanner
+        from pireal.interpreter.sql_generator import SQLGenerator
+
+        queries = self.current_editor().text()
+        if not queries.strip():
+            return
+
+        try:
+            tree = Parser(Lexer(Scanner(queries))).parse()
+            sql_queries = SQLGenerator(tree).generate()
+            sql = "\n\n".join(f"-- {name}\n{sql}" for name, sql in sql_queries.items())
+            dialog = SQLDialog(sql, self)
+            dialog.exec()
+        except Exception:
+            pass  # si hay error de sintaxis, no mostrar nada
+
     def current_editor(self) -> "EditorWidget":
-        current_widget = self._editor_tabs.currentWidget()
-        if current_widget is None:
-            current_widget = self.create_editor()
-        return cast("EditorWidget", current_widget)
+        for i in range(self._editor_tabs.count()):
+            widget = self._editor_tabs.widget(i)
+            if isinstance(widget, EditorWidget):
+                return widget
+        return self.create_editor()
 
 
 class EditorWidget(QWidget):

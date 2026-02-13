@@ -41,6 +41,7 @@ class DatabaseContainer(QSplitter):
         self._database = Registry.get("db", DB)
 
         lateral_widget.relationClicked.connect(self._on_relation_clicked)
+        table_widget.sqlRequested.connect(query_widget._show_sql)
 
     def create_database(self, data):
         table_widget = Registry.get("table-widget", TableWidget)
@@ -100,6 +101,7 @@ class DatabaseContainer(QSplitter):
 
     def execute_queries(self):
         from pireal.interpreter.parser import parse
+        from pireal.interpreter.sql_generator import SQLGenerator
 
         table_widget = Registry.get("table-widget", TableWidget)
         query_widget = Registry.get("query-widget", QueryWidget)
