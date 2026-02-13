@@ -456,6 +456,10 @@ class Editor(QPlainTextEdit):
         self._error_line = linenumber
         self._error_message = message
 
+        error_color = get_theme_manager().current_scheme.editor.get(
+            EditorColorRole.ERROR
+        )
+
         selection = QTextEdit.ExtraSelection()
         selection.cursor = self.textCursor()
         selection.cursor.movePosition(
@@ -468,7 +472,7 @@ class Editor(QPlainTextEdit):
         )
         selection.cursor.select(QTextCursor.SelectionType.LineUnderCursor)
         selection.format.setUnderlineStyle(QTextCharFormat.UnderlineStyle.WaveUnderline)
-        selection.format.setUnderlineColor(QColor("#DD4040"))
+        selection.format.setUnderlineColor(error_color)
 
         self.add_selection("error", [selection])
 
