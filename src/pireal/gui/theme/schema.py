@@ -25,6 +25,7 @@ class EditorColorRole(Enum):
     BRACKET_MISMATCH = "bracket_mismatch"
     SIDEBAR_FOREGROUND = "sidebar_foreground"
     SIDEBAR_BACKGROUND = "sidebar_background"
+    ERROR = "error"
 
 
 @dataclass(frozen=True)
@@ -49,6 +50,7 @@ class EditorColors:
     bracket_mismatch: QColor
     sidebar_background: QColor
     sidebar_foreground: QColor
+    error: QColor
 
     def get(self, role: EditorColorRole) -> QColor:
         """Obtiene un color por role (type-safe).
@@ -77,6 +79,7 @@ class EditorColors:
             EditorColorRole.BRACKET_MISMATCH: self.bracket_mismatch,
             EditorColorRole.SIDEBAR_BACKGROUND: self.sidebar_background,
             EditorColorRole.SIDEBAR_FOREGROUND: self.sidebar_foreground,
+            EditorColorRole.ERROR: self.error,
         }
         return mapping[role]
 
@@ -129,6 +132,7 @@ class EditorColors:
             bracket_mismatch=QColor(255, 0, 0),  # Rojo
             sidebar_background=sidebar_bg,
             sidebar_foreground=sidebar_fg,
+            error=QColor("#DD4040"),
         )
 
     @classmethod
@@ -164,6 +168,7 @@ class EditorColors:
             sidebar_foreground=parse_color(
                 data.get("sidebar_foreground", data.get("line_number_fg", "#808080"))
             ),
+            error=parse_color(data["error"]),
         )
 
 

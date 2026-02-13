@@ -30,6 +30,7 @@ class DarkTheme:
             bracket_mismatch=QColor("#F92672"),
             sidebar_background=QColor("#90908A"),
             sidebar_foreground=QColor("#1E1F1C"),
+            error=QColor("#DD4040"),
         )
 
         return ColorScheme.create(
@@ -95,6 +96,7 @@ class LightTheme:
             bracket_mismatch=QColor("#FF0000"),
             sidebar_background=QColor("#ffffff"),
             sidebar_foreground=QColor("#000000"),
+            error=QColor("#DD4040"),
         )
 
         return ColorScheme.create(

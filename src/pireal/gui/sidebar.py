@@ -24,7 +24,7 @@ john.nachtimwald.com/2009/08/19/better-qplaintextedit-with-line-numbers/
 """
 
 from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtGui import QColor, QFontMetrics, QPainter, QPen
+from PyQt6.QtGui import QFontMetrics, QPainter, QPen
 from PyQt6.QtWidgets import QFrame
 
 from pireal.gui.theme.manager import get_theme_manager
@@ -43,6 +43,9 @@ class Sidebar(QFrame):
 
         theme_manager = get_theme_manager()
         theme_manager.themeChanged.connect(self._on_theme_changed)
+        self._error_color = theme_manager.current_scheme.editor.get(
+            EditorColorRole.ERROR
+        )
 
         self._apply_colors(theme_manager.current_scheme)
 
@@ -56,6 +59,8 @@ class Sidebar(QFrame):
     def _on_theme_changed(self, scheme: ColorScheme):
         """Handler de cambio de tema."""
         self._apply_colors(scheme)
+        self._error_color = scheme.editor.get(EditorColorRole.ERROR)
+        self.update()
 
     def sizeHint(self):
         return QSize(self.__calculate_width(), 0)
@@ -95,9 +100,9 @@ class Sidebar(QFrame):
         painter.setPen(pen)
         current_line = self.editor.textCursor().blockNumber()
 
-        for top, line, block in self.editor.visible_blocks:
+        for top, line, _ in self.editor.visible_blocks:
             if line + 1 == self.editor._error_line:
-                painter.setPen(QPen(QColor("#DD4040")))
+                painter.setPen(QPen(self._error_color))
                 painter.setFont(font_bold)
             elif current_line == line:
                 painter.setPen(pen)
