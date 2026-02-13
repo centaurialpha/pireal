@@ -504,12 +504,3 @@ class Editor(QPlainTextEdit):
         cursor = self.textCursor()
         cursor.select(cursor.SelectionType.WordUnderCursor)
         return cursor.selectedText()
-
-    # def re_paint(self):
-    #     self.set_font(settings.font_family, settings.font_size)
-    #     self._sidebar.re_paint()
-    #     pal = self.palette()
-    #     self.setPalette(pal)
-    #     self._highlighter = None
-    #     self._highlighter = highlighter.Highlighter(self.document())
-    #     self._cursor_position_changed()
