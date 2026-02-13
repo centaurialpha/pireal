@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2015-2025 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2026 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -18,7 +18,14 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QColor, QFont, QTextCharFormat, QTextCursor, QTextDocument
+from PyQt6.QtGui import (
+    QColor,
+    QFont,
+    QKeyEvent,
+    QTextCharFormat,
+    QTextCursor,
+    QTextDocument,
+)
 from PyQt6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -29,6 +36,7 @@ from PyQt6.QtWidgets import (
 )
 
 from pireal.gui import highlighter, sidebar
+from pireal.gui.completer import PirealCompleter
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.gui.theme.schema import ColorScheme, EditorColorRole
 from pireal.settings import settings
@@ -170,6 +178,9 @@ class Editor(QPlainTextEdit):
         # Menu
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.blockCountChanged.connect(self.update)
+
+        # Completer
+        self.completer = PirealCompleter(self)
         # Connection
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
 
@@ -456,6 +467,43 @@ class Editor(QPlainTextEdit):
         if selection_name in self._selections:
             self._selections[selection_name] = []
             self.update_selections()
+
+    def keyPressEvent(self, e: QKeyEvent | None) -> None:
+        if self.completer.popup().isVisible():
+            if e.key() in (
+                Qt.Key.Key_Enter,
+                Qt.Key.Key_Return,
+                Qt.Key.Key_Tab,
+                Qt.Key.Key_Escape,
+            ):
+                e.ignore()
+                return
+        super().keyPressEvent(e)
+
+        if e.modifiers() or not e.text():
+            return
+        prefix = self._text_under_cursor()
+        if len(prefix) < 2:
+            self.completer.popup().hide()
+            return
+
+        if prefix != self.completer.completionPrefix():
+            self.completer.setCompletionPrefix(prefix)
+            self.completer.popup().setCurrentIndex(
+                self.completer.completionModel().index(0, 0)
+            )
+
+        rect = self.cursorRect()
+        rect.setWidth(
+            self.completer.popup().sizeHintForColumn(0)
+            + self.completer.popup().verticalScrollBar().sizeHint().width()
+        )
+        self.completer.complete(rect)
+
+    def _text_under_cursor(self) -> str:
+        cursor = self.textCursor()
+        cursor.select(cursor.SelectionType.WordUnderCursor)
+        return cursor.selectedText()
 
     # def re_paint(self):
     #     self.set_font(settings.font_family, settings.font_size)
