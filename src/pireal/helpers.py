@@ -1,7 +1,6 @@
 from pathlib import Path
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QColor, QFont, QFontDatabase, QIcon, QPainter, QPixmap
+from PyQt6.QtGui import QFont, QFontDatabase
 
 ROOT = Path(__file__).parent
 FONT_PATH = str(ROOT / "resources" / "images" / "font-awesome.otf")
@@ -26,17 +25,5 @@ class Font:
     def font(self, size: int = 12) -> QFont:
         return QFont(self.family, size)
 
-    def icon(self, char: str, size: int = 14, color: str = "black") -> QIcon:
-        font = QFont(self.family)
-        font.setPixelSize(size)
-
-        pixmap = QPixmap(size, size)
-        pixmap.fill(Qt.GlobalColor.transparent)
-
-        painter = QPainter(pixmap)
-        painter.setFont(font)
-        painter.setPen(QColor(color))
-        painter.drawText(pixmap.rect(), Qt.AlignmentFlag.AlignCenter, char)
-        painter.end()
-
-        return QIcon(pixmap)
+    def apply_to(self, widget, size: int = 12):
+        widget.setFont(self.font(size))

@@ -22,6 +22,7 @@ class ThemeButton(QToolButton):
         super().__init__(parent)
         self.setAutoRaise(True)
         self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.setText("\uf186")
 
     def set_themes(self, themes: list[tuple[str, str]]):
         if len(themes) <= 2:
@@ -102,17 +103,18 @@ class StatusBar(QFrame):
         execute_button = QToolButton()
         execute_button.setAutoRaise(True)
         execute_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        # execute_button.setText('\uf04b')
-        execute_button.setIcon(fa.icon("\uf04b", color="red"))
+        execute_button.setText("\uf04b")
+        fa.apply_to(execute_button)
         execute_button.clicked.connect(lambda: self.playClicked.emit())
         right_layout.addWidget(execute_button)
         self.theme_button = ThemeButton()
-        self.theme_button.setIcon(fa.icon("\uf186", color="red"))
+        fa.apply_to(self.theme_button)
         right_layout.addWidget(self.theme_button)
         settings_button = QToolButton()
         settings_button.setAutoRaise(True)
         settings_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         settings_button.setText("\uf013")
+        fa.apply_to(settings_button)
         settings_button.clicked.connect(lambda: self.gearClicked.emit())
         right_layout.addWidget(settings_button)
 
@@ -120,6 +122,7 @@ class StatusBar(QFrame):
         fullscreen_button.setAutoRaise(True)
         fullscreen_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         fullscreen_button.setText("\uf065")
+        fa.apply_to(fullscreen_button)
         fullscreen_button.setCheckable(True)
         fullscreen_button.setChecked(self._main_window.isFullScreen())
         fullscreen_button.toggled.connect(lambda v: self.expandClicked.emit(v))
