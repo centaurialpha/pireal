@@ -63,12 +63,12 @@ class Pireal(QMainWindow):
         controller = Registry.get("controller", Controller)
         db = Registry.get("db", DB)
         query_widget = Registry.get("query-widget", QueryWidget)
+
         unsaved_editors = [
-            query_widget._editor_tabs.widget(i)
-            for i in range(query_widget._editor_tabs.count())
-            if isinstance(query_widget._editor_tabs.widget(i), EditorWidget)
-            and query_widget._editor_tabs.widget(i).editor.document().isModified()
-            and not is_example_file(query_widget._editor_tabs.widget(i).file)
+            w for i in range(query_widget._editor_tabs.count())
+            if isinstance((w := query_widget._editor_tabs.widget(i)), EditorWidget)
+            and w.editor.document().isModified()
+            and not is_example_file(w.file)
         ]
 
         if unsaved_editors:
@@ -90,7 +90,7 @@ class Pireal(QMainWindow):
                     query_widget._editor_tabs.setCurrentWidget(editor)
                     controller.save_query()
 
-        if db.is_active and db.modified:
+        if db.is_active and db.modified and not is_example_file(db.file):
             ret = QMessageBox.question(
                 self,
                 "Base de datos modificada",
