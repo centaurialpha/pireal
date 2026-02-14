@@ -22,6 +22,7 @@ class Pireal(QMainWindow):
 
         # Status bar
         self._status_bar = StatusBar(self)
+        Registry.register("status-bar", self._status_bar)
         _status_bar = self.statusBar()
         if _status_bar is not None:
             _status_bar.addWidget(self._status_bar, 1)

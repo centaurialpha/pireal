@@ -1,6 +1,9 @@
 from pireal.core.relation import Relation
 from pireal.interpreter import rast as ast
-from pireal.interpreter.exceptions import DuplicateRelationNameError
+from pireal.interpreter.exceptions import (
+    DuplicateRelationNameError,
+    UndefinedAttributeError,
+)
 from pireal.interpreter.tokens import TokenTypes
 
 OPERATOR_MAP = {
@@ -73,10 +76,14 @@ class Evaluator(ast.NodeVisitor):
     def visit_ProjectExpr(self, node: ast.ProjectExpr) -> Relation:
         relation = self.visit(node.expr)
         attrs = [attr.value for attr in node.attrs]
+        for attr in attrs:
+            if attr not in relation.header:
+                raise UndefinedAttributeError(attr, relation.name)
         return relation.project(*attrs)
 
     def visit_SelectExpr(self, node: ast.SelectExpr) -> Relation:
         relation = self.visit(node.expr)
+        self._validate_condition_attrs(node.condition, relation)
         condition = self.visit(node.condition)
         return relation.select(condition)
 
@@ -98,3 +105,12 @@ class Evaluator(ast.NodeVisitor):
         if isinstance(node, (ast.String, ast.Number, ast.Date, ast.Time)):
             return repr(node.value)
         return str(self.visit(node))
+
+    def _validate_condition_attrs(self, node: object, relation: Relation) -> None:
+        if isinstance(node, ast.Condition):
+            if isinstance(node.op1, ast.Variable):
+                if node.op1.value not in relation.header:
+                    raise UndefinedAttributeError(node.op1.value, relation.name)
+        elif isinstance(node, ast.BooleanExpression):
+            self._validate_condition_attrs(node.left_formula, relation)
+            self._validate_condition_attrs(node.right_formula, relation)
