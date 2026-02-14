@@ -134,7 +134,7 @@ class Lexer:
             self.sc.next()
 
         if self.sc.char is None:
-            raise MissingQuoteError("Missing closing quote", lineno=line, col=col)
+            raise MissingQuoteError(lineno=line, col=col)
 
         # Consumir la comilla de cierre
         self.sc.next()
