@@ -88,7 +88,12 @@ class Parser(object):
         if self.token.type == token_type:
             self.token = self.lexer.next_token()
         else:
-            raise ConsumeError(token_type, self.token.type, self.lexer.sc.lineno)
+            raise ConsumeError(
+                token_type,
+                self.token.type,
+                self.lexer.sc.lineno,
+                got_value=str(self.token.value),
+            )
 
     def parse(self):
         return self.compound()
