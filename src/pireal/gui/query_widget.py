@@ -18,6 +18,7 @@ from pireal.registry import Registry
 class QueryWidget(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
+        self._untitled_count = 0
         box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 0, 0)
         box.setSpacing(0)
@@ -67,6 +68,9 @@ class QueryWidget(QWidget):
         editor = EditorWidget()
         if file is not None:
             editor.file = file
+        else:
+            self._untitled_count += 1
+            editor.file = File(display_name=f"untitled_{self._untitled_count}.pqf")
         self.add_editor(editor)
         return editor
 
