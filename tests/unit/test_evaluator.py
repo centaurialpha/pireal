@@ -1,7 +1,10 @@
 import pytest
 from pireal.core.relation import Relation
 from pireal.interpreter.evaluator import Evaluator, UndefinedRelationError
-from pireal.interpreter.exceptions import DuplicateRelationNameError
+from pireal.interpreter.exceptions import (
+    DuplicateRelationNameError,
+    UndefinedAttributeError,
+)
 from pireal.interpreter.lexer import Lexer
 from pireal.interpreter.parser import Parser
 from pireal.interpreter.scanner import Scanner
@@ -108,3 +111,21 @@ def test_chained_queries(relations):
     results = evaluate(query, relations)
     assert results["q2"].header == ["name"]
     assert results["q2"].cardinality() == 2
+
+
+def test_project_undefined_attribute(relations):
+    with pytest.raises(UndefinedAttributeError) as exc:
+        evaluate("q := project nonexistent (personas);", relations)
+    assert exc.value.attribute == "nonexistent"
+
+
+def test_select_undefined_attribute(relations):
+    with pytest.raises(UndefinedAttributeError) as exc:
+        evaluate("q := select nonexistent=1 (personas);", relations)
+    assert exc.value.attribute == "nonexistent"
+
+
+def test_select_nested_undefined_attribute(relations):
+    with pytest.raises(UndefinedAttributeError) as exc:
+        evaluate("q := select age=25 and nonexistent='x' (personas);", relations)
+    assert exc.value.attribute == "nonexistent"

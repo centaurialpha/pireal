@@ -16,6 +16,7 @@ from pireal.interpreter.exceptions import (
     ConsumeError,
     InvalidSyntaxError,
     MissingQuoteError,
+    UndefinedAttributeError,
 )
 from pireal.registry import Registry
 
@@ -133,6 +134,11 @@ class DatabaseContainer(QSplitter):
             results = Evaluator(db.relations_dict()).evaluate(tree)
         except UndefinedRelationError as err:
             editor.editor.highlight_error(err.lineno, message=str(err))
+            return
+        except UndefinedAttributeError as err:
+            from pireal.gui.status_bar import StatusBar
+            status_bar = Registry.get("status-bar", StatusBar)
+            status_bar.show_message(str(err))
             return
 
         for name, relation in results.items():
