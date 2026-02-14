@@ -50,6 +50,7 @@ class DatabaseContainer(QSplitter):
         lateral_widget.relationClicked.connect(self._on_relation_clicked)
         table_widget.sqlRequested.connect(query_widget._show_sql)
         table_widget.treeRequested.connect(query_widget._show_tree)
+        self._database.relationsChanged.connect(query_widget.update_completer)
 
     def create_database(self, data):
         table_widget = Registry.get("table-widget", TableWidget)
@@ -138,6 +139,7 @@ class DatabaseContainer(QSplitter):
             return
         except UndefinedAttributeError as err:
             from pireal.gui.status_bar import StatusBar
+
             status_bar = Registry.get("status-bar", StatusBar)
             status_bar.show_message(str(err))
             return

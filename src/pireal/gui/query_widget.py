@@ -85,6 +85,12 @@ class QueryWidget(QWidget):
                 return widget
         return self.create_editor()
 
+    def update_completer(self, relation_names: list[str]) -> None:
+        for i in range(self._editor_tabs.count()):
+            widget = self._editor_tabs.widget(i)
+            if isinstance(widget, EditorWidget):
+                widget.editor.completer.update_words(relation_names)
+
 
 class EditorWidget(QWidget):
     def __init__(self, parent=None):
