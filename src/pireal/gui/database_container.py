@@ -14,6 +14,7 @@ from pireal.gui.table_widget import TableWidget
 from pireal.interpreter.evaluator import Evaluator, UndefinedRelationError
 from pireal.interpreter.exceptions import (
     ConsumeError,
+    DuplicateRelationNameError,
     InvalidSyntaxError,
     MissingQuoteError,
     UndefinedAttributeError,
@@ -138,6 +139,12 @@ class DatabaseContainer(QSplitter):
             editor.editor.highlight_error(err.lineno, message=str(err))
             return
         except UndefinedAttributeError as err:
+            from pireal.gui.status_bar import StatusBar
+
+            status_bar = Registry.get("status-bar", StatusBar)
+            status_bar.show_message(str(err))
+            return
+        except DuplicateRelationNameError as err:
             from pireal.gui.status_bar import StatusBar
 
             status_bar = Registry.get("status-bar", StatusBar)

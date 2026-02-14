@@ -58,6 +58,7 @@ class Application:
         self._registry.register("controller", controller)
 
         start_page = StartPage()
+        self._registry.register("start-page", start_page)
 
         lateral_widget = LateralWidget()
         self._registry.register("lateral-widget", lateral_widget)

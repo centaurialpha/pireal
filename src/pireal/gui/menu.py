@@ -72,8 +72,10 @@ file_menu.add_item(
 file_menu.add_item(
     Action(tr.TR_MENU_FILE_OPEN_DB, "controller:open_database", shorcut="Ctrl+0")
 )
-file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_DB, "", shorcut="Ctrl+s"))
-file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_DB, ""))
+file_menu.add_item(
+    Action(tr.TR_MENU_FILE_SAVE_DB, "controller:save_database", shorcut="Ctrl+s")
+)
+file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_DB, "controller:save_database_as"))
 file_menu.add_item(
     Action(tr.TR_MENU_FILE_CLOSE_DB, "controller:close_database", shorcut="Ctrl+w")
 )

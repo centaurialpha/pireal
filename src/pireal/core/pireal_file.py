@@ -12,6 +12,10 @@ class File(QObject):
         self._filename = Path(filename) if filename else None
 
     @property
+    def is_new(self) -> bool:
+        return self._is_new
+
+    @property
     def display_name(self) -> str:
         return self._filename.name if self._filename else "Untitled"
 

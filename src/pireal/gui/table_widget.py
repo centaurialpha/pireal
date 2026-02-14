@@ -5,7 +5,6 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QSplitter,
     QStackedWidget,
-    QTabWidget,
     QToolButton,
     QVBoxLayout,
     QWidget,
@@ -177,3 +176,12 @@ class TableWidget(QWidget):
             widget = self._stacked_results.widget(0)
             self._stacked_results.removeWidget(widget)
             widget.deleteLater()
+
+    def clear(self):
+        # limpiar workspace
+        while self._stacked.count() > 0:
+            widget = self._stacked.widget(0)
+            self._stacked.removeWidget(widget)
+            widget.deleteLater()
+        self.clear_results()
+        self._show_placeholder()

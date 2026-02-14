@@ -22,6 +22,8 @@ from typing import Dict, List, Optional
 
 from PyQt6.QtCore import QObject, pyqtSignal
 
+from pireal.core.file_manager import generate_database
+from pireal.core.pireal_file import File
 from pireal.core.relation import Relation
 
 
@@ -37,6 +39,8 @@ class DB(QObject):
 
         self._modified = False
         self._is_active = False
+
+        self._file: File | None = None
 
     @property
     def is_active(self) -> bool:
@@ -113,19 +117,22 @@ class DB(QObject):
     def relations_dict(self) -> dict[str, Relation]:
         return dict(self._relations)
 
-    # def eval_query(self, expression: str, name: str) -> Relation:
-    #     relation = eval(expression, {}, self._relations)
-    #     relation.name = name
-    #     self.load(relation)
-
-    #     if name not in self._query_results:
-    #         self._query_results.append(name)
-
-    #     return relation
-
     def clear_query_results(self) -> None:
         for name in self._query_results[:]:
             if name in self._relations:
                 self.remove(name)
 
         self._query_results.clear()
+
+    @property
+    def is_new(self) -> bool:
+        return self._file is None
+
+    def save(self) -> bool:
+        if self._file is None:
+            return False
+
+        content = generate_database(self._relations)
+        self._file.save(content)
+        self.modified = True
+        return True

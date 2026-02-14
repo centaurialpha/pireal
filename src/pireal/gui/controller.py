@@ -37,6 +37,7 @@ from pireal.gui.database_container import DatabaseContainer
 from pireal.gui.dialogs.new_db_dialog import NewDBInputDialog
 from pireal.gui.dialogs.new_relation_dialog import NewRelationDialog
 from pireal.gui.lateral_widget import LateralWidget, RelationItemType
+from pireal.gui.query_widget import QueryWidget
 from pireal.gui.table_widget import TableWidget
 from pireal.registry import Registry
 from pireal.utils import sanitize_data
@@ -67,6 +68,28 @@ class Controller(QWidget):
         self._recent_databases: list[str] = qsettings.value(
             "recent_databases", type=list
         )
+
+        db = Registry.get("db", DB)
+        db.databaseStateChanged.connect(self._on_database_state_changed)
+
+    @pyqtSlot(bool)
+    def _on_database_state_changed(self, active: bool):
+        db = Registry.get("db", DB)
+        if not active:
+            lateral_widget = Registry.get("lateral-widget", LateralWidget)
+            table_widget = Registry.get("table-widget", TableWidget)
+            query_widget = Registry.get("query-widget", QueryWidget)
+
+            lateral_widget.clear()
+            lateral_widget.clear_results()
+            table_widget.clear()
+            query_widget.clear()
+            db._file = None
+
+            from pireal.gui.start_page import StartPage
+
+            start_page = Registry.get("start-page", StartPage)
+            self.add_widget(start_page)
 
     def add_widget(self, widget):
         index = self._stack.indexOf(widget)
@@ -208,11 +231,35 @@ class Controller(QWidget):
 
     @pyqtSlot()
     def save_query(self):
-        pass
+        query_widget = Registry.get("query-widget", QueryWidget)
+        editor = query_widget.current_editor()
+        if editor is None:
+            return
+        if editor.file.is_new:
+            return self.save_query_as()
+        editor.file.save(editor.text())
+        editor.saved()
 
     @pyqtSlot()
     def save_query_as(self):
-        pass
+        query_widget = Registry.get("query-widget", QueryWidget)
+        editor = query_widget.current_editor()
+        if editor is None:
+            return
+        filename, _ = QFileDialog.getSaveFileName(
+            self,
+            tr.TR_MSG_SAVE_QUERY_FILE,
+            self._last_open_folder,
+            "Pireal Query File (*.pqf)",
+        )
+        if not filename:
+            return
+        if not filename.endswith(".pqf"):
+            filename += ".pqf"
+        editor.file = File(filename)
+        editor.file.save(editor.text())
+        editor.saved()
+        self._remember_folder(filename)
 
     @pyqtSlot()
     def close_query(self):
@@ -249,3 +296,34 @@ class Controller(QWidget):
         QMessageBox.information(
             self, "ola", "Solo se puede tener una base de datos abierta a la vez."
         )
+
+    def save_database(self):
+        db = Registry.get("db", DB)
+        if not db.is_active or not db.modified:
+            return
+
+        if db.is_new:
+            return self.save_database_as()
+
+        db.save()
+
+    def save_database_as(self):
+        db = Registry.get("db", DB)
+        if not db.is_active:
+            return
+
+        filename, _ = QFileDialog.getSaveFileName(
+            self,
+            tr.TR_MSG_SAVE_DB_AS,
+            self._last_open_folder,
+            "Pireal Database File (*.pdb)",
+        )
+        if not filename:
+            return
+
+        if not filename.endswith(".pdb"):
+            filename += ".pdb"
+
+        db._file = File(filename)
+        db.save()
+        self._remember_folder(filename)

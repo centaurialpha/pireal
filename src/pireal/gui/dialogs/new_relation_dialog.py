@@ -33,8 +33,8 @@ from PyQt6.QtWidgets import (
 
 from pireal import translations as tr
 from pireal.core import relation
+from pireal.core.db import DB
 from pireal.gui.model_view_delegate import Header, View
-from pireal.gui.table_widget import TableWidget
 from pireal.registry import Registry
 
 
@@ -147,8 +147,8 @@ class NewRelationDialog(QDialog):
                 self, "Error", tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME
             )
             return
-        table_widget = Registry.get("table-widget", TableWidget)
-        if relation_name in table_widget.relations:
+        db = Registry.get("db", DB)
+        if db.get(relation_name) is not None:
             QMessageBox.information(
                 self, "Error", tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name)
             )

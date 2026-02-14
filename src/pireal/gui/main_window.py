@@ -2,11 +2,13 @@ from typing import Optional
 
 from PyQt6.QtCore import QSettings
 from PyQt6.QtGui import QCloseEvent
-from PyQt6.QtWidgets import QMainWindow
+from PyQt6.QtWidgets import QMainWindow, QMessageBox
 
+from pireal.core.db import DB
 from pireal.dirs import DATA_SETTINGS
 from pireal.gui.controller import Controller
 from pireal.gui.menu import MenuBuilder
+from pireal.gui.query_widget import EditorWidget, QueryWidget
 from pireal.gui.status_bar import StatusBar
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.registry import Registry
@@ -58,8 +60,51 @@ class Pireal(QMainWindow):
 
     def closeEvent(self, a0: Optional[QCloseEvent]) -> None:
         controller = Registry.get("controller", Controller)
-        qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
+        db = Registry.get("db", DB)
+        query_widget = Registry.get("query-widget", QueryWidget)
+        unsaved_editors = [
+            query_widget._editor_tabs.widget(i)
+            for i in range(query_widget._editor_tabs.count())
+            if isinstance(query_widget._editor_tabs.widget(i), EditorWidget)
+            and query_widget._editor_tabs.widget(i).editor.document().isModified()
+        ]
 
+        if unsaved_editors:
+            names = ", ".join(e.file.display_name for e in unsaved_editors)
+            ret = QMessageBox.question(
+                self,
+                "Queries sin guardar",
+                f"Hay queries con cambios sin guardar:\n{names}\n\n¿Guardar antes de salir?",
+                QMessageBox.StandardButton.Save
+                | QMessageBox.StandardButton.Discard
+                | QMessageBox.StandardButton.Cancel,
+            )
+            if ret == QMessageBox.StandardButton.Cancel:
+                if a0:
+                    a0.ignore()
+                return
+            if ret == QMessageBox.StandardButton.Save:
+                for editor in unsaved_editors:
+                    query_widget._editor_tabs.setCurrentWidget(editor)
+                    controller.save_query()
+
+        if db.is_active and db.modified:
+            ret = QMessageBox.question(
+                self,
+                "Base de datos modificada",
+                "La base de datos tiene cambios sin guardar. ¿Guardar antes de salir?",
+                QMessageBox.StandardButton.Save
+                | QMessageBox.StandardButton.Discard
+                | QMessageBox.StandardButton.Cancel,
+            )
+            if ret == QMessageBox.StandardButton.Cancel:
+                if a0:
+                    a0.ignore()
+                return
+            if ret == QMessageBox.StandardButton.Save:
+                controller.save_database()
+
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
         qsettings.setValue("recent_databases", controller.recent_databases)
 
         return super().closeEvent(a0)
