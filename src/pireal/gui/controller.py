@@ -309,7 +309,9 @@ class Controller(QWidget):
 
     def save_database(self):
         db = Registry.get("db", DB)
-        print(f"is_active={db.is_active}, modified={db.modified}, is_new={db.is_new}, file={db.file}, file._filename={db.file._filename if db.file else None}")
+        print(
+            f"is_active={db.is_active}, modified={db.modified}, is_new={db.is_new}, file={db.file}, file._filename={db.file._filename if db.file else None}"
+        )
         if not db.is_active or not db.modified:
             return
 
@@ -338,3 +340,24 @@ class Controller(QWidget):
         db._file = File(filename)
         db.save()
         self._remember_folder(filename)
+
+    def create_database_from_text(self):
+        db = Registry.get("db", DB)
+        if db.is_active:
+            self._show_one_database_warning()
+            return
+
+        from pireal.gui.dialogs.db_from_text_dialog import DBFromTextDialog
+
+        dialog = DBFromTextDialog(self)
+        if dialog.exec() != DBFromTextDialog.DialogCode.Accepted:
+            return
+
+        data = dialog.parsed_data()
+        if not data:
+            return
+
+        database_container = Registry.get("database-container", DatabaseContainer)
+        database_container.create_database(data)
+        self.add_widget(database_container)
+        db.is_active = True
