@@ -20,10 +20,12 @@
 
 # This module is based on Relational: <https://github.com/ltworf/relational>
 
+import datetime
 import itertools
 import re
 
 from pireal.core.ordered_set import OrderedSet
+from pireal.interpreter.utils import is_date, is_time
 from pireal.utils import eval_expr
 
 IS_VALID_FIELD_NAME = re.compile("^[_á-úa-zA-Z][_á-úa-zA-Z0-9]*$")
@@ -104,7 +106,7 @@ def union_compatible(operation):
     return inner
 
 
-def _cast_value(value: str) -> int | float | str:
+def _cast_value(value: str) -> int | float | datetime.date | datetime.time | str:
     try:
         return int(value)
     except ValueError:
@@ -113,6 +115,13 @@ def _cast_value(value: str) -> int | float | str:
         return float(value)
     except ValueError:
         pass
+
+    ok, date = is_date(value)
+    if ok:
+        return date
+    ok, time = is_time(value)
+    if ok:
+        return time
     return value
 
 

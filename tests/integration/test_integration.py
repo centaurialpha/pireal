@@ -109,3 +109,17 @@ def test_variable_reference():
     rb = make_relation(["id", "skill"], [("3", "Web"), ("1", "Python")])
     results = evaluate("q := rb;", {"rb": rb})
     assert_relation_equal(results["q"], rb)
+
+
+def test_select_date():
+    r = make_relation(
+        ["nombre", "fecha_inicio"],
+        [
+            ("Curso A", "01/01/2017"),
+            ("Curso B", "01/06/2017"),
+            ("Curso C", "01/01/2016"),
+        ],
+    )
+    results = evaluate("q := select fecha_inicio > '01/03/2017' (r);", {"r": r})
+    assert results["q"].cardinality() == 1
+    assert ("Curso B", "01/06/2017") in results["q"].content
