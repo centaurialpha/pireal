@@ -23,52 +23,44 @@ from PyQt6.QtCore import QCoreApplication
 def tr(context: str, text: str) -> str:
     return QCoreApplication.translate(context, text)
 
-###############################################################################
-# START PAGE
-###############################################################################
+
 TR_OPEN_DB = tr("Pireal", "Open Database")
 TR_NEW_DB = tr("Pireal", "New Database")
 TR_EXAMPLE_DB = tr("Pireal", "Example")
 
-###############################################################################
-# MENU BAR
-###############################################################################
 TR_MENU_FILE = QCoreApplication.translate("Pireal", "&File")
 TR_MENU_SCHEME = QCoreApplication.translate("Pireal", "&Scheme")
 TR_MENU_TOOLS = QCoreApplication.translate("Pireal", "&Tools")
 TR_MENU_HELP = QCoreApplication.translate("Pireal", "&Help")
 
-###############################################################################
-# MENU ITEMS
-###############################################################################
-# File
-TR_MENU_FILE_NEW_DB = QCoreApplication.translate("Pireal", "New")
-TR_MENU_FILE_OPEN_DB = QCoreApplication.translate("Pireal", "Open")
+# File - Database
+TR_MENU_FILE_NEW_DB = QCoreApplication.translate("Pireal", "New Database")
+TR_MENU_FILE_NEW_DB_FROM_TEXT = QCoreApplication.translate("Pireal", "New from Text")
+TR_MENU_FILE_OPEN_DB = QCoreApplication.translate("Pireal", "Open...")
 TR_MENU_FILE_SAVE_DB = QCoreApplication.translate("Pireal", "Save")
 TR_MENU_FILE_SAVE_AS_DB = QCoreApplication.translate("Pireal", "Save As...")
 TR_MENU_FILE_CLOSE_DB = QCoreApplication.translate("Pireal", "Close")
-TR_MENU_FILE_NEW_QUERY = QCoreApplication.translate("Pireal", "New")
-TR_MENU_FILE_OPEN_QUERY = QCoreApplication.translate("Pireal", "Open")
-TR_MENU_FILE_SAVE_QUERY = QCoreApplication.translate("Pireal", "Save")
-TR_MENU_FILE_SAVE_AS_QUERY = QCoreApplication.translate("Pireal", "Save As...")
-TR_MENU_FILE_CLOSE_QUERY = QCoreApplication.translate("Pireal", "Close")
+
+# File - Query
+TR_MENU_FILE_NEW_QUERY = QCoreApplication.translate("Pireal", "New Query")
+TR_MENU_FILE_OPEN_QUERY = QCoreApplication.translate("Pireal", "Open Query...")
+TR_MENU_FILE_SAVE_QUERY = QCoreApplication.translate("Pireal", "Save Query")
+TR_MENU_FILE_SAVE_AS_QUERY = QCoreApplication.translate("Pireal", "Save Query As...")
+TR_MENU_FILE_CLOSE_QUERY = QCoreApplication.translate("Pireal", "Close Query")
+
 TR_MENU_FILE_QUIT = QCoreApplication.translate("Pireal", "Quit")
 
-# Schema
+# Scheme
 TR_MENU_SCHEME_CREATE_RELATION = QCoreApplication.translate("Pireal", "New Relation")
-TR_MENU_SCHEME_LOAD_RELATION = QCoreApplication.translate("Pireal", "Load Relation")
 TR_MENU_SCHEME_REMOVE_RELATION = QCoreApplication.translate("Pireal", "Delete Relation")
-TR_MENU_SCHEME_EXECUTE_QUERIES = QCoreApplication.translate("Pireal", "Execute Query")
-# Tools
-TR_MENU_TOOLS_SETTINGS = QCoreApplication.translate("Pireal", "Preferences")
+TR_MENU_SCHEME_EXECUTE_QUERIES = QCoreApplication.translate("Pireal", "Execute")
+
 # Help
+TR_MENU_HELP_SHOW_TOUR = QCoreApplication.translate("Pireal", "Show Tour")
 TR_MENU_HELP_REPORT_ISSUE = QCoreApplication.translate("Pireal", "Report Issue")
 TR_MENU_HELP_ABOUT_PIREAL = QCoreApplication.translate("Pireal", "About Pireal")
 TR_MENU_HELP_ABOUT_QT = QCoreApplication.translate("Pireal", "About Qt")
 
-###############################################################################
-# MESSAGES
-###############################################################################
 TR_MSG_INFORMATION = QCoreApplication.translate("Pireal", "Information")
 TR_MSG_ONE_DB_AT_TIME = QCoreApplication.translate(
     "Pireal", "Oops! One database at a time please"
