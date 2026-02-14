@@ -361,3 +361,29 @@ class Controller(QWidget):
         database_container.create_database(data)
         self.add_widget(database_container)
         db.is_active = True
+
+    @pyqtSlot()
+    def quit(self):
+        from pireal.gui.main_window import Pireal
+
+        Pireal.instance().close()
+
+    @pyqtSlot()
+    def show_tour(self):
+        from pireal.gui.dialogs.tour_dialog import TourDialog
+
+        dialog = TourDialog(self)
+        dialog.exec()
+
+    @pyqtSlot()
+    def report_issue(self):
+        from PyQt6.QtCore import QUrl
+        from PyQt6.QtGui import QDesktopServices
+
+        QDesktopServices.openUrl(QUrl("https://github.com/centaurialpha/pireal/issues"))
+
+    @pyqtSlot()
+    def about_qt(self):
+        from PyQt6.QtWidgets import QApplication
+
+        QApplication.aboutQt()
