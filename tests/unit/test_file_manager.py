@@ -69,23 +69,19 @@ def test_generate_database():
 
 def test_sanitize_data():
     data = (
-        "@t1:a,b,c\n"
-        "1234,hola,chau\n"
-        "4321,chau,hola\n\n"
-        "@t2:d,e,f,g\n"
-        "4321,AAA,BBB,CCC\n"
+        "@t1:a,b,c\n1234,hola,chau\n4321,chau,hola\n\n@t2:d,e,f,g\n4321,AAA,BBB,CCC\n"
     )
     expected = {
         "tables": [
             {
                 "header": ["a", "b", "c"],
                 "name": "t1",
-                "tuples": {("1234", "hola", "chau"), ("4321", "chau", "hola")},
+                "tuples": [("1234", "hola", "chau"), ("4321", "chau", "hola")],
             },
             {
                 "header": ["d", "e", "f", "g"],
                 "name": "t2",
-                "tuples": {("4321", "AAA", "BBB", "CCC")},
+                "tuples": [("4321", "AAA", "BBB", "CCC")],
             },
         ]
     }

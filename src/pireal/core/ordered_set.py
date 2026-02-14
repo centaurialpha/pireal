@@ -67,7 +67,7 @@ class OrderedSet(MutableSet):
         return len(self._items)
 
     def __iter__(self):
-        return iter(self._map)
+        return iter(self._items)
 
     def __contains__(self, key):
         return key in self._map

@@ -56,11 +56,11 @@ def sanitize_data(data: str):
             current_table = {
                 "name": name,
                 "header": headers,
-                "tuples": set(),
+                "tuples": [],
             }
             result["tables"].append(current_table)
         elif current_table:
             values = tuple(line.split(","))
-            current_table["tuples"].add(values)
+            current_table["tuples"].append(values)
 
     return result
