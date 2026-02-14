@@ -82,4 +82,9 @@ class Application:
 
     def run(self):
         self._main_window.show()
+        from pireal.gui.dialogs.tour_dialog import TourDialog
+
+        if TourDialog.should_show():
+            TourDialog(self._main_window).exec()
+
         sys.exit(self._app.exec())
