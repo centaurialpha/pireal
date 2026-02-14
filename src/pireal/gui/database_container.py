@@ -103,11 +103,13 @@ class DatabaseContainer(QSplitter):
     def new_query(self, filename: str) -> None:
         query_widget = Registry.get("query-widget", QueryWidget)
 
-        file = File(filename)
-        editor = query_widget.create_editor(file)
         if filename:
+            file = File(filename)
+            editor = query_widget.create_editor(file)
             content = file.read()
             editor.setText(content)
+        else:
+            query_widget.create_editor()
 
     def execute_queries(self):
         from pireal.interpreter.parser import parse
