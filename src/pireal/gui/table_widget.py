@@ -59,80 +59,9 @@ class PlaceholderWidget(QWidget):
         controller.create_relation()
 
 
-class _TableWidget(QSplitter):
-    def __init__(self):
-        super().__init__()
-        self._tabs = QTabWidget()
-        self._tabs.setDocumentMode(True)
-        self.addWidget(self._tabs)
-
-        self._stacked = QStackedWidget()
-        self._tabs.addTab(self._stacked, "Workspace")
-
-        self._stacked_results = QStackedWidget()
-        self._tabs.addTab(self._stacked_results, "Results")
-
-        self._show_placeholder()
-
-        lateral_widget = Registry.get("lateral-widget", LateralWidget)
-        lateral_widget.resultClicked.connect(self._on_result_list_clicked)
-
-    def _show_placeholder(self):
-        if not self._has_placeholder():
-            placeholder = PlaceholderWidget()
-            self._stacked.addWidget(placeholder)
-            self._stacked.setCurrentWidget(placeholder)
-
-    def _remove_placeholder(self):
-        for i in range(self._stacked.count()):
-            widget = self._stacked.widget(i)
-            if isinstance(widget, PlaceholderWidget):
-                self._stacked.removeWidget(widget)
-                widget.deleteLater()
-                break
-
-    def _has_placeholder(self) -> bool:
-        for i in range(self._stacked.count()):
-            if isinstance(self._stacked.widget(i), PlaceholderWidget):
-                return True
-        return False
-
-    @pyqtSlot(int)
-    def _on_result_list_clicked(self, index):
-        self._stacked_results.setCurrentIndex(index)
-
-    def add_table_to_workspace(self, relation: Relation, editable=True):
-        db = Registry.get("db", DB)
-
-        # Eliminar el placeholder
-        # TODO: volver a agregar luego? entonces no deberia ser un attr,
-        # crear función helper para agregar el placeholder (?)
-        self._remove_placeholder()
-
-        view = create_view(relation, editable=editable)
-        db.add(relation)
-        self._stacked.addWidget(view)
-        self._stacked.setCurrentWidget(view)
-        self._update_tab_text(index=0)
-
-    def _update_tab_text(self, index: int) -> None:
-        tab_bar = self._tabs.tabBar()
-        if tab_bar is not None:
-            count = (
-                self._stacked.count() if index == 0 else self._stacked_results.count()
-            )
-            table_name = "Workspace" if index == 0 else "Results"
-            text = f"{table_name}({count})"
-            tab_bar.setTabText(index, text)
-
-    def add_table_to_results(self, relation: Relation, editable=False):
-        view = create_view(relation, editable=editable)
-        self._stacked_results.addWidget(view)
-        self._update_tab_text(index=1)
-
-
 class TableWidget(QWidget):
     sqlRequested = pyqtSignal()
+    treeRequested = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -163,6 +92,15 @@ class TableWidget(QWidget):
         btn_sql.setToolTip("Show SQL")
         btn_sql.clicked.connect(self.sqlRequested.emit)
         toolbar.addWidget(btn_sql)
+
+        btn_tree = QToolButton()
+        btn_tree.setAutoRaise(True)
+        btn_tree.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        fa.apply_to(btn_tree, size=12)
+        btn_tree.setText("\uf0e8")
+        btn_tree.setToolTip("Show Execution Tree")
+        btn_tree.clicked.connect(self.treeRequested.emit)
+        toolbar.addWidget(btn_tree)
 
         layout.addLayout(toolbar)
 
