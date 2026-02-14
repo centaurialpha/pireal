@@ -49,6 +49,7 @@ class DatabaseContainer(QSplitter):
 
         lateral_widget.relationClicked.connect(self._on_relation_clicked)
         table_widget.sqlRequested.connect(query_widget._show_sql)
+        table_widget.treeRequested.connect(query_widget._show_tree)
 
     def create_database(self, data):
         table_widget = Registry.get("table-widget", TableWidget)

@@ -38,6 +38,25 @@ class QueryWidget(QWidget):
         self.add_editor(editor)
         return editor
 
+    def _show_tree(self):
+        from pireal.gui.dialogs.tree_dialog import TreeDialog
+        from pireal.interpreter.lexer import Lexer
+        from pireal.interpreter.parser import Parser
+        from pireal.interpreter.scanner import Scanner
+        from pireal.interpreter.tree_builder import TreeBuilder
+
+        queries = self.current_editor().text()
+        if not queries.strip():
+            return
+
+        try:
+            tree = Parser(Lexer(Scanner(queries))).parse()
+            roots = TreeBuilder().build(tree)
+            dialog = TreeDialog(roots, self)
+            dialog.exec()
+        except Exception:
+            pass
+
     def _show_sql(self):
         from pireal.gui.dialogs.sql_dialog import SQLDialog
         from pireal.interpreter.lexer import Lexer
