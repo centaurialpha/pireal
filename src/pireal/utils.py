@@ -6,6 +6,27 @@ logger = logging.getLogger("pireal.utils")
 def eval_expr(expr: str, names: dict):
     allowed_names = {}
     allowed_names.update(names)
+    code = compile(expr, "<string>", "eval")
+    try:
+        return eval(
+            code,
+            {
+                "__builtins__": {},
+                "datetime": __import__("datetime"),
+                "int": int,
+                "float": float,
+            },
+            allowed_names,
+        )
+    except (TypeError, ValueError):
+        return False
+    except Exception:
+        logger.exception("Error during evaluate expression")
+
+
+def _eval_expr(expr: str, names: dict):
+    allowed_names = {}
+    allowed_names.update(names)
 
     code = compile(expr, "<string>", "eval")
     try:

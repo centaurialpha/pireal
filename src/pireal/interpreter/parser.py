@@ -61,10 +61,10 @@
 """
 
 from pireal.interpreter import rast as ast
-from pireal.interpreter.exceptions import ConsumeError, DuplicateRelationNameError
+from pireal.interpreter.exceptions import ConsumeError
 from pireal.interpreter.lexer import Lexer
 from pireal.interpreter.scanner import Scanner
-from pireal.interpreter.tokens import BINARY_OPERATORS, TokenTypes
+from pireal.interpreter.tokens import BINARY_OPERATORS, Token, TokenTypes
 
 
 class Parser(object):
@@ -77,7 +77,7 @@ class Parser(object):
 
     def __init__(self, lexer):
         self.lexer = lexer
-        self.token = self.lexer.next_token()
+        self.token: Token = self.lexer.next_token()
 
     def consume(self, token_type):
         """Consume a token of a given type and get the next token.
@@ -93,15 +93,11 @@ class Parser(object):
     def parse(self):
         return self.compound()
 
-    def compound(self):
-        nodes = []
+    def compound(self) -> ast.Compound:
+        children = []
         while self.token.type is not TokenTypes.EOF:
-            nodes.append(self.query())
-
-        compound = ast.Compound()
-        compound.children = nodes
-
-        return compound
+            children.append(self.query())
+        return ast.Compound(children=children)
 
     def query(self):
         node = self.assignment()
@@ -166,23 +162,17 @@ class Parser(object):
         node = ast.SelectExpr(boolean_expr, expr)
         return node
 
-    def boolean_expression(self):
+    def boolean_expression(self) -> ast.BooleanExpression | ast.Condition:
         node = self.formula()
 
-        while self.token.type is TokenTypes.AND or self.token.type is TokenTypes.OR:
-            if self.token.type is TokenTypes.AND:
-                boolean_operator = TokenTypes.AND
-                self.consume(TokenTypes.AND)
-            elif self.token.type is TokenTypes.OR:
-                boolean_operator = TokenTypes.OR
-                self.consume(TokenTypes.OR)
-
-            boolean_node = ast.BooleanExpression(
+        while self.token.type in (TokenTypes.AND, TokenTypes.OR):
+            operator = self.token.type
+            self.consume(operator)
+            node = ast.BooleanExpression(
                 left_formula=node,
-                operator=boolean_operator,
+                operator=operator,
                 right_formula=self.formula(),
             )
-            node = boolean_node
 
         return node
 
@@ -203,39 +193,40 @@ class Parser(object):
         return node
 
     def literal(self):
-        if self.token.type is TokenTypes.INTEGER:
-            node = ast.Number(self.token)
-            self.consume(TokenTypes.INTEGER)
-        elif self.token.type is TokenTypes.REAL:
-            node = ast.Number(self.token)
-            self.consume(TokenTypes.REAL)
-        elif self.token.type is TokenTypes.STRING:
-            node = ast.String(self.token)
-            self.consume(TokenTypes.STRING)
-        elif self.token.type is TokenTypes.DATE:
-            node = ast.Date(self.token)
-            self.consume(TokenTypes.DATE)
-        elif self.token.type is TokenTypes.TIME:
-            node = ast.Time(self.token)
-            self.consume(TokenTypes.TIME)
+        token_type = self.token.type
+        value = self.token.value
 
-        return node
+        litarl_map = {
+            TokenTypes.INTEGER: ast.Number,
+            TokenTypes.REAL: ast.Number,
+            TokenTypes.STRING: ast.String,
+            TokenTypes.DATE: ast.Date,
+            TokenTypes.TIME: ast.Time,
+        }
 
-    def operator(self):
-        node = self.token
+        node_class = litarl_map.get(token_type)
+        if node_class is None:
+            raise ConsumeError(TokenTypes.INTEGER, token_type, self.lexer.sc.lineno)
 
-        operators = [
+        self.consume(token_type)
+        return node_class(value)
+
+    def operator(self) -> Token:
+        COMPARISON_OPERATORS = {
             TokenTypes.EQUAL,
             TokenTypes.NOTEQUAL,
             TokenTypes.LESS,
             TokenTypes.LESS_EQUAL,
             TokenTypes.GREATER,
-            TokenTypes.GREATHER_EQUAL,
-        ]
-        index = operators.index(node.type)
-        op = operators[index]
-        self.consume(op)
-        return node
+            TokenTypes.GREATER_EQUAL,
+        }
+
+        if self.token.type not in COMPARISON_OPERATORS:
+            raise ConsumeError(TokenTypes.EQUAL, self.token.type, self.lexer.sc.lineno)
+
+        token = self.token
+        self.consume(self.token.type)
+        return token
 
     def attributes(self):
         """Return a list of ast.Variable nodes."""
@@ -249,98 +240,5 @@ class Parser(object):
         return attribute_list
 
 
-class Interpreter(ast.NodeVisitor):
-    """Visitor.
-
-    Este objeto es el encargado de 'visitar' los nodos con el
-    método Interpreter.to_python(), que convierte a un string que luego
-    es evaluado como código Python
-
-    `global_memory` es un diccionario ordenado que guarda las consultas 'reales'
-    que serán evaluadas, hace de "symbol table".
-    """
-
-    def __init__(self, tree):
-        self.tree = tree
-        self.global_memory = {}
-
-    def to_python(self):
-        return self.visit(self.tree)
-
-    def visit_Compound(self, node):
-        for child in node.children:
-            self.visit(child)
-
-    def visit_Assignment(self, node):
-        rname = self.visit(node.rname)
-        if rname in self.global_memory:
-            raise DuplicateRelationNameError(rname)
-        self.global_memory[rname] = self.visit(node.query)
-
-    def visit_BinaryOp(self, node):
-        left = self.visit(node.left)
-        right = self.visit(node.right)
-        return "{0}.{1}({2})".format(left, node.token.value, right)
-
-    def visit_Number(self, node):
-        return node.num
-
-    def visit_ProjectExpr(self, node):
-        attrs = [i.value for i in node.attrs]
-        expr = self.visit(node.expr)
-
-        return "{0}.project({1})".format(
-            expr, ", ".join("'{0}'".format(i) for i in attrs)
-        )
-
-    def visit_SelectExpr(self, node):
-        bool_expr = self.visit(node.condition)
-        expr = self.visit(node.expr)
-
-        return f'{expr}.select("{bool_expr}")'
-
-    def visit_BooleanExpression(self, node):
-        left_formula = self.visit(node.left_formula)
-        right_formula = self.visit(node.right_formula)
-
-        return f"{left_formula} {node.operator.value} {right_formula}"
-
-    def visit_Condition(self, node):
-        left_operand = self.visit(node.op1)
-        operator = node.operator.value
-        right_operand = self.visit(node.op2)
-
-        # Convert RA operator to valid Python operator
-        map_operators = {"=": "==", "<>": "!="}
-        operator = map_operators.get(operator, operator)
-
-        return f"{left_operand} {operator} {right_operand}"
-
-    def visit_Variable(self, node):
-        return node.value
-
-    def visit_Date(self, node):
-        return repr(node.date)
-
-    def visit_Time(self, node):
-        return repr(node.time)
-
-    def visit_String(self, node):
-        return repr(node.string)
-
-    def clear(self):
-        self.global_memory.clear()
-
-
-def interpret(query: str):
-    return parse(query)
-
-
-def parse(query: str) -> dict:
-    scanner = Scanner(query)
-    lexer = Lexer(scanner)
-    parser = Parser(lexer)
-    tree = parser.parse()
-    interpreter = Interpreter(tree)
-    interpreter.to_python()
-    return interpreter.global_memory
+def parse(query: str) -> ast.Compound:
+    return Parser(Lexer(Scanner(query))).parse()

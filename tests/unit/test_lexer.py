@@ -83,10 +83,10 @@ def test_get_string(lexer, text, expected_token_type):
     assert lex.next_token().type is expected_token_type
 
 
-def test_analize_string_missing_quote_error(lexer):
+def test_missing_quote_error(lexer):
     lex = lexer("'hola que haces")
     with pytest.raises(MissingQuoteError):
-        lex.analize_string()
+        lex.next_token()
 
 
 def test_assignment(lexer):
@@ -106,4 +106,53 @@ def test_operators(lexer):
     assert lex.next_token().type is TokenTypes.LESS
     assert lex.next_token().type is TokenTypes.LESS_EQUAL
     assert lex.next_token().type is TokenTypes.GREATER
-    assert lex.next_token().type is TokenTypes.GREATHER_EQUAL
+    assert lex.next_token().type is TokenTypes.GREATER_EQUAL
+
+
+@pytest.mark.parametrize(
+    "keyword",
+    [
+        "select",
+        "project",
+        "product",
+        "intersect",
+        "union",
+        "difference",
+        "njoin",
+        "louter",
+        "router",
+        "fouter",
+        "and",
+        "or",
+    ],
+)
+def test_reserved_keywords(lexer, keyword):
+    lex = lexer(keyword)
+    token = lex.next_token()
+    assert token.type is not TokenTypes.ID
+
+
+def test_token_position_tracking(lexer):
+    lex = lexer("a := b")
+    t1 = lex.next_token()
+    assert t1.line == 1 and t1.col == 1
+    t2 = lex.next_token()
+    assert t2.line == 1 and t2.col == 3
+
+
+def test_multiline_token_position(lexer):
+    lex = lexer("a\n:= b")
+    lex.next_token()  # 'a'
+    t = lex.next_token()  # ':='
+    assert t.line == 2 and t.col == 1
+
+
+def test_eof(lexer):
+    lex = lexer("")
+    assert lex.next_token().type is TokenTypes.EOF
+
+
+def test_invalid_char(lexer):
+    lex = lexer("@")
+    with pytest.raises(InvalidSyntaxError):
+        lex.next_token()

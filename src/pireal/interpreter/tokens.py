@@ -34,7 +34,7 @@ class TokenTypes(enum.Enum):
     EQUAL = "="
 
     LESS_EQUAL = "<="
-    GREATHER_EQUAL = ">="
+    GREATER_EQUAL = ">="
     NOTEQUAL = "<>"
     ASSIGNMENT = ":="
 
@@ -57,9 +57,9 @@ class TokenTypes(enum.Enum):
     UNION = "union"
     DIFFERENCE = "difference"
     NJOIN = "njoin"
-    LEFT_OUTER_JOIN = "louter"
-    RIGHT_OUTER_JOIN = "router"
-    FULL_OUTER_JOIN = "fouter"  # no cambiar
+    LOUTER = "louter"
+    ROUTER = "router"
+    FOUTER = "fouter"  # no cambiar
     # Conditional
     AND = "and"
     OR = "or"  # no cambiar
@@ -67,22 +67,24 @@ class TokenTypes(enum.Enum):
     UNKNOWN = "unknown"
 
 
-def _build(start_token, end_token):
-    token_type_list = list(TokenTypes)
-    start_index = token_type_list.index(start_token)
-    end_index = token_type_list.index(end_token)
-    return {
-        token_type.value: token_type
-        for token_type in token_type_list[start_index : end_index + 1]
-    }
+BINARY_OPERATORS: dict[str, TokenTypes] = {
+    TokenTypes.PRODUCT.value: TokenTypes.PRODUCT,
+    TokenTypes.INTERSECT.value: TokenTypes.INTERSECT,
+    TokenTypes.UNION.value: TokenTypes.UNION,
+    TokenTypes.DIFFERENCE.value: TokenTypes.DIFFERENCE,
+    TokenTypes.NJOIN.value: TokenTypes.NJOIN,
+    TokenTypes.LOUTER.value: TokenTypes.LOUTER,
+    TokenTypes.ROUTER.value: TokenTypes.ROUTER,
+    TokenTypes.FOUTER.value: TokenTypes.FOUTER,
+}
 
-
-def _build_binary_operators():
-    return _build(TokenTypes.PRODUCT, TokenTypes.FULL_OUTER_JOIN)
-
-
-def _build_reserved_keywords():
-    return _build(TokenTypes.SELECT, TokenTypes.OR)
+RESERVED_KEYWORDS: dict[str, TokenTypes] = {
+    TokenTypes.SELECT.value: TokenTypes.SELECT,
+    TokenTypes.PROJECT.value: TokenTypes.PROJECT,
+    **BINARY_OPERATORS,
+    TokenTypes.AND.value: TokenTypes.AND,
+    TokenTypes.OR.value: TokenTypes.OR,
+}
 
 
 @dataclass(eq=False)
@@ -94,7 +96,3 @@ class Token:
 
     def __eq__(self, other):
         return self.type == other.type and self.value == other.value
-
-
-BINARY_OPERATORS = _build_binary_operators()
-RESERVED_KEYWORDS = _build_reserved_keywords()

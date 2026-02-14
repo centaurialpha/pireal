@@ -233,3 +233,9 @@ class TableWidget(QWidget):
         # Auto-split
         if not self._stacked_results.isVisible():
             self._btn_split.setChecked(True)
+
+    def clear_results(self):
+        while self._stacked_results.count() > 0:
+            widget = self._stacked_results.widget(0)
+            self._stacked_results.removeWidget(widget)
+            widget.deleteLater()

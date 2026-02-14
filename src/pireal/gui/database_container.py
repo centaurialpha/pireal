@@ -11,9 +11,9 @@ from pireal.gui.lateral_widget import LateralWidget, RelationItemType
 from pireal.gui.model_view_delegate import Delegate, RelationModel, View
 from pireal.gui.query_widget import QueryWidget
 from pireal.gui.table_widget import TableWidget
+from pireal.interpreter.evaluator import Evaluator, UndefinedRelationError
 from pireal.interpreter.exceptions import (
     ConsumeError,
-    DuplicateRelationNameError,
     InvalidSyntaxError,
     MissingQuoteError,
 )
@@ -108,38 +108,35 @@ class DatabaseContainer(QSplitter):
     def execute_queries(self):
         from pireal.interpreter.parser import parse
 
+        db = Registry.get("db", DB)
         table_widget = Registry.get("table-widget", TableWidget)
         query_widget = Registry.get("query-widget", QueryWidget)
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
 
         editor = query_widget.current_editor()
         queries = editor.text()
-
         editor.editor.show_run_cursor()
 
-        # FIXME: probar project cod_curso (inscripto) algo raro.
-        # FIXME: borrar y eliminar los items (lateral y table)
-        # self._database.clear()
+        # Limpiar resultados anteriores
         lateral_widget.clear_results()
-        i = table_widget._stacked_results.count()
-        while i >= 0:
-            widget = table_widget._stacked_results.widget(i)
-            if widget is not None:
-                table_widget._stacked_results.removeWidget(widget)
-                widget.deleteLater()
-            i -= 1
+        db.clear_query_results()
+        table_widget.clear_results()
 
-        self._database.clear_query_results()
         try:
-            result = parse(queries)
+            tree = parse(queries)
             editor.editor.highlight_error(-1)
         except (MissingQuoteError, InvalidSyntaxError, ConsumeError) as err:
             editor.editor.highlight_error(err.lineno, message=str(err))
             return
-        except DuplicateRelationNameError:
+
+        try:
+            results = Evaluator(db.relations_dict()).evaluate(tree)
+        except UndefinedRelationError as err:
+            editor.editor.highlight_error(err.lineno, message=str(err))
             return
 
-        for relation_name, expression in result.items():
-            new_relation = self._database.eval_query(expression, relation_name)
-            table_widget.add_table_to_results(new_relation)
-            lateral_widget.add_item(new_relation, RelationItemType.Result)
+        for name, relation in results.items():
+            db.load(relation)
+            db._query_results.append(name)
+            table_widget.add_table_to_results(relation)
+            lateral_widget.add_item(relation, RelationItemType.Result)

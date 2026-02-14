@@ -58,64 +58,97 @@ class Lexer:
     def _skip_comment(self):
         while self.sc.char is not None and self.sc.char != "\n":
             self.sc.next()
+        # self.sc.next()
+
+    def _make_token(self, token_type: TokenTypes) -> Token:
+        token = Token(
+            type=token_type,
+            value=token_type.value,
+            line=self.sc.lineno,
+            col=self.sc.colno,
+        )
         self.sc.next()
+        return token
+
+    def _make_two_char_token(self, token_type: TokenTypes) -> Token:
+        token = Token(
+            type=token_type,
+            value=token_type.value,
+            line=self.sc.lineno,
+            col=self.sc.colno,
+        )
+        self.sc.next()
+        self.sc.next()
+        return token
 
     def get_identifier_or_keyword(self) -> Token:
-        """Handle identifiers and reserved keywords."""
-        token = Token(
-            type=TokenTypes.UNKNOWN, value=None, line=self.sc.lineno, col=self.sc.colno
-        )
+        line, col = self.sc.lineno, self.sc.colno
+        chars = []
 
-        var = ""
         while self.sc.char is not None and not self.sc.char.isspace():
-            # Recognize identifiers like: query_1, query2323
-            if self.sc.char == "_":
-                var += "_"
+            if (
+                self.sc.char in ("_",)
+                or self.sc.char.isdigit()
+                or self.sc.char.isalpha()
+            ):
+                chars.append(self.sc.char)
                 self.sc.next()
-                continue
-            if self.sc.char.isdigit():
-                var += self.sc.char
-                self.sc.next()
-                continue
-            if not self.sc.char.isalpha():
+            else:
                 break
-            var += self.sc.char
-            self.sc.next()
 
-        token_type = RESERVED_KEYWORDS.get(var)
-        if token_type is None:
-            token.type = TokenTypes.ID
-        else:
-            token.type = token_type
-        token.value = var
-        return token
+        value = "".join(chars)
+        token_type = RESERVED_KEYWORDS.get(value, TokenTypes.ID)
+        return Token(type=token_type, value=value, line=line, col=col)
 
     def get_number(self) -> Token:
         """Return a multidigit integer or float."""
-        token = Token(
-            type=TokenTypes.UNKNOWN, value=None, line=self.sc.lineno, col=self.sc.colno
-        )
+        line, col = self.sc.lineno, self.sc.colno
+        digits = []
 
-        number = ""
         while self.sc.char is not None and self.sc.char.isdigit():
-            number += self.sc.char
+            digits.append(self.sc.char)
             self.sc.next()
 
         if self.sc.char == ".":
-            number += self.sc.char
+            digits.append(self.sc.char)
+            self.sc.next()
+            while self.sc.char is not None and self.sc.char.isdigit():
+                digits.append(self.sc.char)
+                self.sc.next()
+            return Token(
+                type=TokenTypes.REAL, value=float("".join(digits)), line=line, col=col
+            )
+
+        return Token(
+            type=TokenTypes.INTEGER, value=int("".join(digits)), line=line, col=col
+        )
+
+    def _read_string(self) -> Token:
+        line, col = self.sc.lineno, self.sc.colno
+        # Consumir la comilla
+        self.sc.next()
+        chars = []
+
+        while self.sc.char is not None and self.sc.char != "'":
+            chars.append(self.sc.char)
             self.sc.next()
 
-            while self.sc.char is not None and self.sc.char.isdigit():
-                number += self.sc.char
-                self.sc.next()
+        if self.sc.char is None:
+            raise MissingQuoteError("Missing closing quote", lineno=line, col=col)
 
-            token.type = TokenTypes.REAL
-            token.value = float(number)
-        else:
-            token.type = TokenTypes.INTEGER
-            token.value = int(number)
+        # Consumir la comilla de cierre
+        self.sc.next()
+        value = "".join(chars)
 
-        return token
+        ok, date = is_date(value)
+        if ok:
+            return Token(type=TokenTypes.DATE, value=date, line=line, col=col)
+
+        ok, time = is_time(value)
+        if ok:
+            return Token(type=TokenTypes.TIME, value=time, line=line, col=col)
+
+        return Token(type=TokenTypes.STRING, value=value, line=line, col=col)
 
     def analize_string(self) -> Token:
         self.sc.next()
@@ -159,7 +192,7 @@ class Lexer:
         """
         while self.sc.char is not None:
             # Recognize identifiers and keywords
-            if self.sc.char.isalpha() or self.sc.char.startswith("_"):
+            if self.sc.char.isalpha() or self.sc.char == "_":
                 return self.get_identifier_or_keyword()
 
             # Ignore any whitespace characters
@@ -172,77 +205,34 @@ class Lexer:
                 self._skip_comment()
                 continue
 
-            # Assignment
-            if self.sc.char == ":" and self.sc.peek() == "=":
-                token = Token(
-                    type=TokenTypes.ASSIGNMENT,
-                    value=TokenTypes.ASSIGNMENT.value,
-                    line=self.sc.lineno,
-                    col=self.sc.colno,
-                )
-                self.sc.next()
-                self.sc.next()
-                return token
+            if self.sc.char == "'":
+                return self._read_string()
 
-            # Operators <>, <=, >=
-            if self.sc.char == "<" and self.sc.peek() == ">":
-                token = Token(
-                    type=TokenTypes.NOTEQUAL,
-                    value=TokenTypes.NOTEQUAL.value,
-                    line=self.sc.lineno,
-                    col=self.sc.colno,
-                )
-                self.sc.next()
-                self.sc.next()
-                return token
-
-            if self.sc.char == "<" and self.sc.peek() == "=":
-                token = Token(
-                    type=TokenTypes.LESS_EQUAL,
-                    value=TokenTypes.LESS_EQUAL.value,
-                    line=self.sc.lineno,
-                    col=self.sc.colno,
-                )
-                self.sc.next()
-                self.sc.next()
-                return token
-
-            if self.sc.char == ">" and self.sc.peek() == "=":
-                token = Token(
-                    type=TokenTypes.GREATHER_EQUAL,
-                    value=TokenTypes.GREATHER_EQUAL.value,
-                    line=self.sc.lineno,
-                    col=self.sc.colno,
-                )
-                self.sc.next()
-                self.sc.next()
-                return token
-
-            # Number
             if self.sc.char.isdigit():
                 return self.get_number()
 
-            # Strings, dates, times
-            if self.sc.char == "'":
-                token = self.analize_string()
-                return token
+            # Two-char tokens
+            peek = self.sc.peek()
+            # Assignment
+            if self.sc.char == ":" and peek == "=":
+                return self._make_two_char_token(TokenTypes.ASSIGNMENT)
+            # Not equal
+            if self.sc.char == "<" and peek == ">":
+                return self._make_two_char_token(TokenTypes.NOTEQUAL)
+            # Less equal
+            if self.sc.char == "<" and peek == "=":
+                return self._make_two_char_token(TokenTypes.LESS_EQUAL)
+            # Greater equal
+            if self.sc.char == ">" and peek == "=":
+                return self._make_two_char_token(TokenTypes.GREATER_EQUAL)
 
-            # Single-character
+            # Single-char tokens
             try:
                 token_type = TokenTypes(self.sc.char)
             except ValueError:
                 raise InvalidSyntaxError(
                     self.sc.lineno, self.sc.colno, self.sc.char
                 ) from None
-            else:
-                token = Token(
-                    type=token_type,
-                    value=token_type.value,
-                    line=self.sc.lineno,
-                    col=self.sc.colno,
-                )
-                self.sc.next()
-                return token
 
-        # EOF
+            return self._make_token(token_type)
         return Token(TokenTypes.EOF, None)

@@ -24,7 +24,6 @@ import itertools
 import re
 
 from pireal.core.ordered_set import OrderedSet
-from pireal.core.rtypes import RType
 from pireal.utils import eval_expr
 
 IS_VALID_FIELD_NAME = re.compile("^[_á-úa-zA-Z][_á-úa-zA-Z0-9]*$")
@@ -105,6 +104,18 @@ def union_compatible(operation):
     return inner
 
 
+def _cast_value(value: str) -> int | float | str:
+    try:
+        return int(value)
+    except ValueError:
+        pass
+    try:
+        return float(value)
+    except ValueError:
+        pass
+    return value
+
+
 class Relation(object):
     def __init__(self):
         self.content = OrderedSet()
@@ -126,7 +137,6 @@ class Relation(object):
     def insert(self, values):
         if isinstance(values, str):
             values = tuple(values.split())
-
         if len(values) != len(self._header):
             raise WrongSizeError(len(self._header), len(values))
         self.content.add(values)
@@ -176,15 +186,10 @@ class Relation(object):
         return new_relation
 
     def select(self, expression):
-        """Return a new relation.
-
-        with the tuples thatsatisfy an expression.
-        """
         new_relation = Relation()
         new_relation.header = self._header
-
         for tupla in self.content:
-            attrs = {attr: RType.cast(tupla[e]) for e, attr in enumerate(self.header)}
+            attrs = {attr: _cast_value(tupla[e]) for e, attr in enumerate(self.header)}
             if eval_expr(expression, attrs):
                 new_relation.insert(tupla)
         return new_relation
