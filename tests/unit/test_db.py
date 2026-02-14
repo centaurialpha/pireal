@@ -64,13 +64,13 @@ def test_remove_relation(db, sample_relations, relation_name):
 def test_clear_query_results(db, sample_relations):
     db.add(sample_relations["users"])
     db.add(sample_relations["orders"])
-
     assert db.count == 2
 
-    db.eval_query("users.njoin(orders)", "q1")
-
+    result = Relation()
+    result.name = "q1"
+    db.load(result)
+    db._query_results.append("q1")
     assert db.count == 3
 
     db.clear_query_results()
-
     assert db.count == 2

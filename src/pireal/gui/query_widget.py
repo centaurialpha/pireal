@@ -55,7 +55,8 @@ class QueryWidget(QWidget):
             sql = "\n\n".join(f"-- {name}\n{sql}" for name, sql in sql_queries.items())
             dialog = SQLDialog(sql, self)
             dialog.exec()
-        except Exception:
+        except Exception as e:
+            print(e)
             pass  # si hay error de sintaxis, no mostrar nada
 
     def current_editor(self) -> "EditorWidget":

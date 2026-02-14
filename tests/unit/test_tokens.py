@@ -1,45 +1,54 @@
-import unittest
+import pytest
 
-from pireal.interpreter.tokens import (
-    TokenTypes,
-    _build_binary_operators,
-    _build_reserved_keywords,
+from pireal.interpreter.tokens import TokenTypes, BINARY_OPERATORS, RESERVED_KEYWORDS
+
+pytestmark = pytest.mark.interpreter
+
+
+def test_binary_operators():
+    expected = {
+        "product": TokenTypes.PRODUCT,
+        "intersect": TokenTypes.INTERSECT,
+        "union": TokenTypes.UNION,
+        "difference": TokenTypes.DIFFERENCE,
+        "njoin": TokenTypes.NJOIN,
+        "louter": TokenTypes.LOUTER,
+        "router": TokenTypes.ROUTER,
+        "fouter": TokenTypes.FOUTER,
+    }
+    assert BINARY_OPERATORS == expected
+
+
+def test_reserved_keywords():
+    expected = {
+        "select": TokenTypes.SELECT,
+        "project": TokenTypes.PROJECT,
+        "product": TokenTypes.PRODUCT,
+        "intersect": TokenTypes.INTERSECT,
+        "union": TokenTypes.UNION,
+        "difference": TokenTypes.DIFFERENCE,
+        "njoin": TokenTypes.NJOIN,
+        "louter": TokenTypes.LOUTER,
+        "router": TokenTypes.ROUTER,
+        "fouter": TokenTypes.FOUTER,
+        "and": TokenTypes.AND,
+        "or": TokenTypes.OR,
+    }
+    assert RESERVED_KEYWORDS == expected
+
+
+@pytest.mark.parametrize(
+    "op",
+    [
+        "product",
+        "intersect",
+        "union",
+        "difference",
+        "njoin",
+        "louter",
+        "router",
+        "fouter",
+    ],
 )
-
-
-class TokenTestCase(unittest.TestCase):
-    def test_build_binary_operators(self):
-        expected_operators = {
-            "product": TokenTypes.PRODUCT,
-            "intersect": TokenTypes.INTERSECT,
-            "union": TokenTypes.UNION,
-            "difference": TokenTypes.DIFFERENCE,
-            "njoin": TokenTypes.NJOIN,
-            "louter": TokenTypes.LEFT_OUTER_JOIN,
-            "router": TokenTypes.RIGHT_OUTER_JOIN,
-            "fouter": TokenTypes.FULL_OUTER_JOIN,
-        }
-
-        binary_operators = _build_binary_operators()
-
-        self.assertDictEqual(binary_operators, expected_operators)
-
-    def test_build_reserved_keywords(self):
-        expected_keywords = {
-            "select": TokenTypes.SELECT,
-            "project": TokenTypes.PROJECT,
-            "product": TokenTypes.PRODUCT,
-            "intersect": TokenTypes.INTERSECT,
-            "union": TokenTypes.UNION,
-            "difference": TokenTypes.DIFFERENCE,
-            "njoin": TokenTypes.NJOIN,
-            "louter": TokenTypes.LEFT_OUTER_JOIN,
-            "router": TokenTypes.RIGHT_OUTER_JOIN,
-            "fouter": TokenTypes.FULL_OUTER_JOIN,
-            "and": TokenTypes.AND,
-            "or": TokenTypes.OR,
-        }
-
-        reserved_keywords = _build_reserved_keywords()
-
-        self.assertDictEqual(reserved_keywords, expected_keywords)
+def test_binary_operators_are_in_reserved_keywords(op):
+    assert op in RESERVED_KEYWORDS

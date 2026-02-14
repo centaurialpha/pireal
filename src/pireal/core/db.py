@@ -106,15 +106,18 @@ class DB(QObject):
     def __len__(self) -> int:
         return self.count
 
-    def eval_query(self, expression: str, name: str) -> Relation:
-        relation = eval(expression, {}, self._relations)
-        relation.name = name
-        self.load(relation)
+    def relations_dict(self) -> dict[str, Relation]:
+        return dict(self._relations)
 
-        if name not in self._query_results:
-            self._query_results.append(name)
+    # def eval_query(self, expression: str, name: str) -> Relation:
+    #     relation = eval(expression, {}, self._relations)
+    #     relation.name = name
+    #     self.load(relation)
 
-        return relation
+    #     if name not in self._query_results:
+    #         self._query_results.append(name)
+
+    #     return relation
 
     def clear_query_results(self) -> None:
         for name in self._query_results[:]:

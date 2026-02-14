@@ -7,7 +7,7 @@ OPERATOR_MAP = {
     TokenTypes.LESS: "<",
     TokenTypes.LESS_EQUAL: "<=",
     TokenTypes.GREATER: ">",
-    TokenTypes.GREATHER_EQUAL: ">=",
+    TokenTypes.GREATER_EQUAL: ">=",
 }
 
 BINARY_OP_MAP = {
@@ -16,9 +16,9 @@ BINARY_OP_MAP = {
     TokenTypes.DIFFERENCE: "EXCEPT",
     TokenTypes.PRODUCT: "CROSS JOIN",
     TokenTypes.NJOIN: "NATURAL JOIN",
-    TokenTypes.LEFT_OUTER_JOIN: "LEFT OUTER JOIN",
-    TokenTypes.RIGHT_OUTER_JOIN: "RIGHT OUTER JOIN",
-    TokenTypes.FULL_OUTER_JOIN: "FULL OUTER JOIN",
+    TokenTypes.LOUTER: "LEFT OUTER JOIN",
+    TokenTypes.ROUTER: "RIGHT OUTER JOIN",
+    TokenTypes.FOUTER: "FULL OUTER JOIN",
 }
 
 
@@ -44,16 +44,16 @@ class SQLGenerator(ast.NodeVisitor):
         return node.value
 
     def visit_Number(self, node):
-        return str(node.num)
+        return str(node.value)
 
     def visit_String(self, node):
-        return f"'{node.string}'"
+        return f"'{node.value}'"
 
     def visit_Date(self, node):
-        return f"'{node.date}'"
+        return f"'{node.value}'"
 
     def visit_Time(self, node):
-        return f"'{node.time}'"
+        return f"'{node.value}'"
 
     def visit_Condition(self, node):
         op1 = self.visit(node.op1)
