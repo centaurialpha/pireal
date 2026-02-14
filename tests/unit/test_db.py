@@ -74,3 +74,35 @@ def test_clear_query_results(db, sample_relations):
 
     db.clear_query_results()
     assert db.count == 2
+
+
+def test_db_file_is_none_by_default(db):
+    assert db.file is None
+    assert db.is_new
+
+
+def test_db_file_setter(db, tmp_path):
+    from pireal.core.pireal_file import File
+
+    f = File(str(tmp_path / "test.pdb"))
+    db.file = f
+    assert db.file is f
+    assert not db.is_new
+
+
+def test_db_save(db, tmp_path):
+    from pireal.core.pireal_file import File
+
+    filepath = tmp_path / "test.pdb"
+    db.file = File(str(filepath))
+
+    r = Relation()
+    r.name = "personas"
+    r.header = ["id", "nombre"]
+    r.insert(("1", "Gabriel"))
+    db.load(r)
+
+    result = db.save()
+    assert result
+    assert not db.modified
+    assert filepath.exists()

@@ -31,7 +31,7 @@ from PyQt6.QtWidgets import (
 
 from pireal import translations as tr
 from pireal.core.db import DB
-from pireal.core.pireal_file import File
+from pireal.core.pireal_file import File, is_example_file
 from pireal.dirs import DATA_SETTINGS, EXAMPLE_DB_FILENAME
 from pireal.gui.database_container import DatabaseContainer
 from pireal.gui.dialogs.new_db_dialog import NewDBInputDialog
@@ -147,6 +147,7 @@ class Controller(QWidget):
         if database_filepath is None:
             return
 
+        db.file = File(database_filepath)
         db.is_active = True
 
         database_widget = Registry.get("database-container", DatabaseContainer)
@@ -195,13 +196,16 @@ class Controller(QWidget):
         self.add_db_to_recents(filename)
 
         db.is_active = True
+        db.file = file
         logger.info("Database opened")
 
     @pyqtSlot()
     def close_database(self):
         db = Registry.get("db", DB)
+        if not db.is_active:
+            return
 
-        if db.modified:
+        if db.modified and not is_example_file(db.file):
             value = QMessageBox.question(
                 self,
                 tr.TR_MSG_SAVE_CHANGES,
@@ -210,6 +214,12 @@ class Controller(QWidget):
                 | QMessageBox.StandardButton.No
                 | QMessageBox.StandardButton.Cancel,
             )
+            if value == QMessageBox.StandardButton.Cancel:
+                return
+
+            if value == QMessageBox.StandardButton.Save:
+                self.save_database()
+
         db.is_active = False
 
     @pyqtSlot()
@@ -299,6 +309,7 @@ class Controller(QWidget):
 
     def save_database(self):
         db = Registry.get("db", DB)
+        print(f"is_active={db.is_active}, modified={db.modified}, is_new={db.is_new}, file={db.file}, file._filename={db.file._filename if db.file else None}")
         if not db.is_active or not db.modified:
             return
 
