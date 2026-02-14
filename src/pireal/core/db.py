@@ -43,6 +43,14 @@ class DB(QObject):
         self._file: File | None = None
 
     @property
+    def file(self) -> File | None:
+        return self._file
+
+    @file.setter
+    def file(self, value: File | None) -> None:
+        self._file = value
+
+    @property
     def is_active(self) -> bool:
         return self._is_active
 
@@ -134,5 +142,5 @@ class DB(QObject):
 
         content = generate_database(self._relations)
         self._file.save(content)
-        self.modified = True
+        self.modified = False
         return True

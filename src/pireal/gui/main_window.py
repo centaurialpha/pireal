@@ -5,6 +5,7 @@ from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import QMainWindow, QMessageBox
 
 from pireal.core.db import DB
+from pireal.core.pireal_file import is_example_file
 from pireal.dirs import DATA_SETTINGS
 from pireal.gui.controller import Controller
 from pireal.gui.menu import MenuBuilder
@@ -67,6 +68,7 @@ class Pireal(QMainWindow):
             for i in range(query_widget._editor_tabs.count())
             if isinstance(query_widget._editor_tabs.widget(i), EditorWidget)
             and query_widget._editor_tabs.widget(i).editor.document().isModified()
+            and not is_example_file(query_widget._editor_tabs.widget(i).file)
         ]
 
         if unsaved_editors:

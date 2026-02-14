@@ -2,6 +2,8 @@ from pathlib import Path
 
 from PyQt6.QtCore import QObject
 
+from pireal.dirs import EXAMPLES_DIR
+
 
 class File(QObject):
     def __init__(self, filename: str = "", display_name: str = ""):
@@ -37,3 +39,13 @@ class File(QObject):
 
         self._filename.write_text(data, encoding="utf-8")
         self._display_name = ""
+
+
+def is_example_file(file: File | None) -> bool:
+    if file is None:
+        return False
+    try:
+        Path(file.path).resolve().relative_to(EXAMPLES_DIR.resolve())
+        return True
+    except ValueError:
+        return False
