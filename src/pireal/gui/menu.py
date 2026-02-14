@@ -70,6 +70,13 @@ file_menu.add_item(
     Action(tr.TR_MENU_FILE_NEW_DB, "controller:create_database", shorcut="Ctrl+n")
 )
 file_menu.add_item(
+    Action(
+        tr.TR_MENU_FILE_NEW_DB,
+        "controller:create_database_from_text",
+        shorcut="Ctrl+shift+n",
+    )
+)
+file_menu.add_item(
     Action(tr.TR_MENU_FILE_OPEN_DB, "controller:open_database", shorcut="Ctrl+0")
 )
 file_menu.add_item(

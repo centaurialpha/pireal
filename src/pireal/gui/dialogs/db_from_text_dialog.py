@@ -1,0 +1,174 @@
+from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtWidgets import (
+    QDialog,
+    QDialogButtonBox,
+    QLabel,
+    QPlainTextEdit,
+    QSplitter,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
+
+from pireal.gui.db_highlighter import DBHighlighter
+from pireal.utils import sanitize_data
+
+PLACEHOLDER = """\
+% Escribí tu base de datos aquí
+% Formato: @nombre_relacion:attr1,attr2,...
+% Seguido de las tuplas, una por línea
+
+@personas:id,nombre,edad
+1,Gabriel,30
+2,Ana,25
+
+@cursos:id,nombre
+1,Base de Datos
+2,Algoritmos
+"""
+
+
+class DBFromTextDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Nueva base de datos desde texto")
+        self.setMinimumSize(800, 500)
+        self.resize(900, 560)
+
+        self._parsed_data: dict | None = None
+
+        self._build_ui()
+        self._setup_timer()
+
+    def _build_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(12, 12, 12, 8)
+        layout.setSpacing(8)
+
+        splitter = QSplitter(Qt.Orientation.Horizontal)
+
+        # — Lado izquierdo: editor —
+        left = QWidget()
+        left_layout = QVBoxLayout(left)
+        left_layout.setContentsMargins(0, 0, 0, 0)
+        left_layout.setSpacing(4)
+        left_layout.addWidget(QLabel("Texto de la base de datos:"))
+
+        self._editor = QPlainTextEdit()
+        self._editor.setPlaceholderText(PLACEHOLDER)
+        self._editor.setTabStopDistance(28)
+        font = self._editor.font()
+        font.setFamily("Monospace")
+        font.setPointSize(10)
+        self._editor.setFont(font)
+        self._highlighter = DBHighlighter(self._editor.document())
+        left_layout.addWidget(self._editor)
+
+        # — Lado derecho: preview —
+        right = QWidget()
+        right_layout = QVBoxLayout(right)
+        right_layout.setContentsMargins(0, 0, 0, 0)
+        right_layout.setSpacing(4)
+        right_layout.addWidget(QLabel("Vista previa:"))
+
+        self._preview = QTreeWidget()
+        self._preview.setHeaderHidden(True)
+        self._preview.setAnimated(True)
+        right_layout.addWidget(self._preview)
+
+        self._status_label = QLabel("")
+        self._status_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        right_layout.addWidget(self._status_label)
+
+        splitter.addWidget(left)
+        splitter.addWidget(right)
+        splitter.setSizes([480, 320])
+
+        layout.addWidget(splitter)
+
+        # — Botones —
+        self._buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        )
+        self._buttons.button(QDialogButtonBox.StandardButton.Ok).setText("Cargar")
+        self._buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
+        self._buttons.accepted.connect(self.accept)
+        self._buttons.rejected.connect(self.reject)
+        layout.addWidget(self._buttons)
+
+        self._editor.textChanged.connect(self._on_text_changed)
+
+    def _setup_timer(self):
+        self._timer = QTimer(self)
+        self._timer.setSingleShot(True)
+        self._timer.setInterval(300)
+        self._timer.timeout.connect(self._update_preview)
+
+    def _on_text_changed(self):
+        self._timer.start()
+
+    def _update_preview(self):
+        text = self._editor.toPlainText().strip()
+        self._preview.clear()
+
+        if not text:
+            self._set_status("", ok=True)
+            self._buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
+            self._parsed_data = None
+            return
+
+        try:
+            data = sanitize_data(text)
+        except Exception as e:
+            self._set_status(f"✗ Error: {e}", ok=False)
+            self._buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
+            self._parsed_data = None
+            return
+
+        tables = data.get("tables", [])
+        if not tables:
+            self._set_status("✗ No se encontraron relaciones", ok=False)
+            self._buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
+            self._parsed_data = None
+            return
+
+        for table in tables:
+            name = table["name"]
+            header = table["header"]
+            tuples = table["tuples"]
+
+            cardinality = len(tuples)
+            root = QTreeWidgetItem(
+                self._preview,
+                [
+                    f"  {name}  ({cardinality} {'tupla' if cardinality == 1 else 'tuplas'})"
+                ],
+            )
+            root.setExpanded(True)
+
+            # Fila de encabezado
+            header_item = QTreeWidgetItem(root, [" | ".join(header)])
+            font = header_item.font(0)
+            font.setBold(True)
+            header_item.setFont(0, font)
+
+            # Tuplas (máximo 5 para no saturar)
+            for tupla in list(tuples)[:5]:
+                QTreeWidgetItem(root, [" | ".join(tupla)])
+            if cardinality > 5:
+                QTreeWidgetItem(root, [f"  ... ({cardinality - 5} más)"])
+
+        n = len(tables)
+        self._set_status(
+            f"✓  {n} {'relación' if n == 1 else 'relaciones'} válidas", ok=True
+        )
+        self._buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
+        self._parsed_data = data
+
+    def _set_status(self, message: str, *, ok: bool):
+        color = "green" if ok else "red"
+        self._status_label.setText(f'<span style="color:{color}">{message}</span>')
+
+    def parsed_data(self) -> dict | None:
+        return self._parsed_data

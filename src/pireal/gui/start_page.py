@@ -33,7 +33,7 @@ from PyQt6.QtCore import (
 from PyQt6.QtCore import (
     pyqtSlot as Slot,
 )
-from PyQt6.QtGui import QColor, QPainter, QPalette, QPen, QPixmap
+from PyQt6.QtGui import QPainter, QPixmap
 from PyQt6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -255,11 +255,13 @@ class StartPage(QWidget):
         btn_open_db.setSizePolicy(
             QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred
         )
+
         btn_new_db = QPushButton(tr.TR_NEW_DB)
         btn_new_db.setMinimumSize(150, 0)
         btn_new_db.setSizePolicy(
             QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred
         )
+
         btn_example = QPushButton(tr.TR_EXAMPLE_DB)
         btn_example.setMinimumSize(150, 0)
         btn_example.setSizePolicy(
@@ -272,16 +274,25 @@ class StartPage(QWidget):
         hbox_btn.addWidget(btn_example)
         hbox_btn.addStretch()
 
+        # "or code your DB" link
+        or_lbl = QLabel("or")
+        or_lbl.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        or_font = or_lbl.font()
+        or_font.setPointSize(9)
+        or_lbl.setFont(or_font)
+        or_lbl.setStyleSheet("color: #888;")
+
+        code_link = QLabel(
+            '<a href="code" style="text-decoration:none; color:#1565c0;">'
+            "<tt>&lt;/&gt;</tt> code your database directly →"
+            "</a>"
+        )
+        code_link.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        code_link.setCursor(Qt.CursorShape.PointingHandCursor)
+        code_link.linkActivated.connect(lambda _: self._new_database_from_text())
+
         # List
         self._recent_databases_view = RecentDatabasesView()
-        # pal = frame_recent_dbs.palette()
-        # pal.setColor(pal.ColorRole.Window, QColor("#282828"))
-        # frame_recent_dbs.setPalette(pal)
-        # frame_recent_dbs.setFrameShape(QFrame.Shape.StyledPanel)
-        # frame_recent_dbs.setSizePolicy(
-        #     QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred
-        # )
-        # frame_recent_dbs.setAutoFillBackground(True)
 
         # Footer
         hbox_footer = QHBoxLayout()
@@ -307,11 +318,15 @@ class StartPage(QWidget):
         main_layout.addStretch(1)
         main_layout.addWidget(title_lbl, alignment=Qt.AlignmentFlag.AlignHCenter)
         main_layout.addWidget(subtitle_lbl, alignment=Qt.AlignmentFlag.AlignHCenter)
+        main_layout.addSpacing(16)
         main_layout.addLayout(hbox_btn)
+        main_layout.addSpacing(4)
+        main_layout.addWidget(or_lbl)
+        main_layout.addWidget(code_link)
+        main_layout.addSpacing(12)
         main_layout.addWidget(
             self._recent_databases_view, alignment=Qt.AlignmentFlag.AlignHCenter
         )
-        main_layout.addStretch(1)
         main_layout.addStretch(1)
         main_layout.addLayout(hbox_footer)
 
@@ -344,3 +359,7 @@ class StartPage(QWidget):
         )
         if path is not None:
             self._open_database(path)
+
+    def _new_database_from_text(self):
+        controller = Registry.get("controller", Controller)
+        controller.create_database_from_text()
