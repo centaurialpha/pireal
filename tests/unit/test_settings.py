@@ -1,19 +1,10 @@
 import pytest
 from unittest.mock import patch
 from pireal.settings import Settings
-from PyQt6.QtWidgets import QApplication
 
 
 @pytest.fixture
-def app():
-    app = QApplication.instance()
-    if app is None:
-        app = QApplication([])
-    yield app
-
-
-@pytest.fixture
-def settings(tmp_path, app):
+def settings(tmp_path, qapp):
     config_file = tmp_path / "settings.ini"
     with patch("pireal.settings.CONFIG_FILE", config_file):
         s = Settings()
@@ -35,7 +26,7 @@ def test_defaults(settings, attr, expected):
     assert getattr(settings, attr) == expected
 
 
-def test_theme_default_light_when_dark_mode_false(tmp_path, app):
+def test_theme_default_light_when_dark_mode_false(tmp_path, qapp):
     config_file = tmp_path / "settings.ini"
     with patch("pireal.settings.CONFIG_FILE", config_file):
         s = Settings()
@@ -50,7 +41,7 @@ def test_load_only_once(settings):
     assert settings.language == "en"
 
 
-def test_values_persisted(tmp_path, app):
+def test_values_persisted(tmp_path, qapp):
     config_file = tmp_path / "settings.ini"
     with patch("pireal.settings.CONFIG_FILE", config_file):
         s1 = Settings()
@@ -67,7 +58,7 @@ def test_values_persisted(tmp_path, app):
         assert s2.theme == "light"
 
 
-def test_auto_save_on_setattr(tmp_path, app):
+def test_auto_save_on_setattr(tmp_path, qapp):
     config_file = tmp_path / "settings.ini"
     with patch("pireal.settings.CONFIG_FILE", config_file):
         s1 = Settings()
@@ -80,7 +71,7 @@ def test_auto_save_on_setattr(tmp_path, app):
         assert s2.language == "en"
 
 
-def test_no_auto_save_before_load(tmp_path, app):
+def test_no_auto_save_before_load(tmp_path, qapp):
     config_file = tmp_path / "settings.ini"
     with patch("pireal.settings.CONFIG_FILE", config_file):
         s = Settings()

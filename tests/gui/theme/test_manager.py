@@ -1,19 +1,8 @@
 import pytest
-from PyQt6.QtWidgets import QApplication
-
 from pireal.gui.theme.manager import ThemeManager
 
 
-@pytest.fixture
-def app():
-    """Fixture para QApplication."""
-    app = QApplication.instance()
-    if app is None:
-        app = QApplication([])
-    yield app
-
-
-def test_manager_initialization(app):
+def test_manager_initialization(qapp):
     manager = ThemeManager()
 
     available = manager.themes()
@@ -23,7 +12,7 @@ def test_manager_initialization(app):
     assert "light" in theme_ids
 
 
-def test_apply_theme(app):
+def test_apply_theme(qapp):
     manager = ThemeManager()
 
     manager.apply("dark")
@@ -35,14 +24,14 @@ def test_apply_theme(app):
     assert manager.current.name == "Light"
 
 
-def test_apply_invalid_theme(app):
+def test_apply_invalid_theme(qapp):
     manager = ThemeManager()
 
     with pytest.raises(ValueError, match="not found"):
         manager.apply("nonexistent-theme")
 
 
-def test_current_theme_tracking(app):
+def test_current_theme_tracking(qapp):
     manager = ThemeManager()
 
     assert manager.current_id == "dark"  # Default
