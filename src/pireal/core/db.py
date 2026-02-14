@@ -28,6 +28,7 @@ from pireal.core.relation import Relation
 class DB(QObject):
     hasModified = pyqtSignal(bool)
     databaseStateChanged = pyqtSignal(bool)
+    relationsChanged = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()
@@ -53,10 +54,12 @@ class DB(QObject):
     def add(self, relation: Relation) -> None:
         self._relations[relation.name] = relation
         self.modified = True
+        self.relationsChanged.emit(list(self._relations.keys()))
 
     def load(self, relation: Relation) -> None:
         """Cargar relación sin marcar como modificado (para carga inicial)"""
         self._relations[relation.name] = relation
+        self.relationsChanged.emit(list(self._relations.keys()))
 
     def remove(self, relation_name: str) -> None:
         del self._relations[relation_name]
@@ -68,6 +71,7 @@ class DB(QObject):
 
         self._relations.clear()
         self.modified = True
+        self.relationsChanged.emit([])
 
     def get(self, relation_name: str) -> Optional[Relation]:
         return self._relations.get(relation_name)
