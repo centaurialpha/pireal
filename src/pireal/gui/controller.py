@@ -75,6 +75,21 @@ class Controller(QWidget):
         db.databaseStateChanged.connect(self._on_database_state_changed)
         lateral_widget.deleteRelationRequested.connect(self.remove_relation)
 
+    @pyqtSlot()
+    def add_relations_from_text(self):
+        from pireal.gui.dialogs.db_from_text_dialog import DBFromTextDialog
+
+        dialog = DBFromTextDialog(self)
+        if dialog.exec() != DBFromTextDialog.DialogCode.Accepted:
+            return
+
+        data = dialog.parsed_data()
+        if not data:
+            return
+
+        database_container = Registry.get("database-container", DatabaseContainer)
+        database_container.create_database(data)
+
     @pyqtSlot(int)
     def remove_relation(self, index: int):
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
