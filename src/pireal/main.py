@@ -37,7 +37,6 @@ from pireal import __version__
 from pireal.app import Application
 from pireal.core import cliparser
 from pireal.dirs import LOGS_DIR, create_app_dirs
-from pireal.gui.main_window import Pireal
 
 logger = logging.getLogger()
 

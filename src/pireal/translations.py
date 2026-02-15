@@ -17,21 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+print("translations module imported")
 from PyQt6.QtCore import QCoreApplication
-
-
-def tr(context: str, text: str) -> str:
-    return QCoreApplication.translate(context, text)
-
-
-TR_OPEN_DB = tr("Pireal", "Open Database")
-TR_NEW_DB = tr("Pireal", "New Database")
-TR_EXAMPLE_DB = tr("Pireal", "Example")
 
 TR_MENU_FILE = QCoreApplication.translate("Pireal", "&File")
 TR_MENU_SCHEME = QCoreApplication.translate("Pireal", "&Scheme")
-TR_MENU_TOOLS = QCoreApplication.translate("Pireal", "&Tools")
 TR_MENU_HELP = QCoreApplication.translate("Pireal", "&Help")
+
+TR_OPEN_DB = QCoreApplication.translate("Pireal", "Open Database")
+TR_NEW_DB = QCoreApplication.translate("Pireal", "New Database")
+TR_EXAMPLE_DB = QCoreApplication.translate("Pireal", "Example")
 
 # File - Database
 TR_MENU_FILE_NEW_DB = QCoreApplication.translate("Pireal", "New Database")
