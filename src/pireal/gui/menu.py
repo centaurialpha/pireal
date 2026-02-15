@@ -64,7 +64,7 @@ class MenuBuilder:
         return menu_bar
 
 
-file_menu = Menu("&File")
+file_menu = Menu(tr.TR_MENU_FILE)
 file_menu.add_item(Section("Database"))
 file_menu.add_item(
     Action(tr.TR_MENU_FILE_NEW_DB, "controller:create_database", shorcut="Ctrl+N")
