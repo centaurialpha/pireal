@@ -39,10 +39,23 @@ class Pireal(QMainWindow):
 
         theme_manager = get_theme_manager()
 
+        db = Registry.get("db", DB)
+        db.hasModified.connect(self._update_title)
+        db.databaseStateChanged.connect(self._update_title)
+
         self._status_bar.playClicked.connect(controller.execute_queries)
         self._status_bar.gearClicked.connect(self._show_settings)
         self._status_bar.theme_button.set_themes(theme_manager.themes())
         self._status_bar.theme_button.themeRequested.connect(self._on_theme_requested)
+
+    def _update_title(self, *args):
+        db = Registry.get("db", DB)
+        if not db.is_active:
+            self.setWindowTitle("Pireal")
+            return
+        name = db.file.display_name if db.file else "Untitled"
+        modified = "*" if db.modified else ""
+        self.setWindowTitle(f"Pireal — {name}{modified}")
 
     @classmethod
     def instance(cls):
@@ -65,7 +78,8 @@ class Pireal(QMainWindow):
         query_widget = Registry.get("query-widget", QueryWidget)
 
         unsaved_editors = [
-            w for i in range(query_widget._editor_tabs.count())
+            w
+            for i in range(query_widget._editor_tabs.count())
             if isinstance((w := query_widget._editor_tabs.widget(i)), EditorWidget)
             and w.editor.document().isModified()
             and not is_example_file(w.file)

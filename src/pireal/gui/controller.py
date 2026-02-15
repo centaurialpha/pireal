@@ -69,8 +69,33 @@ class Controller(QWidget):
             "recent_databases", type=list
         )
 
+        lateral_widget = Registry.get("lateral-widget", LateralWidget)
         db = Registry.get("db", DB)
+
         db.databaseStateChanged.connect(self._on_database_state_changed)
+        lateral_widget.deleteRelationRequested.connect(self.remove_relation)
+
+    @pyqtSlot(int)
+    def remove_relation(self, index: int):
+        lateral_widget = Registry.get("lateral-widget", LateralWidget)
+        db = Registry.get("db", DB)
+
+        relation_name = lateral_widget._relations_model.relation_by_index(index).name
+
+        ret = QMessageBox.question(
+            self,
+            tr.TR_MENU_SCHEME_REMOVE_RELATION,
+            tr.TR_MSG_REMOVE_RELATION.format(relation_name),
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel,
+        )
+        if ret != QMessageBox.StandardButton.Yes:
+            return
+
+        db.remove(relation_name)
+        lateral_widget.remove_relation(index)
+
+        table_widget = Registry.get("table-widget", TableWidget)
+        table_widget.remove_relation(relation_name)
 
     @pyqtSlot(bool)
     def _on_database_state_changed(self, active: bool):
@@ -195,8 +220,8 @@ class Controller(QWidget):
         self._remember_folder(filename)
         self.add_db_to_recents(filename)
 
-        db.is_active = True
         db.file = file
+        db.is_active = True
         logger.info("Database opened")
 
     @pyqtSlot()
@@ -273,7 +298,8 @@ class Controller(QWidget):
 
     @pyqtSlot()
     def close_query(self):
-        pass
+        query_widget = Registry.get("query-widget", QueryWidget)
+        query_widget.close_current_editor()
 
     @pyqtSlot()
     def execute_queries(self) -> None:

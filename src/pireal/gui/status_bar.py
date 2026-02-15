@@ -75,12 +75,21 @@ class StatusBar(QFrame):
         layout = QGridLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
 
+        # Left widgets - version
         left_widget = QFrame(parent)
+        left_layout = QHBoxLayout(left_widget)
         left_widget.setStyleSheet("border: none;")
+        self._version_label = QLabel(f"Pireal v{__version__}")
+        left_layout.addWidget(self._version_label)
+
+        # Mid widgets - temporal messages and editor info
         mid_widget = QFrame(parent)
+        mid_layout = QHBoxLayout(mid_widget)
+        self._messages_label = QLabel()
+        mid_layout.addWidget(self._messages_label)
+
         right_widget = QFrame(parent)
 
-        left_layout = QHBoxLayout(left_widget)
         left_widget.setLayout(left_layout)
         left_layout.setContentsMargins(0, 0, 0, 0)
         mid_layout = QHBoxLayout(mid_widget)
@@ -91,14 +100,7 @@ class StatusBar(QFrame):
         right_layout.setContentsMargins(0, 0, 0, 0)
 
         fa = Font.instance()
-        # Left widgets
-        self._messages_label = QLabel()
-        self._messages_label.setText(f"Pireal v{__version__}")
-        left_layout.addWidget(self._messages_label)
-        # Mid widgets
-        self._line_col_label = QLabel("Line: 0, Col: 0")
-        self._line_col_label.hide()
-        mid_layout.addWidget(self._line_col_label)
+
         # Right widgets
         execute_button = QToolButton()
         execute_button.setAutoRaise(True)
@@ -138,8 +140,3 @@ class StatusBar(QFrame):
         self._messages_label.setText(msg)
         if timeout > 0:
             QTimer.singleShot(timeout, self._messages_label.clear)
-
-    def update_line_and_col(self, line, col):
-        if not self._line_col_label.isVisible():
-            self._line_col_label.show()
-        self._line_col_label.setText("Line: {}, Col: {}".format(line, col))

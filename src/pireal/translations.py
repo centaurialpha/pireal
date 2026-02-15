@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-print("translations module imported")
 from PyQt6.QtCore import QCoreApplication
 
 TR_MENU_FILE = QCoreApplication.translate("Pireal", "&File")
@@ -212,3 +211,6 @@ TR_STATUS_DB_LOADED = QCoreApplication.translate(
 )
 TR_STATUS_DB_CONNECTED = QCoreApplication.translate("Pireal", "Connected to: {}")
 TR_STATUS_QUERY_SAVED = QCoreApplication.translate("Pireal", "Query saved: {}")
+
+TR_TAB_CLOSE_TITLE = QCoreApplication.translate("Pireal", "Unsaved changes")
+TR_TAB_CLOSE_BODY = QCoreApplication.translate("Pireal", "The file <b>{name}</b> has unsaved changes. Save before closing?")

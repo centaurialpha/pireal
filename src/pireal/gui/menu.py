@@ -94,6 +94,9 @@ file_menu.add_item(
 file_menu.add_item(
     Action(tr.TR_MENU_FILE_OPEN_QUERY, "controller:open_query", shorcut="Ctrl+Shift+O")
 )
+file_menu.add_item(
+    Action(tr.TR_MENU_FILE_CLOSE_QUERY, "controller:close_query")
+)
 file_menu.add_item("separator")
 file_menu.add_item(
     Action(tr.TR_MENU_FILE_SAVE_QUERY, "controller:save_query", shorcut="Ctrl+Shift+S")

@@ -64,6 +64,9 @@ class TableWidget(QWidget):
 
     def __init__(self):
         super().__init__()
+
+        self._relation_widgets: dict[str, QWidget] = {}
+
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
@@ -159,6 +162,7 @@ class TableWidget(QWidget):
         self._remove_placeholder()
         view = create_view(relation, editable=editable)
         db.add(relation)
+        self._relation_widgets[relation.name] = view  # ← registrar
         self._stacked.addWidget(view)
         self._stacked.setCurrentWidget(view)
 
@@ -185,3 +189,12 @@ class TableWidget(QWidget):
             widget.deleteLater()
         self.clear_results()
         self._show_placeholder()
+
+    def remove_relation(self, relation_name: str):
+        widget = self._relation_widgets.pop(relation_name, None)
+        if widget is None:
+            return
+        self._stacked.removeWidget(widget)
+        widget.deleteLater()
+        if self._stacked.count() == 0:
+            self._show_placeholder()
