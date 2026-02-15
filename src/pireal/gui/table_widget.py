@@ -1,4 +1,5 @@
 from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -10,6 +11,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
+from pireal import translations as tr
 from pireal.core.db import DB
 from pireal.core.relation import Relation
 from pireal.gui.lateral_widget import LateralWidget
@@ -19,43 +21,56 @@ from pireal.registry import Registry
 
 
 class PlaceholderWidget(QWidget):
-    def __init__(
-        self,
-        message: str = "🛸 Espacio vacío detectado. \n¿Cargamos la primera relación?",
-        parent=None,
-    ):
+    def __init__(self, parent=None):
         super().__init__(parent)
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        placeholder_label = QLabel(message)
-        placeholder_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        placeholder_label.setStyleSheet("font-size: 18px; color: #888;")
+        layout.setSpacing(12)
 
-        placeholder_button = QPushButton("Nueva relación")
-        placeholder_button.setStyleSheet("""
-            QPushButton {
-                font-size: 16px;
-                padding: 8px;
-                border-radius: 8px;
-                background-color: #4CAF50;
-                color: white;
-            }
-            QPushButton:hover {
-                background-color: #45A049;
-            }
-        """)
-        layout.addWidget(placeholder_label)
-        layout.addSpacing(15)
-        layout.addWidget(placeholder_button)
+        label = QLabel(tr.TR_PLACEHOLDER_NO_RELATIONS)
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        font = label.font()
+        font.setPointSize(font.pointSize() + 2)
+        label.setFont(font)
 
-        placeholder_button.clicked.connect(self._on_placeholder_button_clicked)
+        hint = QLabel(tr.TR_PLACEHOLDER_HINT)
+        hint.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        hint.setWordWrap(True)
+
+        btn_new = QPushButton(tr.TR_PLACEHOLDER_BTN_NEW)
+        btn_from_code = QPushButton(tr.TR_PLACEHOLDER_BTN_FROM_CODE)
+        btn_from_code.setFlat(True)
+        palette = btn_from_code.palette()
+        link_color = palette.color(QPalette.ColorRole.Link).name()
+        btn_from_code.setStyleSheet(f"color: {link_color};")
+
+        btn_layout = QHBoxLayout()
+        btn_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        btn_layout.setSpacing(8)
+        btn_layout.addWidget(btn_new)
+        btn_layout.addWidget(btn_from_code)
+
+        layout.addWidget(label)
+        layout.addWidget(hint)
+        layout.addSpacing(8)
+        layout.addLayout(btn_layout)
+
+        btn_new.clicked.connect(self._on_new_relation)
+        btn_from_code.clicked.connect(self._on_from_code)
 
     @pyqtSlot()
-    def _on_placeholder_button_clicked(self):
+    def _on_new_relation(self):
         from pireal.gui.controller import Controller
 
         controller = Registry.get("controller", Controller)
         controller.create_relation()
+
+    @pyqtSlot()
+    def _on_from_code(self):
+        from pireal.gui.controller import Controller
+
+        controller = Registry.get("controller", Controller)
+        controller.add_relations_from_text()
 
 
 class TableWidget(QWidget):

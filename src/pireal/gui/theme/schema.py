@@ -259,7 +259,7 @@ class ColorScheme:
         palette.setColor(QPalette.ColorRole.ButtonText, self.button_text)
         palette.setColor(QPalette.ColorRole.Highlight, self.highlight)
         palette.setColor(QPalette.ColorRole.HighlightedText, self.highlighted_text)
-        palette.setColor(QPalette.ColorRole.Light, self.link)
+        palette.setColor(QPalette.ColorRole.Link, self.link)
         palette.setColor(QPalette.ColorRole.ToolTipBase, self.tooltip_base)
         palette.setColor(QPalette.ColorRole.ToolTipText, self.tooltip_text)
 

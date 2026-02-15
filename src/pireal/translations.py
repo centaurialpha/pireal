@@ -158,14 +158,14 @@ TR_DIALOG_ABOUT_PIREAL_COPY = QCoreApplication.translate(
     " <a href='{}'><span style='color: #3465a4'>GitHub.</span></a>",
 )
 # # New Database
-# TR_DB_DIALOG_TITLE = QCoreApplication.translate("Pireal", "Create New Database")
+TR_DB_DIALOG_TITLE = QCoreApplication.translate("Pireal", "Create New Database")
 # TR_DB_DIALOG_NEW_DB = QCoreApplication.translate("Pireal", "Pireal New Database")
 # TR_DB_DIALOG_NEW_DB_SUB = QCoreApplication.translate(
 #     "Pireal", "Choose the name and destination of the database"
 # )
-# TR_DB_DIALOG_DB_NAME = QCoreApplication.translate("Pireal", "Database Name:")
-# TR_DB_DIALOG_DB_LOCATION = QCoreApplication.translate("Pireal", "Location:")
-# TR_DB_DIALOG_DB_FILENAME = QCoreApplication.translate("Pireal", "Filename:")
+TR_DB_DIALOG_DB_NAME = QCoreApplication.translate("Pireal", "Database Name:")
+TR_DB_DIALOG_DB_LOCATION = QCoreApplication.translate("Pireal", "Location:")
+TR_DB_DIALOG_DB_FILENAME = QCoreApplication.translate("Pireal", "Filename:")
 # TR_DB_DIALOG_SELECT_FOLDER = QCoreApplication.translate("Pireal", "Select Folder")
 # New Relation
 TR_INPUT_DIALOG_HEADER_TITLE = QCoreApplication.translate("Pireal", "New Header Name:")
@@ -298,3 +298,11 @@ TR_CLOSE_DB_BODY = QCoreApplication.translate(
 )
 
 TR_RECENT_DATABASES = QCoreApplication.translate("Pireal", "Recent Databases")
+
+# Placeholder
+TR_PLACEHOLDER_NO_RELATIONS = QCoreApplication.translate("Pireal", "No relations loaded")
+TR_PLACEHOLDER_HINT = QCoreApplication.translate(
+    "Pireal", "Create a relation using the form or write the code directly."
+)
+TR_PLACEHOLDER_BTN_NEW = QCoreApplication.translate("Pireal", "New relation")
+TR_PLACEHOLDER_BTN_FROM_CODE = QCoreApplication.translate("Pireal", "From code")
