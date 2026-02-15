@@ -1,8 +1,11 @@
 from typing import Optional
 
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QHBoxLayout,
+    QLabel,
     QLineEdit,
+    QMessageBox,
     QPushButton,
     QTabWidget,
     QVBoxLayout,
@@ -10,8 +13,9 @@ from PyQt6.QtWidgets import (
 )
 
 from pireal import translations as tr
-from pireal.core.pireal_file import File
+from pireal.core.pireal_file import File, is_example_file
 from pireal.gui.editor import Editor
+from pireal.gui.status_bar import StatusBar
 from pireal.registry import Registry
 
 
@@ -26,22 +30,41 @@ class QueryWidget(QWidget):
         self._editor_tabs.setTabsClosable(True)
         self._editor_tabs.setMovable(True)
         self._editor_tabs.setTabPosition(QTabWidget.TabPosition.South)
+
+        # Line/col
+        self._line_col_label = QLabel("Ln 1, Col 1")
+        self._line_col_label.setContentsMargins(0, 0, 6, 0)
+        self._line_col_label.hide()
+        self._editor_tabs.setCornerWidget(
+            self._line_col_label,
+            Qt.Corner.TopRightCorner,  # TopRight = esquina sobre las tabs (que están abajo = BottomRight)
+        )
         box.addWidget(self._editor_tabs)
 
+        self._editor_tabs.currentChanged.connect(self._on_tab_changed)
         self._editor_tabs.tabCloseRequested.connect(self._on_tab_close_requested)
+
+    def _on_tab_changed(self, index: int):
+        widget = self._editor_tabs.widget(index)
+        if isinstance(widget, EditorWidget):
+            self._line_col_label.show()
+            cursor = widget.editor.textCursor()
+            self._update_line_col(cursor.blockNumber() + 1, cursor.columnNumber() + 1)
+        else:
+            self._line_col_label.hide()
+
+    def _update_line_col(self, line: int, col: int):
+        self._line_col_label.setText(f"Ln {line}, Col {col}")
 
     def _on_tab_close_requested(self, index: int):
         editor = self._editor_tabs.widget(index)
         if not isinstance(editor, EditorWidget):
             return
-
-        if editor.editor.document().isModified():
-            from PyQt6.QtWidgets import QMessageBox
-
+        if editor.editor.document().isModified() and not is_example_file(editor.file):
             ret = QMessageBox.question(
                 self,
-                "Archivo modificado",
-                f"El archivo <b>{editor.file.display_name}</b> tiene cambios sin guardar. ¿Guardar antes de cerrar?",
+                tr.TR_TAB_CLOSE_TITLE,
+                tr.TR_TAB_CLOSE_BODY.format(name=editor.file.display_name),
                 QMessageBox.StandardButton.Save
                 | QMessageBox.StandardButton.Discard
                 | QMessageBox.StandardButton.Cancel,
@@ -53,16 +76,29 @@ class QueryWidget(QWidget):
 
                 controller = Registry.get("controller", Controller)
                 controller.save_query()
-
         self._editor_tabs.removeTab(index)
 
     def clear(self):
         self._editor_tabs.clear()
 
-    def add_editor(self, editor: "EditorWidget"):
-        tab_text = editor.file.display_name
-        index = self._editor_tabs.addTab(editor, tab_text)
-        self._editor_tabs.setTabToolTip(index, editor.file.path)
+    def add_editor(self, editor_widget: "EditorWidget"):
+        status_bar = Registry.get("status-bar", StatusBar)
+        editor_widget.editor.errorOccurred.connect(
+            lambda line, msg: status_bar.show_message(f"Line {line}: {msg}", timeout=0)
+        )
+        editor_widget.editor.errorCleared.connect(
+            lambda: status_bar.show_message("", timeout=0)
+        )
+        editor_widget.editor.cursorPositionChanged.connect(
+            lambda: self._update_line_col(
+                editor_widget.editor.textCursor().blockNumber() + 1,
+                editor_widget.editor.textCursor().columnNumber() + 1,
+            )
+        )
+
+        tab_text = editor_widget.file.display_name
+        index = self._editor_tabs.addTab(editor_widget, tab_text)
+        self._editor_tabs.setTabToolTip(index, editor_widget.file.path)
 
     def create_editor(self, file: Optional[File] = None) -> "EditorWidget":
         editor = EditorWidget()
@@ -132,6 +168,11 @@ class QueryWidget(QWidget):
             widget = self._editor_tabs.widget(i)
             if isinstance(widget, EditorWidget):
                 widget.editor.completer.update_words(relation_names)
+
+    def close_current_editor(self):
+        index = self._editor_tabs.currentIndex()
+        if index != -1:
+            self._on_tab_close_requested(index)
 
 
 class EditorWidget(QWidget):

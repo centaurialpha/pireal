@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtCore import QEvent, Qt, QTimer
+from PyQt6.QtCore import QEvent, Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import (
     QColor,
     QFont,
@@ -150,6 +150,9 @@ class BracketHighlighter:
 
 
 class Editor(QPlainTextEdit):
+    errorOccurred = pyqtSignal(int, str)
+    errorCleared = pyqtSignal()
+
     def __init__(self, pfile=None):
         super(Editor, self).__init__()
         # Extra selections
@@ -451,10 +454,13 @@ class Editor(QPlainTextEdit):
             self.clear_selections("error")
             self._error_line = -1
             self._error_message = ""
+            self.errorCleared.emit()
             return
 
         self._error_line = linenumber
         self._error_message = message
+
+        self.errorOccurred.emit(linenumber, message)
 
         error_color = get_theme_manager().current_scheme.editor.get(
             EditorColorRole.ERROR

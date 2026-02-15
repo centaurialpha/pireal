@@ -34,6 +34,7 @@ from PyQt6.QtWidgets import (
     QFrame,
     QLabel,
     QListView,
+    QMenu,
     QSizePolicy,
     QSplitter,
     QStyle,
@@ -41,6 +42,8 @@ from PyQt6.QtWidgets import (
     QStyleOptionViewItem,
     QVBoxLayout,
 )
+
+from pireal import translations as tr
 
 RelationItem = namedtuple("RelationItem", "name cardinality degree")
 
@@ -201,6 +204,7 @@ class RelationDelegate(QStyledItemDelegate):
 class LateralWidget(QSplitter):
     relationClicked = pyqtSignal(int)
     resultClicked = pyqtSignal(int)
+    deleteRelationRequested = pyqtSignal(int)
 
     def __init__(self):
         super().__init__(orientation=Qt.Orientation.Vertical)
@@ -221,12 +225,31 @@ class LateralWidget(QSplitter):
             RelationItemType.Result: self._results_model,
         }
 
+        self._relations_list.view.setContextMenuPolicy(
+            Qt.ContextMenuPolicy.CustomContextMenu
+        )
+        self._relations_list.view.customContextMenuRequested.connect(
+            self._on_relations_context_menu
+        )
         self._relations_list.view.clicked.connect(
             lambda index: self.relationClicked.emit(index.row())
         )
         self._results_list.view.clicked.connect(
             lambda index: self.resultClicked.emit(index.row())
         )
+
+    def _on_relations_context_menu(self, pos):
+        index = self._relations_list.view.indexAt(pos)
+        if not index.isValid():
+            return
+        menu = QMenu(self)
+        delete_action = menu.addAction(tr.TR_MENU_SCHEME_REMOVE_RELATION)
+        if menu.exec(self._relations_list.view.viewport().mapToGlobal(pos)):
+            if delete_action:
+                self.deleteRelationRequested.emit(index.row())
+
+    def remove_relation(self, index: int):
+        self._relations_model.remove_relation(index)
 
     def add_item(self, relation, relation_type: RelationItemType) -> None:
         item = RelationItem(relation.name, relation.cardinality(), relation.degree())

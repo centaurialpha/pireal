@@ -72,14 +72,14 @@ class Application:
         database = DB()
         self._registry.register("db", database)
 
+        lateral_widget = LateralWidget()
+        self._registry.register("lateral-widget", lateral_widget)
+
         controller = Controller()
         self._registry.register("controller", controller)
 
         start_page = StartPage()
         self._registry.register("start-page", start_page)
-
-        lateral_widget = LateralWidget()
-        self._registry.register("lateral-widget", lateral_widget)
 
         table_widget = TableWidget()
         self._registry.register("table-widget", table_widget)
