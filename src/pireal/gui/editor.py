@@ -164,6 +164,8 @@ class Editor(QPlainTextEdit):
         theme_manager = get_theme_manager()
         theme_manager.themeChanged.connect(self._on_theme_changed)
 
+        self._error_color = theme_manager.current_scheme.editor.get(EditorColorRole.ERROR)
+
         self._apply_theme(theme_manager.current_scheme)
 
         self._bracket_highlighter = BracketHighlighter()
@@ -217,6 +219,7 @@ class Editor(QPlainTextEdit):
 
         # Color de línea actual
         self._current_line_color = editor.get(EditorColorRole.CURRENT_LINE)
+        self._error_color = editor.get(EditorColorRole.ERROR)
 
         # Re-highlight línea actual
         self._highlight_current_line()
@@ -462,10 +465,6 @@ class Editor(QPlainTextEdit):
 
         self.errorOccurred.emit(linenumber, message)
 
-        error_color = get_theme_manager().current_scheme.editor.get(
-            EditorColorRole.ERROR
-        )
-
         selection = QTextEdit.ExtraSelection()
         selection.cursor = self.textCursor()
         selection.cursor.movePosition(
@@ -478,7 +477,7 @@ class Editor(QPlainTextEdit):
         )
         selection.cursor.select(QTextCursor.SelectionType.LineUnderCursor)
         selection.format.setUnderlineStyle(QTextCharFormat.UnderlineStyle.WaveUnderline)
-        selection.format.setUnderlineColor(error_color)
+        selection.format.setUnderlineColor(self._error_color)
 
         self.add_selection("error", [selection])
 
