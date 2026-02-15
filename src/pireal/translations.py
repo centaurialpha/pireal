@@ -213,4 +213,32 @@ TR_STATUS_DB_CONNECTED = QCoreApplication.translate("Pireal", "Connected to: {}"
 TR_STATUS_QUERY_SAVED = QCoreApplication.translate("Pireal", "Query saved: {}")
 
 TR_TAB_CLOSE_TITLE = QCoreApplication.translate("Pireal", "Unsaved changes")
-TR_TAB_CLOSE_BODY = QCoreApplication.translate("Pireal", "The file <b>{name}</b> has unsaved changes. Save before closing?")
+TR_TAB_CLOSE_BODY = QCoreApplication.translate(
+    "Pireal", "The file <b>{name}</b> has unsaved changes. Save before closing?"
+)
+
+# Tour
+TR_TOUR_GET_STARTED = QCoreApplication.translate("Pireal", "Get started!")
+TR_TOUR_NEXT = QCoreApplication.translate("Pireal", "Next →")
+TR_TOUR_SLIDE1_TITLE = QCoreApplication.translate("Pireal", "Welcome to Pireal")
+TR_TOUR_SLIDE1_BODY = QCoreApplication.translate(
+    "Pireal",
+    "Pireal is a free and open source <b>Relational Algebra interpreter</b> designed for learning database fundamentals.<br><br>Perfect for students and teachers exploring how databases work under the hood.",
+)
+TR_TOUR_SLIDE2_TITLE = QCoreApplication.translate("Pireal", "Create or open a Database")
+TR_TOUR_SLIDE2_BODY = QCoreApplication.translate(
+    "Pireal",
+    "You can open an existing <b>.pdb</b> file, create one step by step using the dialog, or go full nerd and <b>code your database directly</b> using the text syntax:",
+)
+TR_TOUR_SLIDE3_TITLE = QCoreApplication.translate(
+    "Pireal", "Write Relational Algebra queries"
+)
+TR_TOUR_SLIDE3_BODY = QCoreApplication.translate(
+    "Pireal",
+    "Use the query editor to write <b>Relational Algebra expressions</b>:",
+)
+TR_TOUR_SLIDE4_TITLE = QCoreApplication.translate("Pireal", "Explore the results")
+TR_TOUR_SLIDE4_BODY = QCoreApplication.translate(
+    "Pireal",
+    "Every query result appears in the <b>Results panel</b> and the <b>sidebar</b>.<br><br>You can inspect each relation, see its cardinality and degree, and compare results side by side.",
+)
