@@ -36,6 +36,7 @@ from PyQt6.QtWidgets import (
     QToolTip,
 )
 
+from pireal import translations as tr
 from pireal.gui import highlighter, sidebar
 from pireal.gui.completer import PirealCompleter
 from pireal.gui.theme.manager import get_theme_manager
@@ -46,6 +47,21 @@ BRACKETS = "()"
 OPOSITE_BRACKET = {
     "(": ")",
     ")": "(",
+}
+
+
+OPERATOR_TOOLTIPS = {
+    "select": tr.TR_TOOLTIP_SELECT,
+    "project": tr.TR_TOOLTIP_PROJECT,
+    "rename": tr.TR_TOOLTIP_RENAME,
+    "product": tr.TR_TOOLTIP_PRODUCT,
+    "njoin": tr.TR_TOOLTIP_NJOIN,
+    "louter": tr.TR_TOOLTIP_LOUTER,
+    "router": tr.TR_TOOLTIP_ROUTER,
+    "fouter": tr.TR_TOOLTIP_FOUTER,
+    "difference": tr.TR_TOOLTIP_DIFFERENCE,
+    "intersect": tr.TR_TOOLTIP_INTERSECT,
+    "union": tr.TR_TOOLTIP_UNION,
 }
 
 
@@ -164,7 +180,9 @@ class Editor(QPlainTextEdit):
         theme_manager = get_theme_manager()
         theme_manager.themeChanged.connect(self._on_theme_changed)
 
-        self._error_color = theme_manager.current_scheme.editor.get(EditorColorRole.ERROR)
+        self._error_color = theme_manager.current_scheme.editor.get(
+            EditorColorRole.ERROR
+        )
 
         self._apply_theme(theme_manager.current_scheme)
 
@@ -449,6 +467,12 @@ class Editor(QPlainTextEdit):
             line = cursor.blockNumber() + 1
             if line == self._error_line:
                 QToolTip.showText(e.globalPos(), self._error_message)
+                return True
+            # tooltip operator
+            cursor.select(QTextCursor.SelectionType.WordUnderCursor)
+            word = cursor.selectedText().lower()
+            if word in OPERATOR_TOOLTIPS:
+                QToolTip.showText(e.globalPos(), OPERATOR_TOOLTIPS[word])
                 return True
         return super().event(e)
 

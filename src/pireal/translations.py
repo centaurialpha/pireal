@@ -242,3 +242,41 @@ TR_TOUR_SLIDE4_BODY = QCoreApplication.translate(
     "Pireal",
     "Every query result appears in the <b>Results panel</b> and the <b>sidebar</b>.<br><br>You can inspect each relation, see its cardinality and degree, and compare results side by side.",
 )
+
+# Operator Tooltips
+TR_TOOLTIP_SELECT = QCoreApplication.translate(
+    "Pireal",
+    "Filters tuples that satisfy a condition.\nUsage: select condition (relation)",
+)
+TR_TOOLTIP_PROJECT = QCoreApplication.translate(
+    "Pireal",
+    "Returns only the specified attributes.\nUsage: project attr1, attr2 (relation)",
+)
+TR_TOOLTIP_RENAME = QCoreApplication.translate(
+    "Pireal", "Renames an attribute.\nUsage: rename old_name new_name (relation)"
+)
+TR_TOOLTIP_PRODUCT = QCoreApplication.translate(
+    "Pireal", "Cartesian product of two relations.\nUsage: relation1 product relation2"
+)
+TR_TOOLTIP_NJOIN = QCoreApplication.translate(
+    "Pireal", "Natural join on common attributes.\nUsage: relation1 njoin relation2"
+)
+TR_TOOLTIP_LOUTER = QCoreApplication.translate(
+    "Pireal", "Left outer join.\nUsage: relation1 louter relation2"
+)
+TR_TOOLTIP_ROUTER = QCoreApplication.translate(
+    "Pireal", "Right outer join.\nUsage: relation1 router relation2"
+)
+TR_TOOLTIP_FOUTER = QCoreApplication.translate(
+    "Pireal", "Full outer join.\nUsage: relation1 fouter relation2"
+)
+TR_TOOLTIP_DIFFERENCE = QCoreApplication.translate(
+    "Pireal",
+    "Tuples in first relation but not in second.\nUsage: relation1 difference relation2",
+)
+TR_TOOLTIP_INTERSECT = QCoreApplication.translate(
+    "Pireal", "Tuples present in both relations.\nUsage: relation1 intersect relation2"
+)
+TR_TOOLTIP_UNION = QCoreApplication.translate(
+    "Pireal", "All tuples from both relations.\nUsage: relation1 union relation2"
+)
