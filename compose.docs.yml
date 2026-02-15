@@ -1,0 +1,15 @@
+services:
+  pireal-docs:
+    build:
+      context:
+      dockerfile: Dockerfile.docs
+    restart: unless-stopped
+    ports:
+      - "8082:80"
+
+  cloudflare:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run
+    restart: unless-stopped
+    environment:
+      - ${CLOUDFLARE_}={CLOUDFLARE}

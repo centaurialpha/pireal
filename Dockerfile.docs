@@ -1,0 +1,20 @@
+# Stage 1: build the static site
+FROM python:3.12-slim AS builder
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir \
+        mkdocs-material>=9.5 \
+        mkdocs-static-i18n>=1.0.0
+
+COPY mkdocs.yml .
+COPY docs/ docs/
+
+RUN mkdocs build --strict
+
+# Stage 2: serve with nginx
+FROM nginx:alpine
+
+COPY --from=builder /app/site/ /usr/share/nginx/html/
+
+EXPOSE 80
