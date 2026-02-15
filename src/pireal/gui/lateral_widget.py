@@ -208,13 +208,13 @@ class LateralWidget(QSplitter):
 
     def __init__(self):
         super().__init__(orientation=Qt.Orientation.Vertical)
-        self._relations_list = RelationListView("Relaciones")
+        self._relations_list = RelationListView(tr.TR_RELATIONS)
         self._relations_model = RelationModel()
         self._relations_list.view.setModel(self._relations_model)
         self._relations_list.view.setItemDelegate(RelationDelegate())
         self.addWidget(self._relations_list)
 
-        self._results_list = RelationListView("Resultados")
+        self._results_list = RelationListView(tr.TR_RESULTS)
         self._results_model = RelationModel()
         self._results_list.view.setModel(self._results_model)
         self._results_list.view.setItemDelegate(RelationDelegate())

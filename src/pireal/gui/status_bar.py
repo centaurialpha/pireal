@@ -1,12 +1,10 @@
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
-from PyQt6.QtGui import QActionGroup
 from PyQt6.QtWidgets import (
     QFrame,
     QGridLayout,
     QHBoxLayout,
     QLabel,
     QMainWindow,
-    QMenu,
     QToolButton,
 )
 
@@ -19,46 +17,41 @@ from pireal.helpers import Font
 class ThemeButton(QToolButton):
     themeRequested = pyqtSignal(str)
 
+    _ICONS = {
+        "light": "\uf185",  # solcito
+        "dark": "\uf186",  # lunita
+    }
+    _DEFAULT_ICON = "\uf042"
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setAutoRaise(True)
         self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.setText("\uf186")
+        self.setCheckable(False)
+        self._themes: list[str] = []
+        self._current_index: int = 0
+        self.clicked.connect(self._on_clicked)
 
     def set_themes(self, themes: list[tuple[str, str]]):
-        if len(themes) <= 2:
-            self._setup_toggle()
-        else:
-            self._setup_menu(themes)
-
-    def _setup_toggle(self):
-        self.setCheckable(True)
-        self.setChecked(get_theme_manager().current_id == "dark")
-        self.toggled.connect(self._on_toggled)
-
-    def _setup_menu(self, themes: list[tuple[str, str]]):
-        self.setCheckable(False)
-        self.setPopupMode(QToolButton.ToolButtonPopupMode.MenuButtonPopup)
-        menu = QMenu(self)
-        group = QActionGroup(menu)
-        group.setExclusive(True)
+        self._themes = [theme_id for theme_id, _ in themes]
         current_id = get_theme_manager().current_id
-        for theme_id, theme_name in themes:
-            if action := menu.addAction(theme_name):
-                action.setCheckable(True)
-                action.setChecked(theme_id == current_id)
-                group.addAction(action)
-                action.triggered.connect(
-                    lambda _, tid=theme_id: self._on_menu_action(tid)
-                )
-        self.setMenu(menu)
+        if current_id in self._themes:
+            self._current_index = self._themes.index(current_id)
+        self._update_icon()
 
-    def _on_toggled(self, checked: bool):
-        theme_id = "dark" if checked else "light"
+    def _on_clicked(self):
+        self._current_index = (self._current_index + 1) % len(self._themes)
+        theme_id = self._themes[self._current_index]
+        self._update_icon()
         self.themeRequested.emit(theme_id)
 
-    def _on_menu_action(self, theme_id: str):
-        self.themeRequested.emit(theme_id)
+    def _update_icon(self):
+        if not self._themes:
+            return
+        # Mostrar el ícono del próximo tema
+        next_index = (self._current_index + 1) % len(self._themes)
+        next_theme_id = self._themes[next_index]
+        self.setText(self._ICONS.get(next_theme_id, self._DEFAULT_ICON))
 
 
 class StatusBar(QFrame):
@@ -79,6 +72,7 @@ class StatusBar(QFrame):
         # Left widgets - version
         left_widget = QFrame(parent)
         left_layout = QHBoxLayout(left_widget)
+        left_layout.setContentsMargins(0, 0, 0, 0)
         left_widget.setStyleSheet("border: none;")
         self._version_label = QLabel(f"Pireal v{__version__}")
         left_layout.addWidget(self._version_label)
@@ -86,18 +80,14 @@ class StatusBar(QFrame):
         # Mid widgets - temporal messages and editor info
         mid_widget = QFrame(parent)
         mid_layout = QHBoxLayout(mid_widget)
+        mid_layout.setContentsMargins(0, 0, 0, 0)
         self._message_label = QLabel()
         mid_layout.addWidget(self._message_label)
 
+        # Right widgets
         right_widget = QFrame(parent)
-
-        left_widget.setLayout(left_layout)
-        left_layout.setContentsMargins(0, 0, 0, 0)
-        mid_layout = QHBoxLayout(mid_widget)
-        mid_widget.setLayout(mid_layout)
-        mid_layout.setContentsMargins(0, 0, 0, 0)
         right_layout = QHBoxLayout(right_widget)
-        right_widget.setLayout(right_layout)
+        right_layout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         right_layout.setContentsMargins(0, 0, 0, 0)
 
         fa = Font.instance()
@@ -110,12 +100,15 @@ class StatusBar(QFrame):
         fa.apply_to(execute_button)
         execute_button.clicked.connect(lambda: self.playClicked.emit())
         right_layout.addWidget(execute_button)
+
         self.theme_button = ThemeButton()
         fa.apply_to(self.theme_button)
         right_layout.addWidget(self.theme_button)
+
         settings_button = QToolButton()
         settings_button.setAutoRaise(True)
-        settings_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        settings_button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly)
+        # settings_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         settings_button.setText("\uf013")
         fa.apply_to(settings_button)
         settings_button.clicked.connect(lambda: self.gearClicked.emit())
@@ -135,7 +128,10 @@ class StatusBar(QFrame):
         layout.addWidget(mid_widget, 0, 1, 0, 1, Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(right_widget, 0, 2, 0, 1, Qt.AlignmentFlag.AlignRight)
 
-        layout.setContentsMargins(2, 0, 2, 0)
+        for btn in (execute_button, self.theme_button, settings_button, fullscreen_button):
+            btn.setFixedSize(26, 26)
+
+        layout.setContentsMargins(2, 2, 2, 0)
 
     def show_message(self, msg: str, timeout=4000, error=False):
         if error:
@@ -146,3 +142,13 @@ class StatusBar(QFrame):
             self._message_label.setText(msg)
         if timeout > 0:
             QTimer.singleShot(timeout, self._message_label.clear)
+
+    def paintEvent(self, a0):
+        super().paintEvent(a0)
+        from PyQt6.QtGui import QPainter
+
+        painter = QPainter(self)
+        color = self.palette().color(self.palette().ColorRole.Mid)
+        color.setAlpha(120)
+        painter.setPen(color)
+        painter.drawLine(0, 0, self.width(), 0)

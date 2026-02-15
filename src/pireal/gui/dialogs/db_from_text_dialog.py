@@ -11,6 +11,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
+from pireal import translations as tr
 from pireal.gui.db_highlighter import DBHighlighter
 from pireal.utils import sanitize_data
 
@@ -32,7 +33,7 @@ PLACEHOLDER = """\
 class DBFromTextDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Nueva base de datos desde texto")
+        self.setWindowTitle(tr.TR_DB_FROM_TEXT_TITLE)
         self.setMinimumSize(800, 500)
         self.resize(900, 560)
 
@@ -53,7 +54,7 @@ class DBFromTextDialog(QDialog):
         left_layout = QVBoxLayout(left)
         left_layout.setContentsMargins(0, 0, 0, 0)
         left_layout.setSpacing(4)
-        left_layout.addWidget(QLabel("Texto de la base de datos:"))
+        left_layout.addWidget(QLabel(tr.TR_DB_FROM_TEXT_EDITOR_LABEL))
 
         self._editor = QPlainTextEdit()
         self._editor.setPlaceholderText(PLACEHOLDER)
@@ -70,7 +71,7 @@ class DBFromTextDialog(QDialog):
         right_layout = QVBoxLayout(right)
         right_layout.setContentsMargins(0, 0, 0, 0)
         right_layout.setSpacing(4)
-        right_layout.addWidget(QLabel("Vista previa:"))
+        right_layout.addWidget(QLabel(tr.TR_DB_FROM_TEXT_PREVIEW_LABEL))
 
         self._preview = QTreeWidget()
         self._preview.setHeaderHidden(True)
@@ -91,7 +92,9 @@ class DBFromTextDialog(QDialog):
         self._buttons = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
         )
-        self._buttons.button(QDialogButtonBox.StandardButton.Ok).setText("Cargar")
+        self._buttons.button(QDialogButtonBox.StandardButton.Ok).setText(
+            tr.TR_DB_FROM_TEXT_LOAD_BTN
+        )
         self._buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
         self._buttons.accepted.connect(self.accept)
         self._buttons.rejected.connect(self.reject)
@@ -120,15 +123,15 @@ class DBFromTextDialog(QDialog):
 
         try:
             data = sanitize_data(text)
-        except Exception as e:
-            self._set_status(f"✗ Error: {e}", ok=False)
+        except Exception as err:
+            self._set_status(tr.TR_DB_FROM_TEXT_ERROR.format(err), ok=False)
             self._buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
             self._parsed_data = None
             return
 
         tables = data.get("tables", [])
         if not tables:
-            self._set_status("✗ No se encontraron relaciones", ok=False)
+            self._set_status(tr.TR_DB_FROM_TEXT_NO_RELATIONS, ok=False)
             self._buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
             self._parsed_data = None
             return
@@ -157,12 +160,10 @@ class DBFromTextDialog(QDialog):
             for tupla in list(tuples)[:5]:
                 QTreeWidgetItem(root, [" | ".join(tupla)])
             if cardinality > 5:
-                QTreeWidgetItem(root, [f"  ... ({cardinality - 5} más)"])
+                QTreeWidgetItem(root, [f"  ... ({cardinality - 5} +)"])
 
         n = len(tables)
-        self._set_status(
-            f"✓  {n} {'relación' if n == 1 else 'relaciones'} válidas", ok=True
-        )
+        self._set_status(tr.TR_DB_FROM_TEXT_VALID_MANY.format(n), ok=True)
         self._buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
         self._parsed_data = data
 

@@ -4,6 +4,7 @@ from PyQt6.QtCore import QSettings
 from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import QMainWindow, QMessageBox
 
+from pireal import translations as tr
 from pireal.core.db import DB
 from pireal.core.pireal_file import is_example_file
 from pireal.dirs import DATA_SETTINGS
@@ -89,8 +90,8 @@ class Pireal(QMainWindow):
             names = ", ".join(e.file.display_name for e in unsaved_editors)
             ret = QMessageBox.question(
                 self,
-                "Queries sin guardar",
-                f"Hay queries con cambios sin guardar:\n{names}\n\n¿Guardar antes de salir?",
+                tr.TR_UNSAVED_QUERIES_TITLE,
+                tr.TR_UNSAVED_QUERIES_BODY.format(names=names),
                 QMessageBox.StandardButton.Save
                 | QMessageBox.StandardButton.Discard
                 | QMessageBox.StandardButton.Cancel,
@@ -107,8 +108,8 @@ class Pireal(QMainWindow):
         if db.is_active and db.modified and not is_example_file(db.file):
             ret = QMessageBox.question(
                 self,
-                "Base de datos modificada",
-                "La base de datos tiene cambios sin guardar. ¿Guardar antes de salir?",
+                tr.TR_CLOSE_DB_TITLE,
+                tr.TR_CLOSE_DB_BODY,
                 QMessageBox.StandardButton.Save
                 | QMessageBox.StandardButton.Discard
                 | QMessageBox.StandardButton.Cancel,

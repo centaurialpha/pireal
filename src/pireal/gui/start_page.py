@@ -207,7 +207,7 @@ class RecentDatabasesView(QFrame):
         self.setAutoFillBackground(True)
 
         vbox = QVBoxLayout(self)
-        label = QLabel("Recent Databases")
+        label = QLabel(tr.TR_RECENT_DATABASES)
         vbox.addWidget(label, alignment=Qt.AlignmentFlag.AlignHCenter)
         self._recent_dbs_list = QListView()
         pal = self._recent_dbs_list.palette()

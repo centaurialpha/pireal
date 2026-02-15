@@ -12,6 +12,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
 )
 
+from pireal import translations as tr
 from pireal.settings import settings
 
 
@@ -19,7 +20,7 @@ class SettingsDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-        self.setWindowTitle("Settings")
+        self.setWindowTitle(tr.TR_SETTINGS_TITLE)
 
         vbox = QVBoxLayout(self)
         vbox.addWidget(self._build_general_group())
@@ -35,7 +36,7 @@ class SettingsDialog(QDialog):
         vbox.addWidget(button_box)
 
     def _build_general_group(self) -> QGroupBox:
-        group = QGroupBox("General")
+        group = QGroupBox(tr.TR_SETTINGS_GROUP_GENERAL)
         layout = QGridLayout(group)
 
         self._combo_languages = QComboBox()
@@ -43,19 +44,19 @@ class SettingsDialog(QDialog):
         self._combo_languages.addItems(self._languages.values())
         self._combo_languages.setCurrentText(self._languages[settings.language])
 
-        layout.addWidget(QLabel("Language"), 0, 0)
+        layout.addWidget(QLabel(tr.TR_SETTINGS_LANGUAGE), 0, 0)
         layout.addWidget(self._combo_languages, 0, 1)
 
         return group
 
     def _build_editor_group(self) -> QGroupBox:
-        group = QGroupBox("Editor")
+        group = QGroupBox(tr.TR_SETTINGS_GROUP_EDITOR)
         layout = QGridLayout(group)
 
-        self._check_highlight_line = QCheckBox("Highlight Current Line")
+        self._check_highlight_line = QCheckBox(tr.TR_SETTINGS_HIGHLIGHT_LINE)
         self._check_highlight_line.setChecked(settings.highlight_current_line)
 
-        self._check_match_parenthesis = QCheckBox("Highlight Braces")
+        self._check_match_parenthesis = QCheckBox(tr.TR_SETTINGS_HIGHLIGHT_BRACES)
         self._check_match_parenthesis.setChecked(settings.match_parenthesis)
 
         layout.addWidget(self._check_highlight_line, 0, 0)
@@ -64,7 +65,7 @@ class SettingsDialog(QDialog):
         return group
 
     def _build_font_group(self) -> QGroupBox:
-        group = QGroupBox("Font")
+        group = QGroupBox(tr.TR_SETTINGS_GROUP_FONT)
         layout = QGridLayout(group)
 
         self._combo_font_family = QFontComboBox()
@@ -81,9 +82,9 @@ class SettingsDialog(QDialog):
         self._combo_font_size.addItems([str(s) for s in sizes])
         self._combo_font_size.setCurrentText(str(settings.font_size))
 
-        layout.addWidget(QLabel("Family"), 0, 0)
+        layout.addWidget(QLabel(tr.TR_SETTINGS_FONT_FAMILY), 0, 0)
         layout.addWidget(self._combo_font_family, 0, 1)
-        layout.addWidget(QLabel("Size"), 0, 2)
+        layout.addWidget(QLabel(tr.TR_SETTINGS_FONT_SIZE), 0, 2)
         layout.addWidget(self._combo_font_size, 0, 3)
 
         return group
