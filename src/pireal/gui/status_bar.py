@@ -12,6 +12,7 @@ from PyQt6.QtWidgets import (
 
 from pireal import __version__
 from pireal.gui.theme.manager import get_theme_manager
+from pireal.gui.theme.schema import EditorColorRole
 from pireal.helpers import Font
 
 
@@ -85,8 +86,8 @@ class StatusBar(QFrame):
         # Mid widgets - temporal messages and editor info
         mid_widget = QFrame(parent)
         mid_layout = QHBoxLayout(mid_widget)
-        self._messages_label = QLabel()
-        mid_layout.addWidget(self._messages_label)
+        self._message_label = QLabel()
+        mid_layout.addWidget(self._message_label)
 
         right_widget = QFrame(parent)
 
@@ -136,7 +137,12 @@ class StatusBar(QFrame):
 
         layout.setContentsMargins(2, 0, 2, 0)
 
-    def show_message(self, msg: str, timeout=4000):
-        self._messages_label.setText(msg)
+    def show_message(self, msg: str, timeout=4000, error=False):
+        if error:
+            scheme = get_theme_manager().current_scheme
+            color = scheme.editor.get(EditorColorRole.ERROR).name()
+            self._message_label.setText(f'<span style="color:{color}">{msg}</span>')
+        else:
+            self._message_label.setText(msg)
         if timeout > 0:
-            QTimer.singleShot(timeout, self._messages_label.clear)
+            QTimer.singleShot(timeout, self._message_label.clear)
