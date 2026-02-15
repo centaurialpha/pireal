@@ -3,53 +3,68 @@ from PyQt6.QtWidgets import (
     QDialog,
     QHBoxLayout,
     QLabel,
+    QPlainTextEdit,
     QPushButton,
     QVBoxLayout,
 )
 
+from pireal import translations as tr
 from pireal.dirs import DATA_SETTINGS
+from pireal.gui.db_highlighter import DBHighlighter
+from pireal.gui.highlighter import Highlighter
 
 SLIDES = [
     {
         "icon": "🎓",
-        "title": "Welcome to Pireal",
-        "body": (
-            "Pireal is a free and open source <b>Relational Algebra interpreter</b> "
-            "designed for learning database fundamentals.<br><br>"
-            "Perfect for students and teachers exploring how databases work under the hood."
-        ),
+        "title": tr.TR_TOUR_SLIDE1_TITLE,
+        "body": tr.TR_TOUR_SLIDE1_BODY,
+        "code": None,
+        "highlighter_type": None,
     },
     {
         "icon": "🗄️",
-        "title": "Create or open a Database",
-        "body": (
-            "You can open an existing <b>.pdb</b> file, create one step by step using the dialog, "
-            "or go full nerd and <b>code your database directly</b> using the text syntax:<br><br>"
-            "<tt>@students:id,name,age<br>"
-            "1,Gabriel,25<br>"
-            "2,Ana,22</tt>"
-        ),
+        "title": tr.TR_TOUR_SLIDE2_TITLE,
+        "body": tr.TR_TOUR_SLIDE2_BODY,
+        "code": "@students:id,name,age\n1,Gabriel,25\n2,Marisel,22",
+        "highlighter_type": DBHighlighter,
     },
     {
         "icon": "✏️",
-        "title": "Write Relational Algebra queries",
-        "body": (
-            "Use the query editor to write <b>Relational Algebra expressions</b>:<br><br>"
-            "<tt>adults := select age >= 18 (students);<br>"
-            "names := project name (adults);</tt><br><br>"
-            "Hit <b>▶</b> or use the run button to execute."
-        ),
+        "title": tr.TR_TOUR_SLIDE3_TITLE,
+        "body": tr.TR_TOUR_SLIDE3_BODY,
+        "code": "adults := select age >= 18 (students);\nnames := project name (adults);",
+        "highlighter_type": Highlighter,
     },
     {
         "icon": "📊",
-        "title": "Explore the results",
-        "body": (
-            "Every query result appears in the <b>Results panel</b> and the <b>sidebar</b>.<br><br>"
-            "You can inspect each relation, see its cardinality and degree, "
-            "and compare results side by side."
-        ),
+        "title": tr.TR_TOUR_SLIDE4_TITLE,
+        "body": tr.TR_TOUR_SLIDE4_BODY,
+        "code": None,
     },
 ]
+
+
+class CodeSnippet(QPlainTextEdit):
+    def __init__(self, code: str, parent=None):
+        super().__init__(parent)
+        self.setReadOnly(True)
+        self.setPlainText(code)
+        self.setMaximumHeight(80)
+        self.setFrameShape(QPlainTextEdit.Shape.NoFrame)
+        self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        font = self.font()
+        font.setFamily("Monospace")
+        font.setPointSize(10)
+        self.setFont(font)
+        self._highlighter = None
+
+    def set_highlighter(self, highlighter_class):
+        if self._highlighter is not None:
+            self._highlighter.setDocument(None)
+        if highlighter_class is not None:
+            self._highlighter = highlighter_class(self.document())
+        else:
+            self._highlighter = None
 
 
 class TourDialog(QDialog):
@@ -106,6 +121,9 @@ class TourDialog(QDialog):
         self._body_lbl.setTextFormat(Qt.TextFormat.RichText)
         layout.addWidget(self._body_lbl, stretch=1)
 
+        self._code_widget = CodeSnippet("")
+        self._code_widget.hide()
+        layout.addWidget(self._code_widget)
         # Botones
         btn_layout = QHBoxLayout()
         self._skip_btn = QPushButton("Skip tour")
@@ -127,6 +145,16 @@ class TourDialog(QDialog):
         self._title_lbl.setText(slide["title"])
         self._body_lbl.setText(slide["body"])
 
+        if slide["code"]:
+            self._code_widget.set_highlighter(slide["highlighter_type"])
+            self._code_widget.setPlainText(slide["code"])
+            self._code_widget.show()
+        else:
+            self._code_widget.hide()
+
+        is_last = self._current == len(SLIDES) - 1
+        self._next_btn.setText(tr.TR_TOUR_GET_STARTED if is_last else tr.TR_TOUR_NEXT)
+
         # Actualizar indicadores
         for i, dot in enumerate(self._indicators):
             dot.setStyleSheet(
@@ -134,10 +162,6 @@ class TourDialog(QDialog):
                 if i == self._current
                 else "color: #ccc; font-size: 10px;"
             )
-
-        # Último slide: cambiar botón
-        is_last = self._current == len(SLIDES) - 1
-        self._next_btn.setText("Get started!" if is_last else "Next →")
 
     def _on_next(self):
         if self._current < len(SLIDES) - 1:
