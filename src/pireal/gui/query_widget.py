@@ -84,7 +84,7 @@ class QueryWidget(QWidget):
     def add_editor(self, editor_widget: "EditorWidget"):
         status_bar = Registry.get("status-bar", StatusBar)
         editor_widget.editor.errorOccurred.connect(
-            lambda line, msg: status_bar.show_message(f"Line {line}: {msg}", timeout=0)
+            lambda line, msg: status_bar.show_message(f"Line {line}: {msg}", timeout=0, error=True)
         )
         editor_widget.editor.errorCleared.connect(
             lambda: status_bar.show_message("", timeout=0)
