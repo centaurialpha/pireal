@@ -60,6 +60,7 @@ class StatusBar(QFrame):
     playClicked = pyqtSignal()
     gearClicked = pyqtSignal()
     expandClicked = pyqtSignal(bool)
+    feedbackClicked = pyqtSignal()
 
     def __init__(self, main_window: QMainWindow, parent=None):
         super().__init__(parent)
@@ -101,9 +102,26 @@ class StatusBar(QFrame):
         execute_button.clicked.connect(lambda: self.playClicked.emit())
         right_layout.addWidget(execute_button)
 
+        scheme = get_theme_manager().current_scheme
+        execute_button.setStyleSheet(
+            f"color: {scheme.editor.get(EditorColorRole.STRING).name()};"
+        )
+        right_layout.addWidget(execute_button)
+
         self.theme_button = ThemeButton()
         fa.apply_to(self.theme_button)
         right_layout.addWidget(self.theme_button)
+
+        if True:
+            feedback_button = QToolButton()
+            feedback_button.setAutoRaise(True)
+            feedback_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+            feedback_button.setText("\uf086")
+            feedback_button.setToolTip("Enviar feedback")
+            fa.apply_to(feedback_button)
+            feedback_button.setFixedSize(26, 26)
+            feedback_button.clicked.connect(lambda: self.feedbackClicked.emit())
+            right_layout.addWidget(feedback_button)
 
         settings_button = QToolButton()
         settings_button.setAutoRaise(True)
@@ -128,7 +146,12 @@ class StatusBar(QFrame):
         layout.addWidget(mid_widget, 0, 1, 0, 1, Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(right_widget, 0, 2, 0, 1, Qt.AlignmentFlag.AlignRight)
 
-        for btn in (execute_button, self.theme_button, settings_button, fullscreen_button):
+        for btn in (
+            execute_button,
+            self.theme_button,
+            settings_button,
+            fullscreen_button,
+        ):
             btn.setFixedSize(26, 26)
 
         layout.setContentsMargins(2, 2, 2, 0)

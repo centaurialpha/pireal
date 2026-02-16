@@ -99,7 +99,7 @@ class Application:
         logger.info("Widgets initialized")
 
     def run(self):
-        self._main_window.show()
+        self._main_window.showMaximized()
         from pireal.gui.dialogs.tour_dialog import TourDialog
 
         if TourDialog.should_show():
