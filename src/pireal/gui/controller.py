@@ -90,6 +90,11 @@ class Controller(QWidget):
         database_container = Registry.get("database-container", DatabaseContainer)
         database_container.create_database(data)
 
+    def remove_from_recents(self, path: str):
+        normalized = str(Path(path).resolve())
+        if normalized in self._recent_databases:
+            self._recent_databases.remove(normalized)
+
     @pyqtSlot(int)
     def remove_relation(self, index: int):
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
@@ -432,5 +437,6 @@ class Controller(QWidget):
     @pyqtSlot()
     def send_feedback(self):
         from pireal.gui.dialogs.feedback_dialog import FeedbackDialog
+
         dialog = FeedbackDialog(self)
         dialog.exec()
