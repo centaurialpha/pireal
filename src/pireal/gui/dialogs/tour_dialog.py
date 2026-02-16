@@ -73,6 +73,11 @@ class TourDialog(QDialog):
         self.setWindowTitle("Welcome to Pireal")
         self.setMinimumSize(520, 340)
         self.resize(540, 360)
+        if parent is not None:
+            parent_geometry = parent.geometry()
+            x = parent_geometry.x() + (parent_geometry.width() - self.width()) // 2
+            y = parent_geometry.y() + (parent_geometry.height() - self.height()) // 2
+            self.move(x, y)
         self.setWindowFlags(
             self.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint
         )
