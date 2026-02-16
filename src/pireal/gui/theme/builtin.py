@@ -30,6 +30,7 @@ class DarkTheme:
             sidebar_background=QColor("#21252b"),
             sidebar_foreground=QColor("#4b5263"),
             error=QColor("#e06c75"),
+            success=QColor("#98c379"),
         )
 
         return ColorScheme.create(
@@ -96,6 +97,7 @@ class LightTheme:
             sidebar_background=QColor("#f6f8fa"),
             sidebar_foreground=QColor("#8c959f"),
             error=QColor("#cf222e"),
+            success=QColor("#2d7a2d"),
         )
         return ColorScheme.create(
             window=QColor("#f6f8fa"),

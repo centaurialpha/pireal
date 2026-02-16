@@ -1,4 +1,4 @@
-from PyQt6.QtCore import Qt, QTimer, pyqtSignal
+from PyQt6.QtCore import Qt, QTimer, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import (
     QFrame,
     QGridLayout,
@@ -9,8 +9,9 @@ from PyQt6.QtWidgets import (
 )
 
 from pireal import __version__
+from pireal import translations as tr
 from pireal.gui.theme.manager import get_theme_manager
-from pireal.gui.theme.schema import EditorColorRole
+from pireal.gui.theme.schema import ColorScheme, EditorColorRole
 from pireal.helpers import Font
 
 
@@ -93,20 +94,22 @@ class StatusBar(QFrame):
 
         fa = Font.instance()
 
+        theme_manager = get_theme_manager()
         # Right widgets
-        execute_button = QToolButton()
-        execute_button.setAutoRaise(True)
-        execute_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        execute_button.setText("\uf04b")
-        fa.apply_to(execute_button)
-        execute_button.clicked.connect(lambda: self.playClicked.emit())
-        right_layout.addWidget(execute_button)
+        self._execute_button = QToolButton()
+        self._execute_button.setAutoRaise(True)
+        self._execute_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self._execute_button.setText("\uf04b")
+        self._update_execute_color(theme_manager.current_scheme)
+        fa.apply_to(self._execute_button)
+        self._execute_button.clicked.connect(lambda: self.playClicked.emit())
+        theme_manager.themeChanged.connect(self._update_execute_color)
+        right_layout.addWidget(self._execute_button)
 
-        scheme = get_theme_manager().current_scheme
-        execute_button.setStyleSheet(
-            f"color: {scheme.editor.get(EditorColorRole.STRING).name()};"
+        self._execute_button.setStyleSheet(
+            f"color: {theme_manager.current_scheme.editor.get(EditorColorRole.SUCCESS).name()};"
         )
-        right_layout.addWidget(execute_button)
+        right_layout.addWidget(self._execute_button)
 
         self.theme_button = ThemeButton()
         fa.apply_to(self.theme_button)
@@ -117,7 +120,7 @@ class StatusBar(QFrame):
             feedback_button.setAutoRaise(True)
             feedback_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
             feedback_button.setText("\uf086")
-            feedback_button.setToolTip("Enviar feedback")
+            feedback_button.setToolTip(tr.TR_MENU_HELP_FEEDBACK)
             fa.apply_to(feedback_button)
             feedback_button.setFixedSize(26, 26)
             feedback_button.clicked.connect(lambda: self.feedbackClicked.emit())
@@ -126,7 +129,7 @@ class StatusBar(QFrame):
         settings_button = QToolButton()
         settings_button.setAutoRaise(True)
         settings_button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly)
-        # settings_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        settings_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         settings_button.setText("\uf013")
         fa.apply_to(settings_button)
         settings_button.clicked.connect(lambda: self.gearClicked.emit())
@@ -147,7 +150,7 @@ class StatusBar(QFrame):
         layout.addWidget(right_widget, 0, 2, 0, 1, Qt.AlignmentFlag.AlignRight)
 
         for btn in (
-            execute_button,
+            self._execute_button,
             self.theme_button,
             settings_button,
             fullscreen_button,
@@ -155,6 +158,11 @@ class StatusBar(QFrame):
             btn.setFixedSize(26, 26)
 
         layout.setContentsMargins(2, 2, 2, 0)
+
+    @pyqtSlot(ColorScheme)
+    def _update_execute_color(self, scheme):
+        color = scheme.editor.get(EditorColorRole.SUCCESS).name()
+        self._execute_button.setStyleSheet(f"color: {color};")
 
     def show_message(self, msg: str, timeout=4000, error=False):
         if error:
