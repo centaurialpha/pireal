@@ -48,6 +48,8 @@ class Pireal(QMainWindow):
         self._status_bar.gearClicked.connect(self._show_settings)
         self._status_bar.theme_button.set_themes(theme_manager.themes())
         self._status_bar.theme_button.themeRequested.connect(self._on_theme_requested)
+        if True:
+            self._status_bar.feedbackClicked.connect(controller.send_feedback)
 
     def _update_title(self, *args):
         db = Registry.get("db", DB)

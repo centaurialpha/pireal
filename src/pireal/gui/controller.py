@@ -428,3 +428,9 @@ class Controller(QWidget):
         from PyQt6.QtWidgets import QApplication
 
         QApplication.aboutQt()
+
+    @pyqtSlot()
+    def send_feedback(self):
+        from pireal.gui.dialogs.feedback_dialog import FeedbackDialog
+        dialog = FeedbackDialog(self)
+        dialog.exec()

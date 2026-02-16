@@ -300,9 +300,58 @@ TR_CLOSE_DB_BODY = QCoreApplication.translate(
 TR_RECENT_DATABASES = QCoreApplication.translate("Pireal", "Recent Databases")
 
 # Placeholder
-TR_PLACEHOLDER_NO_RELATIONS = QCoreApplication.translate("Pireal", "No relations loaded")
+TR_PLACEHOLDER_NO_RELATIONS = QCoreApplication.translate(
+    "Pireal", "No relations loaded"
+)
 TR_PLACEHOLDER_HINT = QCoreApplication.translate(
     "Pireal", "Create a relation using the form or write the code directly."
 )
 TR_PLACEHOLDER_BTN_NEW = QCoreApplication.translate("Pireal", "New relation")
 TR_PLACEHOLDER_BTN_FROM_CODE = QCoreApplication.translate("Pireal", "From code")
+
+# Feedback
+TR_FEEDBACK_TITLE = QCoreApplication.translate("Pireal", "Send feedback")
+TR_FEEDBACK_TYPE_GROUP = QCoreApplication.translate("Pireal", "Type")
+TR_FEEDBACK_TYPE_BUG = QCoreApplication.translate("Pireal", "🐛  Bug")
+TR_FEEDBACK_TYPE_SUGGESTION = QCoreApplication.translate("Pireal", "💡  Suggestion")
+TR_FEEDBACK_TYPE_QUESTION = QCoreApplication.translate("Pireal", "❓  Question")
+TR_FEEDBACK_TYPE_OTHER = QCoreApplication.translate("Pireal", "💬  Other")
+TR_FEEDBACK_TITLE_LABEL = QCoreApplication.translate("Pireal", "Title:")
+TR_FEEDBACK_TITLE_PLACEHOLDER = QCoreApplication.translate(
+    "Pireal", "Brief summary of the problem or idea"
+)
+TR_FEEDBACK_BODY_LABEL = QCoreApplication.translate("Pireal", "Description:")
+TR_FEEDBACK_BODY_PLACEHOLDER = QCoreApplication.translate(
+    "Pireal", "Describe it in detail. If it's a bug, include the steps to reproduce it."
+)
+TR_FEEDBACK_ATTACH_BTN = QCoreApplication.translate("Pireal", "Attach image (optional)")
+TR_FEEDBACK_ATTACH_DIALOG = QCoreApplication.translate("Pireal", "Select Image")
+TR_FEEDBACK_ATTACH_FILTER = QCoreApplication.translate(
+    "Pireal", "Images (*.png *.jpg *.jpeg)"
+)
+TR_FEEDBACK_BTN_SEND = QCoreApplication.translate("Pireal", "Send")
+TR_FEEDBACK_BTN_SEND_START_PAGE = QCoreApplication.translate(
+    "Pireal", "💬  Send me feedback"
+)
+TR_FEEDBACK_BTN_SENDING = QCoreApplication.translate("Pireal", "Sending to botcito...")
+TR_FEEDBACK_BTN_RETRY = QCoreApplication.translate("Pireal", "Retry")
+TR_FEEDBACK_SUCCESS = QCoreApplication.translate(
+    "Pireal", "Sent! Thanks for helping to improve Pireal :)."
+)
+TR_FEEDBACK_ERROR_PREFIX = QCoreApplication.translate(
+    "Pireal", "It could not be sent :(: {}"
+)
+TR_FEEDBACK_ERROR_NO_CONFIG = QCoreApplication.translate(
+    "Pireal", "No se encontró la configuración de Telegram."
+)
+TR_FEEDBACK_ERROR_NO_TOKEN = QCoreApplication.translate(
+    "Pireal", "Token o chat ID no configurados."
+)
+TR_FEEDBACK_HINT_LABEL = QCoreApplication.translate(
+    "Pireal",
+    (
+        "If you prefer, you can also open an issue in"
+        '<a href="https://github.com/centaurialpha/pireal/issues">GitHub</a>.'
+    ),
+)
+TR_MENU_HELP_FEEDBACK = QCoreApplication.translate("Pireal", "Enviar feedback")

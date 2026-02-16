@@ -187,6 +187,7 @@ class ColorScheme:
     link: QColor
     tooltip_base: QColor
     tooltip_text: QColor
+    placeholder_text: QColor
 
     fade_color: QColor
     fade_amount: float
@@ -209,6 +210,7 @@ class ColorScheme:
         link: QColor | None = None,
         tooltip_base: QColor | None = None,
         tooltip_text: QColor | None = None,
+        placeholder_text: QColor | None = None,
         fade_color: QColor | None = None,
         fade_amount: float = 0.5,
         editor: EditorColors | None = None,
@@ -218,6 +220,7 @@ class ColorScheme:
         link = link or QColor(47, 163, 198)
         tooltip_base = tooltip_base or QColor(255, 255, 220)
         tooltip_text = tooltip_text or QColor(0, 0, 0)
+        placeholder_text = placeholder_text or blend_colors(text, window, 0.6)
         fade_color = fade_color or window
 
         # Generar editor colors si no se proveen
@@ -243,6 +246,7 @@ class ColorScheme:
             link=link,
             tooltip_base=tooltip_base,
             tooltip_text=tooltip_text,
+            placeholder_text=placeholder_text,
             fade_color=fade_color,
             fade_amount=fade_amount,
             editor=editor,
@@ -262,6 +266,7 @@ class ColorScheme:
         palette.setColor(QPalette.ColorRole.Link, self.link)
         palette.setColor(QPalette.ColorRole.ToolTipBase, self.tooltip_base)
         palette.setColor(QPalette.ColorRole.ToolTipText, self.tooltip_text)
+        palette.setColor(QPalette.ColorRole.PlaceholderText, self.placeholder_text)
 
         return self._apply_fade(palette)
 
