@@ -20,6 +20,7 @@
 import logging
 import os
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
 from PyQt6.QtCore import (
@@ -29,12 +30,14 @@ from PyQt6.QtCore import (
     QSettings,
     Qt,
     QTimer,
+    pyqtSignal,
 )
 from PyQt6.QtCore import (
     pyqtSlot as Slot,
 )
-from PyQt6.QtGui import QPainter, QPixmap
+from PyQt6.QtGui import QPainter, QPalette, QPixmap
 from PyQt6.QtWidgets import (
+    QApplication,
     QFrame,
     QHBoxLayout,
     QLabel,
@@ -57,24 +60,39 @@ logger = logging.getLogger(__name__)
 
 
 class RecentDBModel(QAbstractListModel):
-    def __init__(self, data):
+    def __init__(self, data: list[tuple[str, str]]):
         super().__init__()
         self._items = data
 
-    def rowCount(self, parent=None):
-        _ = parent
+    def rowCount(self, parent=QModelIndex()) -> int:
         return len(self._items)
 
-    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
-        if not index.isValid():
+    def data(self, index: QModelIndex, role=Qt.ItemDataRole.DisplayRole):
+        if not index.isValid() or index.row() >= len(self._items):
             return None
 
-        item = self._items[index.row()]
+        name, path = self._items[index.row()]
         if role == Qt.ItemDataRole.DisplayRole:
-            return item[0]
-        elif role == Qt.ItemDataRole.UserRole:
-            return item[1]
+            return name
+        if role == Qt.ItemDataRole.UserRole:
+            return path
+        if role == Qt.ItemDataRole.UserRole + 1:
+            return Path(path).exists()
         return None
+
+    def remove_item(self, row: int):
+        self.beginRemoveRows(QModelIndex(), row, row)
+        self._items.pop(row)
+        self.endRemoveRows()
+        self._persist()
+
+    def _persist(self):
+        from pireal.gui.controller import Controller
+        from pireal.registry import Registry
+
+        controller = Registry.get("controller", Controller)
+        # Reemplazar la lista entera en el controller
+        controller._recent_databases = [path for _, path in self._items]
 
 
 class RecentDBDelegate(QStyledItemDelegate):
@@ -83,47 +101,114 @@ class RecentDBDelegate(QStyledItemDelegate):
     in same item
     """
 
+    removeRequested = pyqtSignal(int)
+
+    _PADDING = 8
+    _BTN_SIZE = 20
+
     def paint(
         self,
         painter: Optional[QPainter],
         option: "QStyleOptionViewItem",
         index: QModelIndex,
     ) -> None:
-        print("AAAAAAAAAAAA")
         if painter is None:
-            return
-
-        model = index.model()
-        if model is None:
             return
 
         opt = QStyleOptionViewItem(option)
         self.initStyleOption(opt, index)
-
-        db_name = model.data(index, Qt.ItemDataRole.DisplayRole)
-        db_path = model.data(index, Qt.ItemDataRole.UserRole)
-
-        if not db_name:
-            return
-
-        style = opt.widget.style()
         opt.text = ""
-        if style is not None:
-            style.drawControl(
-                QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget
-            )
 
-        rect = option.rect
-        item_rect = rect.adjusted(0, 0, 0, 0)
+        style = opt.widget.style() if opt.widget else QApplication.style()
+        style.drawControl(
+            QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget
+        )
 
         painter.save()
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        # Draw background
-        # self._draw_background(painter, item_rect, opt.state)
-        # Draw content
-        content_rect = item_rect.adjusted(8, 3, -8, -3)
-        self._draw_content(painter, content_rect, db_name, db_path, option.state)
+
+        palette = opt.palette
+
+        exits = index.data(Qt.ItemDataRole.UserRole + 1)
+        is_selected = bool(opt.state & QStyle.StateFlag.State_Selected)
+
+        if is_selected:
+            text_color = palette.color(QPalette.ColorRole.HighlightedText)
+        elif not exits:
+            text_color = palette.color(QPalette.ColorRole.PlaceholderText)
+        else:
+            text_color = palette.color(QPalette.ColorRole.Text)
+
+        sub_color = palette.color(QPalette.ColorRole.PlaceholderText)
+
+        rect = option.rect.adjusted(
+            self._PADDING, 0, -self._BTN_SIZE - self._PADDING, 0
+        )
+        half = rect.height() // 2
+
+        name = index.data(Qt.ItemDataRole.DisplayRole) or ""
+        path = index.data(Qt.ItemDataRole.UserRole) or ""
+
+        name_font = painter.font()
+        name_font.setBold(True)
+        name_font.setPointSize(11)
+        painter.setFont(name_font)
+        painter.setPen(text_color)
+        name_rect = QRect(rect.left(), rect.top(), rect.width(), half)
+        painter.drawText(
+            name_rect, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, name
+        )
+
+        path_font = painter.font()
+        path_font.setBold(False)
+        path_font.setPointSize(9)
+        painter.setFont(path_font)
+        painter.setPen(sub_color)
+        path_rect = QRect(rect.left(), rect.top() + half, rect.width(), half)
+        metrics = painter.fontMetrics()
+        elided = metrics.elidedText(path, Qt.TextElideMode.ElideLeft, path_rect.width())
+        painter.drawText(
+            path_rect,
+            Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
+            elided,
+        )
+
+        is_hover = bool(opt.state & QStyle.StateFlag.State_MouseOver)
+        if is_hover or is_selected:
+            btn_color = palette.color(QPalette.ColorRole.PlaceholderText)
+            painter.setPen(btn_color)
+            btn_font = painter.font()
+            btn_font.setPointSize(10)
+            painter.setFont(btn_font)
+            btn_rect = QRect(
+                option.rect.right() - self._BTN_SIZE,
+                option.rect.top(),
+                self._BTN_SIZE,
+                option.rect.height(),
+            )
+            painter.drawText(btn_rect, Qt.AlignmentFlag.AlignCenter, "✕")
+
         painter.restore()
+
+    def editorEvent(self, event, model, option, index):
+        from PyQt6.QtCore import QEvent
+
+        if event.type() == QEvent.Type.MouseButtonRelease:
+            btn_rect = QRect(
+                option.rect.right() - self._BTN_SIZE,
+                option.rect.top(),
+                self._BTN_SIZE,
+                option.rect.height(),
+            )
+            pos = (
+                event.position().toPoint()
+                if hasattr(event, "position")
+                else event.pos()
+            )
+            if btn_rect.contains(pos):
+                self.removeRequested.emit(index.row())
+                return True
+        return super().editorEvent(event, model, option, index)
 
     def _draw_background(self, painter, rect, state):
         # if state & QStyle.StateFlag.State_Selected:
@@ -156,7 +241,6 @@ class RecentDBDelegate(QStyledItemDelegate):
         font.setBold(True)
         font.setPointSize(12)
         painter.setFont(font)
-        # painter.setPen(QPen(title_color))
 
         title_height = rect.height() // 2
         subtitle_height = rect.height() - title_height
@@ -171,7 +255,6 @@ class RecentDBDelegate(QStyledItemDelegate):
         font.setBold(False)
         font.setPointSize(10)
         painter.setFont(font)
-        # painter.setPen(QPen(subtitle_color))
 
         subtitle_rect = QRect(
             rect.left(), rect.top() + title_height, rect.width(), subtitle_height
@@ -192,37 +275,42 @@ class RecentDBDelegate(QStyledItemDelegate):
 
     def sizeHint(self, option, index):
         size = super().sizeHint(option, index)
-        size.setHeight(int(size.height() * 3.0))
+        size.setHeight(52)
         return size
 
 
 class RecentDatabasesView(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
-        palette = self.palette()
-        # palette.setColor(
-        #     QPalette.ColorRole.Window, QColor(theme_manager.get_color("AlternateBase"))
-        # )
-        self.setPalette(palette)
         self.setAutoFillBackground(True)
 
         vbox = QVBoxLayout(self)
+        vbox.setContentsMargins(0, 0, 0, 0)
+        vbox.setSpacing(4)
+
         label = QLabel(tr.TR_RECENT_DATABASES)
-        vbox.addWidget(label, alignment=Qt.AlignmentFlag.AlignHCenter)
+        font = label.font()
+        font.setPointSize(font.pointSize() - 1)
+        label.setFont(font)
+        vbox.addWidget(label)
+
+        self._empty_label = QLabel("No hay base de datos recientes.")
+        self._empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        palette = self._empty_label.palette()
+        self._empty_label.setStyleSheet(
+            f"color: {palette.color(QPalette.ColorRole.PlaceholderText).name()};"
+        )
+        vbox.addWidget(self._empty_label)
+
         self._recent_dbs_list = QListView()
-        pal = self._recent_dbs_list.palette()
-        # pal.setColor(pal.ColorRole.Base, QColor(theme_manager.get_color("Window")))
-        self._recent_dbs_list.setPalette(pal)
-        self._recent_dbs_list.setAutoFillBackground(True)
         self._recent_dbs_list.setFrameShape(QListView.Shape.NoFrame)
         self._recent_dbs_list.setVerticalScrollMode(QListView.ScrollMode.ScrollPerPixel)
         self._recent_dbs_list.setSelectionMode(QListView.SelectionMode.SingleSelection)
         self._recent_dbs_list.setMinimumWidth(550)
-
-        vbox.addWidget(self._recent_dbs_list, alignment=Qt.AlignmentFlag.AlignHCenter)
+        self._recent_dbs_list.setMouseTracking(True)
+        vbox.addWidget(self._recent_dbs_list)
 
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
-
         model_data = []
         for recent_db in qsettings.value("recent_databases", type=list):
             name = os.path.splitext(os.path.basename(recent_db))[0]
@@ -230,7 +318,21 @@ class RecentDatabasesView(QFrame):
 
         self.model = RecentDBModel(model_data)
         self._recent_dbs_list.setModel(self.model)
-        self._recent_dbs_list.setItemDelegate(RecentDBDelegate())
+
+        delegate = RecentDBDelegate()
+        delegate.removeRequested.connect(self._on_remove)
+        self._recent_dbs_list.setItemDelegate(delegate)
+
+        self._update_empty_state()
+
+    def _update_empty_state(self):
+        has_items = self.model.rowCount() > 0
+        self._empty_label.setVisible(not has_items)
+        self._recent_dbs_list.setVisible(has_items)
+
+    def _on_remove(self, row: int):
+        self.model.remove_item(row)
+        self._update_empty_state()
 
 
 class StartPage(QWidget):
@@ -352,6 +454,9 @@ class StartPage(QWidget):
         main_layout.addLayout(hbox_footer)
 
         self._recent_databases_view._recent_dbs_list.doubleClicked.connect(
+            self._on_listview_item_double_clicked
+        )
+        self._recent_databases_view._recent_dbs_list.clicked.connect(
             self._on_listview_item_double_clicked
         )
         btn_open_db.clicked.connect(self._open_database)
