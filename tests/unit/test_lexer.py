@@ -17,13 +17,10 @@
 
 import pytest
 
-from pireal.interpreter.lexer import (
-    Lexer,
-    Token,
-)
 from pireal.interpreter.exceptions import InvalidSyntaxError, MissingQuoteError
-from pireal.interpreter.tokens import TokenTypes
+from pireal.interpreter.lexer import Lexer, Token
 from pireal.interpreter.scanner import Scanner
+from pireal.interpreter.tokens import TokenTypes
 
 pytestmark = pytest.mark.interpreter
 

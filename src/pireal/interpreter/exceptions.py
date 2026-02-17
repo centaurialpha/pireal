@@ -41,9 +41,7 @@ class InvalidSyntaxError(InterpreterError):
     """Unexpected character found in the query."""
 
     def __init__(self, lineno: int, col: int, char: str):
-        super().__init__(
-            f"Unexpected character '{char}' on line {lineno}, column {col}."
-        )
+        super().__init__(f"Unexpected character '{char}' on line {lineno}, column {col}.")
         self.lineno = lineno
         self.column = col
         self.char = char
@@ -54,10 +52,7 @@ class ConsumeError(InterpreterError):
 
     def __init__(self, expected, got, lineno: int, got_value: str | None = None):
         got_str = got_value or got.value
-        super().__init__(
-            f"Syntax error on line {lineno}: "
-            f"expected '{expected.value}' but got '{got_str}'."
-        )
+        super().__init__(f"Syntax error on line {lineno}: expected '{expected.value}' but got '{got_str}'.")
         self.expected = expected
         self.got = got
         self.lineno = lineno
@@ -75,9 +70,7 @@ class UndefinedAttributeError(InterpreterError):
     """An attribute referenced in the query does not exist in the relation."""
 
     def __init__(self, attribute: str, relation_name: str, lineno: int | None = None):
-        super().__init__(
-            f"Attribute '{attribute}' does not exist in relation '{relation_name}'."
-        )
+        super().__init__(f"Attribute '{attribute}' does not exist in relation '{relation_name}'.")
         self.attribute = attribute
         self.relation_name = relation_name
         self.lineno = lineno

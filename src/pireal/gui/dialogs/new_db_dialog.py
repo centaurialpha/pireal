@@ -19,14 +19,7 @@
 from pathlib import Path
 
 from PyQt6.QtCore import Qt, pyqtSlot
-from PyQt6.QtWidgets import (
-    QDialog,
-    QDialogButtonBox,
-    QFileDialog,
-    QFormLayout,
-    QLineEdit,
-    QStyle,
-)
+from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QFileDialog, QFormLayout, QLineEdit, QStyle
 
 from pireal import translations as tr
 from pireal.dirs import DATABASES_DIR
@@ -93,9 +86,6 @@ class NewDBInputDialog(QDialog):
         dialog = NewDBInputDialog(parent, location, name)
         result = dialog.exec()
 
-        if (
-            result == QDialog.DialogCode.Accepted
-            and dialog._line_db_name.text().strip()
-        ):
+        if result == QDialog.DialogCode.Accepted and dialog._line_db_name.text().strip():
             return dialog._line_db_filename.text()
         return

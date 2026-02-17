@@ -30,7 +30,5 @@ def get_cli() -> argparse.ArgumentParser:
         help="Set logger level",
     )
     parser.add_argument("--version", action="store_true", help="Version")
-    parser.add_argument(
-        "--no-check-updates", action="store_true", help="Disable check for updates"
-    )
+    parser.add_argument("--no-check-updates", action="store_true", help="Disable check for updates")
     return parser

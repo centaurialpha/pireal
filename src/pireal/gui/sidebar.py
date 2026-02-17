@@ -33,7 +33,7 @@ class Sidebar(QFrame):
     """Sidebar widget"""
 
     def __init__(self, editor):
-        super(Sidebar, self).__init__(editor)
+        super().__init__(editor)
         self.editor = editor
 
         self.editor.blockCountChanged.connect(self.update_viewport)
@@ -41,9 +41,7 @@ class Sidebar(QFrame):
 
         theme_manager = get_theme_manager()
         theme_manager.themeChanged.connect(self._on_theme_changed)
-        self._error_color = theme_manager.current_scheme.editor.get(
-            EditorColorRole.ERROR
-        )
+        self._error_color = theme_manager.current_scheme.editor.get(EditorColorRole.ERROR)
 
         self._apply_colors(theme_manager.current_scheme)
 
@@ -76,9 +74,7 @@ class Sidebar(QFrame):
 
     def __calculate_width(self):
         digits = len(str(max(1, self.editor.blockCount())))
-        fmetrics_width = QFontMetrics(
-            self.editor.document().defaultFont()
-        ).horizontalAdvance("9")
+        fmetrics_width = QFontMetrics(self.editor.document().defaultFont()).horizontalAdvance("9")
         return 5 + fmetrics_width * digits + 3
 
     def paintEvent(self, event):
@@ -108,6 +104,4 @@ class Sidebar(QFrame):
             else:
                 painter.setPen(pen)
                 painter.setFont(font)
-            painter.drawText(
-                5, int(top), width, height, Qt.AlignmentFlag.AlignRight, str(line + 1)
-            )
+            painter.drawText(5, int(top), width, height, Qt.AlignmentFlag.AlignRight, str(line + 1))

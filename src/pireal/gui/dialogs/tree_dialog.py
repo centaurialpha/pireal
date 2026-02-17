@@ -17,13 +17,7 @@
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QFont
-from PyQt6.QtWidgets import (
-    QDialog,
-    QDialogButtonBox,
-    QTreeWidget,
-    QTreeWidgetItem,
-    QVBoxLayout,
-)
+from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QTreeWidget, QTreeWidgetItem, QVBoxLayout
 
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.gui.theme.schema import EditorColorRole
@@ -31,9 +25,7 @@ from pireal.interpreter.tree_builder import NodeKind, TreeNode
 from pireal.settings import settings
 
 
-def _populate(
-    parent: QTreeWidgetItem, node: TreeNode, scheme, base_font: QFont
-) -> None:
+def _populate(parent: QTreeWidgetItem, node: TreeNode, scheme, base_font: QFont) -> None:
     item = QTreeWidgetItem(parent, [node.label])
     editor = scheme.editor
 

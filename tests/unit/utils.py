@@ -17,10 +17,7 @@
 
 import unittest
 
-from pireal.interpreter.utils import (
-    is_date,
-    is_time,
-)
+from pireal.interpreter.utils import is_date, is_time
 
 
 class UtilsTestCase(unittest.TestCase):

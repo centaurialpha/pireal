@@ -16,14 +16,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt6.QtCore import QSettings, Qt
-from PyQt6.QtWidgets import (
-    QDialog,
-    QHBoxLayout,
-    QLabel,
-    QPlainTextEdit,
-    QPushButton,
-    QVBoxLayout,
-)
+from PyQt6.QtWidgets import QDialog, QHBoxLayout, QLabel, QPlainTextEdit, QPushButton, QVBoxLayout
 
 from pireal import translations as tr
 from pireal.dirs import DATA_SETTINGS
@@ -95,9 +88,7 @@ class TourDialog(QDialog):
             x = parent_geometry.x() + (parent_geometry.width() - self.width()) // 2
             y = parent_geometry.y() + (parent_geometry.height() - self.height()) // 2
             self.move(x, y)
-        self.setWindowFlags(
-            self.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint
-        )
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint)
 
         self._current = 0
         self._build_ui()
@@ -180,9 +171,7 @@ class TourDialog(QDialog):
         # Actualizar indicadores
         for i, dot in enumerate(self._indicators):
             dot.setStyleSheet(
-                "color: #1565c0; font-size: 10px;"
-                if i == self._current
-                else "color: #ccc; font-size: 10px;"
+                "color: #1565c0; font-size: 10px;" if i == self._current else "color: #ccc; font-size: 10px;"
             )
 
     def _on_next(self):

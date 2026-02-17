@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Dict
 
 from PyQt6.QtCore import QSettings, Qt, pyqtSlot
 from PyQt6.QtWidgets import QSplitter
@@ -62,7 +61,7 @@ class DatabaseContainer(QSplitter):
         self.addWidget(lateral_widget)
         self.addWidget(self._vsplitter)
 
-        self._relations: Dict[str, Relation] = {}
+        self._relations: dict[str, Relation] = {}
         self._database = Registry.get("db", DB)
 
         lateral_widget.relationClicked.connect(self._on_relation_clicked)
@@ -108,9 +107,7 @@ class DatabaseContainer(QSplitter):
         if vsizes is not None:
             self._vsplitter.restoreState(vsizes)
         else:
-            self._vsplitter.setSizes(
-                [round(self.height() / 3), round(self.height() / 6)]
-            )
+            self._vsplitter.setSizes([round(self.height() / 3), round(self.height() / 6)])
         hsizes = qsettings.value("hsplitter_sizes", None)
         if hsizes is not None:
             self.restoreState(hsizes)

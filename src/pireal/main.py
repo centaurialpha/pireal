@@ -28,8 +28,6 @@ import sys
 from pathlib import Path
 
 from PyQt6.QtCore import QT_VERSION_STR, QDir
-from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QApplication
 
 from pireal import __version__
 from pireal.app import Application
@@ -102,52 +100,7 @@ def run():
     python_version = platform.python_version()
 
     logger.info("Running Pireal %s...", __version__)
-    logger.info(
-        "Python %s on %s-%s, Qt %s", python_version, os_name, system, QT_VERSION_STR
-    )
+    logger.info("Python %s on %s-%s, Qt %s", python_version, os_name, system, QT_VERSION_STR)
 
     app = Application(args)
     app.run()
-
-
-def _start_pireal(args):
-    app = QApplication(sys.argv)
-    app.setApplicationName("Pireal")
-    app.setApplicationDisplayName("Pireal")
-    app.setWindowIcon(QIcon("icons:pireal_icon.png"))
-
-    # # Add Font Awesome
-    # family = QFontDatabase.applicationFontFamilies(
-    #     QFontDatabase.addApplicationFont(str(IMAGES_DIR / "font-awesome.ttf"))
-    # )[0]
-    # font = QFont(family)
-    # font.setStyleName("Solid")
-    # app.setFont(font)
-    # # Install translators
-    # # Qt translations
-    # system_locale_name = QLocale.system().name()
-    # qt_languages_path = Path(
-    #     QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
-    # )
-    # qt_translator = QTranslator()
-    # translator_loaded = qt_translator.load(
-    #     str(qt_languages_path / f"qt_{SETTINGS.language}.qm")
-    # )
-    # if not translator_loaded:
-    #     qt_translator.load(
-    #         str(
-    #             qt_languages_path / "qt_{}.qml".format(system_locale_name.split("_")[0])
-    #         )
-    #     )
-    # app.installTranslator(qt_translator)
-    # # App translator
-    # translator = QTranslator()
-    # if translator.load(f"languages:{SETTINGS.language}"):
-    #     app.installTranslator(translator)
-
-    check_updates = not args.no_check_updates
-    pireal_gui = Pireal(check_updates)
-
-    pireal_gui.show()
-
-    sys.exit(app.exec())

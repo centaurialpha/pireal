@@ -180,10 +180,7 @@ class TableWidget(QWidget):
                 break
 
     def _has_placeholder(self) -> bool:
-        return any(
-            isinstance(self._stacked.widget(i), PlaceholderWidget)
-            for i in range(self._stacked.count())
-        )
+        return any(isinstance(self._stacked.widget(i), PlaceholderWidget) for i in range(self._stacked.count()))
 
     @pyqtSlot(int)
     def _on_result_list_clicked(self, index):

@@ -89,9 +89,7 @@ TR_MSG_SAVE_DB_AS = QCoreApplication.translate("Pireal", "Save Database As...")
 #     "Pireal", "Are you sure you want to delete the selected tuples?"
 # )
 #
-TR_MSG_REMOVE_RELATION = QCoreApplication.translate(
-    "Pireal", "Are you sure you want to delete the relation <b>{}</b>?"
-)
+TR_MSG_REMOVE_RELATION = QCoreApplication.translate("Pireal", "Are you sure you want to delete the relation <b>{}</b>?")
 #
 # TR_MSG_FILE_NOT_OPENED = QCoreApplication.translate(
 #     "Pireal", "The file could not be opened"
@@ -137,18 +135,14 @@ TR_SETTINGS_GROUP_GENERAL = QCoreApplication.translate("Pireal", "General")
 TR_SETTINGS_GROUP_EDITOR = QCoreApplication.translate("Pireal", "Editor")
 TR_SETTINGS_GROUP_FONT = QCoreApplication.translate("Pireal", "Font")
 TR_SETTINGS_LANGUAGE = QCoreApplication.translate("Pireal", "Language")
-TR_SETTINGS_HIGHLIGHT_LINE = QCoreApplication.translate(
-    "Pireal", "Highlight Current Line"
-)
+TR_SETTINGS_HIGHLIGHT_LINE = QCoreApplication.translate("Pireal", "Highlight Current Line")
 TR_SETTINGS_HIGHLIGHT_BRACES = QCoreApplication.translate("Pireal", "Highlight Braces")
 TR_SETTINGS_FONT_FAMILY = QCoreApplication.translate("Pireal", "Font Family")
 TR_SETTINGS_FONT_SIZE = QCoreApplication.translate("Pireal", "Font Size")
 
 # About
 TR_DIALOG_ABOUT_PIREAL_TITLE = QCoreApplication.translate("Pireal", "About Pireal")
-TR_DIALOG_ABOUT_PIREAL_BODY = QCoreApplication.translate(
-    "Pireal", "Relational Algebra Query Evaluator"
-)
+TR_DIALOG_ABOUT_PIREAL_BODY = QCoreApplication.translate("Pireal", "Relational Algebra Query Evaluator")
 TR_DIALOG_ABOUT_PIREAL_COPY = QCoreApplication.translate(
     "Pireal",
     "<br>This Software is distributed under <a href='{}'><span style='color: #3465a4'>"
@@ -171,15 +165,11 @@ TR_INPUT_DIALOG_HEADER_BODY = QCoreApplication.translate("Pireal", "Header Name:
 TR_RELATION_DIALOG_TITLE = QCoreApplication.translate("Pireal", "Relation Creator")
 TR_RELATION_DIALOG_NAME = QCoreApplication.translate("Pireal", "Relation Name")
 TR_RELATION_DIALOG_CREATE = QCoreApplication.translate("Pireal", "Create")
-TR_RELATION_DIALOG_CONFIRM_DELETE_TUPLE = QCoreApplication.translate(
-    "Pireal", "Confirm tuple delete"
-)
+TR_RELATION_DIALOG_CONFIRM_DELETE_TUPLE = QCoreApplication.translate("Pireal", "Confirm tuple delete")
 TR_RELATION_DIALOG_CONFIRM_DELETE_TUPLE_BODY = QCoreApplication.translate(
     "Pireal", "Are you sure you want to delete the selected tuple(s)?"
 )
-TR_RELATION_DIALOG_EMPTY_RELATION_NAME = QCoreApplication.translate(
-    "Pireal", "Relation name not specified"
-)
+TR_RELATION_DIALOG_EMPTY_RELATION_NAME = QCoreApplication.translate("Pireal", "Relation name not specified")
 TR_RELATION_DIALOG_WHITESPACE = QCoreApplication.translate(
     "Pireal", "The blanks are so boring :(.<br><br>Please enter data in <b>{}:{}</b>"
 )
@@ -213,16 +203,17 @@ TR_TOUR_NEXT = QCoreApplication.translate("Pireal", "Next →")
 TR_TOUR_SLIDE1_TITLE = QCoreApplication.translate("Pireal", "Welcome to Pireal")
 TR_TOUR_SLIDE1_BODY = QCoreApplication.translate(
     "Pireal",
-    "Pireal is a free and open source <b>Relational Algebra interpreter</b> designed for learning database fundamentals.<br><br>Perfect for students and teachers exploring how databases work under the hood.",
+    "Pireal is a free and open source <b>Relational Algebra interpreter</b> designed "
+    "for learning database fundamentals.<br><br>Perfect for students and teachers exploring "
+    "how databases work under the hood.",
 )
 TR_TOUR_SLIDE2_TITLE = QCoreApplication.translate("Pireal", "Create or open a Database")
 TR_TOUR_SLIDE2_BODY = QCoreApplication.translate(
     "Pireal",
-    "You can open an existing <b>.pdb</b> file, create one step by step using the dialog, or go full nerd and <b>code your database directly</b> using the text syntax:",
+    "You can open an existing <b>.pdb</b> file, create one step by step using the dialog, "
+    "or go full nerd and <b>code your database directly</b> using the text syntax:",
 )
-TR_TOUR_SLIDE3_TITLE = QCoreApplication.translate(
-    "Pireal", "Write Relational Algebra queries"
-)
+TR_TOUR_SLIDE3_TITLE = QCoreApplication.translate("Pireal", "Write Relational Algebra queries")
 TR_TOUR_SLIDE3_BODY = QCoreApplication.translate(
     "Pireal",
     "Use the query editor to write <b>Relational Algebra expressions</b>:",
@@ -230,7 +221,8 @@ TR_TOUR_SLIDE3_BODY = QCoreApplication.translate(
 TR_TOUR_SLIDE4_TITLE = QCoreApplication.translate("Pireal", "Explore the results")
 TR_TOUR_SLIDE4_BODY = QCoreApplication.translate(
     "Pireal",
-    "Every query result appears in the <b>Results panel</b> and the <b>sidebar</b>.<br><br>You can inspect each relation, see its cardinality and degree, and compare results side by side.",
+    "Every query result appears in the <b>Results panel</b> and the <b>sidebar</b>."
+    "<br><br>You can inspect each relation, see its cardinality and degree, and compare results side by side.",
 )
 #
 # # Operator Tooltips
@@ -251,15 +243,9 @@ TR_TOOLTIP_PRODUCT = QCoreApplication.translate(
 TR_TOOLTIP_NJOIN = QCoreApplication.translate(
     "Pireal", "Natural join on common attributes.\nUsage: relation1 njoin relation2"
 )
-TR_TOOLTIP_LOUTER = QCoreApplication.translate(
-    "Pireal", "Left outer join.\nUsage: relation1 louter relation2"
-)
-TR_TOOLTIP_ROUTER = QCoreApplication.translate(
-    "Pireal", "Right outer join.\nUsage: relation1 router relation2"
-)
-TR_TOOLTIP_FOUTER = QCoreApplication.translate(
-    "Pireal", "Full outer join.\nUsage: relation1 fouter relation2"
-)
+TR_TOOLTIP_LOUTER = QCoreApplication.translate("Pireal", "Left outer join.\nUsage: relation1 louter relation2")
+TR_TOOLTIP_ROUTER = QCoreApplication.translate("Pireal", "Right outer join.\nUsage: relation1 router relation2")
+TR_TOOLTIP_FOUTER = QCoreApplication.translate("Pireal", "Full outer join.\nUsage: relation1 fouter relation2")
 TR_TOOLTIP_DIFFERENCE = QCoreApplication.translate(
     "Pireal",
     "Tuples in first relation but not in second.\nUsage: relation1 difference relation2",
@@ -277,13 +263,9 @@ TR_DB_FROM_TEXT_EDITOR_LABEL = QCoreApplication.translate("Pireal", "Database te
 TR_DB_FROM_TEXT_PREVIEW_LABEL = QCoreApplication.translate("Pireal", "Preview:")
 TR_DB_FROM_TEXT_LOAD_BTN = QCoreApplication.translate("Pireal", "Load")
 TR_DB_FROM_TEXT_ERROR = QCoreApplication.translate("Pireal", "✗ Error: {}")
-TR_DB_FROM_TEXT_NO_RELATIONS = QCoreApplication.translate(
-    "Pireal", "✗ No relations found."
-)
+TR_DB_FROM_TEXT_NO_RELATIONS = QCoreApplication.translate("Pireal", "✗ No relations found.")
 TR_DB_FROM_TEXT_VALID_ONE = QCoreApplication.translate("Pireal", "✓ 1 valid relation")
-TR_DB_FROM_TEXT_VALID_MANY = QCoreApplication.translate(
-    "Pireal", "✓ {} valid relations"
-)
+TR_DB_FROM_TEXT_VALID_MANY = QCoreApplication.translate("Pireal", "✓ {} valid relations")
 
 TR_UNSAVED_QUERIES_TITLE = QCoreApplication.translate("Pireal", "Unsaved queries")
 TR_UNSAVED_QUERIES_BODY = QCoreApplication.translate(
@@ -291,16 +273,12 @@ TR_UNSAVED_QUERIES_BODY = QCoreApplication.translate(
     "The following queries have unsaved changes:\n{names}\n\nSave before closing?",
 )
 TR_CLOSE_DB_TITLE = QCoreApplication.translate("Pireal", "Database modified")
-TR_CLOSE_DB_BODY = QCoreApplication.translate(
-    "Pireal", "The database has unsaved changes. Save before closing?"
-)
+TR_CLOSE_DB_BODY = QCoreApplication.translate("Pireal", "The database has unsaved changes. Save before closing?")
 
 TR_RECENT_DATABASES = QCoreApplication.translate("Pireal", "Recent Databases")
 
 # Placeholder
-TR_PLACEHOLDER_NO_RELATIONS = QCoreApplication.translate(
-    "Pireal", "No relations loaded"
-)
+TR_PLACEHOLDER_NO_RELATIONS = QCoreApplication.translate("Pireal", "No relations loaded")
 TR_PLACEHOLDER_HINT = QCoreApplication.translate(
     "Pireal", "Create a relation using the form or write the code directly."
 )
@@ -315,36 +293,22 @@ TR_FEEDBACK_TYPE_SUGGESTION = QCoreApplication.translate("Pireal", "💡  Sugges
 TR_FEEDBACK_TYPE_QUESTION = QCoreApplication.translate("Pireal", "❓  Question")
 TR_FEEDBACK_TYPE_OTHER = QCoreApplication.translate("Pireal", "💬  Other")
 TR_FEEDBACK_TITLE_LABEL = QCoreApplication.translate("Pireal", "Title:")
-TR_FEEDBACK_TITLE_PLACEHOLDER = QCoreApplication.translate(
-    "Pireal", "Brief summary of the problem or idea"
-)
+TR_FEEDBACK_TITLE_PLACEHOLDER = QCoreApplication.translate("Pireal", "Brief summary of the problem or idea")
 TR_FEEDBACK_BODY_LABEL = QCoreApplication.translate("Pireal", "Description:")
 TR_FEEDBACK_BODY_PLACEHOLDER = QCoreApplication.translate(
     "Pireal", "Describe it in detail. If it's a bug, include the steps to reproduce it."
 )
 TR_FEEDBACK_ATTACH_BTN = QCoreApplication.translate("Pireal", "Attach image (optional)")
 TR_FEEDBACK_ATTACH_DIALOG = QCoreApplication.translate("Pireal", "Select Image")
-TR_FEEDBACK_ATTACH_FILTER = QCoreApplication.translate(
-    "Pireal", "Images (*.png *.jpg *.jpeg)"
-)
+TR_FEEDBACK_ATTACH_FILTER = QCoreApplication.translate("Pireal", "Images (*.png *.jpg *.jpeg)")
 TR_FEEDBACK_BTN_SEND = QCoreApplication.translate("Pireal", "Send")
-TR_FEEDBACK_BTN_SEND_START_PAGE = QCoreApplication.translate(
-    "Pireal", "💬  Send me feedback"
-)
+TR_FEEDBACK_BTN_SEND_START_PAGE = QCoreApplication.translate("Pireal", "💬  Send me feedback")
 TR_FEEDBACK_BTN_SENDING = QCoreApplication.translate("Pireal", "Sending to botcito...")
 TR_FEEDBACK_BTN_RETRY = QCoreApplication.translate("Pireal", "Retry")
-TR_FEEDBACK_SUCCESS = QCoreApplication.translate(
-    "Pireal", "Sent! Thanks for helping to improve Pireal :)."
-)
-TR_FEEDBACK_ERROR_PREFIX = QCoreApplication.translate(
-    "Pireal", "It could not be sent :(: {}"
-)
-TR_FEEDBACK_ERROR_NO_CONFIG = QCoreApplication.translate(
-    "Pireal", "No se encontró la configuración de Telegram."
-)
-TR_FEEDBACK_ERROR_NO_TOKEN = QCoreApplication.translate(
-    "Pireal", "Token o chat ID no configurados."
-)
+TR_FEEDBACK_SUCCESS = QCoreApplication.translate("Pireal", "Sent! Thanks for helping to improve Pireal :).")
+TR_FEEDBACK_ERROR_PREFIX = QCoreApplication.translate("Pireal", "It could not be sent :(: {}")
+TR_FEEDBACK_ERROR_NO_CONFIG = QCoreApplication.translate("Pireal", "No se encontró la configuración de Telegram.")
+TR_FEEDBACK_ERROR_NO_TOKEN = QCoreApplication.translate("Pireal", "Token o chat ID no configurados.")
 TR_FEEDBACK_HINT_LABEL = QCoreApplication.translate(
     "Pireal",
     (

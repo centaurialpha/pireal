@@ -36,7 +36,7 @@ class Error(Exception):
 class FieldError(Error):
     def __init__(self, campo, msg=None):
         if msg is None:
-            msg = "Error con el campo '{}'".format(campo)
+            msg = f"Error con el campo '{campo}'"
         super().__init__(msg)
         self.campo = campo
 
@@ -45,25 +45,19 @@ class InvalidFieldNameError(FieldError):
     """Excepción lanzada cuando un nombre de campo no es válido."""
 
     def __init__(self, campo, msg=None):
-        super().__init__(
-            campo, msg="El nombre de campo '{}' no es válido".format(campo)
-        )
+        super().__init__(campo, msg=f"El nombre de campo '{campo}' no es válido")
 
 
 class DuplicateFieldError(FieldError):
     def __init__(self, campo, msg=None):
-        super().__init__(
-            campo, msg="Campo duplicado '{}' en la operación producto".format(campo)
-        )
+        super().__init__(campo, msg=f"Campo duplicado '{campo}' en la operación producto")
 
 
 class FieldNotInHeaderError(FieldError):
     """Excepción lanzada cuando un campo no existe en la relación."""
 
     def __init__(self, campo, relacion, msg=None):
-        super().__init__(
-            campo, msg="El campo '{}' no existe en '{}'".format(campo, relacion)
-        )
+        super().__init__(campo, msg=f"El campo '{campo}' no existe en '{relacion}'")
         self.nombre_relacion = relacion
 
 
@@ -76,7 +70,7 @@ class WrongSizeError(Error):
 
     def __init__(self, expected, got, msg=None):
         if msg is None:
-            msg = "Wrong size. Expected {}, got {}".format(expected, got)
+            msg = f"Wrong size. Expected {expected}, got {got}"
         super().__init__(msg)
         self.expected = expected
         self.got = got
@@ -96,9 +90,7 @@ def union_compatible(operation):
     def inner(self, *args, **kwargs):
         header_other = args[0].header
         if len(self._header) != len(header_other):
-            raise UnionCompatibleError(
-                f"Union not compatible for '{operation.__name__}'"
-            )
+            raise UnionCompatibleError(f"Union not compatible for '{operation.__name__}'")
         return operation(self, *args, **kwargs)
 
     return inner
@@ -123,7 +115,7 @@ def _cast_value(value: str) -> int | float | datetime.date | datetime.time | str
     return value
 
 
-class Relation(object):
+class Relation:
     def __init__(self):
         self.content = OrderedSet()
         self._header = []
@@ -157,7 +149,7 @@ class Relation(object):
         """Agrega una fila/tupla al final."""
         nulls = []
         for _ in range(self.degree()):
-            nulls.append("null ({})".format(self._null_count))
+            nulls.append(f"null ({self._null_count})")
             self._null_count += 1
         self.insert(tuple(nulls))
 
@@ -210,9 +202,7 @@ class Relation(object):
 
         # Campos en común
         sharedf = set(self._header).intersection(set(other_relation.header))
-        final_fields = self._header + [
-            i for i in other_relation.header if i not in sharedf
-        ]
+        final_fields = self._header + [i for i in other_relation.header if i not in sharedf]
         indexes_r = [self._header.index(i) for i in sharedf]
         indexes_or = [other_relation.header.index(i) for i in sharedf]
 
@@ -230,9 +220,7 @@ class Relation(object):
         new_relation.header = header
 
         sharedf = set(self._header).intersection(set(other_relation.header))
-        final_fields = self._header + [
-            i for i in other_relation.header if i not in sharedf
-        ]
+        final_fields = self._header + [i for i in other_relation.header if i not in sharedf]
 
         indexes_r = [self._header.index(i) for i in sharedf]
         indexes_or = [other_relation.header.index(i) for i in sharedf]
@@ -346,8 +334,4 @@ class Relation(object):
         return header + content
 
     def __repr__(self):
-        return (
-            f"Relation(name={self.name}, "
-            f"degree={self.degree()}, "
-            f"cardinality={self.cardinality()})"
-        )
+        return f"Relation(name={self.name}, degree={self.degree()}, cardinality={self.cardinality()})"

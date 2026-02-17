@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Dict, Type, TypeVar, cast
+from typing import TypeVar, cast
 
 from PyQt6.QtCore import QObject
 
@@ -23,14 +23,14 @@ T = TypeVar("T", bound=QObject)
 
 
 class Registry:
-    _components: Dict[str, QObject] = {}
+    _components: dict[str, QObject] = {}
 
     @classmethod
     def register(cls, name: str, widget: QObject) -> None:
         cls._components[name] = widget
 
     @classmethod
-    def get(cls, name: str, widget_type: Type[T]) -> T:
+    def get(cls, name: str, widget_type: type[T]) -> T:
         widget = cls._components[name]
         if not isinstance(widget, widget_type):
             raise TypeError("error")

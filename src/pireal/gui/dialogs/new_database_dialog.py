@@ -17,16 +17,24 @@
 
 import os
 
-from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtWidgets import (
     QDialog,
+    QDialogButtonBox,
     QFileDialog,
+    QFormLayout,
     QFrame,
     QHBoxLayout,
     QLabel,
     QLineEdit,
     QPushButton,
+    QStyle,
     QVBoxLayout,
+)
+
+from pireal import (
+    dirs,
+    translations as tr,
 )
 
 
@@ -202,7 +210,7 @@ class _DBInputDialog(QDialog):
         self._line_db_location.textChanged.connect(self._update_db_path)
         self._line_db_name.textChanged.connect(self._validate)
 
-    @Slot()
+    @pyqtSlot()
     def _update_db_path(self):
         db_name = self._line_db_name.text().strip()
         if db_name:
@@ -214,7 +222,7 @@ class _DBInputDialog(QDialog):
     def db_path(self) -> str:
         return self._line_db_path.text()
 
-    @Slot()
+    @pyqtSlot()
     def _choose_db_dir(self):
         location = QFileDialog.getExistingDirectory(self, tr.TR_DB_DIALOG_SELECT_FOLDER)
         if location:

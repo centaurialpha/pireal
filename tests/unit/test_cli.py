@@ -16,6 +16,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import shlex
+
 import pytest
 
 from pireal.core import cliparser

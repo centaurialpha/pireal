@@ -106,12 +106,8 @@ class DBFromTextDialog(QDialog):
         layout.addWidget(splitter)
 
         # — Botones —
-        self._buttons = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
-        )
-        self._buttons.button(QDialogButtonBox.StandardButton.Ok).setText(
-            tr.TR_DB_FROM_TEXT_LOAD_BTN
-        )
+        self._buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        self._buttons.button(QDialogButtonBox.StandardButton.Ok).setText(tr.TR_DB_FROM_TEXT_LOAD_BTN)
         self._buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
         self._buttons.accepted.connect(self.accept)
         self._buttons.rejected.connect(self.reject)
@@ -161,9 +157,7 @@ class DBFromTextDialog(QDialog):
             cardinality = len(tuples)
             root = QTreeWidgetItem(
                 self._preview,
-                [
-                    f"  {name}  ({cardinality} {'tupla' if cardinality == 1 else 'tuplas'})"
-                ],
+                [f"  {name}  ({cardinality} {'tupla' if cardinality == 1 else 'tuplas'})"],
             )
             root.setExpanded(True)
 

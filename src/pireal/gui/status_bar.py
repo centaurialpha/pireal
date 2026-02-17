@@ -16,17 +16,12 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal, pyqtSlot
-from PyQt6.QtWidgets import (
-    QFrame,
-    QGridLayout,
-    QHBoxLayout,
-    QLabel,
-    QMainWindow,
-    QToolButton,
-)
+from PyQt6.QtWidgets import QFrame, QGridLayout, QHBoxLayout, QLabel, QMainWindow, QToolButton
 
-from pireal import __version__
-from pireal import translations as tr
+from pireal import (
+    __version__,
+    translations as tr,
+)
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.gui.theme.schema import ColorScheme, EditorColorRole
 from pireal.helpers import Font

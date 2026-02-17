@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Optional
 
 from PyQt6.QtCore import QSettings
 from PyQt6.QtGui import QCloseEvent
@@ -92,7 +91,7 @@ class Pireal(QMainWindow):
         theme_manager.apply(theme_id)
         settings.theme = theme_id
 
-    def closeEvent(self, a0: Optional[QCloseEvent]) -> None:
+    def closeEvent(self, a0: QCloseEvent | None) -> None:
         controller = Registry.get("controller", Controller)
         db = Registry.get("db", DB)
         query_widget = Registry.get("query-widget", QueryWidget)

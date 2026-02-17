@@ -79,11 +79,16 @@ def adjust_luminance(color: QColor, factor: float) -> QColor:
     Returns:
         Color con luminancia ajustada
     """
-    h, s, l, a = color.getHslF()
-    l = min(1.0, max(0.0, l * factor))
+    hue, saturation, lightness, alpha = color.getHslF()
+    assert hue is not None
+    assert saturation is not None
+    assert lightness is not None
+    assert alpha is not None
+
+    lightness = min(1.0, max(0.0, lightness * factor))
 
     result = QColor()
-    result.setHslF(h, s, l, a)
+    result.setHslF(hue, saturation, lightness, alpha)
     return result
 
 
@@ -102,9 +107,14 @@ def is_dark_color(color: QColor, threshold: float = 0.5) -> bool:
 
 def rotate_hue(color: QColor, degrees: int) -> QColor:
     """Rota el hue de un color."""
-    h, s, l, a = color.getHslF()
-    h = (h + degrees / 360.0) % 1.0
+    hue, saturation, lightness, alpha = color.getHslF()
+    assert hue is not None
+    assert saturation is not None
+    assert lightness is not None
+    assert alpha is not None
+
+    hue = (hue + degrees / 360.0) % 1.0
 
     result = QColor()
-    result.setHslF(h, s, l, a)
+    result.setHslF(hue, saturation, lightness, alpha)
     return result

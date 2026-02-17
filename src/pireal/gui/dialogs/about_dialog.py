@@ -19,18 +19,13 @@ from datetime import datetime
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtWidgets import (
-    QDialog,
-    QHBoxLayout,
-    QLabel,
-    QPushButton,
-    QSizePolicy,
-    QSpacerItem,
-    QVBoxLayout,
-)
+from PyQt6.QtWidgets import QDialog, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout
 
-from pireal import __version__, gui
-from pireal import translations as tr
+from pireal import (
+    __version__,
+    gui,
+    translations as tr,
+)
 
 
 class AboutDialog(QDialog):
@@ -45,7 +40,7 @@ class AboutDialog(QDialog):
         vbox.addWidget(banner)
 
         # Version
-        lbl_version = QLabel("{0}".format(__version__))
+        lbl_version = QLabel(f"{__version__}")
         lbl_version.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         font = lbl_version.font()
         font.setPointSize(10)
@@ -70,10 +65,7 @@ class AboutDialog(QDialog):
         vbox.addWidget(abuelo_agui_lbl)
 
         # Copyright
-        copy = QLabel(
-            "<br>Copyright © 2015-{year} - "
-            "Gabriel 'gabo' Acosta".format(year=datetime.today().year)
-        )
+        copy = QLabel(f"<br>Copyright © 2015-{datetime.today().year} - Gabriel 'gabo' Acosta")
         copy.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         font = copy.font()
         font.setPointSize(9)
@@ -81,9 +73,7 @@ class AboutDialog(QDialog):
         vbox.addWidget(copy)
 
         # License and source
-        lbl_license_source = QLabel(
-            tr.TR_DIALOG_ABOUT_PIREAL_COPY.format(gui.__license__, gui.__source_code__)
-        )
+        lbl_license_source = QLabel(tr.TR_DIALOG_ABOUT_PIREAL_COPY.format(gui.__license__, gui.__source_code__))
         lbl_license_source.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         lbl_license_source.setOpenExternalLinks(True)
         font = lbl_license_source.font()

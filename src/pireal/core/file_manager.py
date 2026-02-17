@@ -48,7 +48,7 @@ def generate_database(relations):
     """
     content = ""
     for relation_name, relation in list(relations.items()):
-        content += "@%s:" % relation_name
+        content += f"@{relation_name}:"
         header = ",".join(relation.header)
         content += header + "\n"
         for i in relation.content:

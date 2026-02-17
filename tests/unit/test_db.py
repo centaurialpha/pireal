@@ -17,8 +17,8 @@
 
 import pytest
 
-from pireal.core.relation import Relation
 from pireal.core.db import DB
+from pireal.core.relation import Relation
 
 
 @pytest.fixture

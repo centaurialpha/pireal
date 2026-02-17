@@ -17,7 +17,8 @@
 
 import pytest
 
-from pireal.interpreter.tokens import TokenTypes, BINARY_OPERATORS, RESERVED_KEYWORDS
+from pireal.interpreter.tokens import (BINARY_OPERATORS, RESERVED_KEYWORDS,
+                                       TokenTypes)
 
 pytestmark = pytest.mark.interpreter
 

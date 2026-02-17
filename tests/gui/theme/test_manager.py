@@ -16,6 +16,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import pytest
+
 from pireal.gui.theme.manager import ThemeManager
 
 

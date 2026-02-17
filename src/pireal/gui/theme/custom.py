@@ -95,12 +95,9 @@ class CustomTheme:
             try:
                 editor = EditorColors.from_dict(colors["editor"])
             except (KeyError, ValueError) as e:
-                logger.warning(
-                    f"Invalid editor colors in {path}: {e}, deriving automatically"
-                )
+                logger.warning(f"Invalid editor colors in {path}: {e}, deriving automatically")
 
         try:
-
             color_scheme = ColorScheme.create(
                 window=parse_color(colors["window"]),
                 window_text=parse_color(colors["window_text"]),
@@ -112,15 +109,9 @@ class CustomTheme:
                 highlight=parse_color(colors["highlight"]),
                 highlighted_text=parse_color(colors["highlighted_text"]),
                 link=parse_color(colors["link"]) if "link" in colors else None,
-                tooltip_base=parse_color(colors["tooltip_base"])
-                if "tooltip_base" in colors
-                else None,
-                tooltip_text=parse_color(colors["tooltip_text"])
-                if "tooltip_text" in colors
-                else None,
-                fade_color=parse_color(colors["fade_color"])
-                if "fade_color" in colors
-                else None,
+                tooltip_base=parse_color(colors["tooltip_base"]) if "tooltip_base" in colors else None,
+                tooltip_text=parse_color(colors["tooltip_text"]) if "tooltip_text" in colors else None,
+                fade_color=parse_color(colors["fade_color"]) if "fade_color" in colors else None,
                 fade_amount=float(colors.get("fade_amount", 0.5)),
                 editor=editor,  # None = se deriva automáticamente
             )

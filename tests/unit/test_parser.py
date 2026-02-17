@@ -19,12 +19,12 @@ import datetime
 
 import pytest
 
-from pireal.interpreter.scanner import Scanner
+from pireal.interpreter import rast as ast
+from pireal.interpreter.exceptions import ConsumeError
 from pireal.interpreter.lexer import Lexer, Token
 from pireal.interpreter.parser import Parser
-from pireal.interpreter import rast as ast
+from pireal.interpreter.scanner import Scanner
 from pireal.interpreter.tokens import TokenTypes
-from pireal.interpreter.exceptions import ConsumeError
 
 pytestmark = pytest.mark.interpreter
 

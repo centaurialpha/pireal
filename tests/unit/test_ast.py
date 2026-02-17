@@ -16,6 +16,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import pytest
+
 from pireal.interpreter import rast as ast
 
 pytestmark = pytest.mark.interpreter
