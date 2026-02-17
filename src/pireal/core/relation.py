@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright (C) 2008-2018  Salvo "LtWorf" Tomaselli
 # Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #

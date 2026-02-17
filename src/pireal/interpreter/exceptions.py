@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright 2015-2017 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
