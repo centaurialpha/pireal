@@ -17,8 +17,7 @@
 
 import pytest
 
-from pireal.interpreter.tokens import (BINARY_OPERATORS, RESERVED_KEYWORDS,
-                                       TokenTypes)
+from pireal.interpreter.tokens import BINARY_OPERATORS, RESERVED_KEYWORDS, TokenTypes
 
 pytestmark = pytest.mark.interpreter
 
@@ -34,7 +33,7 @@ def test_binary_operators():
         "router": TokenTypes.ROUTER,
         "fouter": TokenTypes.FOUTER,
     }
-    assert BINARY_OPERATORS == expected
+    assert expected == BINARY_OPERATORS
 
 
 def test_reserved_keywords():
@@ -52,7 +51,7 @@ def test_reserved_keywords():
         "and": TokenTypes.AND,
         "or": TokenTypes.OR,
     }
-    assert RESERVED_KEYWORDS == expected
+    assert expected == RESERVED_KEYWORDS
 
 
 @pytest.mark.parametrize(

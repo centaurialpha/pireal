@@ -26,7 +26,7 @@ class UtilsTestCase(unittest.TestCase):
 
         expected_values = (True, False, True)
 
-        for date, expected in zip(dates, expected_values):
+        for date, expected in zip(dates, expected_values, strict=True):
             with self.subTest(date=date):
                 self.assertEqual(is_date(date), expected)
 
@@ -39,6 +39,6 @@ class UtilsTestCase(unittest.TestCase):
 
         expected_values = (True, True, False)
 
-        for t, expected in zip(times, expected_values):
+        for t, expected in zip(times, expected_values, strict=True):
             with self.subTest(t=t):
                 self.assertEqual(is_time(t), expected)

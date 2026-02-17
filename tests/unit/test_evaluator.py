@@ -19,8 +19,7 @@ import pytest
 
 from pireal.core.relation import Relation
 from pireal.interpreter.evaluator import Evaluator, UndefinedRelationError
-from pireal.interpreter.exceptions import (DuplicateRelationNameError,
-                                           UndefinedAttributeError)
+from pireal.interpreter.exceptions import DuplicateRelationNameError, UndefinedAttributeError
 from pireal.interpreter.lexer import Lexer
 from pireal.interpreter.parser import Parser
 from pireal.interpreter.scanner import Scanner

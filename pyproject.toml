@@ -40,7 +40,7 @@ packages = ["src/pireal"]
 [tool.ruff]
 line-length = 120
 target-version = "py312"
-extend-exclude = ["windows/*", "tests/*"]
+extend-exclude = ["windows/*"]
 
 [tool.ruff.lint]
 select = [
@@ -82,5 +82,7 @@ docs = [
 
 [tool.pytest.ini_options]
 markers = [
-    "interpreter: mark a test as a interpreter."
+    "interpreter: interpreter tests",
+    "gui: tests that require a QApplication and Qt widgets",
+    "integration: end-to-end tests with full app stack",
 ]

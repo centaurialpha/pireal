@@ -104,6 +104,7 @@ class QueryWidget(QWidget):
         tab_text = editor_widget.file.display_name
         index = self._editor_tabs.addTab(editor_widget, tab_text)
         self._editor_tabs.setTabToolTip(index, editor_widget.file.path)
+        self._editor_tabs.setCurrentIndex(index)
 
     def create_editor(self, file: File | None = None) -> "EditorWidget":
         editor = EditorWidget()
