@@ -102,5 +102,5 @@ def run():
     logger.info("Running Pireal %s...", __version__)
     logger.info("Python %s on %s-%s, Qt %s", python_version, os_name, system, QT_VERSION_STR)
 
-    app = Application(args)
+    app = Application()
     app.run()

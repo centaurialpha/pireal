@@ -15,33 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from pytest import Parser
+import pytest
 
-from pireal.core.relation import Relation
-from pireal.interpreter.evaluator import Evaluator
-from pireal.interpreter.lexer import Lexer
-from pireal.interpreter.parser import Parser
-from pireal.interpreter.scanner import Scanner
+from tests.helpers import assert_relation_equal, evaluate, make_relation
 
-
-def make_relation(header: list, rows: list[tuple]) -> Relation:
-    r = Relation()
-    r.header = header
-    for row in rows:
-        r.insert(row)
-    return r
-
-
-def evaluate(query: str, relations: dict) -> dict:
-    tree = Parser(Lexer(Scanner(query))).parse()
-    return Evaluator(relations).evaluate(tree)
-
-
-def assert_relation_equal(r1: Relation, r2: Relation):
-    assert r1.header == r2.header
-    assert r1.degree() == r2.degree()
-    assert r1.cardinality() == r2.cardinality()
-    assert r1.content == r2.content
+pytestmark = pytest.mark.integration
 
 
 def test_basic_project():
@@ -115,9 +93,7 @@ def test_select_nested_and():
             ("gabox", "49"),
         ],
     )
-    results = evaluate(
-        "q := select age>=33 and age<=35 and name='gabox' (r);", {"r": r}
-    )
+    results = evaluate("q := select age>=33 and age<=35 and name='gabox' (r);", {"r": r})
     expected = make_relation(["name", "age"], [("gabox", "34")])
     assert_relation_equal(results["q"], expected)
 

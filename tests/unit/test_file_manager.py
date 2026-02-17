@@ -71,23 +71,24 @@ def test_get_files_from_folder(tmp_path: Path):
 
 
 def test_generate_database():
-    # FIXME: arreglar
     r = relation.Relation()
     r.header = ["id", "name"]
     data = {("1", "Gabriel"), ("23", "Rodrigo")}
     for d in data:
         r.insert(d)
-
     relations = {"persona": r}
-    expected = "@persona:id,name\n1,Gabriel\n23,Rodrigo\n"
 
-    # assert expected in file_manager.generate_database(relations)
+    result = file_manager.generate_database(relations)
+
+    # Verificar header
+    assert result.startswith("@persona:id,name\n")
+    # Verificar que ambas tuplas están presentes, sin asumir orden
+    assert "1,Gabriel" in result
+    assert "23,Rodrigo" in result
 
 
 def test_sanitize_data():
-    data = (
-        "@t1:a,b,c\n1234,hola,chau\n4321,chau,hola\n\n@t2:d,e,f,g\n4321,AAA,BBB,CCC\n"
-    )
+    data = "@t1:a,b,c\n1234,hola,chau\n4321,chau,hola\n\n@t2:d,e,f,g\n4321,AAA,BBB,CCC\n"
     expected = {
         "tables": [
             {

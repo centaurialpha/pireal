@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import pytest
 
 from pireal.core.ordered_set import OrderedSet
 

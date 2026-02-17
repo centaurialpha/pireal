@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import argparse
 import logging
 import sys
 
@@ -30,9 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 class Application:
-    def __init__(self, args: argparse.Namespace):
-        self._args = args
-
+    def __init__(self):
         self._translator = None
         self._app = QApplication(sys.argv)
         self._app.setApplicationName("Pireal")

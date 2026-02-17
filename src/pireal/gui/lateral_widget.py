@@ -74,7 +74,7 @@ class RelationModel(QAbstractListModel):
         self._relations.clear()
         self.endResetModel()
 
-    def rowCount(self, index: QModelIndex, parent) -> int:
+    def rowCount(self, parent: QModelIndex | None = None) -> int:
         _ = parent
         return len(self._relations)
 
