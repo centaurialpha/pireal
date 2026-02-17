@@ -17,16 +17,7 @@
 
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtGui import QFont
-from PyQt6.QtWidgets import (
-    QDialog,
-    QHBoxLayout,
-    QLabel,
-    QMessageBox,
-    QPlainTextEdit,
-    QPushButton,
-    QStyle,
-    QVBoxLayout,
-)
+from PyQt6.QtWidgets import QDialog, QHBoxLayout, QLabel, QMessageBox, QPlainTextEdit, QPushButton, QStyle, QVBoxLayout
 
 from pireal.gui.main_window import Pireal
 from pireal.settings import CONFIG
@@ -38,16 +29,11 @@ class EditRelationDialog(QDialog):
     def __init__(self, rname, parent=None):
         super().__init__(parent)
         self._rname = rname
-        self.setWindowTitle(self.tr("Editor - {}".format(rname)))
+        self.setWindowTitle(self.tr(f"Editor - {rname}"))
         self.resize(400, 300)
         self.setModal(True)
         vbox = QVBoxLayout(self)
-        desc = QLabel(
-            self.tr(
-                "Ingresar los datos separados por comas y las tuplas\n"
-                "separadas por un salto de línea."
-            )
-        )
+        desc = QLabel(self.tr("Ingresar los datos separados por comas y las tuplas\nseparadas por un salto de línea."))
         vbox.addWidget(desc)
         self._editor = QPlainTextEdit()
         font, size = CONFIG.get("fontFamily"), CONFIG.get("fontSize")
@@ -85,11 +71,9 @@ class EditRelationDialog(QDialog):
                     self,
                     "Error",
                     self.tr(
-                        "La relación <b>{}</b> es de grado <b>{}</b>.<br> "
-                        "Ingresaste <b>{}</b> datos a la "
-                        "tupla <b>{}</b> :/".format(
-                            self._rname, relation.degree(), len(t), e + 1
-                        )
+                        f"La relación <b>{self._rname}</b> es de grado <b>{relation.degree()}</b>.<br> "
+                        f"Ingresaste <b>{len(t)}</b> datos a la "
+                        f"tupla <b>{e + 1}</b> :/"
                     ),
                 )
                 return

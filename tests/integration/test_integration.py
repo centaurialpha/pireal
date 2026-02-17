@@ -17,11 +17,11 @@
 
 from pytest import Parser
 
-from pireal.interpreter.lexer import Lexer
-from pireal.interpreter.scanner import Scanner
-from pireal.interpreter.parser import Parser
-from pireal.interpreter.evaluator import Evaluator
 from pireal.core.relation import Relation
+from pireal.interpreter.evaluator import Evaluator
+from pireal.interpreter.lexer import Lexer
+from pireal.interpreter.parser import Parser
+from pireal.interpreter.scanner import Scanner
 
 
 def make_relation(header: list, rows: list[tuple]) -> Relation:

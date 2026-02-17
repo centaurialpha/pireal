@@ -16,23 +16,8 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt6.QtCore import QEvent, Qt, QTimer, pyqtSignal
-from PyQt6.QtGui import (
-    QColor,
-    QFont,
-    QKeyEvent,
-    QTextCharFormat,
-    QTextCursor,
-    QTextDocument,
-)
-from PyQt6.QtWidgets import (
-    QFrame,
-    QHBoxLayout,
-    QLabel,
-    QPlainTextEdit,
-    QTextEdit,
-    QToolButton,
-    QToolTip,
-)
+from PyQt6.QtGui import QColor, QFont, QKeyEvent, QTextCharFormat, QTextCursor, QTextDocument
+from PyQt6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPlainTextEdit, QTextEdit, QToolButton, QToolTip
 
 from pireal import translations as tr
 from pireal.gui import highlighter, sidebar
@@ -88,16 +73,11 @@ class EditorNotification(QFrame):
 class BracketHighlighter:
     def _make_selection(self, block, column_index, matched):
         selection = QTextEdit.ExtraSelection()
-        if matched:
-            color = "#ffff00"
-        else:
-            color = "#ff0000"
+        color = "#ffff00" if matched else "#ff0000"
         selection.format.setBackground(QColor(color))
         selection.cursor = QTextCursor(block)
         selection.cursor.setPosition(block.position() + column_index)
-        selection.cursor.movePosition(
-            QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor
-        )
+        selection.cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor)
         return selection
 
     def _iterate_chars_forward(self, block, start_column_index):
@@ -112,9 +92,7 @@ class BracketHighlighter:
             block = block.next()
 
     def _iterate_chars_backward(self, block, start_column_index):
-        for col_index, char in reversed(
-            list(enumerate(block.text()[:start_column_index]))
-        ):
+        for col_index, char in reversed(list(enumerate(block.text()[:start_column_index]))):
             yield block, col_index, char
 
         block = block.previous()
@@ -143,9 +121,7 @@ class BracketHighlighter:
             return None, None
 
     def _highlight_bracket(self, bracket, block, column_index):
-        matched_block, matched_column_index = self._find_matching_bracket(
-            bracket, block, column_index
-        )
+        matched_block, matched_column_index = self._find_matching_bracket(bracket, block, column_index)
         if matched_block is not None:
             return [
                 self._make_selection(block, column_index, True),
@@ -157,9 +133,7 @@ class BracketHighlighter:
         block_text = block.text()
 
         if column_index < len(block_text) and block_text[column_index] in BRACKETS:
-            return self._highlight_bracket(
-                block_text[column_index], block, column_index
-            )
+            return self._highlight_bracket(block_text[column_index], block, column_index)
         return []
 
 
@@ -168,7 +142,7 @@ class Editor(QPlainTextEdit):
     errorCleared = pyqtSignal()
 
     def __init__(self, pfile=None):
-        super(Editor, self).__init__()
+        super().__init__()
         # Extra selections
         self._selections = {}
 
@@ -178,9 +152,7 @@ class Editor(QPlainTextEdit):
         theme_manager = get_theme_manager()
         theme_manager.themeChanged.connect(self._on_theme_changed)
 
-        self._error_color = theme_manager.current_scheme.editor.get(
-            EditorColorRole.ERROR
-        )
+        self._error_color = theme_manager.current_scheme.editor.get(EditorColorRole.ERROR)
 
         self._apply_theme(theme_manager.current_scheme)
 
@@ -257,9 +229,7 @@ class Editor(QPlainTextEdit):
         if not self.isReadOnly():
             selection = QTextEdit.ExtraSelection()
             selection.format.setBackground(self._current_line_color)
-            selection.format.setProperty(
-                QTextCharFormat.Property.FullWidthSelection, True
-            )
+            selection.format.setProperty(QTextCharFormat.Property.FullWidthSelection, True)
             selection.cursor = self.textCursor()
             selection.cursor.clearSelection()
             extra_selections.append(selection)
@@ -294,7 +264,7 @@ class Editor(QPlainTextEdit):
             block_number += 1
 
     def resizeEvent(self, e):
-        super(Editor, self).resizeEvent(e)
+        super().resizeEvent(e)
         self._sidebar.redimensionar()
         self._sidebar.update_viewport()
 
@@ -310,9 +280,7 @@ class Editor(QPlainTextEdit):
             cursor = self.textCursor()
         start_pos = end_pos = cursor.position()
         while not cursor.atStart():
-            cursor.movePosition(
-                QTextCursor.MoveOperation.Left, QTextCursor.MoveMode.KeepAnchor
-            )
+            cursor.movePosition(QTextCursor.MoveOperation.Left, QTextCursor.MoveMode.KeepAnchor)
             char = cursor.selectedText()[0]
             selected_text = cursor.selectedText()
             if (
@@ -325,9 +293,7 @@ class Editor(QPlainTextEdit):
             cursor.setPosition(start_pos)
         cursor.setPosition(end_pos)
         while not cursor.atEnd():
-            cursor.movePosition(
-                QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor
-            )
+            cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor)
             char = cursor.selectedText()[0]
             selected_text = cursor.selectedText()
             if (
@@ -434,9 +400,7 @@ class Editor(QPlainTextEdit):
 
             tcursor.endEditBlock()
 
-    def find_text(
-        self, search: str, cs=False, wo=False, backward=False, find_next=True
-    ):
+    def find_text(self, search: str, cs=False, wo=False, backward=False, find_next=True):
         flags = QTextDocument.FindFlag(0)
         if cs:
             flags = QTextDocument.FindFlag.FindCaseSensitively
@@ -489,9 +453,7 @@ class Editor(QPlainTextEdit):
 
         selection = QTextEdit.ExtraSelection()
         selection.cursor = self.textCursor()
-        selection.cursor.movePosition(
-            QTextCursor.MoveOperation.Start, QTextCursor.MoveMode.MoveAnchor
-        )
+        selection.cursor.movePosition(QTextCursor.MoveOperation.Start, QTextCursor.MoveMode.MoveAnchor)
         selection.cursor.movePosition(
             QTextCursor.MoveOperation.Down,
             QTextCursor.MoveMode.MoveAnchor,
@@ -519,15 +481,14 @@ class Editor(QPlainTextEdit):
             self.update_selections()
 
     def keyPressEvent(self, e: QKeyEvent | None) -> None:
-        if self.completer.popup().isVisible():
-            if e.key() in (
-                Qt.Key.Key_Enter,
-                Qt.Key.Key_Return,
-                Qt.Key.Key_Tab,
-                Qt.Key.Key_Escape,
-            ):
-                e.ignore()
-                return
+        if self.completer.popup().isVisible() and e.key() in (
+            Qt.Key.Key_Enter,
+            Qt.Key.Key_Return,
+            Qt.Key.Key_Tab,
+            Qt.Key.Key_Escape,
+        ):
+            e.ignore()
+            return
         super().keyPressEvent(e)
 
         if e.modifiers() or not e.text():
@@ -539,14 +500,11 @@ class Editor(QPlainTextEdit):
 
         if prefix != self.completer.completionPrefix():
             self.completer.setCompletionPrefix(prefix)
-            self.completer.popup().setCurrentIndex(
-                self.completer.completionModel().index(0, 0)
-            )
+            self.completer.popup().setCurrentIndex(self.completer.completionModel().index(0, 0))
 
         rect = self.cursorRect()
         rect.setWidth(
-            self.completer.popup().sizeHintForColumn(0)
-            + self.completer.popup().verticalScrollBar().sizeHint().width()
+            self.completer.popup().sizeHintForColumn(0) + self.completer.popup().verticalScrollBar().sizeHint().width()
         )
         self.completer.complete(rect)
 

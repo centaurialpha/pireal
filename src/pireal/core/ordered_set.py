@@ -58,7 +58,7 @@ class OrderedSet(MutableSet):
         return set(self) == other
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__, list(self))
+        return f"{self.__class__.__name__}({list(self)!r})"
 
     def __reversed__(self):
         return reversed(self._items)

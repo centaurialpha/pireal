@@ -17,13 +17,7 @@
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QGuiApplication
-from PyQt6.QtWidgets import (
-    QDialog,
-    QDialogButtonBox,
-    QPlainTextEdit,
-    QPushButton,
-    QVBoxLayout,
-)
+from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QPlainTextEdit, QPushButton, QVBoxLayout
 
 from pireal.gui.sql_highlighter import SQLHighlighter
 from pireal.gui.theme.manager import get_theme_manager

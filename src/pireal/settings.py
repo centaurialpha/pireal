@@ -72,12 +72,8 @@ class Settings(QObject):
 
         self.font_family: str = self._qs.value("font_family", _get_default_font())
         self.font_size: int = self._qs.value("font_size", 12, type=int)
-        self.highlight_current_line: bool = self._qs.value(
-            "highlight_current_line", True, type=bool
-        )
-        self.match_parenthesis: bool = self._qs.value(
-            "match_parenthesis", True, type=bool
-        )
+        self.highlight_current_line: bool = self._qs.value("highlight_current_line", True, type=bool)
+        self.match_parenthesis: bool = self._qs.value("match_parenthesis", True, type=bool)
         self.dark_mode: bool = self._qs.value("dark_mode", True, type=bool)
 
         default_theme = "dark" if self.dark_mode else "light"

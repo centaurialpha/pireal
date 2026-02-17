@@ -16,8 +16,6 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 
-from typing import Dict, List, Optional
-
 from PyQt6.QtCore import QObject, pyqtSignal
 
 from pireal.core.file_manager import generate_database
@@ -32,8 +30,8 @@ class DB(QObject):
 
     def __init__(self):
         super().__init__()
-        self._relations: Dict[str, Relation] = {}
-        self._query_results: List[str] = []
+        self._relations: dict[str, Relation] = {}
+        self._query_results: list[str] = []
 
         self._modified = False
         self._is_active = False
@@ -83,10 +81,10 @@ class DB(QObject):
         self.modified = True
         self.relationsChanged.emit([])
 
-    def get(self, relation_name: str) -> Optional[Relation]:
+    def get(self, relation_name: str) -> Relation | None:
         return self._relations.get(relation_name)
 
-    def update(self, relations: Dict[str, Relation]) -> None:
+    def update(self, relations: dict[str, Relation]) -> None:
         for name, relation in relations.items():
             is_new = name not in self._relations
             self._relations[name] = relation

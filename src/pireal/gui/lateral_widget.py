@@ -17,16 +17,9 @@
 
 import enum
 from collections import namedtuple
-from typing import Optional, cast
+from typing import cast
 
-from PyQt6.QtCore import (
-    QAbstractItemModel,
-    QAbstractListModel,
-    QModelIndex,
-    QRect,
-    Qt,
-    pyqtSignal,
-)
+from PyQt6.QtCore import QAbstractItemModel, QAbstractListModel, QModelIndex, QRect, Qt, pyqtSignal
 from PyQt6.QtGui import QPainter
 from PyQt6.QtWidgets import (
     QFrame,
@@ -81,7 +74,7 @@ class RelationModel(QAbstractListModel):
         self._relations.clear()
         self.endResetModel()
 
-    def rowCount(self, parent: QModelIndex = QModelIndex()) -> int:
+    def rowCount(self, index: QModelIndex, parent) -> int:
         _ = parent
         return len(self._relations)
 
@@ -132,7 +125,7 @@ class RelationListView(QFrame):
 class RelationDelegate(QStyledItemDelegate):
     def paint(
         self,
-        painter: Optional[QPainter],
+        painter: QPainter | None,
         option: "QStyleOptionViewItem",
         index: QModelIndex,
     ) -> None:
@@ -155,9 +148,7 @@ class RelationDelegate(QStyledItemDelegate):
         style = opt.widget.style()
         opt.text = ""
         if style is not None:
-            style.drawControl(
-                QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget
-            )
+            style.drawControl(QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget)
 
         rect = opt.rect
 
@@ -223,18 +214,10 @@ class LateralWidget(QSplitter):
             RelationItemType.Result: self._results_model,
         }
 
-        self._relations_list.view.setContextMenuPolicy(
-            Qt.ContextMenuPolicy.CustomContextMenu
-        )
-        self._relations_list.view.customContextMenuRequested.connect(
-            self._on_relations_context_menu
-        )
-        self._relations_list.view.clicked.connect(
-            lambda index: self.relationClicked.emit(index.row())
-        )
-        self._results_list.view.clicked.connect(
-            lambda index: self.resultClicked.emit(index.row())
-        )
+        self._relations_list.view.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self._relations_list.view.customContextMenuRequested.connect(self._on_relations_context_menu)
+        self._relations_list.view.clicked.connect(lambda index: self.relationClicked.emit(index.row()))
+        self._results_list.view.clicked.connect(lambda index: self.resultClicked.emit(index.row()))
 
     def _on_relations_context_menu(self, pos):
         index = self._relations_list.view.indexAt(pos)
@@ -242,9 +225,8 @@ class LateralWidget(QSplitter):
             return
         menu = QMenu(self)
         delete_action = menu.addAction(tr.TR_MENU_SCHEME_REMOVE_RELATION)
-        if menu.exec(self._relations_list.view.viewport().mapToGlobal(pos)):
-            if delete_action:
-                self.deleteRelationRequested.emit(index.row())
+        if menu.exec(self._relations_list.view.viewport().mapToGlobal(pos)) and delete_action:
+            self.deleteRelationRequested.emit(index.row())
 
     def remove_relation(self, index: int):
         self._relations_model.remove_relation(index)

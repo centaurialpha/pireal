@@ -65,7 +65,7 @@ from pireal.interpreter.scanner import Scanner
 from pireal.interpreter.tokens import BINARY_OPERATORS, Token, TokenTypes
 
 
-class Parser(object):
+class Parser:
     """The Parser.
 
     Is the part that really understands the syntax of
@@ -189,10 +189,7 @@ class Parser(object):
         return node
 
     def operand(self):
-        if self.token.type is TokenTypes.ID:
-            node = self.variable()
-        else:
-            node = self.literal()
+        node = self.variable() if self.token.type is TokenTypes.ID else self.literal()
         return node
 
     def literal(self):

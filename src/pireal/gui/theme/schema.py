@@ -154,7 +154,7 @@ class EditorColors:
             sidebar_background=sidebar_bg,
             sidebar_foreground=sidebar_fg,
             error=QColor("#DD4040"),
-            success=rotate_hue(highlight -60),
+            success=rotate_hue(highlight - 60),
         )
 
     @classmethod
@@ -184,12 +184,8 @@ class EditorColors:
             selection_fg=parse_color(data["selection_fg"]),
             bracket_match=parse_color(data.get("bracket_match", "#ffff00")),
             bracket_mismatch=parse_color(data.get("bracket_mismatch", "#ff0000")),
-            sidebar_background=parse_color(
-                data.get("sidebar_background", data.get("background", "#ffffff"))
-            ),
-            sidebar_foreground=parse_color(
-                data.get("sidebar_foreground", data.get("line_number_fg", "#808080"))
-            ),
+            sidebar_background=parse_color(data.get("sidebar_background", data.get("background", "#ffffff"))),
+            sidebar_foreground=parse_color(data.get("sidebar_foreground", data.get("line_number_fg", "#808080"))),
             error=parse_color(data["error"]),
             success=parse_color(data.get("success", "#98c379")),
         )

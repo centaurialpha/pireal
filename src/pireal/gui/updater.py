@@ -19,8 +19,10 @@ from urllib.error import URLError
 from urllib.request import urlopen
 
 from packaging.version import Version
-from PyQt6.QtCore import QObject
-from PyQt6.QtCore import pyqtSignal as Signal
+from PyQt6.QtCore import (
+    QObject,
+    pyqtSignal as Signal,
+)
 
 from pireal import __version__
 

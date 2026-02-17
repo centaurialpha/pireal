@@ -37,8 +37,35 @@ path = "pireal/__init__.py"
 [tool.hatch.build.targets.wheel]
 packages = ["src/pireal"]
 
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["windows/*", "tests/*"]
+
 [tool.ruff.lint]
-exclude = ["windows/*", "tests/*"]
+select = [
+    # pycodestyle
+    "E",
+    # pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+split-on-trailing-comma = true
+force-wrap-aliases = true
+force-single-line = false
 
 [dependency-groups]
 dev = [

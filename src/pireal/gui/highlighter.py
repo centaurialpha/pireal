@@ -16,11 +16,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt6.QtCore import QRegularExpression
-from PyQt6.QtGui import (
-    QFont,
-    QSyntaxHighlighter,
-    QTextCharFormat,
-)
+from PyQt6.QtGui import QFont, QSyntaxHighlighter, QTextCharFormat
 
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.gui.theme.schema import ColorScheme, EditorColorRole

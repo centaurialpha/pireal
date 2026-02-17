@@ -16,7 +16,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from dataclasses import dataclass, field
-from typing import List, Union
+from typing import Union
 
 from PyQt6.QtGui import QAction, QIcon
 
@@ -40,7 +40,7 @@ class Action:
 @dataclass
 class Menu:
     name: str
-    items: List[Union["Menu", Action, Section, str]] = field(default_factory=list)
+    items: list[Union["Menu", Action, Section, str]] = field(default_factory=list)
 
     def add_item(self, item):
         self.items.append(item)
@@ -83,9 +83,7 @@ class MenuBuilder:
 
 file_menu = Menu(tr.TR_MENU_FILE)
 file_menu.add_item(Section("Database"))
-file_menu.add_item(
-    Action(tr.TR_MENU_FILE_NEW_DB, "controller:create_database", shorcut="Ctrl+N")
-)
+file_menu.add_item(Action(tr.TR_MENU_FILE_NEW_DB, "controller:create_database", shorcut="Ctrl+N"))
 file_menu.add_item(
     Action(
         tr.TR_MENU_FILE_NEW_DB_FROM_TEXT,
@@ -93,46 +91,28 @@ file_menu.add_item(
         shorcut="Ctrl+Shift+N",
     )
 )
-file_menu.add_item(
-    Action(tr.TR_MENU_FILE_OPEN_DB, "controller:open_database", shorcut="Ctrl+O")
-)
+file_menu.add_item(Action(tr.TR_MENU_FILE_OPEN_DB, "controller:open_database", shorcut="Ctrl+O"))
 file_menu.add_item("separator")
-file_menu.add_item(
-    Action(tr.TR_MENU_FILE_SAVE_DB, "controller:save_database", shorcut="Ctrl+S")
-)
+file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_DB, "controller:save_database", shorcut="Ctrl+S"))
 file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_DB, "controller:save_database_as"))
-file_menu.add_item(
-    Action(tr.TR_MENU_FILE_CLOSE_DB, "controller:close_database", shorcut="Ctrl+W")
-)
+file_menu.add_item(Action(tr.TR_MENU_FILE_CLOSE_DB, "controller:close_database", shorcut="Ctrl+W"))
 file_menu.add_item(Section("Query"))
-file_menu.add_item(
-    Action(tr.TR_MENU_FILE_NEW_QUERY, "controller:new_query", shorcut="Ctrl+T")
-)
-file_menu.add_item(
-    Action(tr.TR_MENU_FILE_OPEN_QUERY, "controller:open_query", shorcut="Ctrl+Shift+O")
-)
+file_menu.add_item(Action(tr.TR_MENU_FILE_NEW_QUERY, "controller:new_query", shorcut="Ctrl+T"))
+file_menu.add_item(Action(tr.TR_MENU_FILE_OPEN_QUERY, "controller:open_query", shorcut="Ctrl+Shift+O"))
 file_menu.add_item(Action(tr.TR_MENU_FILE_CLOSE_QUERY, "controller:close_query"))
 file_menu.add_item("separator")
-file_menu.add_item(
-    Action(tr.TR_MENU_FILE_SAVE_QUERY, "controller:save_query", shorcut="Ctrl+Shift+S")
-)
+file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_QUERY, "controller:save_query", shorcut="Ctrl+Shift+S"))
 file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_QUERY, "controller:save_query_as"))
 file_menu.add_item("separator")
 file_menu.add_item(Action(tr.TR_MENU_FILE_QUIT, "controller:quit", shorcut="Ctrl+Q"))
 
 scheme_menu = Menu("&Scheme")
-scheme_menu.add_item(
-    Action(tr.TR_MENU_SCHEME_CREATE_RELATION, "controller:create_relation")
-)
+scheme_menu.add_item(Action(tr.TR_MENU_SCHEME_CREATE_RELATION, "controller:create_relation"))
 # scheme_menu.add_item(
 #     Action(tr.TR_MENU_SCHEME_REMOVE_RELATION, "controller:remove_relation")
 # )
 scheme_menu.add_item("separator")
-scheme_menu.add_item(
-    Action(
-        tr.TR_MENU_SCHEME_EXECUTE_QUERIES, "controller:execute_queries", shorcut="F5"
-    )
-)
+scheme_menu.add_item(Action(tr.TR_MENU_SCHEME_EXECUTE_QUERIES, "controller:execute_queries", shorcut="F5"))
 
 help_menu = Menu("&Help")
 help_menu.add_item(Action(tr.TR_MENU_HELP_SHOW_TOUR, "controller:show_tour"))

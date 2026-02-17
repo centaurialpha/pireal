@@ -17,15 +17,13 @@
 
 import logging
 
-from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt
-from PyQt6.QtCore import pyqtSlot as Slot
-from PyQt6.QtWidgets import (
-    QAbstractItemView,
-    QHeaderView,
-    QInputDialog,
-    QItemDelegate,
-    QTableView,
+from PyQt6.QtCore import (
+    QAbstractTableModel,
+    QModelIndex,
+    Qt,
+    pyqtSlot as Slot,
 )
+from PyQt6.QtWidgets import QAbstractItemView, QHeaderView, QInputDialog, QItemDelegate, QTableView
 
 from pireal import translations as tr
 from pireal.gui.theme.manager import get_theme_manager
@@ -40,21 +38,19 @@ class RelationModel(QAbstractTableModel):
         self.editable = True
         self.relation = relation_object
         theme_manager = get_theme_manager()
-        self._null_text_color = theme_manager.current_scheme.editor.get(
-            EditorColorRole.COMMENT
-        )
+        self._null_text_color = theme_manager.current_scheme.editor.get(EditorColorRole.COMMENT)
         theme_manager.themeChanged.connect(self._on_theme_changed)
 
     def _on_theme_changed(self, scheme):
         self._null_text_color = scheme.editor.get(EditorColorRole.COMMENT)
 
-    def rowCount(self, parent=QModelIndex()):
+    def rowCount(self, parent=QModelIndex):
         """Devuelve la cardinalidad de la relación"""
         if parent.isValid():
             return 0
         return self.relation.cardinality()
 
-    def columnCount(self, parent=QModelIndex()):
+    def columnCount(self, parent=QModelIndex):
         """Devuelve el grado de la relación"""
         if parent.isValid():
             return 0
@@ -114,7 +110,7 @@ class View(QTableView):
     """Vista"""
 
     def __init__(self):
-        super(View, self).__init__()
+        super().__init__()
         # self.setAlternatingRowColors(CONFIG.get('alternatingRowColors'))
         self.verticalHeader().hide()
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -124,7 +120,7 @@ class View(QTableView):
         self.horizontalHeader().setHighlightSections(False)
 
     def resizeEvent(self, event):
-        super(View, self).resizeEvent(event)
+        super().resizeEvent(event)
         self.adjust_columns()
 
     def adjust_columns(self):
@@ -140,7 +136,7 @@ class View(QTableView):
 
 class Header(QHeaderView):
     def __init__(self, orientation=Qt.Orientation.Horizontal, parent=None):
-        super(Header, self).__init__(orientation, parent)
+        super().__init__(orientation, parent)
         self.editable = True
         self.setSectionsClickable(True)
         self.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
@@ -152,9 +148,7 @@ class Header(QHeaderView):
     def _on_section_double_clicked(self, index):
         if not self.editable:
             return
-        name, ok = QInputDialog.getText(
-            self, tr.TR_INPUT_DIALOG_HEADER_TITLE, tr.TR_INPUT_DIALOG_HEADER_BODY
-        )
+        name, ok = QInputDialog.getText(self, tr.TR_INPUT_DIALOG_HEADER_TITLE, tr.TR_INPUT_DIALOG_HEADER_BODY)
         if ok:
             self.model().setHeaderData(index, Qt.Orientation.Horizontal, name.strip())
 

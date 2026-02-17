@@ -77,6 +77,4 @@ class DBHighlighter(QSyntaxHighlighter):
         iterator = QRegularExpression(r"\b\d+(\.\d+)?\b").globalMatch(text)
         while iterator.hasNext():
             match = iterator.next()
-            self.setFormat(
-                match.capturedStart(), match.capturedLength(), self._number_fmt
-            )
+            self.setFormat(match.capturedStart(), match.capturedLength(), self._number_fmt)

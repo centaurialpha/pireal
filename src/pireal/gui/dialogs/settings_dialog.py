@@ -44,10 +44,7 @@ class SettingsDialog(QDialog):
         vbox.addWidget(self._build_editor_group())
         vbox.addWidget(self._build_font_group())
 
-        button_box = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Save
-            | QDialogButtonBox.StandardButton.Cancel
-        )
+        button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         button_box.rejected.connect(self.reject)
         button_box.accepted.connect(self.accept)
         vbox.addWidget(button_box)
@@ -86,9 +83,7 @@ class SettingsDialog(QDialog):
         layout = QGridLayout(group)
 
         self._combo_font_family = QFontComboBox()
-        self._combo_font_family.setCurrentFont(
-            QFontDatabase.font(settings.font_family, "", settings.font_size)
-        )
+        self._combo_font_family.setCurrentFont(QFontDatabase.font(settings.font_family, "", settings.font_size))
         self._combo_font_family.currentFontChanged.connect(self._update_font_sizes)
 
         self._combo_font_size = QComboBox()

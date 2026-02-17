@@ -84,11 +84,7 @@ class Lexer:
         chars = []
 
         while self.sc.char is not None and not self.sc.char.isspace():
-            if (
-                self.sc.char in ("_",)
-                or self.sc.char.isdigit()
-                or self.sc.char.isalpha()
-            ):
+            if self.sc.char in ("_",) or self.sc.char.isdigit() or self.sc.char.isalpha():
                 chars.append(self.sc.char)
                 self.sc.next()
             else:
@@ -113,13 +109,9 @@ class Lexer:
             while self.sc.char is not None and self.sc.char.isdigit():
                 digits.append(self.sc.char)
                 self.sc.next()
-            return Token(
-                type=TokenTypes.REAL, value=float("".join(digits)), line=line, col=col
-            )
+            return Token(type=TokenTypes.REAL, value=float("".join(digits)), line=line, col=col)
 
-        return Token(
-            type=TokenTypes.INTEGER, value=int("".join(digits)), line=line, col=col
-        )
+        return Token(type=TokenTypes.INTEGER, value=int("".join(digits)), line=line, col=col)
 
     def _read_string(self) -> Token:
         line, col = self.sc.lineno, self.sc.colno
@@ -169,18 +161,12 @@ class Lexer:
         # Is date? is time? or just string?
         ok, date = is_date(string)
         if ok:
-            return Token(
-                type=TokenTypes.DATE, value=date, line=self.sc.lineno, col=self.sc.colno
-            )
+            return Token(type=TokenTypes.DATE, value=date, line=self.sc.lineno, col=self.sc.colno)
 
         ok, time = is_time(string)
         if ok:
-            return Token(
-                type=TokenTypes.TIME, value=time, line=self.sc.lineno, col=self.sc.colno
-            )
-        return Token(
-            type=TokenTypes.STRING, value=string, line=self.sc.lineno, col=self.sc.colno
-        )
+            return Token(type=TokenTypes.TIME, value=time, line=self.sc.lineno, col=self.sc.colno)
+        return Token(type=TokenTypes.STRING, value=string, line=self.sc.lineno, col=self.sc.colno)
 
     def next_token(self) -> Token:
         """Lexical analyzer.
@@ -228,9 +214,7 @@ class Lexer:
             try:
                 token_type = TokenTypes(self.sc.char)
             except ValueError:
-                raise InvalidSyntaxError(
-                    self.sc.lineno, self.sc.colno, self.sc.char
-                ) from None
+                raise InvalidSyntaxError(self.sc.lineno, self.sc.colno, self.sc.char) from None
 
             return self._make_token(token_type)
         return Token(TokenTypes.EOF, None)

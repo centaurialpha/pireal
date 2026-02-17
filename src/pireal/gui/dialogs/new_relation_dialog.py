@@ -15,8 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtCore import pyqtSignal as Signal
+from PyQt6.QtCore import (
+    Qt,
+    pyqtSignal as Signal,
+)
 from PyQt6.QtGui import QStandardItemModel
 from PyQt6.QtWidgets import (
     QDialog,
@@ -141,15 +143,11 @@ class NewRelationDialog(QDialog):
     def _create(self):
         relation_name = self._line_relation_name.text().strip()
         if not relation_name:
-            QMessageBox.critical(
-                self, "Error", tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME
-            )
+            QMessageBox.critical(self, "Error", tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME)
             return
         db = Registry.get("db", DB)
         if db.get(relation_name) is not None:
-            QMessageBox.information(
-                self, "Error", tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name)
-            )
+            QMessageBox.information(self, "Error", tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name))
             return
         # Table model
         model = self._view.model()

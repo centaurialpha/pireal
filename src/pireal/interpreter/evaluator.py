@@ -17,10 +17,7 @@
 
 from pireal.core.relation import Relation
 from pireal.interpreter import rast as ast
-from pireal.interpreter.exceptions import (
-    DuplicateRelationNameError,
-    UndefinedAttributeError,
-)
+from pireal.interpreter.exceptions import DuplicateRelationNameError, UndefinedAttributeError
 from pireal.interpreter.tokens import TokenTypes
 
 OPERATOR_MAP = {
@@ -125,9 +122,8 @@ class Evaluator(ast.NodeVisitor):
 
     def _validate_condition_attrs(self, node: object, relation: Relation) -> None:
         if isinstance(node, ast.Condition):
-            if isinstance(node.op1, ast.Variable):
-                if node.op1.value not in relation.header:
-                    raise UndefinedAttributeError(node.op1.value, relation.name)
+            if isinstance(node.op1, ast.Variable) and node.op1.value not in relation.header:
+                raise UndefinedAttributeError(node.op1.value, relation.name)
         elif isinstance(node, ast.BooleanExpression):
             self._validate_condition_attrs(node.left_formula, relation)
             self._validate_condition_attrs(node.right_formula, relation)

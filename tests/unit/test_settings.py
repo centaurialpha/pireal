@@ -15,8 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import pytest
 from unittest.mock import patch
+
+import pytest
+
 from pireal.settings import Settings
 
 

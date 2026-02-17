@@ -15,19 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Optional
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QMessageBox,
-    QPushButton,
-    QTabWidget,
-    QVBoxLayout,
-    QWidget,
-)
+from PyQt6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMessageBox, QPushButton, QTabWidget, QVBoxLayout, QWidget
 
 from pireal import translations as tr
 from pireal.core.pireal_file import File, is_example_file
@@ -103,9 +93,7 @@ class QueryWidget(QWidget):
         editor_widget.editor.errorOccurred.connect(
             lambda line, msg: status_bar.show_message(f"Line {line}: {msg}", timeout=0, error=True)
         )
-        editor_widget.editor.errorCleared.connect(
-            lambda: status_bar.show_message("", timeout=0)
-        )
+        editor_widget.editor.errorCleared.connect(lambda: status_bar.show_message("", timeout=0))
         editor_widget.editor.cursorPositionChanged.connect(
             lambda: self._update_line_col(
                 editor_widget.editor.textCursor().blockNumber() + 1,
@@ -117,7 +105,7 @@ class QueryWidget(QWidget):
         index = self._editor_tabs.addTab(editor_widget, tab_text)
         self._editor_tabs.setTabToolTip(index, editor_widget.file.path)
 
-    def create_editor(self, file: Optional[File] = None) -> "EditorWidget":
+    def create_editor(self, file: File | None = None) -> "EditorWidget":
         editor = EditorWidget()
         if file is not None:
             editor.file = file
@@ -202,9 +190,7 @@ class EditorWidget(QWidget):
         self.editor = Editor()
         vbox.addWidget(self.editor)
 
-        self.editor.document().modificationChanged.connect(
-            self._on_modification_changed
-        )
+        self.editor.document().modificationChanged.connect(self._on_modification_changed)
 
         self._search_widget = SearchWidget(self.editor)
         self._search_widget.hide()

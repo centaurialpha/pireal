@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 import shutil
+import sys
 from subprocess import call
 
 PYINSTALLER_CMD = [

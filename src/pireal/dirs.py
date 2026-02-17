@@ -40,12 +40,7 @@ def _data_dir() -> Path:
     else:
         # In windows and mac, use standard paths provided by Qt
         pireal_data_dir = (
-            Path(
-                QStandardPaths.writableLocation(
-                    QStandardPaths.StandardLocation.GenericDataLocation
-                )
-            )
-            / pireal_dir_name
+            Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.GenericDataLocation)) / pireal_dir_name
         )
 
     return pireal_data_dir
@@ -53,14 +48,7 @@ def _data_dir() -> Path:
 
 def _get_databases_location() -> Path:
     """Return the path used for store the user databases."""
-    db_dir = (
-        Path(
-            QStandardPaths.writableLocation(
-                QStandardPaths.StandardLocation.HomeLocation
-            )
-        )
-        / "PirealDBs"
-    )
+    db_dir = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.HomeLocation)) / "PirealDBs"
 
     return db_dir
 

@@ -62,9 +62,7 @@ def _build_multipart(fields: dict, file_path: Path) -> tuple[bytes, str]:
         body.write(f"{value}\r\n".encode())
     mime = mimetypes.guess_type(str(file_path))[0] or "application/octet-stream"
     body.write(f"--{boundary}\r\n".encode())
-    body.write(
-        f'Content-Disposition: form-data; name="photo"; filename="{file_path.name}"\r\n'.encode()
-    )
+    body.write(f'Content-Disposition: form-data; name="photo"; filename="{file_path.name}"\r\n'.encode())
     body.write(f"Content-Type: {mime}\r\n\r\n".encode())
     body.write(file_path.read_bytes())
     body.write(b"\r\n")
@@ -93,9 +91,7 @@ class _TelegramSender(QThread):
         data = urlencode({"chat_id": chat_id, "text": self._text}).encode()
         if self._image_path:
             url = f"https://api.telegram.org/bot{token}/sendPhoto"
-            body, content_type = _build_multipart(
-                {"chat_id": chat_id, "caption": self._text}, self._image_path
-            )
+            body, content_type = _build_multipart({"chat_id": chat_id, "caption": self._text}, self._image_path)
             req = Request(url, data=body, method="POST")
             req.add_header("Content-Type", content_type)
         else:
@@ -121,9 +117,7 @@ class FeedbackDialog(QDialog):
         self.setWindowTitle(tr.TR_FEEDBACK_TITLE)
         self.setMinimumWidth(480)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-        self.setWindowFlags(
-            self.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint
-        )
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint)
 
         self._sender: _TelegramSender | None = None
         self._image_path: Path | None = None
@@ -211,9 +205,7 @@ class FeedbackDialog(QDialog):
         cancel_btn = QPushButton(tr.TR_CANCEL)
         cancel_btn.setFlat(True)
         self._button_box.addButton(cancel_btn, QDialogButtonBox.ButtonRole.RejectRole)
-        self._button_box.addButton(
-            self._send_btn, QDialogButtonBox.ButtonRole.AcceptRole
-        )
+        self._button_box.addButton(self._send_btn, QDialogButtonBox.ButtonRole.AcceptRole)
         self._button_box.rejected.connect(self.reject)
         self._button_box.accepted.connect(self._on_send)
         layout.addWidget(self._button_box)
@@ -225,9 +217,7 @@ class FeedbackDialog(QDialog):
 
     @pyqtSlot()
     def _on_attach(self):
-        path, _ = QFileDialog.getOpenFileName(
-            self, tr.TR_FEEDBACK_ATTACH_DIALOG, "", tr.TR_FEEDBACK_ATTACH_FILTER
-        )
+        path, _ = QFileDialog.getOpenFileName(self, tr.TR_FEEDBACK_ATTACH_DIALOG, "", tr.TR_FEEDBACK_ATTACH_FILTER)
         if not path:
             return
         self._image_path = Path(path)
@@ -284,11 +274,7 @@ class FeedbackDialog(QDialog):
             from pireal.gui.theme.manager import get_theme_manager
             from pireal.gui.theme.schema import EditorColorRole
 
-            color = (
-                get_theme_manager()
-                .current_scheme.editor.get(EditorColorRole.ERROR)
-                .name()
-            )
+            color = get_theme_manager().current_scheme.editor.get(EditorColorRole.ERROR).name()
         else:
             palette = self._status_label.palette()
             color = palette.color(palette.ColorRole.Link).name()

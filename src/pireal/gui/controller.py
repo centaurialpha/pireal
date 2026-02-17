@@ -19,13 +19,7 @@ import logging
 from pathlib import Path
 
 from PyQt6.QtCore import QSettings, pyqtSlot
-from PyQt6.QtWidgets import (
-    QFileDialog,
-    QMessageBox,
-    QStackedWidget,
-    QVBoxLayout,
-    QWidget,
-)
+from PyQt6.QtWidgets import QFileDialog, QMessageBox, QStackedWidget, QVBoxLayout, QWidget
 
 from pireal import translations as tr
 from pireal.core.db import DB
@@ -60,12 +54,8 @@ class Controller(QWidget):
         box.addWidget(self._stack)
 
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
-        self._last_open_folder: str = qsettings.value(
-            "last_open_folder", type=str
-        ) or str(Path.home())
-        self._recent_databases: list[str] = qsettings.value(
-            "recent_databases", type=list
-        )
+        self._last_open_folder: str = qsettings.value("last_open_folder", type=str) or str(Path.home())
+        self._recent_databases: list[str] = qsettings.value("recent_databases", type=list)
 
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
         db = Registry.get("db", DB)
@@ -220,9 +210,7 @@ class Controller(QWidget):
 
         if not filename:
             logger.info("Filename not provided")
-            filename, _ = QFileDialog.getOpenFileName(
-                self, "Ola", self._last_open_folder, ""
-            )
+            filename, _ = QFileDialog.getOpenFileName(self, "Ola", self._last_open_folder, "")
             if not filename:
                 logger.info("Filename not selected")
                 return
@@ -253,9 +241,7 @@ class Controller(QWidget):
                 self,
                 tr.TR_MSG_SAVE_CHANGES,
                 tr.TR_MSG_SAVE_CHANGES_BODY,
-                QMessageBox.StandardButton.Yes
-                | QMessageBox.StandardButton.No
-                | QMessageBox.StandardButton.Cancel,
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Cancel,
             )
             if value == QMessageBox.StandardButton.Cancel:
                 return
@@ -268,9 +254,7 @@ class Controller(QWidget):
     @pyqtSlot()
     def open_query(self, filename="", remember=True):
         if not filename:
-            filename, _ = QFileDialog.getOpenFileName(
-                self, "open quiery", self._last_open_folder, ""
-            )
+            filename, _ = QFileDialog.getOpenFileName(self, "open quiery", self._last_open_folder, "")
             if not filename:
                 return
 
@@ -347,15 +331,10 @@ class Controller(QWidget):
         dialog.exec()
 
     def _show_one_database_warning(self):
-        QMessageBox.information(
-            self, "ola", "Solo se puede tener una base de datos abierta a la vez."
-        )
+        QMessageBox.information(self, "ola", "Solo se puede tener una base de datos abierta a la vez.")
 
     def save_database(self):
         db = Registry.get("db", DB)
-        print(
-            f"is_active={db.is_active}, modified={db.modified}, is_new={db.is_new}, file={db.file}, file._filename={db.file._filename if db.file else None}"
-        )
         if not db.is_active or not db.modified:
             return
 
