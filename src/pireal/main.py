@@ -46,6 +46,45 @@ if ROOT_DIR not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 
+class ColoredFormatter(logging.Formatter):
+    COLORS = {
+        "DEBUG": "\033[36m",
+        "INFO": "\033[32m",
+        "WARNING": "\033[33m",
+        "ERROR": "\033[31m",
+        "CRITICAL": "\033[1;31m",
+    }
+    RESET = "\033[0m"
+
+    def __init__(self, fmt=None, datefmt=None, use_colors=True):
+        super().__init__(fmt, datefmt)
+        self.use_colors = use_colors and self._supports_color()
+
+    def _supports_color(self) -> bool:
+        # No usar colores si no es una terminal (ej: piped output)
+        if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
+            return False
+
+        # En Windows, habilitar ANSI (funciona en Win10+)
+        if platform.system() == "Windows":
+            try:
+                import os
+
+                os.system("")  # Habilita ANSI en consolas Win10+
+                return True
+            except Exception:
+                return False
+
+        return True
+
+    def format(self, record):
+        if self.use_colors:
+            levelname = record.levelname
+            if levelname in self.COLORS:
+                record.levelname = f"{self.COLORS[levelname]}{levelname}{self.RESET}"
+        return super().format(record)
+
+
 def setup_logger(level: int = logging.INFO) -> None:
     """
     Configure application logging.
@@ -58,7 +97,7 @@ def setup_logger(level: int = logging.INFO) -> None:
     date_format = "%Y-%m-%d %H:%M:%S"
 
     console_handler = logging.StreamHandler()
-    console_handler.setFormatter(logging.Formatter(console_fmt))
+    console_handler.setFormatter(ColoredFormatter(console_fmt))
 
     log_file = LOGS_DIR / "pireal.log"
 
