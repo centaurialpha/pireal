@@ -30,7 +30,7 @@ from PyQt6.QtCore import (
     pyqtSignal,
     pyqtSlot as Slot,
 )
-from PyQt6.QtGui import QPainter, QPalette, QPixmap
+from PyQt6.QtGui import QFont, QPainter, QPalette, QPixmap
 from PyQt6.QtWidgets import (
     QApplication,
     QFrame,
@@ -321,9 +321,10 @@ class StartPage(QWidget):
         super().__init__(parent)
 
         main_layout = QVBoxLayout(self)
-        title_lbl = QLabel('<b><font color="#1565c0">π</font></b>real')
-        font = title_lbl.font()
-        font.setPointSize(42)
+        palette = self.palette()
+        highlight = palette.color(palette.ColorRole.Highlight).name()
+        title_lbl = QLabel(f'<b><font color="{highlight}">π</font><span style="letter-spacing:2px;">real</span></b>')
+        font = QFont("Monospace", 42, QFont.Weight.Bold)
         title_lbl.setFont(font)
 
         subtitle_lbl = QLabel("free and open source Relational Algebra Interpreter")
