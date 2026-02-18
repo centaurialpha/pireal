@@ -60,12 +60,42 @@ class Pireal(QMainWindow):
         db.hasModified.connect(self._update_title)
         db.databaseStateChanged.connect(self._update_title)
 
+        if check_updates:
+            self._start_updater()
+
         self._status_bar.playClicked.connect(controller.execute_queries)
         self._status_bar.gearClicked.connect(self._show_settings)
         self._status_bar.theme_button.set_themes(theme_manager.themes())
         self._status_bar.theme_button.themeRequested.connect(self._on_theme_requested)
         if True:
             self._status_bar.feedbackClicked.connect(controller.send_feedback)
+
+    def _start_updater(self):
+        from PyQt6.QtCore import QThread
+
+        from pireal.gui.updater import Updater
+
+        updater_thread = QThread(self)
+        self._updater = Updater()
+        self._updater.moveToThread(updater_thread)
+
+        updater_thread.started.connect(self._updater.check_updates)
+        self._updater.finished.connect(updater_thread.quit)
+        updater_thread.finished.connect(updater_thread.deleteLater)
+        self._updater.updateAvailable.connect(self._on_update_available)
+
+        updater_thread.start()
+
+    def _on_update_available(self, version: str, url: str):
+        theme_manager = get_theme_manager()
+        highlight = theme_manager.current_scheme.highlight.name()
+
+        msg = (
+            f'Nueva versión <b>{version}</b> disponible — <a href="{url}" '
+            f'style="color: {highlight}; text-decoration: none;">Descargar ↗</a>'
+        )
+        self._status_bar.show_message(msg, timeout=0)
+        self._status_bar._message_label.setOpenExternalLinks(True)
 
     def _update_title(self, *args):
         db = Registry.get("db", DB)
