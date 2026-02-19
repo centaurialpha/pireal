@@ -246,7 +246,7 @@ class Controller(QWidget):
             if value == QMessageBox.StandardButton.Cancel:
                 return
 
-            if value == QMessageBox.StandardButton.Save:
+            if value == QMessageBox.StandardButton.Yes:
                 self.save_database()
 
         db.is_active = False

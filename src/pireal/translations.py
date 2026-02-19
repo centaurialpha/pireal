@@ -71,10 +71,10 @@ TR_MENU_HELP_ABOUT_QT = QCoreApplication.translate("Pireal", "About Qt")
 TR_CANCEL = QCoreApplication.translate("Pireal", "Cancel")
 TR_MSG_CONFIRMATION = QCoreApplication.translate("Pireal", "Confirmation")
 #
-# TR_MSG_SAVE_CHANGES = QCoreApplication.translate("Pireal", "Save changes?")
-# TR_MSG_SAVE_CHANGES_BODY = QCoreApplication.translate(
-#     "Pireal", "The database has been modified. Do you want to save the changes?"
-# )
+TR_MSG_SAVE_CHANGES = QCoreApplication.translate("Pireal", "Save changes?")
+TR_MSG_SAVE_CHANGES_BODY = QCoreApplication.translate(
+    "Pireal", "The database has been modified. Do you want to save the changes?"
+)
 #
 # TR_MSG_FILE_MODIFIED = QCoreApplication.translate("Pireal", "File modified")
 # TR_MSG_FILE_MODIFIED_BODY = QCoreApplication.translate(

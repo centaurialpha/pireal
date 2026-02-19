@@ -20,7 +20,7 @@ from collections import namedtuple
 from typing import cast
 
 from PyQt6.QtCore import QAbstractItemModel, QAbstractListModel, QModelIndex, QRect, Qt, pyqtSignal
-from PyQt6.QtGui import QPainter
+from PyQt6.QtGui import QPainter, QPalette
 from PyQt6.QtWidgets import (
     QFrame,
     QLabel,
@@ -151,10 +151,17 @@ class RelationDelegate(QStyledItemDelegate):
             style.drawControl(QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget)
 
         rect = opt.rect
-
         rect = rect.adjusted(5, 3, 5, -3)
+
+        palette = opt.palette
+        is_selected = bool(opt.state & QStyle.StateFlag.State_Selected)
+        text_color = (
+            palette.color(QPalette.ColorRole.HighlightedText) if is_selected else palette.color(QPalette.ColorRole.Text)
+        )
+
         painter.save()
 
+        painter.setPen(text_color)
         font = painter.font()
         font.setBold(True)
         font.setPointSize(12)
@@ -167,6 +174,7 @@ class RelationDelegate(QStyledItemDelegate):
 
         painter.restore()
 
+        painter.setPen(text_color)
         painter.drawText(
             QRect(rect.left(), rect.top(), rect.width(), rect.height()),
             opt.displayAlignment,
