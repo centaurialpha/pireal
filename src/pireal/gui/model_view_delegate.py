@@ -23,13 +23,19 @@ from PyQt6.QtCore import (
     Qt,
     pyqtSlot as Slot,
 )
+from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QAbstractItemView, QHeaderView, QInputDialog, QItemDelegate, QTableView
 
 from pireal import translations as tr
+from pireal.core.db import DB
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.gui.theme.schema import EditorColorRole
+from pireal.registry import Registry
 
 logger = logging.getLogger("gui.model_view_delegate")
+
+
+# En model_view_delegate.py, agregar esta clase antes de View
 
 
 class RelationModel(QAbstractTableModel):
@@ -71,7 +77,7 @@ class RelationModel(QAbstractTableModel):
         return None
 
     def headerData(self, section, orientation, role):
-        if role == Qt.ItemDataRole.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole and orientation == Qt.Orientation.Horizontal:
             return self.relation.header[section]
 
     def setHeaderData(self, section, orientation, value, role):
@@ -101,7 +107,8 @@ class RelationModel(QAbstractTableModel):
                     current_value,
                     value,
                 )
-                # FIXME: avisar que se ha modificado la base de datos
+                db = Registry.get("db", DB)
+                db.modified = True
                 return True
         return False
 
@@ -111,7 +118,7 @@ class View(QTableView):
 
     def __init__(self):
         super().__init__()
-        # self.setAlternatingRowColors(CONFIG.get('alternatingRowColors'))
+        self.setAlternatingRowColors(True)
         self.verticalHeader().hide()
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         # Scroll content per pixel
@@ -119,8 +126,33 @@ class View(QTableView):
         self.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
         self.horizontalHeader().setHighlightSections(False)
 
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
+        self._apply_hover_style()
+
+        theme_manager = get_theme_manager()
+        theme_manager.themeChanged.connect(self._on_theme_changed)
+
+    def _on_theme_changed(self, scheme):
+        self._apply_hover_style()
+
+    def _apply_hover_style(self):
+        theme_manager = get_theme_manager()
+        palette = theme_manager.current_scheme
+
+        alternate = palette.alternate_base
+        hover_color = palette.highlight
+        hover_color.setAlpha(35)
+
+        self.setStyleSheet(f"""
+            QTableView {{
+                alternate-background-color: {alternate.name()};
+            }}
+            QTableView::item:hover {{
+                background-color: {hover_color.name(QColor.NameFormat.HexArgb)};
+            }}
+        """)
+
+    def resizeEvent(self, e):
+        super().resizeEvent(e)
         self.adjust_columns()
 
     def adjust_columns(self):
