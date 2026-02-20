@@ -134,10 +134,15 @@ class Controller(QWidget):
     def recent_databases(self) -> list[str]:
         return self._recent_databases.copy()
 
-    def _remember_folder(self, filepath: str):
+    def _remember_folder(self, filename: str):
         """Actualiza la última carpeta usada basada en la ruta del archivo"""
-        if filepath:
-            folder = str(Path(filepath).parent)
+        if filename:
+            filepath = Path(filename)
+            folder = str(filepath.parent)
+            if is_example_file(filepath):
+                logger.debug("Skipping example folder: '%s'", folder)
+                return
+
             self._last_open_folder = folder
 
             qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)

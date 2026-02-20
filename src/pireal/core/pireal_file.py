@@ -58,11 +58,14 @@ class File(QObject):
         self._display_name = ""
 
 
-def is_example_file(file: File | None) -> bool:
+def is_example_file(file: File | Path | str | None) -> bool:
     if file is None:
         return False
+
+    path = Path(file.path) if isinstance(file, File) else Path(file)
+
     try:
-        Path(file.path).resolve().relative_to(EXAMPLES_DIR.resolve())
+        path.resolve().relative_to(EXAMPLES_DIR.resolve())
         return True
     except ValueError:
         return False
