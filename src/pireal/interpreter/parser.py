@@ -58,6 +58,8 @@
                     | TIME
 """
 
+from typing import cast
+
 from pireal.interpreter import rast as ast
 from pireal.interpreter.exceptions import ConsumeError
 from pireal.interpreter.lexer import Lexer
@@ -116,29 +118,32 @@ class Parser:
 
         return node
 
-    def expression(self):
+    def expression(self) -> ast.BinaryOp | ast.ProjectExpr | ast.SelectExpr | ast.Variable:
+        """Parse expression with binary operators (left-associative)"""
+        node = self._primary_expression()
+
+        while self.token.value in BINARY_OPERATORS:
+            token_type = BINARY_OPERATORS[cast(str, self.token.value)]
+            self.consume(self.token.type)
+            right = self._primary_expression()
+            node = ast.BinaryOp(left=node, op=token_type, right=right)
+        return node
+
+    def _primary_expression(self) -> ast.BinaryOp | ast.ProjectExpr | ast.SelectExpr | ast.Variable:
+        """Parse primary expression (without binary operators)"""
         if self.token.type is TokenTypes.PROJECT:
-            node = self.project_expression()
+            return self.project_expression()
         elif self.token.type is TokenTypes.SELECT:
-            node = self.select_expression()
+            return self.select_expression()
         elif self.token.type is TokenTypes.LEFT_PARENTHESIS:
             self.consume(TokenTypes.LEFT_PARENTHESIS)
-            node = self.expression()
+            node = self.expression()  # Los paréntesis SÍ pueden tener binarios
             self.consume(TokenTypes.RIGHT_PARENTHESIS)
+            return node
         elif self.token.type is TokenTypes.ID:
-            node = self.variable()
-            if self.token.value in BINARY_OPERATORS:
-                # Binary expression
-                # now, node is left node in binary expression
-                token_type = BINARY_OPERATORS[self.token.value]
-                self.consume(self.token.type)
-                node = ast.BinaryOp(
-                    left=node,
-                    op=token_type,
-                    right=self.expression(),  # to allow (<Expression>)
-                )
-
-        return node
+            return self.variable()
+        else:
+            raise ConsumeError(TokenTypes.ID, self.token.type, self.lexer.sc.lineno, got_value=str(self.token.value))
 
     def variable(self):
         node = ast.Variable(self.token)

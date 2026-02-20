@@ -181,3 +181,141 @@ def test_compound(make_parser):
 def test_consume_error(make_parser):
     with pytest.raises(ConsumeError):
         make_parser("q := select id=1 (personas)").parse()
+
+
+def test_union_after_project_expressions(make_parser):
+    """Union entre dos project debe parsear correctamente"""
+    query = """q := 
+        (project eID (select eTitle='Manager' (employee))) union
+        (project eID (select eTitle='Lead' (employee)));"""
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    # Raíz debe ser BinaryOp con union
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.UNION
+
+    # Ambos lados son ProjectExpr
+    assert isinstance(assignment.query.left, ast.ProjectExpr)
+    assert isinstance(assignment.query.right, ast.ProjectExpr)
+
+
+def test_union_after_select_expressions(make_parser):
+    """Union entre dos select debe parsear correctamente"""
+    query = "q := select edad > 25 (estudiantes) union select edad < 18 (estudiantes);"
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.UNION
+    assert isinstance(assignment.query.left, ast.SelectExpr)
+    assert isinstance(assignment.query.right, ast.SelectExpr)
+
+
+def test_intersect_after_project(make_parser):
+    """Intersect después de project debe funcionar"""
+    query = "q := project nombre (r1) intersect project nombre (r2);"
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.INTERSECT
+
+
+def test_difference_after_select(make_parser):
+    """Difference después de select debe funcionar"""
+    query = "q := select activo='si' (personas) difference select edad < 18 (personas);"
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.DIFFERENCE
+
+
+def test_njoin_after_parenthesized_expression(make_parser):
+    """Njoin después de expresión entre paréntesis"""
+    query = "q := (select edad >= 18 (estudiantes)) njoin inscripciones;"
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.NJOIN
+    assert isinstance(assignment.query.left, ast.SelectExpr)
+    assert isinstance(assignment.query.right, ast.Variable)
+
+
+def test_multiline_binary_expression(make_parser):
+    """Expresiones binarias en múltiples líneas"""
+    query = """q := 
+        project nombre (personas) 
+        union 
+        project nombre (empleados);"""
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.UNION
+
+
+def test_chained_binary_operations(make_parser):
+    """Múltiples operaciones binarias encadenadas"""
+    query = "q := r1 union r2 union r3;"
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    # Debe parsear left-to-right: (r1 union r2) union r3
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.UNION
+    assert isinstance(assignment.query.left, ast.BinaryOp)
+    assert assignment.query.left.op == TokenTypes.UNION
+
+
+def test_complex_nested_binary(make_parser):
+    """Expresión compleja con anidamiento"""
+    query = """q := 
+        (project id (select tipo='A' (tabla1))) union
+        (project id (select tipo='B' (tabla2))) intersect
+        (project id (tabla3));"""
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    # Debe parsear: ((union) intersect project)
+    assert isinstance(assignment.query, ast.BinaryOp)
+    # El último operador es intersect
+    assert assignment.query.op == TokenTypes.INTERSECT
+
+
+def test_product_after_complex_expressions(make_parser):
+    """Product después de expresiones complejas"""
+    query = "q := (select a=1 (r1)) product (project b (r2));"
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.PRODUCT
+    assert isinstance(assignment.query.left, ast.SelectExpr)
+    assert isinstance(assignment.query.right, ast.ProjectExpr)
+
+
+@pytest.mark.parametrize(
+    "operator", ["union", "intersect", "difference", "product", "njoin", "louter", "router", "fouter"]
+)
+def test_all_binary_operators_after_project(make_parser, operator):
+    """Todos los operadores binarios deben funcionar después de project"""
+    query = f"q := project a (r1) {operator} project b (r2);"
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert isinstance(assignment.query.left, ast.ProjectExpr)
+    assert isinstance(assignment.query.right, ast.ProjectExpr)
