@@ -117,11 +117,13 @@ class QueryWidget(QWidget):
         return editor
 
     def _show_tree(self):
-        from pireal.gui.dialogs.tree_dialog import TreeDialog
+        from pireal.core.db import DB
+        from pireal.gui.dialogs.query_plan_dialog import QueryPlanDialog
         from pireal.interpreter.lexer import Lexer
         from pireal.interpreter.parser import Parser
+        from pireal.interpreter.query_plan import QueryPlanBuilder
         from pireal.interpreter.scanner import Scanner
-        from pireal.interpreter.tree_builder import TreeBuilder
+        from pireal.registry import Registry
 
         queries = self.current_editor().text()
         if not queries.strip():
@@ -129,11 +131,28 @@ class QueryWidget(QWidget):
 
         try:
             tree = Parser(Lexer(Scanner(queries))).parse()
-            roots = TreeBuilder().build(tree)
-            dialog = TreeDialog(roots, self)
-            dialog.exec()
-        except Exception:
-            pass
+            db = Registry.get("db", DB)
+
+            # Contexto inicial: relaciones base
+            context = db.relations_dict().copy()
+
+            # Evaluar queries intermedios y agregarlos al contexto
+            from pireal.interpreter.evaluator import Evaluator
+
+            evaluator = Evaluator(context)
+            results = evaluator.evaluate(tree)
+            context.update(results)  # ahora context tiene base + intermedios
+
+            # Construir plan de la última query
+            builder = QueryPlanBuilder(context)
+            plans = builder.build(tree)
+
+            if plans:
+                # Mostrar el último plan con contexto completo
+                dialog = QueryPlanDialog(plans, context, self)
+                dialog.exec()
+        except Exception as e:
+            print(e)
 
     def _show_sql(self):
         from pireal.gui.dialogs.sql_dialog import SQLDialog

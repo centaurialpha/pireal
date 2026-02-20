@@ -312,8 +312,22 @@ TR_FEEDBACK_ERROR_NO_TOKEN = QCoreApplication.translate("Pireal", "Token o chat 
 TR_FEEDBACK_HINT_LABEL = QCoreApplication.translate(
     "Pireal",
     (
-        "If you prefer, you can also open an issue in"
+        "If you prefer, you can also open an issue in "
         '<a href="https://github.com/centaurialpha/pireal/issues">GitHub</a>.'
     ),
 )
 TR_MENU_HELP_FEEDBACK = QCoreApplication.translate("Pireal", "Enviar feedback")
+
+# Query Plan Dialog
+TR_QUERY_PLAN_TITLE = QCoreApplication.translate("Pireal", "Query Plan Viewer")
+TR_QUERY_PLAN_QUERY_LABEL = QCoreApplication.translate("Pireal", "Query:")
+TR_QUERY_PLAN_STATUS_READY = QCoreApplication.translate(
+    "Pireal", "Click on a node or use controls to step through execution"
+)
+TR_QUERY_PLAN_BTN_STEP = QCoreApplication.translate("Pireal", "Step →")
+TR_QUERY_PLAN_BTN_RUN_ALL = QCoreApplication.translate("Pireal", "Run All")
+TR_QUERY_PLAN_BTN_RESET = QCoreApplication.translate("Pireal", "Reset")
+TR_QUERY_PLAN_SELECT_NODE = QCoreApplication.translate("Pireal", "Select a node to view its result")
+TR_QUERY_PLAN_COMPLETED = QCoreApplication.translate("Pireal", "✓ Execution completed")
+TR_QUERY_PLAN_STEP_COUNT = QCoreApplication.translate("Pireal", "Step {current}/{total}")
+TR_QUERY_PLAN_RESULT_FORMAT = QCoreApplication.translate("Pireal", "{op} — {tuples} tuples, {attrs} attributes")
