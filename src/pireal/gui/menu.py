@@ -21,6 +21,8 @@ from typing import Union
 from PyQt6.QtGui import QAction, QIcon
 
 from pireal import translations as tr
+from pireal.core.db import DB
+from pireal.registry import Registry
 
 
 @dataclass
@@ -35,6 +37,8 @@ class Action:
     is_checkable: bool = False
     shorcut: str = ""
     icon: str = ""
+    requires_db: bool = False
+    requires_modified: bool = False
 
 
 @dataclass
@@ -51,6 +55,8 @@ class MenuBuilder:
     def __init__(self, main_window, controller):
         self.main_window = main_window
         self.controller = controller
+        self.db_dependent_actions = []
+        self.modified_dependent_actions = []
 
     def build(self):
         menu_bar = self.main_window.menuBar()
@@ -74,11 +80,38 @@ class MenuBuilder:
                             slot = getattr(self.controller, slot)
                             qaction.triggered.connect(slot)
 
+                    if item.requires_db:
+                        self.db_dependent_actions.append(qaction)
+                    if item.requires_modified:
+                        self.modified_dependent_actions.append(qaction)
+
                     qmenu.addAction(qaction)
                 elif item == "separator":
                     qmenu.addSeparator()
 
+        db = Registry.get("db", DB)
+        db.databaseStateChanged.connect(self._update_actions)
+        db.hasModified.connect(self._update_actions)
+
+        self._update_actions()
+
         return menu_bar
+
+    def _update_actions(self):
+        from pireal.core.db import DB
+        from pireal.registry import Registry
+
+        db = Registry.get("db", DB)
+        print(f"_update_actions called: is_active={db.is_active}, modified={db.modified}")  # debug
+
+        # Acciones que solo requieren DB abierta
+        for action in self.db_dependent_actions:
+            action.setEnabled(db.is_active)
+
+        # Acciones que requieren DB abierta Y modificada
+        for action in self.modified_dependent_actions:
+            print(action)
+            action.setEnabled(db.is_active and db.modified)
 
 
 file_menu = Menu(tr.TR_MENU_FILE)
@@ -93,7 +126,9 @@ file_menu.add_item(
 )
 file_menu.add_item(Action(tr.TR_MENU_FILE_OPEN_DB, "controller:open_database", shorcut="Ctrl+O"))
 file_menu.add_item("separator")
-file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_DB, "controller:save_database", shorcut="Ctrl+S"))
+file_menu.add_item(
+    Action(tr.TR_MENU_FILE_SAVE_DB, "controller:save_database", shorcut="Ctrl+S", requires_modified=True)
+)
 file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_DB, "controller:save_database_as"))
 file_menu.add_item(Action(tr.TR_MENU_FILE_CLOSE_DB, "controller:close_database", shorcut="Ctrl+W"))
 file_menu.add_item(Section("Query"))
