@@ -222,6 +222,13 @@ class Controller(QWidget):
 
         logger.info("Opening database '%s'", filename)
         file = File(filename)
+        if not file.exists:
+            QMessageBox.warning(
+                self,
+                tr.TR_MSG_FILE_NOT_FOUND_TITLE,
+                tr.TR_MSG_FILE_NOT_FOUND_BODY.format(filename),
+            )
+            return
         content = sanitize_data(file.read())
 
         database_container = Registry.get("database-container", DatabaseContainer)

@@ -68,6 +68,7 @@ def test_save_raises_without_filename():
 
 def test_is_example_file_true(tmp_path):
     from pireal.dirs import EXAMPLES_DIR
+
     example_file = EXAMPLES_DIR / "database.pdb"
     f = File(str(example_file))
     assert is_example_file(f)
@@ -80,3 +81,17 @@ def test_is_example_file_false(tmp_path):
 
 def test_is_example_file_none():
     assert not is_example_file(None)
+
+
+def test_exists_false_when_no_filename():
+    assert not File().exists
+
+
+def test_exists_false_when_file_missing():
+    assert not File("/tmp/no_existe_este_archivo.pdb").exists
+
+
+def test_exists_true_when_file_present(tmp_path):
+    f = tmp_path / "db.pdb"
+    f.write_text("data")
+    assert File(str(f)).exists

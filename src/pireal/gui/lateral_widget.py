@@ -148,6 +148,11 @@ class RelationDelegate(QStyledItemDelegate):
         style = opt.widget.style()
         opt.text = ""
         if style is not None:
+            if opt.state & QStyle.StateFlag.State_Selected:
+                highlight = opt.palette.color(QPalette.ColorRole.Highlight)
+                highlight.setAlpha(150)
+                opt.palette.setColor(QPalette.ColorRole.Highlight, highlight)
+
             style.drawControl(QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget)
 
         rect = opt.rect

@@ -332,3 +332,6 @@ TR_QUERY_PLAN_SELECT_NODE = QCoreApplication.translate("Pireal", "Select a node 
 TR_QUERY_PLAN_COMPLETED = QCoreApplication.translate("Pireal", "✓ Execution completed")
 TR_QUERY_PLAN_STEP_COUNT = QCoreApplication.translate("Pireal", "Step {current}/{total}")
 TR_QUERY_PLAN_RESULT_FORMAT = QCoreApplication.translate("Pireal", "{op} — {tuples} tuples, {attrs} attributes")
+
+TR_MSG_FILE_NOT_FOUND_TITLE = QCoreApplication.translate("Pireal", "File not found")
+TR_MSG_FILE_NOT_FOUND_BODY = QCoreApplication.translate("Pireal", "The file '{}' no longer exists.")

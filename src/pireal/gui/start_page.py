@@ -115,6 +115,10 @@ class RecentDBDelegate(QStyledItemDelegate):
         opt.text = ""
 
         style = opt.widget.style() if opt.widget else QApplication.style()
+        if opt.state & QStyle.StateFlag.State_Selected:
+            highlight = opt.palette.color(QPalette.ColorRole.Highlight)
+            highlight.setAlpha(150)
+            opt.palette.setColor(QPalette.ColorRole.Highlight, highlight)
         style.drawControl(QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget)
 
         painter.save()
@@ -132,7 +136,11 @@ class RecentDBDelegate(QStyledItemDelegate):
         else:
             text_color = palette.color(QPalette.ColorRole.Text)
 
-        sub_color = palette.color(QPalette.ColorRole.PlaceholderText)
+        if is_selected:
+            sub_color = palette.color(QPalette.ColorRole.HighlightedText)
+        else:
+            sub_color = palette.color(QPalette.ColorRole.Text)
+            sub_color.setAlpha(160)
 
         rect = option.rect.adjusted(self._PADDING, 0, -self._BTN_SIZE - self._PADDING, 0)
         half = rect.height() // 2

@@ -42,6 +42,10 @@ class File(QObject):
     def path(self) -> str:
         return str(self._filename) if self._filename else ""
 
+    @property
+    def exists(self) -> bool:
+        return self._filename is not None and self._filename.exists()
+
     def read(self):
         if self._filename is None:
             return ""
