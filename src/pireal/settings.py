@@ -75,6 +75,7 @@ class Settings(QObject):
         self.highlight_current_line: bool = self._qs.value("highlight_current_line", True, type=bool)
         self.match_parenthesis: bool = self._qs.value("match_parenthesis", True, type=bool)
         self.dark_mode: bool = self._qs.value("dark_mode", True, type=bool)
+        self.symbol_mode: bool = self._qs.value("symbol_mode", False, type=bool)
 
         default_theme = "dark" if self.dark_mode else "light"
         self.theme: str = self._qs.value("theme", default_theme)
@@ -92,6 +93,7 @@ class Settings(QObject):
         self._qs.setValue("match_parenthesis", self.match_parenthesis)
         self._qs.setValue("dark_mode", self.dark_mode)
         self._qs.setValue("theme", self.theme)
+        self._qs.setValue("symbol_mode", self.symbol_mode)
 
         self._qs.sync()
 

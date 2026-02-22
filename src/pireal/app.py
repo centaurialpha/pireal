@@ -23,6 +23,7 @@ from PyQt6.QtWidgets import QApplication
 
 from pireal.core.db import DB
 from pireal.dirs import LOCALES_DIR, THEMES_DIR
+from pireal.gui.controller import Controller
 from pireal.registry import Registry
 
 logger = logging.getLogger(__name__)
@@ -117,6 +118,6 @@ class Application:
         from pireal.gui.dialogs.tour_dialog import TourDialog
 
         if TourDialog.should_show():
-            TourDialog(self._main_window).exec()
+            TourDialog(Registry.get("controller", Controller)).exec()
 
         sys.exit(self._app.exec())

@@ -73,8 +73,12 @@ class SettingsDialog(QDialog):
         self._check_match_parenthesis = QCheckBox(tr.TR_SETTINGS_HIGHLIGHT_BRACES)
         self._check_match_parenthesis.setChecked(settings.match_parenthesis)
 
+        self._check_symbol_mode = QCheckBox(tr.TR_SETTINGS_SYMBOL_MODE)
+        self._check_symbol_mode.setChecked(settings.symbol_mode)
+
         layout.addWidget(self._check_highlight_line, 0, 0)
         layout.addWidget(self._check_match_parenthesis, 0, 1)
+        layout.addWidget(self._check_symbol_mode, 1, 0)
 
         return group
 
@@ -111,6 +115,7 @@ class SettingsDialog(QDialog):
         settings.match_parenthesis = self._check_match_parenthesis.isChecked()
         settings.font_family = self._combo_font_family.currentText()
         settings.font_size = int(self._combo_font_size.currentText())
+        settings.symbol_mode = self._check_symbol_mode.isChecked()
 
         super().accept()
 

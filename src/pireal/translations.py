@@ -137,6 +137,7 @@ TR_SETTINGS_GROUP_FONT = QCoreApplication.translate("Pireal", "Font")
 TR_SETTINGS_LANGUAGE = QCoreApplication.translate("Pireal", "Language")
 TR_SETTINGS_HIGHLIGHT_LINE = QCoreApplication.translate("Pireal", "Highlight Current Line")
 TR_SETTINGS_HIGHLIGHT_BRACES = QCoreApplication.translate("Pireal", "Highlight Braces")
+TR_SETTINGS_SYMBOL_MODE = QCoreApplication.translate("Pireal", "Symbol mode (σ, π, ⋈...) [Experimental]")
 TR_SETTINGS_FONT_FAMILY = QCoreApplication.translate("Pireal", "Font Family")
 TR_SETTINGS_FONT_SIZE = QCoreApplication.translate("Pireal", "Font Size")
 

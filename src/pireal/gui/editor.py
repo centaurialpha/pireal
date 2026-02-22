@@ -24,6 +24,7 @@ from pireal.gui import highlighter, sidebar
 from pireal.gui.completer import PirealCompleter
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.gui.theme.schema import ColorScheme, EditorColorRole
+from pireal.interpreter.tokens import KEYWORD_TO_SYMBOL, SYMBOL_TO_KEYWORD
 from pireal.settings import settings
 
 BRACKETS = "()"
@@ -178,8 +179,39 @@ class Editor(QPlainTextEdit):
 
         # Completer
         self.completer = PirealCompleter(self)
+
+        # self._symbol_mode = settings.symbol_mode
+        # if self._symbol_mode:
+        #     self.toggle_symbol_mode(True)
+        # settings.settingsChanged.connect(self._on_settings_changed)
         # Connection
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
+
+    def toggle_symbol_mode(self, enable: bool) -> None:
+        """Convierte keywords ↔ símbolos en el documento."""
+        mapping = KEYWORD_TO_SYMBOL if enable else SYMBOL_TO_KEYWORD
+        print(mapping)
+        # Preservar posición del cursor
+        cursor_pos = self.textCursor().position()
+
+        document = self.document()
+        cursor = QTextCursor(document)
+        cursor.beginEditBlock()
+
+        for source, target in mapping.items():
+            # Usamos QTextDocument.find con flags exacto
+            flags = QTextDocument.FindFlag(0)
+            search_cursor = document.find(source, 0, flags)
+            while not search_cursor.isNull():
+                search_cursor.insertText(target)
+                search_cursor = document.find(source, search_cursor, flags)
+
+        cursor.endEditBlock()
+
+        # Restaurar cursor (aproximado, el texto cambió de largo)
+        new_cursor = self.textCursor()
+        new_cursor.setPosition(min(cursor_pos, document.characterCount() - 1))
+        self.setTextCursor(new_cursor)
 
     def _on_cursor_position_changed(self):
         self._highlight_current_line()
@@ -217,7 +249,10 @@ class Editor(QPlainTextEdit):
     def _on_settings_changed(self, key: str):
         if key in ("font_family", "font_size"):
             self.set_font(settings.font_family, settings.font_size)
-        elif key == "highlight_current_line":
+        if key == "symbol_mode":
+            self._symbol_mode = settings.symbol_mode
+            self.toggle_symbol_mode(self._symbol_mode)
+        if key == "highlight_current_line":
             self._highlight_current_line()
 
     def _highlight_current_line(self):
@@ -479,6 +514,17 @@ class Editor(QPlainTextEdit):
         if selection_name in self._selections:
             self._selections[selection_name] = []
             self.update_selections()
+
+    def _replace_last_word_with_symbol(self) -> None:
+        cursor = self.textCursor()
+        cursor.movePosition(QTextCursor.MoveOperation.PreviousCharacter)  # retroceder antes del trigger
+        cursor.select(QTextCursor.SelectionType.WordUnderCursor)
+        word = cursor.selectedText().lower()
+        if word in KEYWORD_TO_SYMBOL:
+            document = self.document()
+            was_modified = document.isModified()
+            cursor.insertText(KEYWORD_TO_SYMBOL[word])
+            document.setModified(was_modified)
 
     def keyPressEvent(self, e: QKeyEvent | None) -> None:
         if self.completer.popup().isVisible() and e.key() in (

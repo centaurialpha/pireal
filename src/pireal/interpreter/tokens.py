@@ -85,6 +85,24 @@ RESERVED_KEYWORDS: dict[str, TokenTypes] = {
 }
 
 
+KEYWORD_SYMBOLS: dict[str, TokenTypes] = {
+    "σ": TokenTypes.SELECT,
+    "π": TokenTypes.PROJECT,
+    "⋈": TokenTypes.NJOIN,
+    "∪": TokenTypes.UNION,
+    "∩": TokenTypes.INTERSECT,
+    "−": TokenTypes.DIFFERENCE,
+    "×": TokenTypes.PRODUCT,
+    "⟕": TokenTypes.LOUTER,
+    "⟖": TokenTypes.ROUTER,
+    "⟗": TokenTypes.FOUTER,
+}
+
+KEYWORD_TO_SYMBOL: dict[str, str] = {token_type.value: symbol for symbol, token_type in KEYWORD_SYMBOLS.items()}
+
+SYMBOL_TO_KEYWORD: dict[str, str] = {symbol: token_type.value for symbol, token_type in KEYWORD_SYMBOLS.items()}
+
+
 @dataclass(eq=False)
 class Token:
     type: TokenTypes
