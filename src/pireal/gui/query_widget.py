@@ -23,7 +23,9 @@ from pireal import translations as tr
 from pireal.core.pireal_file import File, is_example_file
 from pireal.gui.editor import Editor
 from pireal.gui.status_bar import StatusBar
+from pireal.interpreter.tokens import SYMBOL_TO_KEYWORD
 from pireal.registry import Registry
+from pireal.settings import settings
 
 
 class QueryWidget(QWidget):
@@ -237,10 +239,15 @@ class EditorWidget(QWidget):
         self._file = file
 
     def text(self) -> str:
-        return self.editor.toPlainText()
+        content = self.editor.toPlainText()
+        for symbol, keyword in SYMBOL_TO_KEYWORD.items():
+            content = content.replace(symbol, keyword)
+        return content
 
     def setText(self, text: str):
         self.editor.setPlainText(text)
+        if settings.symbol_mode:
+            self.editor.toggle_symbol_mode(True)
 
     def saved(self):
         self.editor.saved()

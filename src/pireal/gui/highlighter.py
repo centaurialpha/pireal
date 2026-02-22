@@ -15,11 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import re
+
 from PyQt6.QtCore import QRegularExpression
 from PyQt6.QtGui import QFont, QSyntaxHighlighter, QTextCharFormat
 
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.gui.theme.schema import ColorScheme, EditorColorRole
+from pireal.interpreter.tokens import KEYWORD_SYMBOLS
 
 
 class Highlighter(QSyntaxHighlighter):
@@ -54,6 +57,11 @@ class Highlighter(QSyntaxHighlighter):
         self._keyword_fmt.setForeground(editor.get(EditorColorRole.KEYWORD))
         self._keyword_fmt.setFontWeight(QFont.Weight.Bold)
 
+        # Symbols
+        self._symbol_fmt = QTextCharFormat()
+        self._symbol_fmt.setForeground(editor.get(EditorColorRole.KEYWORD))
+        self._symbol_fmt.setFontWeight(QFont.Weight.Black)  # más pesado que Bold
+
         # Variables
         self._var_fmt = QTextCharFormat()
         self._var_fmt.setForeground(editor.get(EditorColorRole.VARIABLE))
@@ -87,6 +95,10 @@ class Highlighter(QSyntaxHighlighter):
         for kw in self.KEYWORDS:
             pattern = QRegularExpression(rf"\b{kw}\b")
             self._rules.append((pattern, self._keyword_fmt))
+
+        for symbol in KEYWORD_SYMBOLS:
+            pattern = QRegularExpression(re.escape(symbol))
+            self._rules.append((pattern, self._symbol_fmt))
 
         # Variables
         var_pattern = QRegularExpression(r"\w+\s*:=")
