@@ -15,11 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+from importlib.resources import files
 from pathlib import Path
 
 from PyQt6.QtCore import QObject
-
-from pireal.dirs import EXAMPLES_DIR
 
 
 class File(QObject):
@@ -67,9 +66,10 @@ def is_example_file(file: File | Path | str | None) -> bool:
         return False
 
     path = Path(file.path) if isinstance(file, File) else Path(file)
+    examples_dir = Path(str(files("pireal") / "resources" / "samples"))
 
     try:
-        path.resolve().relative_to(EXAMPLES_DIR.resolve())
+        path.resolve().relative_to(examples_dir)
         return True
     except ValueError:
         return False

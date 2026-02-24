@@ -24,7 +24,7 @@ from PyQt6.QtWidgets import QFileDialog, QMessageBox, QStackedWidget, QVBoxLayou
 from pireal import translations as tr
 from pireal.core.db import DB
 from pireal.core.pireal_file import File, is_example_file
-from pireal.dirs import DATA_SETTINGS, EXAMPLE_DB_FILENAME
+from pireal.dirs import DATA_SETTINGS
 from pireal.gui.database_container import DatabaseContainer
 from pireal.gui.dialogs.new_db_dialog import NewDBInputDialog
 from pireal.gui.dialogs.new_relation_dialog import NewRelationDialog
@@ -32,6 +32,7 @@ from pireal.gui.lateral_widget import LateralWidget, RelationItemType
 from pireal.gui.query_widget import QueryWidget
 from pireal.gui.table_widget import TableWidget
 from pireal.registry import Registry
+from pireal.resources import sample
 from pireal.utils import sanitize_data
 
 logger = logging.getLogger(__name__)
@@ -149,7 +150,7 @@ class Controller(QWidget):
             qsettings.setValue("last_open_folder", folder)
 
     def add_db_to_recents(self, db_filepath: str) -> None:
-        if Path(db_filepath).resolve() == EXAMPLE_DB_FILENAME.resolve():
+        if Path(db_filepath).resolve() == Path(sample("database.pdb")).resolve():
             logger.debug("Skipping example database: '%s'", db_filepath)
             return
 

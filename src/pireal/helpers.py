@@ -15,19 +15,17 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from pathlib import Path
 
 from PyQt6.QtGui import QFont, QFontDatabase
 
-ROOT = Path(__file__).parent
-FONT_PATH = str(ROOT / "resources" / "images" / "font-awesome.otf")
+from pireal.resources import font as get_font
 
 
 class Font:
     _instance = None
 
-    def __init__(self, font_path: str = FONT_PATH):
-        font_id = QFontDatabase.addApplicationFont(font_path)
+    def __init__(self):
+        font_id = QFontDatabase.addApplicationFont(get_font("font-awesome.otf"))
         if font_id == -1:
             raise RuntimeError("No se pudo cargar la fuente")
 

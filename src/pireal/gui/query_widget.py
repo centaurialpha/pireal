@@ -248,6 +248,8 @@ class EditorWidget(QWidget):
         self.editor.setPlainText(text)
         if settings.symbol_mode:
             self.editor.toggle_symbol_mode(True)
+        self.editor.document().setModified(False)
+        self.editor.modified = False
 
     def saved(self):
         self.editor.saved()

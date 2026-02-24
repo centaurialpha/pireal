@@ -19,12 +19,14 @@ import logging
 import sys
 
 from PyQt6.QtCore import QTranslator
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication
 
 from pireal.core.db import DB
-from pireal.dirs import LOCALES_DIR, THEMES_DIR
+from pireal.dirs import THEMES_DIR
 from pireal.gui.controller import Controller
 from pireal.registry import Registry
+from pireal.resources import image, translation
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +37,6 @@ class Application:
         self._app = QApplication(sys.argv)
         self._app.setApplicationName("Pireal")
         self._app.setApplicationDisplayName("Pireal")
-
         self._registry = Registry()
 
         self._initialize_settings()
@@ -53,7 +54,7 @@ class Application:
         from pireal.settings import settings
 
         translator = QTranslator()
-        is_ok = translator.load(f"{settings.language}", str(LOCALES_DIR))
+        is_ok = translator.load(translation(settings.language))
         if is_ok:
             self._app.installTranslator(translator)
         # Mantener la referencia porque Qt/C++ necesita
@@ -106,6 +107,7 @@ class Application:
         self._registry.register("database-container", database_container)
 
         self._main_window = Pireal()
+        self._main_window.setWindowIcon(QIcon(image("pireal_icon.png")))
         self._registry.register("pireal", self._main_window)
 
         self._main_window.setCentralWidget(controller)

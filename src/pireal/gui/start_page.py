@@ -47,9 +47,10 @@ from PyQt6.QtWidgets import (
 )
 
 from pireal import translations as tr
-from pireal.dirs import DATA_SETTINGS, EXAMPLES_DIR
+from pireal.dirs import DATA_SETTINGS
 from pireal.gui.controller import Controller
 from pireal.registry import Registry
+from pireal.resources import sample
 
 logger = logging.getLogger(__name__)
 
@@ -455,8 +456,8 @@ class StartPage(QWidget):
 
     def _open_example(self):
         controller = Registry.get("controller", Controller)
-        controller.open_database(EXAMPLES_DIR / "database.pdb")
-        controller.open_query(str(EXAMPLES_DIR / "queries.pqf"))
+        controller.open_database(sample("database.pdb"))
+        controller.open_query(sample("queries.pqf"))
 
         QTimer.singleShot(1300, controller.execute_queries)
 
