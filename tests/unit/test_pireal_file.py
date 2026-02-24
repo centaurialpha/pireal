@@ -67,10 +67,9 @@ def test_save_raises_without_filename():
 
 
 def test_is_example_file_true(tmp_path):
-    from pireal.dirs import EXAMPLES_DIR
+    from pireal.resources import sample
 
-    example_file = EXAMPLES_DIR / "database.pdb"
-    f = File(str(example_file))
+    f = File(sample("database.pdb"))
     assert is_example_file(f)
 
 
