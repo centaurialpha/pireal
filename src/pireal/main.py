@@ -115,8 +115,13 @@ def setup_logger(level: int = logging.INFO) -> None:
 
 
 def run():
-    QDir.addSearchPath("icons", str(IMAGES_DIR))
-    QDir.addSearchPath("languages", str(LANGUAGES_DIR))
+    from importlib.resources import files
+
+    images_dir = str(files("pireal") / "resources" / "images")
+    lang_dir = str(files("pireal") / "resources" / "lang")
+
+    QDir.addSearchPath("icons", images_dir)
+    QDir.addSearchPath("languages", lang_dir)
 
     # Parse CLI
     args = cliparser.get_cli().parse_args()
@@ -143,3 +148,7 @@ def run():
 
     app = Application()
     app.run()
+
+
+if __name__ == "__main__":
+    run()

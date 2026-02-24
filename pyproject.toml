@@ -36,6 +36,9 @@ path = "pireal/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pireal"]
+artifacts = [
+    "src/pireal/resources/**",
+]
 
 [tool.ruff]
 line-length = 120
