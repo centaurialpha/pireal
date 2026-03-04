@@ -19,7 +19,7 @@ import enum
 from collections import namedtuple
 from typing import cast
 
-from PyQt6.QtCore import QAbstractItemModel, QAbstractListModel, QModelIndex, QRect, Qt, pyqtSignal
+from PyQt6.QtCore import QAbstractListModel, QModelIndex, QRect, Qt, pyqtSignal
 from PyQt6.QtGui import QPainter, QPalette
 from PyQt6.QtWidgets import (
     QFrame,
@@ -110,13 +110,14 @@ class RelationListView(QFrame):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(3, 3, 3, 3)
         layout.setSpacing(0)
-        header_lbl = QLabel(header_text)
+        header_lbl = QLabel(header_text.upper())
+        header_lbl.setObjectName("section_title")
         font = header_lbl.font()
-        font.setPointSize(12)
+        font.setPointSize(11)
         header_lbl.setFont(font)
         layout.addWidget(
             header_lbl,
-            alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter,
+            # alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter,
         )
         self.view = QListView()
         layout.addWidget(self.view)
@@ -132,21 +133,15 @@ class RelationDelegate(QStyledItemDelegate):
         if painter is None:
             return
 
-        model: QAbstractItemModel | None = index.model()
+        model = cast(RelationModel, index.model())
         if model is None:
             return
 
-        model = cast(RelationModel, model)
-
         opt = QStyleOptionViewItem(option)
         self.initStyleOption(opt, index)
-
-        relation_name = model.data(index, model.NameRole)
-        cardinality = model.data(index, model.CardinalityRole)
-        degree = model.data(index, model.DegreeRole)
+        opt.text = ""
 
         style = opt.widget.style()
-        opt.text = ""
         if style is not None:
             if opt.state & QStyle.StateFlag.State_Selected:
                 highlight = opt.palette.color(QPalette.ColorRole.Highlight)
@@ -155,51 +150,39 @@ class RelationDelegate(QStyledItemDelegate):
 
             style.drawControl(QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget)
 
-        rect = opt.rect
-        rect = rect.adjusted(5, 3, 5, -3)
-
-        palette = opt.palette
         is_selected = bool(opt.state & QStyle.StateFlag.State_Selected)
-        text_color = (
+        palette = opt.palette
+        name_color = (
             palette.color(QPalette.ColorRole.HighlightedText) if is_selected else palette.color(QPalette.ColorRole.Text)
         )
+        meta_color = palette.color(QPalette.ColorRole.PlaceholderText)
+
+        rect = opt.rect.adjusted(12, 4, -8, -4)
+        half = rect.height() // 2
+
+        name = model.data(index, model.NameRole)
+        cardinality = model.data(index, model.CardinalityRole)
+        degree = model.data(index, model.DegreeRole)
+        meta = f"{cardinality} tuples - {degree} attributes"
 
         painter.save()
 
-        painter.setPen(text_color)
         font = painter.font()
         font.setBold(True)
-        font.setPointSize(12)
         painter.setFont(font)
-        painter.drawText(
-            QRect(rect.left(), rect.top(), rect.width(), round(rect.height() / 3)),
-            opt.displayAlignment,
-            relation_name,
-        )
+        painter.setPen(name_color)
+        painter.drawText(QRect(rect.left(), rect.top(), rect.width(), half), Qt.AlignmentFlag.AlignVCenter, name)
 
+        font.setBold(False)
+        font.setPointSize(font.pointSize() - 1)
+        painter.setFont(font)
+        painter.setPen(meta_color)
+        painter.drawText(QRect(rect.left(), rect.top() + half, rect.width(), half), Qt.AlignmentFlag.AlignVCenter, meta)
         painter.restore()
-
-        painter.setPen(text_color)
-        painter.drawText(
-            QRect(rect.left(), rect.top(), rect.width(), rect.height()),
-            opt.displayAlignment,
-            "cardinality: " + str(cardinality),
-        )
-
-        painter.drawText(
-            QRect(
-                rect.left(),
-                round(rect.top() + rect.height() / 2),
-                rect.width(),
-                round(rect.height() / 1.5),
-            ),
-            opt.displayAlignment,
-            "degree: " + str(degree),
-        )
 
     def sizeHint(self, option, index):
         size = super().sizeHint(option, index)
-        size.setHeight(round(size.height() * 4.5))
+        size.setHeight(44)
         return size
 
 
