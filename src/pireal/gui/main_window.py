@@ -27,7 +27,6 @@ from pireal.dirs import DATA_SETTINGS
 from pireal.gui.controller import Controller
 from pireal.gui.menu import MenuBuilder
 from pireal.gui.query_widget import EditorWidget, QueryWidget
-from pireal.gui.status_bar import StatusBar
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.gui.theme.schema import EditorColorRole
 from pireal.helpers import Font
@@ -42,14 +41,6 @@ class Pireal(QMainWindow):
         super().__init__()
         Pireal._instance = self
 
-        # Status bar
-        self._status_bar = StatusBar(self)
-        Registry.register("status-bar", self._status_bar)
-        _status_bar = self.statusBar()
-        if _status_bar is not None:
-            _status_bar.addWidget(self._status_bar, 1)
-            _status_bar.setSizeGripEnabled(False)
-
         controller = Registry.get("controller", Controller)
 
         # Menu bar
@@ -58,7 +49,6 @@ class Pireal(QMainWindow):
 
         corner = self._build_corner_widget(controller)
         self.menuBar().setCornerWidget(corner, Qt.Corner.TopRightCorner)
-        theme_manager = get_theme_manager()
 
         db = Registry.get("db", DB)
         db.hasModified.connect(self._update_title)
@@ -67,12 +57,7 @@ class Pireal(QMainWindow):
         if check_updates:
             self._start_updater()
 
-        self._status_bar.playClicked.connect(controller.execute_queries)
-        self._status_bar.gearClicked.connect(self._show_settings)
-        self._status_bar.theme_button.set_themes(theme_manager.themes())
-        self._status_bar.theme_button.themeRequested.connect(self._on_theme_requested)
-        if True:
-            self._status_bar.feedbackClicked.connect(controller.send_feedback)
+        self.statusBar().hide()
 
     def _build_corner_widget(self, controller) -> QWidget:
         widget = QWidget()

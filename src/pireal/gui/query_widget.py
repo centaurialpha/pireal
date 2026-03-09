@@ -16,8 +16,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMessageBox, QPushButton, QTabWidget, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QHBoxLayout, QLineEdit, QMessageBox, QPushButton, QTabWidget, QVBoxLayout, QWidget
 
 from pireal import translations as tr
 from pireal.core.pireal_file import File, is_example_file
@@ -32,6 +31,8 @@ class QueryWidget(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self._untitled_count = 0
+        self._symbol_mode_on = False
+
         box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 0, 0)
         box.setSpacing(0)
@@ -41,29 +42,35 @@ class QueryWidget(QWidget):
         self._editor_tabs.setTabPosition(QTabWidget.TabPosition.South)
 
         # Line/col
-        self._line_col_label = QLabel("Ln 1, Col 1")
-        self._line_col_label.setContentsMargins(0, 0, 6, 0)
-        self._line_col_label.hide()
-        self._editor_tabs.setCornerWidget(
-            self._line_col_label,
-            Qt.Corner.TopRightCorner,  # TopRight = esquina sobre las tabs (que están abajo = BottomRight)
-        )
+        # self._line_col_label = QLabel("Ln 1, Col 1")
+        # self._line_col_label.setContentsMargins(0, 0, 6, 0)
+        # self._line_col_label.hide()
+        # self._editor_tabs.setCornerWidget(
+        #     self._line_col_label,
+        #     Qt.Corner.TopRightCorner,  # TopRight = esquina sobre las tabs (que están abajo = BottomRight)
+        # )
         box.addWidget(self._editor_tabs)
 
         self._editor_tabs.currentChanged.connect(self._on_tab_changed)
         self._editor_tabs.tabCloseRequested.connect(self._on_tab_close_requested)
 
-    def _on_tab_changed(self, index: int):
+    def set_symbol_mode(self, enabled: bool) -> None:
+        self._symbol_mode_on = enabled
+        editor = self.current_editor()
+        if editor:
+            editor.editor.toggle_symbol_mode(enabled)
+
+        status_bar = Registry.get("status-bar", StatusBar)
+        status_bar.show_symbol_mode(enabled)
+
+    def _on_tab_changed(self, index: int) -> None:
+        status_bar = Registry.get("status-bar", StatusBar)
         widget = self._editor_tabs.widget(index)
         if isinstance(widget, EditorWidget):
-            self._line_col_label.show()
             cursor = widget.editor.textCursor()
-            self._update_line_col(cursor.blockNumber() + 1, cursor.columnNumber() + 1)
+            status_bar.update_line_col(cursor.blockNumber() + 1, cursor.columnNumber() + 1)
         else:
-            self._line_col_label.hide()
-
-    def _update_line_col(self, line: int, col: int):
-        self._line_col_label.setText(f"Ln {line}, Col {col}")
+            status_bar.hide_line_col()
 
     def _on_tab_close_requested(self, index: int):
         editor = self._editor_tabs.widget(index)
@@ -96,17 +103,19 @@ class QueryWidget(QWidget):
             lambda line, msg: status_bar.show_message(f"Line {line}: {msg}", timeout=0, error=True)
         )
         editor_widget.editor.errorCleared.connect(lambda: status_bar.show_message("", timeout=0))
-        editor_widget.editor.cursorPositionChanged.connect(
-            lambda: self._update_line_col(
-                editor_widget.editor.textCursor().blockNumber() + 1,
-                editor_widget.editor.textCursor().columnNumber() + 1,
-            )
-        )
+        editor_widget.editor.cursorPositionChanged.connect(lambda: self._on_cursor_moved(editor_widget))
 
         tab_text = editor_widget.file.display_name
         index = self._editor_tabs.addTab(editor_widget, tab_text)
         self._editor_tabs.setTabToolTip(index, editor_widget.file.path)
         self._editor_tabs.setCurrentIndex(index)
+
+    def _on_cursor_moved(self, editor_widget: "EditorWidget") -> None:
+        from pireal.gui.status_bar import StatusBar
+
+        status_bar = Registry.get("status-bar", StatusBar)
+        cursor = editor_widget.editor.textCursor()
+        status_bar.update_line_col(cursor.blockNumber() + 1, cursor.columnNumber() + 1)
 
     def create_editor(self, file: File | None = None) -> "EditorWidget":
         editor = EditorWidget()

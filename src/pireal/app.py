@@ -25,6 +25,8 @@ from PyQt6.QtWidgets import QApplication
 from pireal.core.db import DB
 from pireal.dirs import THEMES_DIR
 from pireal.gui.controller import Controller
+from pireal.gui.right_pane import RightPane
+from pireal.gui.status_bar import StatusBar
 from pireal.registry import Registry
 from pireal.resources import image, translation
 
@@ -82,6 +84,7 @@ class Application:
         from pireal.gui.query_widget import QueryWidget
         from pireal.gui.start_page import StartPage
         from pireal.gui.table_widget import TableWidget
+        from pireal.settings import settings
 
         logger.info("Widgets initialization")
 
@@ -103,16 +106,24 @@ class Application:
         query_widget = QueryWidget()
         self._registry.register("query-widget", query_widget)
 
-        database_container = DatabaseContainer()
-        self._registry.register("database-container", database_container)
+        status_bar = StatusBar()
+        status_bar.symbolModeToggled.connect(query_widget.set_symbol_mode)
+        status_bar.show_symbol_mode(settings.symbol_mode)
+        self._registry.register("status-bar", status_bar)
 
         self._main_window = Pireal()
         self._main_window.setWindowIcon(QIcon(image("pireal_icon.png")))
         self._registry.register("pireal", self._main_window)
 
-        self._main_window.setCentralWidget(controller)
+        right_pane = RightPane()
+        self._registry.register("right-pane", right_pane)
 
+        database_container = DatabaseContainer()
+        self._registry.register("database-container", database_container)
+
+        self._main_window.setCentralWidget(controller)
         controller.add_widget(start_page)
+
         logger.info("Widgets initialized")
 
     def run(self):
