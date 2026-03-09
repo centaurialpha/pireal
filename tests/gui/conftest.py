@@ -32,6 +32,6 @@ def mock_status_bar(qtbot):
 
     main_window = QMainWindow()
     qtbot.addWidget(main_window)
-    status_bar = StatusBar(main_window)
+    status_bar = StatusBar()
     qtbot.addWidget(status_bar)
     Registry.register("status-bar", status_bar)
