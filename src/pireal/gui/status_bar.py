@@ -41,17 +41,20 @@ class StatusBar(QWidget):
     """
     Status bar for RightPane.
 
-    Left  - temporary messages (errors, info)
-    Right - persistent context: db name · Ln/Col · Symbol Mode · query time
+    Left - db name (accent color)
+    Center - temporary messages (errors, info)
+    Right - Ln/Col, Symbol Mode, Theme toggle
     """
 
     symbolModeToggled = pyqtSignal(bool)
+    themeToggleRequested = pyqtSignal()
 
     _SEPARATOR = "  ·  "
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setFixedHeight(24)
+        fm = self.fontMetrics()
+        self.setFixedHeight(fm.height() + 16)
 
         self._symbol_mode_on = False
         self._timer = QTimer(self)
@@ -86,16 +89,16 @@ class StatusBar(QWidget):
         self._sep2 = QLabel(self._SEPARATOR)
         self._sep2.hide()
 
-        self._query_time_label = QLabel()
-        self._query_time_label.hide()
+        self._theme_label = _ClickableLabel()
+        self._theme_label.clicked.connect(self._on_theme_toggle_clicked)
 
-        # Right side: line_col · symbol_mode · query_time
+        # Right side: line_col, symbol_mode, theme
         for widget in (
             self._line_col_label,
             self._sep1,
             self._symbol_mode_label,
             self._sep2,
-            self._query_time_label,
+            self._theme_label,
         ):
             layout.addWidget(widget)
 
@@ -132,9 +135,9 @@ class StatusBar(QWidget):
         self._sep2.show()
         self._refresh_symbol_mode_color()
 
-    def update_query_time(self, ms: int) -> None:
-        self._query_time_label.setText(f"⏱ {ms}ms")
-        self._query_time_label.show()
+    @pyqtSlot()
+    def _on_theme_toggle_clicked(self) -> None:
+        self.themeToggleRequested.emit()
 
     @pyqtSlot()
     def _on_symbol_mode_clicked(self) -> None:
@@ -151,6 +154,8 @@ class StatusBar(QWidget):
         accent = scheme.editor.get(EditorColorRole.KEYWORD).name()
         self._db_label.setStyleSheet(f"color: {accent};")
         self._refresh_symbol_mode_color()
+        theme_name = get_theme_manager().current.name
+        self._theme_label.setText(f"Theme: {theme_name}")
 
     def _refresh_symbol_mode_color(self) -> None:
         scheme = get_theme_manager().current_scheme

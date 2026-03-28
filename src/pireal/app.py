@@ -84,6 +84,7 @@ class Application:
         from pireal.gui.query_widget import QueryWidget
         from pireal.gui.start_page import StartPage
         from pireal.gui.table_widget import TableWidget
+        from pireal.gui.theme.manager import get_theme_manager
         from pireal.settings import settings
 
         logger.info("Widgets initialization")
@@ -114,6 +115,11 @@ class Application:
         self._main_window = Pireal()
         self._main_window.setWindowIcon(QIcon(image("pireal_icon.png")))
         self._registry.register("pireal", self._main_window)
+        status_bar.themeToggleRequested.connect(
+            lambda: self._main_window._on_theme_requested(
+                "light" if get_theme_manager().current_id == "dark" else "dark"
+            )
+        )
 
         right_pane = RightPane()
         self._registry.register("right-pane", right_pane)

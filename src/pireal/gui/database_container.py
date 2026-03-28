@@ -16,8 +16,6 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 
-import time
-
 from PyQt6.QtCore import QSettings, Qt, pyqtSlot
 from PyQt6.QtWidgets import QSplitter
 
@@ -161,9 +159,7 @@ class DatabaseContainer(QSplitter):
             return
 
         try:
-            start = time.perf_counter()
             results = Evaluator(db.relations_dict()).evaluate(tree)
-            elapsed_ms = round((time.perf_counter() - start) * 1000)
         except UndefinedRelationError as err:
             editor.editor.highlight_error(err.lineno, message=str(err))
             return
@@ -181,6 +177,3 @@ class DatabaseContainer(QSplitter):
             db._query_results.append(name)
             table_widget.add_table_to_results(relation)
             lateral_widget.add_item(relation, RelationItemType.Result)
-
-        status_bar = Registry.get("status-bar", StatusBar)
-        status_bar.update_query_time(elapsed_ms)
