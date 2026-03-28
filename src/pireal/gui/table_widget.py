@@ -15,15 +15,17 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QPalette
+from PyQt6.QtCore import QSize, Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QColor, QFontMetrics, QIcon, QPainter, QPalette, QPixmap
 from PyQt6.QtWidgets import (
+    QFrame,
     QHBoxLayout,
     QLabel,
     QPushButton,
     QSplitter,
     QStackedWidget,
-    QToolButton,
+    QStyle,
+    QStyleOptionButton,
     QVBoxLayout,
     QWidget,
 )
@@ -33,6 +35,8 @@ from pireal.core.db import DB
 from pireal.core.relation import Relation
 from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.model_view_delegate import create_view
+from pireal.gui.theme.manager import get_theme_manager
+from pireal.gui.theme.schema import EditorColorRole
 from pireal.helpers import Font
 from pireal.registry import Registry
 
@@ -90,6 +94,40 @@ class PlaceholderWidget(QWidget):
         controller.add_relations_from_text()
 
 
+class _FAButton(QPushButton):
+    def __init__(self, fa, glyph: str, tooltip: str, icon_size: int = 13, color: QColor | None = None, parent=None):
+        super().__init__(parent)
+        self._glyph = glyph
+        self._fa_font = fa.font(icon_size)
+        self._color = color
+        self.setFlat(True)
+        self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.setFixedSize(28, 28)
+        self.setToolTip(tooltip)
+        self.setStyleSheet("border: none; background: transparent;")
+
+    def paintEvent(self, a0):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        opt = QStyleOptionButton()
+        self.initStyleOption(opt)
+        if opt.state & QStyle.StateFlag.State_MouseOver:
+            painter.fillRect(self.rect(), QColor(128, 128, 128, 35))
+
+        # Glifo centrado con boundingRect real
+        painter.setFont(self._fa_font)
+        color = self._color if self._color else self.palette().color(self.palette().ColorRole.ButtonText)
+        painter.setPen(color)
+        fm = QFontMetrics(self._fa_font)
+        br = fm.boundingRect(self._glyph)
+        x = (self.width() - br.width()) // 2 - br.x()
+        y = (self.height() - br.height()) // 2 - br.y()
+        painter.drawText(x, y, self._glyph)
+        painter.end()
+
+
 class TableWidget(QWidget):
     sqlRequested = pyqtSignal()
     treeRequested = pyqtSignal()
@@ -101,40 +139,38 @@ class TableWidget(QWidget):
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
+        layout.setSpacing(1)
 
         # Toolbar
         toolbar = QHBoxLayout()
-        toolbar.setContentsMargins(0, 0, 4, 0)
+        toolbar.setContentsMargins(0, 0, 0, 0)
         toolbar.addStretch()
         fa = Font.instance()
-        self._btn_split = QToolButton()
-        self._btn_split.setAutoRaise(True)
+
+        self._btn_split = self._make_tool_btn(fa, "\uf0db", "Toggle split view")
         self._btn_split.setCheckable(True)
-        self._btn_split.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        fa.apply_to(self._btn_split, size=12)
-        self._btn_split.setText("\uf0db")
-        self._btn_split.setToolTip("Toggle split view")
         self._btn_split.toggled.connect(self._on_split_toggled)
         toolbar.addWidget(self._btn_split)
 
-        btn_sql = QToolButton()
-        btn_sql.setAutoRaise(True)
-        btn_sql.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        fa.apply_to(btn_sql, size=12)
-        btn_sql.setText("\uf121")
-        btn_sql.setToolTip("Show SQL")
+        btn_sql = self._make_tool_btn(fa, "\uf121", "Show SQL", icon_size=11)
         btn_sql.clicked.connect(self.sqlRequested.emit)
         toolbar.addWidget(btn_sql)
 
-        btn_tree = QToolButton()
-        btn_tree.setAutoRaise(True)
-        btn_tree.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        fa.apply_to(btn_tree, size=12)
-        btn_tree.setText("\uf0e8")
-        btn_tree.setToolTip("Show Execution Tree")
+        btn_tree = self._make_tool_btn(fa, "\uf0e8", "Show execution tree")
         btn_tree.clicked.connect(self.treeRequested.emit)
         toolbar.addWidget(btn_tree)
+
+        # Separador
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.VLine)
+        sep.setFixedHeight(16)
+        toolbar.addWidget(sep)
+
+        success_color = get_theme_manager().current_scheme.editor.get(EditorColorRole.SUCCESS)
+        btn_run = self._make_tool_btn(fa, "\uf04b", "Run queries", color=success_color)
+        btn_run.setStyleSheet(f"QToolButton {{ color: {success_color.name()}; }}")
+        btn_run.clicked.connect(self._on_run_queries)
+        toolbar.addWidget(btn_run)
 
         layout.addLayout(toolbar)
 
@@ -150,6 +186,35 @@ class TableWidget(QWidget):
 
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
         lateral_widget.resultClicked.connect(self._on_result_list_clicked)
+
+    def _fa_icon(self, fa, glyph: str, btn_size: int = 28, icon_size: int = 13, color: QColor | None = None) -> QIcon:
+        from PyQt6.QtGui import QFontMetrics
+
+        px = QPixmap(QSize(btn_size, btn_size))
+        px.fill(Qt.GlobalColor.transparent)
+        font = fa.font(icon_size)
+        fm = QFontMetrics(font)
+        br = fm.boundingRect(glyph)
+        x = (btn_size - br.width()) // 2 - br.x()
+        y = (btn_size - br.height()) // 2 - br.y()
+        painter = QPainter(px)
+        painter.setFont(font)
+        c = color if color else self.palette().color(self.palette().ColorRole.WindowText)
+        painter.setPen(c)
+        painter.drawText(x, y, glyph)
+        painter.end()
+        return QIcon(px)
+
+    def _make_tool_btn(
+        self, fa, glyph: str, tooltip: str, icon_size: int = 13, color: QColor | None = None
+    ) -> _FAButton:
+        return _FAButton(fa, glyph, tooltip, icon_size=icon_size, color=color)
+
+    @pyqtSlot()
+    def _on_run_queries(self):
+        from pireal.gui.controller import Controller
+
+        Registry.get("controller", Controller).execute_queries()
 
     def _on_split_toggled(self, checked: bool):
         if checked:

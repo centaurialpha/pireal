@@ -18,7 +18,7 @@
 
 from PyQt6.QtCore import QSettings, Qt
 from PyQt6.QtGui import QCloseEvent
-from PyQt6.QtWidgets import QHBoxLayout, QMainWindow, QMessageBox, QPushButton, QToolButton, QWidget
+from PyQt6.QtWidgets import QHBoxLayout, QMainWindow, QMessageBox, QToolButton, QWidget
 
 from pireal import translations as tr
 from pireal.core.db import DB
@@ -28,7 +28,6 @@ from pireal.gui.controller import Controller
 from pireal.gui.menu import MenuBuilder
 from pireal.gui.query_widget import EditorWidget, QueryWidget
 from pireal.gui.theme.manager import get_theme_manager
-from pireal.gui.theme.schema import EditorColorRole
 from pireal.helpers import Font
 from pireal.registry import Registry
 from pireal.settings import settings
@@ -77,33 +76,7 @@ class Pireal(QMainWindow):
         settings_btn.setFixedSize(28, 28)
         settings_btn.clicked.connect(self._show_settings)
 
-        # Run
-        run_btn = QPushButton("\uf04b  Run Query")
-        run_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        run_btn.setFixedHeight(28)
-        run_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        fa_font = fa.font(11)
-        run_btn.setFont(fa_font)
-        run_btn.clicked.connect(controller.execute_queries)
-
-        # Estilo del botón Run
-        scheme = get_theme_manager().current_scheme
-        success = scheme.editor.get(EditorColorRole.SUCCESS).name()
-        run_btn.setStyleSheet(f"""
-            QPushButton {{
-                background-color: {success};
-                color: #ffffff;
-                border: none;
-                border-radius: 6px;
-                padding: 0 14px;
-                font-size: 12px;
-            }}
-            QPushButton:hover {{ background-color: {success}dd; }}
-            QPushButton:pressed {{ background-color: {success}aa; }}
-        """)
-
         layout.addWidget(settings_btn)
-        layout.addWidget(run_btn)
         return widget
 
     def _start_updater(self):
@@ -127,7 +100,7 @@ class Pireal(QMainWindow):
         highlight = theme_manager.current_scheme.highlight.name()
 
         msg = (
-            f'Nueva versión <b>{version}</b> disponible — <a href="{url}" '
+            f'Nueva versión <b>{version}</b> disponible - <a href="{url}" '
             f'style="color: {highlight}; text-decoration: none;">Descargar ↗</a>'
         )
         self._status_bar.show_message(msg, timeout=0)

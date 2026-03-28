@@ -16,7 +16,15 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt6.QtWidgets import QHBoxLayout, QLineEdit, QMessageBox, QPushButton, QTabWidget, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import (
+    QHBoxLayout,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
 from pireal import translations as tr
 from pireal.core.pireal_file import File, is_example_file
@@ -41,14 +49,6 @@ class QueryWidget(QWidget):
         self._editor_tabs.setMovable(True)
         self._editor_tabs.setTabPosition(QTabWidget.TabPosition.South)
 
-        # Line/col
-        # self._line_col_label = QLabel("Ln 1, Col 1")
-        # self._line_col_label.setContentsMargins(0, 0, 6, 0)
-        # self._line_col_label.hide()
-        # self._editor_tabs.setCornerWidget(
-        #     self._line_col_label,
-        #     Qt.Corner.TopRightCorner,  # TopRight = esquina sobre las tabs (que están abajo = BottomRight)
-        # )
         box.addWidget(self._editor_tabs)
 
         self._editor_tabs.currentChanged.connect(self._on_tab_changed)
