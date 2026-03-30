@@ -16,6 +16,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from typing import Any
 
 from PyQt6.QtCore import (
     QAbstractTableModel,
@@ -50,15 +51,15 @@ class RelationModel(QAbstractTableModel):
     def _on_theme_changed(self, scheme):
         self._null_text_color = scheme.editor.get(EditorColorRole.COMMENT)
 
-    def rowCount(self, parent=QModelIndex):
+    def rowCount(self, parent: QModelIndex | None = None) -> int:
         """Devuelve la cardinalidad de la relación"""
-        if parent.isValid():
+        if parent is not None and parent.isValid():
             return 0
         return self.relation.cardinality()
 
-    def columnCount(self, parent=QModelIndex):
+    def columnCount(self, parent: QModelIndex | None = None):
         """Devuelve el grado de la relación"""
-        if parent.isValid():
+        if parent is not None and parent.isValid():
             return 0
         return self.relation.degree()
 
@@ -76,17 +77,20 @@ class RelationModel(QAbstractTableModel):
                 return self._null_text_color
         return None
 
-    def headerData(self, section, orientation, role):
+    def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
         if role == Qt.ItemDataRole.DisplayRole and orientation == Qt.Orientation.Horizontal:
             return self.relation.header[section]
 
-    def setHeaderData(self, section, orientation, value, role):
+    def setHeaderData(
+        self, section: int, orientation: Qt.Orientation, value: Any, role: int = Qt.ItemDataRole.DisplayRole
+    ) -> bool:
         if role == Qt.ItemDataRole.DisplayRole:
             old_value = self.relation.header[section]
             if value != old_value:
                 self.relation.header[section] = value
                 self.headerDataChanged.emit(orientation, section, section)
                 return True
+        return False
 
     def flags(self, index):
         flags = super().flags(index)
@@ -94,7 +98,7 @@ class RelationModel(QAbstractTableModel):
             flags |= Qt.ItemFlag.ItemIsEditable
         return flags
 
-    def setData(self, index, value, role):
+    def setData(self, index: QModelIndex, value: Any, role: int = Qt.ItemDataRole.DisplayRole):
         if index.isValid() and role == Qt.ItemDataRole.EditRole:
             current_value = self.data(index)
             if current_value != value:
@@ -119,12 +123,16 @@ class View(QTableView):
     def __init__(self):
         super().__init__()
         self.setAlternatingRowColors(True)
-        self.verticalHeader().hide()
+        vheader = self.verticalHeader()
+        if vheader is not None:
+            vheader.hide()
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         # Scroll content per pixel
         self.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
         self.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
-        self.horizontalHeader().setHighlightSections(False)
+        header = self.horizontalHeader()
+        if header is not None:
+            header.setHighlightSections(False)
 
         self._apply_hover_style()
 
@@ -158,12 +166,13 @@ class View(QTableView):
     def adjust_columns(self):
         """Resize all sections to content and user interactive"""
         header = self.horizontalHeader()
-        for column in range(header.count()):
-            header.setSectionResizeMode(column, QHeaderView.ResizeMode.ResizeToContents)
-            width = header.sectionSize(column)
-            header.setSectionResizeMode(column, QHeaderView.ResizeMode.Interactive)
-            header.resizeSection(column, width)
-        self.horizontalHeader().setMinimumHeight(32)
+        if header is not None:
+            for column in range(header.count()):
+                header.setSectionResizeMode(column, QHeaderView.ResizeMode.ResizeToContents)
+                width = header.sectionSize(column)
+                header.setSectionResizeMode(column, QHeaderView.ResizeMode.Interactive)
+                header.resizeSection(column, width)
+            header.setMinimumHeight(32)
 
 
 class Header(QHeaderView):
@@ -182,7 +191,9 @@ class Header(QHeaderView):
             return
         name, ok = QInputDialog.getText(self, tr.TR_INPUT_DIALOG_HEADER_TITLE, tr.TR_INPUT_DIALOG_HEADER_BODY)
         if ok:
-            self.model().setHeaderData(index, Qt.Orientation.Horizontal, name.strip())
+            model = self.model()
+            if model is not None:
+                model.setHeaderData(index, Qt.Orientation.Horizontal, name.strip())
 
 
 class Delegate(QItemDelegate):

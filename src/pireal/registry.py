@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from typing import TypeVar, cast
+from typing import TypeVar
 
 from PyQt6.QtCore import QObject
 
@@ -34,7 +34,7 @@ class Registry:
         widget = cls._components[name]
         if not isinstance(widget, widget_type):
             raise TypeError("error")
-        return cast(T, widget)
+        return widget
 
 
 # from functools import wraps

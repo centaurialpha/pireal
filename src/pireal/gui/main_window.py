@@ -47,7 +47,9 @@ class Pireal(QMainWindow):
         menu_builder.build()
 
         corner = self._build_corner_widget(controller)
-        self.menuBar().setCornerWidget(corner, Qt.Corner.TopRightCorner)
+        menubar = self.menuBar()
+        assert menubar is not None
+        menubar.setCornerWidget(corner, Qt.Corner.TopRightCorner)
 
         db = Registry.get("db", DB)
         db.hasModified.connect(self._update_title)
@@ -56,7 +58,9 @@ class Pireal(QMainWindow):
         if check_updates:
             self._start_updater()
 
-        self.statusBar().hide()
+        statusbar = self.statusBar()
+        assert statusbar is not None
+        statusbar.hide()
 
     def _build_corner_widget(self, controller) -> QWidget:
         widget = QWidget()
@@ -96,15 +100,17 @@ class Pireal(QMainWindow):
         updater_thread.start()
 
     def _on_update_available(self, version: str, url: str):
-        theme_manager = get_theme_manager()
-        highlight = theme_manager.current_scheme.highlight.name()
+        # theme_manager = get_theme_manager()
+        # highlight = theme_manager.current_scheme.highlight.name()
 
-        msg = (
-            f'Nueva versión <b>{version}</b> disponible - <a href="{url}" '
-            f'style="color: {highlight}; text-decoration: none;">Descargar ↗</a>'
-        )
-        self._status_bar.show_message(msg, timeout=0)
-        self._status_bar._message_label.setOpenExternalLinks(True)
+        # FIXME: hacer esto
+        # msg = (
+        #     f'Nueva versión <b>{version}</b> disponible - <a href="{url}" '
+        #     f'style="color: {highlight}; text-decoration: none;">Descargar ↗</a>'
+        # )
+        # self._status_bar.show_message(msg, timeout=0)
+        # self._status_bar._message_label.setOpenExternalLinks(True)
+        pass
 
     def _update_title(self, *args):
         db = Registry.get("db", DB)
@@ -139,7 +145,8 @@ class Pireal(QMainWindow):
             w
             for i in range(query_widget._editor_tabs.count())
             if isinstance((w := query_widget._editor_tabs.widget(i)), EditorWidget)
-            and w.editor.document().isModified()
+            and (doc := w.editor.document()) is not None
+            and doc.isModified()
             and not is_example_file(w.file)
         ]
 

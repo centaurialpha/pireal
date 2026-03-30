@@ -76,7 +76,8 @@ class QueryWidget(QWidget):
         editor = self._editor_tabs.widget(index)
         if not isinstance(editor, EditorWidget):
             return
-        if editor.editor.document().isModified() and not is_example_file(editor.file):
+        doc = editor.editor.document()
+        if doc is not None and doc.isModified() and not is_example_file(editor.file):
             ret = QMessageBox.question(
                 self,
                 tr.TR_TAB_CLOSE_TITLE,
@@ -136,9 +137,11 @@ class QueryWidget(QWidget):
         from pireal.interpreter.scanner import Scanner
         from pireal.registry import Registry
 
-        queries = self.current_editor().text()
-        if not queries.strip():
-            return
+        editor = self.current_editor()
+        if editor is not None:
+            queries = editor.text()
+            if not queries.strip():
+                return
 
         try:
             tree = Parser(Lexer(Scanner(queries))).parse()
@@ -172,9 +175,11 @@ class QueryWidget(QWidget):
         from pireal.interpreter.scanner import Scanner
         from pireal.interpreter.sql_generator import SQLGenerator
 
-        queries = self.current_editor().text()
-        if not queries.strip():
-            return
+        editor = self.current_editor()
+        if editor is not None:
+            queries = editor.text()
+            if not queries.strip():
+                return
 
         try:
             tree = Parser(Lexer(Scanner(queries))).parse()
@@ -221,7 +226,9 @@ class EditorWidget(QWidget):
         self.editor = Editor()
         vbox.addWidget(self.editor)
 
-        self.editor.document().modificationChanged.connect(self._on_modification_changed)
+        doc = self.editor.document()
+        if doc is not None:
+            doc.modificationChanged.connect(self._on_modification_changed)
 
         self._search_widget = SearchWidget(self.editor)
         self._search_widget.hide()
@@ -257,7 +264,9 @@ class EditorWidget(QWidget):
         self.editor.setPlainText(text)
         if settings.symbol_mode:
             self.editor.toggle_symbol_mode(True)
-        self.editor.document().setModified(False)
+        document = self.editor.document()
+        if document is not None:
+            document.setModified(False)
         self.editor.modified = False
 
     def saved(self):

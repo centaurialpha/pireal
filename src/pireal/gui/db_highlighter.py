@@ -55,8 +55,10 @@ class DBHighlighter(QSyntaxHighlighter):
     def _on_theme_changed(self, scheme: ColorScheme):
         self._setup_formats(scheme)
 
-    def highlightBlock(self, text: str):
+    def highlightBlock(self, text: str | None):
         # Comentarios: líneas que empiezan con %
+        if text is None:
+            return
         if text.startswith("%"):
             self.setFormat(0, len(text), self._comment_fmt)
             return

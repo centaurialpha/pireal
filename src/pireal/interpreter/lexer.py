@@ -155,7 +155,7 @@ class Lexer:
             self.sc.next()
 
         if count == 1:
-            raise MissingQuoteError("Faltan comillas", lineno=1, col=1)
+            raise MissingQuoteError(lineno=1, col=1)
         self.sc.next()
 
         # Is date? is time? or just string?

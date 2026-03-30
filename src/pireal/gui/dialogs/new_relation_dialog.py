@@ -151,6 +151,8 @@ class NewRelationDialog(QDialog):
             return
         # Table model
         model = self._view.model()
+        if model is None:
+            return
         # Row and column count
         nrow = model.rowCount()
         ncol = model.columnCount()
@@ -160,9 +162,10 @@ class NewRelationDialog(QDialog):
         # Header
         try:
             header = []
-            for i in range(ncol):
-                text = model.horizontalHeaderItem(i).text().strip()
-                header.append(text)
+            for col in range(ncol):
+                text = model.headerData(col, Qt.Orientation.Horizontal)
+                if text:
+                    header.append(str(text).strip())
             rela.header = header
         except Exception as reason:
             QMessageBox.critical(self, "Header Error", str(reason))
@@ -172,10 +175,12 @@ class NewRelationDialog(QDialog):
         for row in range(nrow):
             tuples = []
             for column in range(ncol):
-                item = model.item(row, column)
+                index = model.index(row, column)
+                value = model.data(index, Qt.ItemDataRole.DisplayRole)
                 try:
-                    if not item.text().strip():
-                        raise Exception
+                    text = str(value).strip() if value is not None else ""
+                    if not text:
+                        raise Exception()
                 except Exception:
                     QMessageBox.information(
                         self,
@@ -183,7 +188,8 @@ class NewRelationDialog(QDialog):
                         tr.TR_RELATION_DIALOG_WHITESPACE.format(row + 1, column + 1),
                     )
                     return
-                tuples.append(item.text().strip())
+                else:
+                    tuples.append(text)
             rela.insert(tuple(tuples))
 
         # Data

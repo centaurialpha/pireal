@@ -83,7 +83,7 @@ class TreeDialog(QDialog):
 
         base_font = QFont(settings.font_family, settings.font_size)
         for root in roots:
-            _populate(self._tree.invisibleRootItem(), root, scheme, base_font)
+            _populate(self._tree.invisibleRootItem(), root, scheme, base_font)  # type: ignore
 
         self._tree.expandAll()
         layout.addWidget(self._tree)
@@ -107,6 +107,6 @@ class TreeDialog(QDialog):
         self._tree.clear()
         base_font = QFont(settings.font_family, settings.font_size)
         for root in self._roots:
-            _populate(self._tree.invisibleRootItem(), root, scheme, base_font)
+            _populate(self._tree.invisibleRootItem(), root, scheme, base_font)  # type: ignore
 
         self._tree.expandAll()

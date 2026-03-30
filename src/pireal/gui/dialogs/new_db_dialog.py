@@ -61,7 +61,7 @@ class NewDBInputDialog(QDialog):
 
         button_box.accepted.connect(self.accept)
         button_box.rejected.connect(self.reject)
-        choose_dir_action.triggered.connect(self._choose_db_dir)
+        choose_dir_action.triggered.connect(self._choose_db_dir)  # type: ignore
         self._line_db_name.textChanged.connect(self._update_db_filename)
         self._line_db_location.textChanged.connect(self._update_db_filename)
 

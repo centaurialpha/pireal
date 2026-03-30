@@ -44,8 +44,8 @@ class RightPane(QWidget):
         layout.addWidget(self._vsplitter)
         layout.addWidget(status_bar)
 
-    def showEvent(self, event):
-        super().showEvent(event)
+    def showEvent(self, a0):
+        super().showEvent(a0)
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
         vsizes = qsettings.value("vsplitter_sizes", None)
         if vsizes is not None:

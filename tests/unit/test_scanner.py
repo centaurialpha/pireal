@@ -34,9 +34,7 @@ def scanner_bot():
     return _make_scanner
 
 
-@pytest.mark.parametrize(
-    "text, pos, expected", [("hola", 1, "o"), ("hola", 3, "a"), ("hola", 9, None)]
-)
+@pytest.mark.parametrize("text, pos, expected", [("hola", 1, "o"), ("hola", 3, "a"), ("hola", 9, None)])
 def test_char_property(scanner_bot, text, pos, expected):
     sc = scanner_bot(text, pos)
     assert sc.char == expected

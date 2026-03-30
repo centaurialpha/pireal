@@ -77,13 +77,13 @@ class Sidebar(QFrame):
         fmetrics_width = QFontMetrics(self.editor.document().defaultFont()).horizontalAdvance("9")
         return 5 + fmetrics_width * digits + 3
 
-    def paintEvent(self, event):
+    def paintEvent(self, a0):
         """This method draws a left sidebar
 
         :param event: QEvent
         """
         painter = QPainter(self)
-        painter.fillRect(event.rect(), self._background_color)
+        painter.fillRect(a0.rect(), self._background_color)
         width = self.width() - 8
         height = self.editor.fontMetrics().height()
         font = self.editor.font()

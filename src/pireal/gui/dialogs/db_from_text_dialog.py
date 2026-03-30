@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+# type: ignore
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtWidgets import (
     QDialog,
@@ -66,7 +67,6 @@ class DBFromTextDialog(QDialog):
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
 
-        # — Lado izquierdo: editor —
         left = QWidget()
         left_layout = QVBoxLayout(left)
         left_layout.setContentsMargins(0, 0, 0, 0)
@@ -83,7 +83,6 @@ class DBFromTextDialog(QDialog):
         self._highlighter = DBHighlighter(self._editor.document())
         left_layout.addWidget(self._editor)
 
-        # — Lado derecho: preview —
         right = QWidget()
         right_layout = QVBoxLayout(right)
         right_layout.setContentsMargins(0, 0, 0, 0)
@@ -105,7 +104,6 @@ class DBFromTextDialog(QDialog):
 
         layout.addWidget(splitter)
 
-        # — Botones —
         self._buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         self._buttons.button(QDialogButtonBox.StandardButton.Ok).setText(tr.TR_DB_FROM_TEXT_LOAD_BTN)
         self._buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)

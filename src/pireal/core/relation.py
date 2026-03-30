@@ -96,7 +96,7 @@ def union_compatible(operation):
     return inner
 
 
-def _cast_value(value: str) -> int | float | datetime.date | datetime.time | str:
+def _cast_value(value: str) -> int | float | datetime.date | datetime.time | str | None:
     try:
         return int(value)
     except ValueError:

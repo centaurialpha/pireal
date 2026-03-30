@@ -57,7 +57,9 @@ class SQLDialog(QDialog):
         layout.addWidget(button_box)
 
     def _copy(self):
-        QGuiApplication.clipboard().setText(self._editor.toPlainText())
+        clipboard = QGuiApplication.clipboard()
+        if clipboard is not None:
+            clipboard.setText(self._editor.toPlainText())
 
     def _on_settings_changed(self, key: str):
         if key in ("font_family", "font_size"):

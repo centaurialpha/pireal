@@ -221,7 +221,8 @@ class LateralWidget(QSplitter):
             return
         menu = QMenu(self)
         delete_action = menu.addAction(tr.TR_MENU_SCHEME_REMOVE_RELATION)
-        if menu.exec(self._relations_list.view.viewport().mapToGlobal(pos)) and delete_action:
+        viewport = self._relations_list.view.viewport()
+        if viewport is not None and menu.exec(viewport.mapToGlobal(pos)) and delete_action:
             self.deleteRelationRequested.emit(index.row())
 
     def remove_relation(self, index: int):

@@ -80,7 +80,7 @@ class ThemeManager(QObject):
             raise ValueError(f"Theme {theme_id} not found. Available: {available}")
 
         app_instance = QApplication.instance()
-        if app_instance is None:
+        if not isinstance(app_instance, QApplication):
             raise RuntimeError("No QApplication instance found")
 
         app_instance.setStyleSheet("")

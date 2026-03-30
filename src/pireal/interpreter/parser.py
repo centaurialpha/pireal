@@ -197,24 +197,27 @@ class Parser:
         node = self.variable() if self.token.type is TokenTypes.ID else self.literal()
         return node
 
-    def literal(self):
+    def literal(self) -> ast.Number | ast.String | ast.Date | ast.Time:
         token_type = self.token.type
         value = self.token.value
 
-        litarl_map = {
-            TokenTypes.INTEGER: ast.Number,
-            TokenTypes.REAL: ast.Number,
-            TokenTypes.STRING: ast.String,
-            TokenTypes.DATE: ast.Date,
-            TokenTypes.TIME: ast.Time,
-        }
-
-        node_class = litarl_map.get(token_type)
-        if node_class is None:
-            raise ConsumeError(TokenTypes.INTEGER, token_type, self.lexer.sc.lineno)
-
-        self.consume(token_type)
-        return node_class(value)
+        match token_type:
+            case TokenTypes.INTEGER | TokenTypes.REAL:
+                assert isinstance(value, (int, float))
+                self.consume(token_type)
+                return ast.Number(value)
+            case TokenTypes.STRING:
+                assert isinstance(value, str)
+                self.consume(token_type)
+                return ast.String(value)
+            case TokenTypes.DATE:
+                self.consume(token_type)
+                return ast.Date(value)
+            case TokenTypes.TIME:
+                self.consume(token_type)
+                return ast.Time(value)
+            case _:
+                raise ConsumeError(TokenTypes.INTEGER, token_type, self.lexer.sc.lineno)
 
     def operator(self) -> Token:
         COMPARISON_OPERATORS = {

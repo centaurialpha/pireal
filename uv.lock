@@ -494,6 +494,7 @@ dev = [
     { name = "hatch-vcs" },
     { name = "hatchling" },
     { name = "ipython" },
+    { name = "pyqt6-stubs" },
     { name = "pytest" },
     { name = "pytest-qt" },
 ]
@@ -513,6 +514,7 @@ dev = [
     { name = "hatch-vcs", specifier = ">=0.4.0" },
     { name = "hatchling", specifier = ">=1.27.0" },
     { name = "ipython", specifier = ">=9.3.0" },
+    { name = "pyqt6-stubs", specifier = ">=20250824" },
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "pytest-qt", specifier = ">=4.5.0" },
 ]
@@ -637,6 +639,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/20/1a/5c6fcae85edb65cf236c9dc6d23b279b5316e94cdca1abdee6d0a217ddbb/PyQt6_sip-13.10.0-cp313-cp313-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:757ac52c92b2ef0b56ecc7cd763b55a62d3c14271d7ea8d03315af85a70090ff", size = 303407, upload-time = "2025-02-02T17:13:52.733Z" },
     { url = "https://files.pythonhosted.org/packages/b9/db/6924ec985be7d746772806b96ab81d24263ef72f0249f0573a82adaed75e/PyQt6_sip-13.10.0-cp313-cp313-win_amd64.whl", hash = "sha256:571900c44a3e38738d696234d94fe2043972b9de0633505451c99e2922cb6a34", size = 53580, upload-time = "2025-02-02T17:13:54.98Z" },
     { url = "https://files.pythonhosted.org/packages/77/c3/9e44729b582ee7f1d45160e8c292723156889f3e38ce6574f88d5ab8fa02/PyQt6_sip-13.10.0-cp313-cp313-win_arm64.whl", hash = "sha256:39cba2cc71cf80a99b4dc8147b43508d4716e128f9fb99f5eb5860a37f082282", size = 45446, upload-time = "2025-02-02T17:13:57.135Z" },
+]
+
+[[package]]
+name = "pyqt6-stubs"
+version = "20250824"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/eb/08/a5061968fed399314bd83f1b225092ff8102d9bdc9fd13b70010aaf7fb7e/pyqt6_stubs-20250824.tar.gz", hash = "sha256:f56958e34fb69e52c19ce24f5b59f181dde9a1e2fe0738aa8780e6b9a9b809d9", size = 331916, upload-time = "2025-08-24T12:04:49.343Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/54/57/08d3a5c19f2d2fd773d2329d19692e682ab9e2a6620c1a586a744d50b52b/pyqt6_stubs-20250824-py3-none-any.whl", hash = "sha256:4b77dc40f5dab7ca4ba899fff4c1db8de9cc73799ee98f56cae63349f18a6e52", size = 369983, upload-time = "2025-08-24T12:04:47.605Z" },
 ]
 
 [[package]]

@@ -15,8 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtCore import QSize, Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QColor, QFontMetrics, QIcon, QPainter, QPalette, QPixmap
+from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QColor, QFontMetrics, QPainter, QPalette
 from PyQt6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -116,7 +116,6 @@ class _FAButton(QPushButton):
         if opt.state & QStyle.StateFlag.State_MouseOver:
             painter.fillRect(self.rect(), QColor(128, 128, 128, 35))
 
-        # Glifo centrado con boundingRect real
         painter.setFont(self._fa_font)
         color = self._color if self._color else self.palette().color(self.palette().ColorRole.ButtonText)
         painter.setPen(color)
@@ -187,24 +186,6 @@ class TableWidget(QWidget):
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
         lateral_widget.resultClicked.connect(self._on_result_list_clicked)
 
-    def _fa_icon(self, fa, glyph: str, btn_size: int = 28, icon_size: int = 13, color: QColor | None = None) -> QIcon:
-        from PyQt6.QtGui import QFontMetrics
-
-        px = QPixmap(QSize(btn_size, btn_size))
-        px.fill(Qt.GlobalColor.transparent)
-        font = fa.font(icon_size)
-        fm = QFontMetrics(font)
-        br = fm.boundingRect(glyph)
-        x = (btn_size - br.width()) // 2 - br.x()
-        y = (btn_size - br.height()) // 2 - br.y()
-        painter = QPainter(px)
-        painter.setFont(font)
-        c = color if color else self.palette().color(self.palette().ColorRole.WindowText)
-        painter.setPen(c)
-        painter.drawText(x, y, glyph)
-        painter.end()
-        return QIcon(px)
-
     def _make_tool_btn(
         self, fa, glyph: str, tooltip: str, icon_size: int = 13, color: QColor | None = None
     ) -> _FAButton:
@@ -272,15 +253,17 @@ class TableWidget(QWidget):
     def clear_results(self):
         while self._stacked_results.count() > 0:
             widget = self._stacked_results.widget(0)
-            self._stacked_results.removeWidget(widget)
-            widget.deleteLater()
+            if widget is not None:
+                self._stacked_results.removeWidget(widget)
+                widget.deleteLater()
 
     def clear(self):
         # limpiar workspace
         while self._stacked.count() > 0:
             widget = self._stacked.widget(0)
-            self._stacked.removeWidget(widget)
-            widget.deleteLater()
+            if widget is not None:
+                self._stacked.removeWidget(widget)
+                widget.deleteLater()
         self.clear_results()
         self._show_placeholder()
 

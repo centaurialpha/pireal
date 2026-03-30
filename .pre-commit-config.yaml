@@ -1,10 +1,16 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.1
+    rev: v0.15.4
     hooks:
-      # 1) Lint + fixes automáticos (incluye ordenar imports)
-      - id: ruff
+      - id: ruff-check
         args: [--fix]
-
-      # 2) Formatter (decide single vs multiline imports)
       - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: uv run pytest
+        language: system
+        pass_filenames: false
+        always_run: true

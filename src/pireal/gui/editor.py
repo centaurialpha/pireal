@@ -15,8 +15,18 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+from typing import cast
+
 from PyQt6.QtCore import QEvent, Qt, QTimer, pyqtSignal
-from PyQt6.QtGui import QColor, QFont, QKeyEvent, QTextCharFormat, QTextCursor, QTextDocument
+from PyQt6.QtGui import (
+    QColor,
+    QFont,
+    QHelpEvent,
+    QKeyEvent,
+    QTextCharFormat,
+    QTextCursor,
+    QTextDocument,
+)
 from PyQt6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPlainTextEdit, QTextEdit, QToolButton, QToolTip
 
 from pireal import translations as tr
@@ -195,6 +205,8 @@ class Editor(QPlainTextEdit):
         cursor_pos = self.textCursor().position()
 
         document = self.document()
+        if document is None:
+            return
         cursor = QTextCursor(document)
         cursor.beginEditBlock()
 
@@ -227,6 +239,9 @@ class Editor(QPlainTextEdit):
 
     def _apply_theme(self, scheme: ColorScheme):
         """Aplica un ColorScheme al editor."""
+        viewport = self.viewport()
+        if viewport is None:
+            return
         editor = scheme.editor
 
         # Colores del editor
@@ -235,7 +250,7 @@ class Editor(QPlainTextEdit):
         pal.setColor(pal.ColorRole.Text, editor.get(EditorColorRole.FOREGROUND))
         self.setPalette(pal)
 
-        self.viewport().setPalette(pal)
+        viewport.setPalette(pal)
 
         # Color de línea actual
         self._current_line_color = editor.get(EditorColorRole.CURRENT_LINE)
@@ -459,6 +474,9 @@ class Editor(QPlainTextEdit):
                 self.setTextCursor(cursor)
 
     def event(self, e: QEvent | None) -> bool:
+        if e is None:
+            return False
+        e = cast(QHelpEvent, e)
         if e.type() == e.Type.ToolTip:
             cursor = self.cursorForPosition(e.pos())
             line = cursor.blockNumber() + 1
@@ -522,12 +540,21 @@ class Editor(QPlainTextEdit):
         word = cursor.selectedText().lower()
         if word in KEYWORD_TO_SYMBOL:
             document = self.document()
+            if document is None:
+                return
             was_modified = document.isModified()
             cursor.insertText(KEYWORD_TO_SYMBOL[word])
             document.setModified(was_modified)
 
     def keyPressEvent(self, e: QKeyEvent | None) -> None:
-        if self.completer.popup().isVisible() and e.key() in (
+        popup = self.completer.popup()
+        model = self.completer.completionModel()
+        e = cast(QKeyEvent, e)
+        if popup is None:
+            return
+        if model is None:
+            return
+        if popup.isVisible() and e.key() in (
             Qt.Key.Key_Enter,
             Qt.Key.Key_Return,
             Qt.Key.Key_Tab,
@@ -541,17 +568,18 @@ class Editor(QPlainTextEdit):
             return
         prefix = self._text_under_cursor()
         if len(prefix) < 2:
-            self.completer.popup().hide()
+            popup.hide()
             return
 
         if prefix != self.completer.completionPrefix():
             self.completer.setCompletionPrefix(prefix)
-            self.completer.popup().setCurrentIndex(self.completer.completionModel().index(0, 0))
+            popup.setCurrentIndex(model.index(0, 0))
 
         rect = self.cursorRect()
-        rect.setWidth(
-            self.completer.popup().sizeHintForColumn(0) + self.completer.popup().verticalScrollBar().sizeHint().width()
-        )
+        scrollbar = popup.verticalScrollBar()
+        if scrollbar is None:
+            return
+        rect.setWidth(popup.sizeHintForColumn(0) + scrollbar.sizeHint().width())
         self.completer.complete(rect)
 
     def _text_under_cursor(self) -> str:

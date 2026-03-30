@@ -143,6 +143,8 @@ class DatabaseContainer(QSplitter):
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
 
         editor = query_widget.current_editor()
+        if editor is None:
+            return
         queries = editor.text()
         editor.editor.show_run_cursor()
 

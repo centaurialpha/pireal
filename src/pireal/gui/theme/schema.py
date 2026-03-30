@@ -154,7 +154,7 @@ class EditorColors:
             sidebar_background=sidebar_bg,
             sidebar_foreground=sidebar_fg,
             error=QColor("#DD4040"),
-            success=rotate_hue(highlight - 60),
+            success=rotate_hue(highlight, 60),
         )
 
     @classmethod

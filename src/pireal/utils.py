@@ -60,7 +60,7 @@ def sanitize_data(data: str):
     result = {"tables": []}
 
     lines = data.strip().splitlines()
-    current_table = None
+    current_table: dict
 
     for line in lines:
         if not line:

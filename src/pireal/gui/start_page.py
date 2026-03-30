@@ -116,6 +116,8 @@ class RecentDBDelegate(QStyledItemDelegate):
         opt.text = ""
 
         style = opt.widget.style() if opt.widget else QApplication.style()
+        if style is None:
+            return
         if opt.state & QStyle.StateFlag.State_Selected:
             highlight = opt.palette.color(QPalette.ColorRole.Highlight)
             highlight.setAlpha(150)

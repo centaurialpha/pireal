@@ -28,8 +28,8 @@ SLIDES = [
         "icon": "🎓",
         "title": tr.TR_TOUR_SLIDE1_TITLE,
         "body": tr.TR_TOUR_SLIDE1_BODY,
-        "code": None,
-        "highlighter_type": None,
+        "code": "",
+        "highlighter_type": "",
     },
     {
         "icon": "🗄️",
@@ -49,7 +49,7 @@ SLIDES = [
         "icon": "📊",
         "title": tr.TR_TOUR_SLIDE4_TITLE,
         "body": tr.TR_TOUR_SLIDE4_BODY,
-        "code": None,
+        "code": "",
     },
 ]
 
@@ -154,13 +154,13 @@ class TourDialog(QDialog):
 
     def _update_slide(self):
         slide = SLIDES[self._current]
-        self._icon_lbl.setText(slide["icon"])
-        self._title_lbl.setText(slide["title"])
-        self._body_lbl.setText(slide["body"])
+        self._icon_lbl.setText(slide["icon"])  # type: ignore
+        self._title_lbl.setText(slide["title"])  # type: ignore
+        self._body_lbl.setText(slide["body"])  # type: ignore
 
         if slide["code"]:
             self._code_widget.set_highlighter(slide["highlighter_type"])
-            self._code_widget.setPlainText(slide["code"])
+            self._code_widget.setPlainText(slide["code"])  # type: ignore
             self._code_widget.show()
         else:
             self._code_widget.hide()

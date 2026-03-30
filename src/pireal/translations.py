@@ -107,10 +107,10 @@ TR_TABLE_ADD_COL = QCoreApplication.translate("Pireal", "Add Column")
 # Query Container
 # TR_SYNTAX_ERROR = QCoreApplication.translate("Pireal", "Syntax Error")
 # TR_NAME_DUPLICATED = QCoreApplication.translate("Pireal", "Name Duplicated")
-# TR_RELATION_NAME_ALREADY_EXISTS = QCoreApplication.translate(
-#     "Pireal",
-#     "There is already a relationship with name <b>{}</b> :(<br><br>Please choose another.",
-# )
+TR_RELATION_NAME_ALREADY_EXISTS = QCoreApplication.translate(
+    "Pireal",
+    "There is already a relationship with name <b>{}</b> :(<br><br>Please choose another.",
+)
 # TR_QUERY_ERROR = QCoreApplication.translate("Pireal", "Query Error")
 # #
 TR_RELATIONS = QCoreApplication.translate("Pireal", "Relations")
@@ -159,7 +159,7 @@ TR_DB_DIALOG_TITLE = QCoreApplication.translate("Pireal", "Create New Database")
 TR_DB_DIALOG_DB_NAME = QCoreApplication.translate("Pireal", "Database Name:")
 TR_DB_DIALOG_DB_LOCATION = QCoreApplication.translate("Pireal", "Location:")
 TR_DB_DIALOG_DB_FILENAME = QCoreApplication.translate("Pireal", "Filename:")
-# TR_DB_DIALOG_SELECT_FOLDER = QCoreApplication.translate("Pireal", "Select Folder")
+TR_DB_DIALOG_SELECT_FOLDER = QCoreApplication.translate("Pireal", "Select Folder")
 # New Relation
 TR_INPUT_DIALOG_HEADER_TITLE = QCoreApplication.translate("Pireal", "New Header Name:")
 TR_INPUT_DIALOG_HEADER_BODY = QCoreApplication.translate("Pireal", "Header Name:")
@@ -184,7 +184,7 @@ TR_RELATION_DIALOG_WHITESPACE = QCoreApplication.translate(
 #
 TR_REMOVE_TUPLE = QCoreApplication.translate("Pireal", "Remove Tuple")
 TR_REMOVE_COLUMN = QCoreApplication.translate("Pireal", "Remove Column")
-# TR_MSG_WRONG = QCoreApplication.translate("Pireal", "Something has gone wrong")
+TR_MSG_WRONG = QCoreApplication.translate("Pireal", "Something has gone wrong")
 #
 # TR_STATUS_DB_SAVED = QCoreApplication.translate("Pireal", "Database has been saved: {}")
 # TR_STATUS_DB_LOADED = QCoreApplication.translate(
@@ -193,10 +193,10 @@ TR_REMOVE_COLUMN = QCoreApplication.translate("Pireal", "Remove Column")
 # TR_STATUS_DB_CONNECTED = QCoreApplication.translate("Pireal", "Connected to: {}")
 # TR_STATUS_QUERY_SAVED = QCoreApplication.translate("Pireal", "Query saved: {}")
 #
-# TR_TAB_CLOSE_TITLE = QCoreApplication.translate("Pireal", "Unsaved changes")
-# TR_TAB_CLOSE_BODY = QCoreApplication.translate(
-#     "Pireal", "The file <b>{name}</b> has unsaved changes. Save before closing?"
-# )
+TR_TAB_CLOSE_TITLE = QCoreApplication.translate("Pireal", "Unsaved changes")
+TR_TAB_CLOSE_BODY = QCoreApplication.translate(
+    "Pireal", "The file <b>{name}</b> has unsaved changes. Save before closing?"
+)
 #
 # Tour
 TR_TOUR_GET_STARTED = QCoreApplication.translate("Pireal", "Get started!")
