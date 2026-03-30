@@ -47,7 +47,6 @@ class StatusBar(QWidget):
     """
 
     symbolModeToggled = pyqtSignal(bool)
-    themeToggleRequested = pyqtSignal()
 
     _SEPARATOR = "  ·  "
 
@@ -86,19 +85,11 @@ class StatusBar(QWidget):
         self._symbol_mode_label.hide()
         self._symbol_mode_label.clicked.connect(self._on_symbol_mode_clicked)
 
-        self._sep2 = QLabel(self._SEPARATOR)
-        self._sep2.hide()
-
-        self._theme_label = _ClickableLabel()
-        self._theme_label.clicked.connect(self._on_theme_toggle_clicked)
-
-        # Right side: line_col, symbol_mode, theme
+        # Right side: line_col, symbol_mode
         for widget in (
             self._line_col_label,
             self._sep1,
             self._symbol_mode_label,
-            self._sep2,
-            self._theme_label,
         ):
             layout.addWidget(widget)
 
@@ -132,12 +123,7 @@ class StatusBar(QWidget):
         self._symbol_mode_on = enabled
         self._symbol_mode_label.setText(f"Symbol Mode: {'On' if enabled else 'Off'}")
         self._symbol_mode_label.show()
-        self._sep2.show()
         self._refresh_symbol_mode_color()
-
-    @pyqtSlot()
-    def _on_theme_toggle_clicked(self) -> None:
-        self.themeToggleRequested.emit()
 
     @pyqtSlot()
     def _on_symbol_mode_clicked(self) -> None:
@@ -154,8 +140,6 @@ class StatusBar(QWidget):
         accent = scheme.editor.get(EditorColorRole.KEYWORD).name()
         self._db_label.setStyleSheet(f"color: {accent};")
         self._refresh_symbol_mode_color()
-        theme_name = get_theme_manager().current.name
-        self._theme_label.setText(f"Theme: {theme_name}")
 
     def _refresh_symbol_mode_color(self) -> None:
         scheme = get_theme_manager().current_scheme

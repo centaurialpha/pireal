@@ -27,6 +27,7 @@ from pireal.dirs import DATA_SETTINGS
 from pireal.gui.controller import Controller
 from pireal.gui.menu import MenuBuilder
 from pireal.gui.query_widget import EditorWidget, QueryWidget
+from pireal.gui.status_bar import _ClickableLabel
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.helpers import Font
 from pireal.registry import Registry
@@ -70,6 +71,14 @@ class Pireal(QMainWindow):
 
         fa = Font.instance()
 
+        self._theme_label = _ClickableLabel()
+        self._theme_label.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._theme_label.clicked.connect(
+            lambda: self._on_theme_requested("light" if get_theme_manager().current_id == "dark" else "dark")
+        )
+        get_theme_manager().themeChanged.connect(self._update_theme_label)
+        self._update_theme_label()
+        layout.addWidget(self._theme_label)
         # Settings
         settings_btn = QToolButton()
         settings_btn.setAutoRaise(True)
@@ -82,6 +91,10 @@ class Pireal(QMainWindow):
 
         layout.addWidget(settings_btn)
         return widget
+
+    def _update_theme_label(self) -> None:
+        name = get_theme_manager().current.name
+        self._theme_label.setText(f"Theme: {name}")
 
     def _start_updater(self):
         from PyQt6.QtCore import QThread
