@@ -18,7 +18,7 @@
 
 from PyQt6.QtCore import QSettings, Qt
 from PyQt6.QtGui import QCloseEvent
-from PyQt6.QtWidgets import QHBoxLayout, QMainWindow, QMessageBox, QToolButton, QWidget
+from PyQt6.QtWidgets import QHBoxLayout, QMainWindow, QMessageBox, QWidget
 
 from pireal import translations as tr
 from pireal.core.db import DB
@@ -28,6 +28,7 @@ from pireal.gui.controller import Controller
 from pireal.gui.menu import MenuBuilder
 from pireal.gui.query_widget import EditorWidget, QueryWidget
 from pireal.gui.status_bar import _ClickableLabel
+from pireal.gui.table_widget import _FAButton
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.helpers import Font
 from pireal.registry import Registry
@@ -66,10 +67,8 @@ class Pireal(QMainWindow):
     def _build_corner_widget(self, controller) -> QWidget:
         widget = QWidget()
         layout = QHBoxLayout(widget)
-        layout.setContentsMargins(0, 4, 8, 4)
-        layout.setSpacing(6)
-
-        fa = Font.instance()
+        layout.setContentsMargins(0, 0, 2, 4)
+        layout.setSpacing(8)
 
         self._theme_label = _ClickableLabel()
         self._theme_label.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -79,14 +78,10 @@ class Pireal(QMainWindow):
         get_theme_manager().themeChanged.connect(self._update_theme_label)
         self._update_theme_label()
         layout.addWidget(self._theme_label)
+
         # Settings
-        settings_btn = QToolButton()
-        settings_btn.setAutoRaise(True)
-        settings_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        settings_btn.setText("\uf013")
-        settings_btn.setToolTip(tr.TR_SETTINGS_TITLE)
-        fa.apply_to(settings_btn)
-        settings_btn.setFixedSize(28, 28)
+        fa = Font.instance()
+        settings_btn = _FAButton(fa, "\uf013", tr.TR_SETTINGS_TITLE)
         settings_btn.clicked.connect(self._show_settings)
 
         layout.addWidget(settings_btn)

@@ -216,7 +216,9 @@ class Controller(QWidget):
 
         if not filename:
             logger.info("Filename not provided")
-            filename, _ = QFileDialog.getOpenFileName(self, "Ola", self._last_open_folder, "")
+            filename, _ = QFileDialog.getOpenFileName(
+                self, tr.TR_OPEN_DB, self._last_open_folder, "Pireal Database (*.pdb)"
+            )
             if not filename:
                 logger.info("Filename not selected")
                 return
@@ -267,7 +269,9 @@ class Controller(QWidget):
     @pyqtSlot()
     def open_query(self, filename="", remember=True):
         if not filename:
-            filename, _ = QFileDialog.getOpenFileName(self, "open quiery", self._last_open_folder, "")
+            filename, _ = QFileDialog.getOpenFileName(
+                self, tr.TR_OPEN_QUERY, self._last_open_folder, "Pireal Query (*.qrf)"
+            )
             if not filename:
                 return
 
@@ -406,9 +410,9 @@ class Controller(QWidget):
 
     @pyqtSlot()
     def show_tour(self):
-        from pireal.gui.dialogs.tour_dialog import TourDialog
+        from pireal.gui.dialogs.tour_dialog import WelcomeDialog
 
-        dialog = TourDialog(self)
+        dialog = WelcomeDialog(self)
         dialog.exec()
 
     @pyqtSlot()

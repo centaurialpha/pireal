@@ -38,7 +38,7 @@ def settings(tmp_path, qapp):
         ("font_size", 12),
         ("highlight_current_line", True),
         ("match_parenthesis", True),
-        ("theme", "dark"),
+        ("theme", "light"),
     ],
 )
 def test_defaults(settings, attr, expected):

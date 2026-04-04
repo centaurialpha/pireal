@@ -128,9 +128,9 @@ class Application:
 
     def run(self):
         self._main_window.showMaximized()
-        from pireal.gui.dialogs.tour_dialog import TourDialog
+        from pireal.gui.dialogs.tour_dialog import WelcomeDialog
 
-        if TourDialog.should_show():
-            TourDialog(Registry.get("controller", Controller)).exec()
+        if WelcomeDialog.should_show():
+            WelcomeDialog(Registry.get("controller", Controller)).exec()
 
         sys.exit(self._app.exec())

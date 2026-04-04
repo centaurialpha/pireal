@@ -67,7 +67,7 @@ TR_MENU_HELP_ABOUT_QT = QCoreApplication.translate("Pireal", "About Qt")
 #     "Pireal", "The database file could not be opened"
 # )
 #
-# TR_MSG_OPEN_QUERY = QCoreApplication.translate("Pireal", "Open Query")
+TR_OPEN_QUERY = QCoreApplication.translate("Pireal", "Open Query")
 TR_CANCEL = QCoreApplication.translate("Pireal", "Cancel")
 TR_MSG_CONFIRMATION = QCoreApplication.translate("Pireal", "Confirmation")
 #

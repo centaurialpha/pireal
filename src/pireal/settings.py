@@ -77,8 +77,8 @@ class Settings(QObject):
         self.dark_mode: bool = self._qs.value("dark_mode", True, type=bool)
         self.symbol_mode: bool = self._qs.value("symbol_mode", False, type=bool)
 
-        default_theme = "dark" if self.dark_mode else "light"
-        self.theme: str = self._qs.value("theme", default_theme)
+        default_theme = "light" if not self._qs.contains("theme") else self._qs.value("theme")
+        self.theme: str = default_theme
 
         self._loaded = True
 
