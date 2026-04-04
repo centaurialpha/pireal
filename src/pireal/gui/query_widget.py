@@ -54,6 +54,8 @@ class QueryWidget(QWidget):
         self._editor_tabs.currentChanged.connect(self._on_tab_changed)
         self._editor_tabs.tabCloseRequested.connect(self._on_tab_close_requested)
 
+        self.hide()
+
     def set_symbol_mode(self, enabled: bool) -> None:
         self._symbol_mode_on = enabled
         editor = self.current_editor()
@@ -94,6 +96,8 @@ class QueryWidget(QWidget):
                 controller = Registry.get("controller", Controller)
                 controller.save_query()
         self._editor_tabs.removeTab(index)
+        if self._editor_tabs.count() == 0:
+            self.hide()
 
     def clear(self):
         self._editor_tabs.clear()
@@ -126,6 +130,7 @@ class QueryWidget(QWidget):
             self._untitled_count += 1
             editor.file = File(display_name=f"untitled_{self._untitled_count}.pqf")
         self.add_editor(editor)
+        self.show()
         return editor
 
     def _show_tree(self):
