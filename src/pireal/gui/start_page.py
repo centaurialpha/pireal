@@ -175,7 +175,11 @@ class RecentDBDelegate(QStyledItemDelegate):
 
         is_hover = bool(opt.state & QStyle.StateFlag.State_MouseOver)
         if is_hover or is_selected:
-            btn_color = palette.color(QPalette.ColorRole.PlaceholderText)
+            btn_color = (
+                palette.color(QPalette.ColorRole.HighlightedText)
+                if is_selected
+                else palette.color(QPalette.ColorRole.PlaceholderText)
+            )
             painter.setPen(btn_color)
             btn_font = painter.font()
             btn_font.setPointSize(10)
@@ -439,7 +443,6 @@ class StartPage(QWidget):
         main_layout.addLayout(hbox_footer)
 
         self._recent_databases_view._recent_dbs_list.doubleClicked.connect(self._on_listview_item_double_clicked)
-        self._recent_databases_view._recent_dbs_list.clicked.connect(self._on_listview_item_double_clicked)
         btn_open_db.clicked.connect(self._open_database)
         btn_new_db.clicked.connect(self._new_database)
         btn_example.clicked.connect(self._open_example)
