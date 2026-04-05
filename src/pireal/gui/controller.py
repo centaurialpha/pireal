@@ -33,6 +33,7 @@ from pireal.gui.query_widget import QueryWidget
 from pireal.gui.table_widget import TableWidget
 from pireal.registry import Registry
 from pireal.resources import sample
+from pireal.settings import MAX_RECENT_DATABASES
 from pireal.utils import sanitize_data
 
 logger = logging.getLogger(__name__)
@@ -56,7 +57,7 @@ class Controller(QWidget):
 
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
         self._last_open_folder: str = qsettings.value("last_open_folder", type=str) or str(Path.home())
-        self._recent_databases: list[str] = qsettings.value("recent_databases", type=list)
+        self._recent_databases: list[str] = qsettings.value("recent_databases", defaultValue=[], type=list) or []
 
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
         db = Registry.get("db", DB)
@@ -118,7 +119,7 @@ class Controller(QWidget):
             lateral_widget.clear_results()
             table_widget.clear()
             query_widget.clear()
-            db._file = None
+            db.file = None
 
             from pireal.gui.start_page import StartPage
 
@@ -166,7 +167,7 @@ class Controller(QWidget):
             self._recent_databases.remove(normalized_path)
 
         self._recent_databases.insert(0, normalized_path)
-        self._recent_databases = self._recent_databases[:10]  # FIXME: constant
+        self._recent_databases = self._recent_databases[:MAX_RECENT_DATABASES]
 
         logger.debug(
             "Recent databases updated, filepath='%s' - new_count='%d'",
@@ -267,7 +268,7 @@ class Controller(QWidget):
         db.is_active = False
 
     @pyqtSlot()
-    def open_query(self, filename="", remember=True):
+    def open_query(self, filename=""):
         if not filename:
             filename, _ = QFileDialog.getOpenFileName(
                 self, tr.TR_OPEN_QUERY, self._last_open_folder, "Pireal Query (*.qrf)"
@@ -348,7 +349,7 @@ class Controller(QWidget):
         dialog.exec()
 
     def _show_one_database_warning(self):
-        QMessageBox.information(self, "ola", "Solo se puede tener una base de datos abierta a la vez.")
+        QMessageBox.information(self, tr.TR_MSG_INFORMATION, tr.TR_MSG_ONE_DB_AT_TIME)
 
     def save_database(self):
         db = Registry.get("db", DB)
@@ -377,7 +378,7 @@ class Controller(QWidget):
         if not filename.endswith(".pdb"):
             filename += ".pdb"
 
-        db._file = File(filename)
+        db.file = File(filename)
         db.save()
         self._remember_folder(filename)
 

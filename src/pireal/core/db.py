@@ -140,3 +140,6 @@ class DB(QObject):
         self._file.save(content)
         self.modified = False
         return True
+
+    def add_query_result(self, name: str) -> None:
+        self._query_results.append(name)

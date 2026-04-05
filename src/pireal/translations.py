@@ -53,10 +53,8 @@ TR_MENU_HELP_REPORT_ISSUE = QCoreApplication.translate("Pireal", "Report Issue")
 TR_MENU_HELP_ABOUT_PIREAL = QCoreApplication.translate("Pireal", "About Pireal")
 TR_MENU_HELP_ABOUT_QT = QCoreApplication.translate("Pireal", "About Qt")
 
-# TR_MSG_INFORMATION = QCoreApplication.translate("Pireal", "Information")
-# TR_MSG_ONE_DB_AT_TIME = QCoreApplication.translate(
-#     "Pireal", "Oops! One database at a time please"
-# )
+TR_MSG_INFORMATION = QCoreApplication.translate("Pireal", "Information")
+TR_MSG_ONE_DB_AT_TIME = QCoreApplication.translate("Pireal", "Oops! One database at a time please")
 # TR_MSG_UPDATES = QCoreApplication.translate("Pireal", "Pireal Updates")
 # TR_MSG_UPDATES_BODY = QCoreApplication.translate(
 #     "Pireal",

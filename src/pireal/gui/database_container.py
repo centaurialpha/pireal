@@ -56,7 +56,6 @@ class DatabaseContainer(QSplitter):
         right_pane = Registry.get("right-pane", RightPane)
         table_widget = Registry.get("table-widget", TableWidget)
         query_widget = Registry.get("query-widget", QueryWidget)
-        status_bar = Registry.get("status-bar", StatusBar)
 
         self.addWidget(lateral_widget)
         self.addWidget(right_pane)
@@ -69,11 +68,6 @@ class DatabaseContainer(QSplitter):
         table_widget.treeRequested.connect(query_widget._show_tree)
         self._database.relationsChanged.connect(query_widget.update_completer)
         self._database.databaseStateChanged.connect(self._on_db_state_for_status)
-        self._database.databaseStateChanged.connect(
-            lambda active: status_bar.update_db_name(
-                self._database.file.display_name if active and self._database.file else ""
-            )
-        )
 
     @pyqtSlot(bool)
     def _on_db_state_for_status(self, active: bool) -> None:
@@ -86,7 +80,7 @@ class DatabaseContainer(QSplitter):
     def create_database(self, data):
         table_widget = Registry.get("table-widget", TableWidget)
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
-        for table in data.get("tables"):
+        for table in data.get("tables", []):
             table_name = table.get("name")
             header = table.get("header")
             tuples = table.get("tuples")

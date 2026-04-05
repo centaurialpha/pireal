@@ -16,6 +16,8 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 
+import logging
+
 from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLineEdit,
@@ -30,9 +32,12 @@ from pireal import translations as tr
 from pireal.core.pireal_file import File, is_example_file
 from pireal.gui.editor import Editor
 from pireal.gui.status_bar import StatusBar
+from pireal.interpreter.exceptions import ConsumeError, InvalidSyntaxError, MissingQuoteError
 from pireal.interpreter.tokens import SYMBOL_TO_KEYWORD
 from pireal.registry import Registry
 from pireal.settings import settings
+
+logger = logging.getLogger(__name__)
 
 
 class QueryWidget(QWidget):
@@ -170,8 +175,10 @@ class QueryWidget(QWidget):
                 # Mostrar el último plan con contexto completo
                 dialog = QueryPlanDialog(plans, context, self)
                 dialog.exec()
-        except Exception as e:
-            print(e)
+        except (MissingQuoteError, InvalidSyntaxError, ConsumeError):
+            pass
+        except Exception:
+            logger.exception("Unexpected error building query plan")
 
     def _show_sql(self):
         from pireal.gui.dialogs.sql_dialog import SQLDialog
@@ -192,22 +199,16 @@ class QueryWidget(QWidget):
             sql = "\n\n".join(f"-- {name}\n{sql}" for name, sql in sql_queries.items())
             dialog = SQLDialog(sql, self)
             dialog.exec()
-        except Exception as e:
-            print(e)
-            pass  # si hay error de sintaxis, no mostrar nada
+        except (MissingQuoteError, InvalidSyntaxError, ConsumeError):
+            pass  # sintáxis inválida, no mostrar nada
+        except Exception:
+            logger.exception("Unexpected error generating SQL")
 
     def current_editor(self) -> "EditorWidget | None":
         widget = self._editor_tabs.currentWidget()
         if isinstance(widget, EditorWidget):
             return widget
         return None
-
-    def _current_editor(self) -> "EditorWidget":
-        for i in range(self._editor_tabs.count()):
-            widget = self._editor_tabs.widget(i)
-            if isinstance(widget, EditorWidget):
-                return widget
-        return self.create_editor()
 
     def update_completer(self, relation_names: list[str]) -> None:
         for i in range(self._editor_tabs.count()):

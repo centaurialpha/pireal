@@ -198,9 +198,8 @@ class Editor(QPlainTextEdit):
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
 
     def toggle_symbol_mode(self, enable: bool) -> None:
-        """Convierte keywords ↔ símbolos en el documento."""
+        """Convierte keywords, símbolos en el documento."""
         mapping = KEYWORD_TO_SYMBOL if enable else SYMBOL_TO_KEYWORD
-        print(mapping)
         # Preservar posición del cursor
         cursor_pos = self.textCursor().position()
 

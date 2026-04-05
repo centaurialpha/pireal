@@ -31,6 +31,9 @@ SUPPORTED_FILES = (
 )
 
 
+MAX_RECENT_DATABASES = 10
+
+
 def get_extension_filter(extension):
     for sf in SUPPORTED_FILES:
         if extension in sf:

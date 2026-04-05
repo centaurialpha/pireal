@@ -102,7 +102,6 @@ class MenuBuilder:
         from pireal.registry import Registry
 
         db = Registry.get("db", DB)
-        print(f"_update_actions called: is_active={db.is_active}, modified={db.modified}")  # debug
 
         # Acciones que solo requieren DB abierta
         for action in self.db_dependent_actions:

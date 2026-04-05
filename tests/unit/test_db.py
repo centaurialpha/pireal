@@ -86,7 +86,7 @@ def test_clear_query_results(db, sample_relations):
     result = Relation()
     result.name = "q1"
     db.load(result)
-    db._query_results.append("q1")
+    db.add_query_result("q1")
     assert db.count == 3
 
     db.clear_query_results()
