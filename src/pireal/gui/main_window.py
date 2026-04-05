@@ -16,14 +16,13 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt6.QtCore import QSettings, Qt
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import QHBoxLayout, QMainWindow, QMessageBox, QWidget
 
 from pireal import translations as tr
 from pireal.core.db import DB
 from pireal.core.pireal_file import is_example_file
-from pireal.dirs import DATA_SETTINGS
 from pireal.gui.controller import Controller
 from pireal.gui.menu import MenuBuilder
 from pireal.gui.query_widget import EditorWidget, QueryWidget
@@ -193,7 +192,6 @@ class Pireal(QMainWindow):
             if ret == QMessageBox.StandardButton.Save:
                 controller.save_database()
 
-        qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
-        qsettings.setValue("recent_databases", controller.recent_databases)
+        controller.save_state()
 
         return super().closeEvent(a0)

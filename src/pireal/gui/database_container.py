@@ -20,8 +20,7 @@ from PyQt6.QtCore import QSettings, Qt, pyqtSlot
 from PyQt6.QtWidgets import QSplitter
 
 from pireal.core.db import DB
-from pireal.core.pireal_file import File
-from pireal.core.relation import Relation
+from pireal.core.relation_loader import load_relations
 from pireal.dirs import DATA_SETTINGS
 from pireal.gui.lateral_widget import LateralWidget, RelationItemType
 from pireal.gui.model_view_delegate import Delegate, RelationModel, View
@@ -29,14 +28,6 @@ from pireal.gui.query_widget import QueryWidget
 from pireal.gui.right_pane import RightPane
 from pireal.gui.status_bar import StatusBar
 from pireal.gui.table_widget import TableWidget
-from pireal.interpreter.evaluator import Evaluator, UndefinedRelationError
-from pireal.interpreter.exceptions import (
-    ConsumeError,
-    DuplicateRelationNameError,
-    InvalidSyntaxError,
-    MissingQuoteError,
-    UndefinedAttributeError,
-)
 from pireal.registry import Registry
 
 
@@ -60,7 +51,6 @@ class DatabaseContainer(QSplitter):
         self.addWidget(lateral_widget)
         self.addWidget(right_pane)
 
-        self._relations: dict[str, Relation] = {}
         self._database = Registry.get("db", DB)
 
         lateral_widget.relationClicked.connect(self._on_relation_clicked)
@@ -80,26 +70,11 @@ class DatabaseContainer(QSplitter):
     def create_database(self, data):
         table_widget = Registry.get("table-widget", TableWidget)
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
-        for table in data.get("tables", []):
-            table_name = table.get("name")
-            header = table.get("header")
-            tuples = table.get("tuples")
 
-            rela = Relation()
-            rela.header = header
-
-            for tup in tuples:
-                rela.insert(tup)
-
-            # FIXME: feo
-            rela.name = table_name
-
-            self._database.load(rela)
-
-            # FIXME: acá se hace un add por lo tanto se modifica la db, utilizar load
-            table_widget.add_table_to_workspace(rela)
-
-            lateral_widget.add_item(rela, RelationItemType.Normal)
+        for relation in load_relations(data):
+            self._database.load(relation)
+            table_widget.add_table_to_workspace(relation)
+            lateral_widget.add_item(relation, RelationItemType.Normal)
 
         self._database.modified = False
 
@@ -117,59 +92,6 @@ class DatabaseContainer(QSplitter):
         else:
             self.setSizes([round(self.width() / 10), round(self.width() / 3)])
 
-    def new_query(self, filename: str) -> None:
-        query_widget = Registry.get("query-widget", QueryWidget)
-
-        if filename:
-            file = File(filename)
-            editor = query_widget.create_editor(file)
-            content = file.read()
-            editor.setText(content)
-        else:
-            query_widget.create_editor()
-
-    def execute_queries(self):
-        from pireal.interpreter.parser import parse
-
-        db = Registry.get("db", DB)
-        table_widget = Registry.get("table-widget", TableWidget)
-        query_widget = Registry.get("query-widget", QueryWidget)
-        lateral_widget = Registry.get("lateral-widget", LateralWidget)
-
-        editor = query_widget.current_editor()
-        if editor is None:
-            return
-        queries = editor.text()
-
-        # Limpiar resultados anteriores
-        lateral_widget.clear_results()
-        db.clear_query_results()
-        table_widget.clear_results()
-
-        try:
-            tree = parse(queries)
-            editor.editor.highlight_error(-1)
-            editor.editor.show_run_cursor()
-        except (MissingQuoteError, InvalidSyntaxError, ConsumeError) as err:
-            editor.editor.highlight_error(err.lineno, message=str(err))
-            return
-
-        try:
-            results = Evaluator(db.relations_dict()).evaluate(tree)
-        except UndefinedRelationError as err:
-            editor.editor.highlight_error(err.lineno, message=str(err))
-            return
-        except UndefinedAttributeError as err:
-            status_bar = Registry.get("status-bar", StatusBar)
-            status_bar.show_message(str(err))
-            return
-        except DuplicateRelationNameError as err:
-            status_bar = Registry.get("status-bar", StatusBar)
-            status_bar.show_message(str(err))
-            return
-
-        for name, relation in results.items():
-            db.load(relation)
-            db._query_results.append(name)
-            table_widget.add_table_to_results(relation)
-            lateral_widget.add_item(relation, RelationItemType.Result)
+    def save_state(self) -> None:
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
+        qsettings.setValue("hsplitter_sizes", self.saveState())
