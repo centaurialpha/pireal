@@ -155,7 +155,11 @@ class RelationDelegate(QStyledItemDelegate):
         name_color = (
             palette.color(QPalette.ColorRole.HighlightedText) if is_selected else palette.color(QPalette.ColorRole.Text)
         )
-        meta_color = palette.color(QPalette.ColorRole.PlaceholderText)
+        if is_selected:
+            meta_color = palette.color(QPalette.ColorRole.HighlightedText)
+            meta_color.setAlpha(180)
+        else:
+            meta_color = palette.color(QPalette.ColorRole.PlaceholderText)
 
         rect = opt.rect.adjusted(12, 4, -8, -4)
         half = rect.height() // 2
