@@ -1,102 +1,113 @@
-<div id="top"></div>
+# πreal 
 
-<div align="center">
+> A free and open source Relational Algebra interpreter for learning databases.
 
-  # πreal
+[![CI](https://github.com/centaurialpha/pireal/actions/workflows/cicd.yml/badge.svg)](https://github.com/centaurialpha/pireal/actions/workflows/cicd.yml)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Python](https://img.shields.io/badge/python-3.12+-blue)](https://www.python.org)
+[![PyQt6](https://img.shields.io/badge/PyQt-6-green)](https://www.riverbankcomputing.com/software/pyqt/)
 
-  [![CI](https://github.com/centaurialpha/pireal/actions/workflows/cicd.yml/badge.svg)](https://github.com/centaurialpha/pireal/actions/workflows/cicd.yml)
-  [![Coverage Status](https://coveralls.io/repos/github/centaurialpha/pireal/badge.svg)](https://coveralls.io/github/centaurialpha/pireal)
-  ![code style](https://img.shields.io/badge/code%20style-black-black?style=flat)
+Pireal lets you create relations, write Relational Algebra queries, and see
+results instantly, no SQL, no setup, no noise. Built for students and teachers
+who want to understand how databases actually work under the hood.
 
-A Relational Algebra interpreter.
+---
+ 
+## The origin story
+ 
+Pireal was born in 2015 out of necessity. Back then the standard tool for
+practicing Relational Algebra in university courses was WinRDBI, a Windows-only
+application. The problem: I've been a Linux user my whole life, and when I took
+my databases course I simply couldn't use it.
+ 
+Instead of dual-booting into Windows like a normal person, I wrote Pireal.
+Ten years later it's still here, still cross-platform, and WinRDBI is still
+Windows-only.
+ 
+---
 
-  [Getting started](#getting-started) •
-  [Report Bug](https://github.com/centaurialpha/pireal/issues)
-
-</div>
-
-<!-- ABOUT THE PROJECT -->
-## About The Project
-
-![pireal-in-action](https://user-images.githubusercontent.com/5894606/112898688-89c90680-90b7-11eb-8ae1-372d406b33fd.png)
-
-**πireal** is a teaching tool for use in learning introduction to database. It allows the user to interactively experiment with Relational Algebra.
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-### Built With
-
-* [Python](https://python.org/)
-* [PyQt](https://riverbankcomputing.com/software/pyqt/intro)
-* [Qt](https://www.qt.io/)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-## Getting Started
-
-You can download the installer from [here](). Currently we only have installer for Windows and Debian. If you know how to pack for Mac OS or any other Linux distribution, I'll thank you.
-
-There is always the option to execute from the sources:
-
-### Prerequisites
-
-**NOTE**: The following commands assume that you have activated the virtual environment of your project.
-
+## What is this
+ 
+Most database courses jump straight to SQL and skip the theory entirely. Pireal
+takes a step back and lets you work directly with Relational Algebra, the
+mathematical foundation that SQL is built on. Once this clicks, SQL clicks.
+ 
+You write queries like:
+ 
 ```
-$ pip install .
+young := select age < 30 (students);
+names := project name (young);
 ```
-
-<!-- CONTRIBUTING -->
+ 
+Hit F5, see the results. That's it.
+ 
+---
+ 
+## Features
+ 
+- All core RA operators: `select`, `project`, `njoin`, `union`, `intersect`,
+  `difference`, `product`, outer joins
+- Symbol mode: write `σ`, `π`, `⋈` instead of keywords if you're feeling
+  fancy (or your professor insists)
+- AST viewer: inspect the syntax tree Pireal builds when parsing your query,
+  useful if you're also taking a compilers course
+- SQL generator: translates any RA query to equivalent SQL so you can compare
+  both languages side by side
+- Custom themes: drop a JSON file in `~/.pireal/themes/` and it shows up
+  automatically
+- Plain text `.pdb` database files, readable by humans and version control
+  alike
+ 
+---
+ 
+## Installation
+ 
+### Windows
+ 
+Download the installer from the
+[releases page](https://github.com/centaurialpha/pireal/releases) and follow
+the steps. Next, next, finish.
+ 
+### Linux
+ 
+Download the AppImage from the
+[releases page](https://github.com/centaurialpha/pireal/releases):
+ 
+```bash
+chmod +x Pireal-x86_64.AppImage
+./Pireal-x86_64.AppImage
+```
+ 
+### From source
+ 
+Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/).
+ 
+```bash
+git clone https://github.com/centaurialpha/pireal
+cd pireal
+uv run pireal
+```
+ 
+---
+ 
+## Documentation
+ 
+Full docs, operator reference, examples and a theme creation guide at
+[centaurialpha.github.io/pireal](https://centaurialpha.github.io/pireal).
+ 
+---
+ 
 ## Contributing
-
-First install all dependencies to have the development environment ready:
-
-```
-$ make pip-install
-```
-Take a look the `Makefile` for more commands:
-
-```
-$ make
-test                    -- run tests
-test-gui                -- run tests for GUI
-test-integration        -- run integration tests
-pep8                    -- run pycodestyle
-flake8                   -- run flake8
-lint                    -- run pycodestyle and flake8
-dist                    -- run python setup.py sdist
-deb                     -- build a .deb package
-rc                      -- buil resources
+```bash
+uv sync --group dev
+uvx pre-commit install
+uv run pytest
 ```
 
-Now you're ready to contribute to the project 🙂.
+Bug reports, fixes, and feature ideas are welcome. Open an issue or send a PR.
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+---
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- LICENSE -->
 ## License
 
-Distributed under the GNU GPLv3. See `COPYING` for more information.
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- CONTACT -->
-## Contact
-
-Gabriel Acosta - [@_alfacentauri](https://twitter.com/_alfacentauri) - acostadariogabriel@gmail.com
-
-<p align="right">(<a href="#top">back to top</a>)</p>
+GNU GPLv3. See `COPYING`.
