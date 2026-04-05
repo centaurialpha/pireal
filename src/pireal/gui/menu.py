@@ -148,8 +148,6 @@ scheme_menu.add_item("separator")
 scheme_menu.add_item(Action(tr.TR_MENU_SCHEME_EXECUTE_QUERIES, "controller:execute_queries", shorcut="F5"))
 
 help_menu = Menu("&Help")
-help_menu.add_item(Action(tr.TR_MENU_HELP_SHOW_TOUR, "controller:show_tour"))
-help_menu.add_item("separator")
 help_menu.add_item(Action(tr.TR_MENU_HELP_REPORT_ISSUE, "controller:report_issue"))
 help_menu.add_item(Action(tr.TR_MENU_HELP_ABOUT_PIREAL, "controller:about_pireal"))
 help_menu.add_item(Action(tr.TR_MENU_HELP_ABOUT_QT, "controller:about_qt"))

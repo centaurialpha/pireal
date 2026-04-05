@@ -78,7 +78,6 @@ class Application:
             settings.theme = "dark"
 
     def _initialize_widgets(self):
-        from pireal.gui.controller import Controller
         from pireal.gui.database_container import DatabaseContainer
         from pireal.gui.lateral_widget import LateralWidget
         from pireal.gui.main_window import Pireal
@@ -134,9 +133,5 @@ class Application:
 
     def run(self):
         self._main_window.showMaximized()
-        from pireal.gui.dialogs.tour_dialog import WelcomeDialog
-
-        if WelcomeDialog.should_show():
-            WelcomeDialog(Registry.get("controller", Controller)).exec()
 
         sys.exit(self._app.exec())

@@ -215,13 +215,6 @@ class Controller(QWidget):
         Pireal.instance().close()
 
     @pyqtSlot()
-    def show_tour(self):
-        from pireal.gui.dialogs.tour_dialog import WelcomeDialog
-
-        dialog = WelcomeDialog(self)
-        dialog.exec()
-
-    @pyqtSlot()
     def report_issue(self):
         from PyQt6.QtCore import QUrl
         from PyQt6.QtGui import QDesktopServices
