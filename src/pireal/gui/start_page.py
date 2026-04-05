@@ -88,7 +88,8 @@ class RecentDBModel(QAbstractListModel):
 
         controller = Registry.get("controller", Controller)
         # Reemplazar la lista entera en el controller
-        controller._recent_databases = [path for _, path in self._items]
+        paths = [path for _, path in self._items]
+        controller.set_recent_databases(paths)
 
 
 class RecentDBDelegate(QStyledItemDelegate):

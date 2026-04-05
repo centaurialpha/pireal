@@ -19,22 +19,20 @@ import logging
 from pathlib import Path
 
 from PyQt6.QtCore import QSettings, pyqtSlot
-from PyQt6.QtWidgets import QFileDialog, QMessageBox, QStackedWidget, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QMessageBox, QStackedWidget, QVBoxLayout, QWidget
 
 from pireal import translations as tr
 from pireal.core.db import DB
-from pireal.core.pireal_file import File, is_example_file
+from pireal.core.recent_databases import RecentDatabases
 from pireal.dirs import DATA_SETTINGS
 from pireal.gui.database_container import DatabaseContainer
-from pireal.gui.dialogs.new_db_dialog import NewDBInputDialog
-from pireal.gui.dialogs.new_relation_dialog import NewRelationDialog
-from pireal.gui.lateral_widget import LateralWidget, RelationItemType
+from pireal.gui.dialogs.about_dialog import AboutDialog
+from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.query_widget import QueryWidget
+from pireal.gui.services.database_service import DatabaseService
+from pireal.gui.services.query_service import QueryService
 from pireal.gui.table_widget import TableWidget
 from pireal.registry import Registry
-from pireal.resources import sample
-from pireal.settings import MAX_RECENT_DATABASES
-from pireal.utils import sanitize_data
 
 logger = logging.getLogger(__name__)
 
@@ -56,14 +54,31 @@ class Controller(QWidget):
         box.addWidget(self._stack)
 
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
-        self._last_open_folder: str = qsettings.value("last_open_folder", type=str) or str(Path.home())
-        self._recent_databases: list[str] = qsettings.value("recent_databases", defaultValue=[], type=list) or []
+        last_folder: str = qsettings.value("last_open_folder", type=str) or str(Path.home())
+        recent_items = qsettings.value("recent_databases", defaultValue=[], type=list) or []
+        self._recents = RecentDatabases(recent_items)
 
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
         db = Registry.get("db", DB)
 
+        self._db_service = DatabaseService(
+            db=db,
+            recents=self._recents,
+            parent_widget=self,
+            last_folder=last_folder,
+        )
+
+        self._query_service = QueryService(
+            db=db,
+            parent_widget=self,
+            last_folder=last_folder,
+        )
+
         db.databaseStateChanged.connect(self._on_database_state_changed)
         lateral_widget.deleteRelationRequested.connect(self.remove_relation)
+
+    def set_recent_databases(self, paths: list[str]) -> None:
+        self._recents = RecentDatabases(paths)
 
     @pyqtSlot()
     def add_relations_from_text(self):
@@ -81,9 +96,7 @@ class Controller(QWidget):
         database_container.create_database(data)
 
     def remove_from_recents(self, path: str):
-        normalized = str(Path(path).resolve())
-        if normalized in self._recent_databases:
-            self._recent_databases.remove(normalized)
+        self._recents.remove(path)
 
     @pyqtSlot(int)
     def remove_relation(self, index: int):
@@ -134,274 +147,66 @@ class Controller(QWidget):
 
     @property
     def recent_databases(self) -> list[str]:
-        return self._recent_databases.copy()
-
-    def _remember_folder(self, filename: str):
-        """Actualiza la última carpeta usada basada en la ruta del archivo"""
-        if filename:
-            filepath = Path(filename)
-            folder = str(filepath.parent)
-            if is_example_file(filepath):
-                logger.debug("Skipping example folder: '%s'", folder)
-                return
-
-            self._last_open_folder = folder
-
-            qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
-            qsettings.setValue("last_open_folder", folder)
+        return self._recents.all()
 
     def add_db_to_recents(self, db_filepath: str) -> None:
-        if Path(db_filepath).resolve() == Path(sample("database.pdb")).resolve():
-            logger.debug("Skipping example database: '%s'", db_filepath)
-            return
-
-        logger.info(
-            "Adding to recent databases, filepath='%s' - current_count='%d'",
-            db_filepath,
-            len(self.recent_databases),
-        )
-
-        normalized_path = str(Path(db_filepath).resolve())
-
-        if normalized_path in self._recent_databases:
-            self._recent_databases.remove(normalized_path)
-
-        self._recent_databases.insert(0, normalized_path)
-        self._recent_databases = self._recent_databases[:MAX_RECENT_DATABASES]
-
-        logger.debug(
-            "Recent databases updated, filepath='%s' - new_count='%d'",
-            normalized_path,
-            len(self.recent_databases),
-        )
+        self._recents.add(db_filepath)
 
     @pyqtSlot()
     def create_database(self):
-        db = Registry.get("db", DB)
-
-        if db.is_active:
-            self._show_one_database_warning()
-            return
-
-        database_filepath = NewDBInputDialog.ask_db_name(parent=self)
-        if database_filepath is None:
-            return
-
-        db.file = File(database_filepath)
-        db.is_active = True
-
-        database_widget = Registry.get("database-container", DatabaseContainer)
-        self.add_widget(database_widget)
+        if self._db_service.create():
+            self.add_widget(Registry.get("database-container", DatabaseContainer))
 
     @pyqtSlot()
-    def open_database(self, filename: str | Path = ""):
-        """
-        - si ya hay una db abierta, avisar y no hacer nada.
-        - si no se proporciona un archivo, abrir el file dialog para seleccionar.
-        - leer el archivo y sanitizar la data.
-        - crear la db en el database container
-        - agregar el container al stack
-        - mostrar un mensaje en la toolbar del archivo abierto.
-        - actualizar el titulo de la ventana con el nombre del archivo.
-        - agregar la db a la lista de recientes.
-        """
-
-        if isinstance(filename, Path):
-            filename = str(filename)
-
-        db = Registry.get("db", DB)
-        if db.is_active:
-            logger.warning("Database already active")
-            self._show_one_database_warning()
-            return
-
-        if not filename:
-            logger.info("Filename not provided")
-            filename, _ = QFileDialog.getOpenFileName(
-                self, tr.TR_OPEN_DB, self._last_open_folder, "Pireal Database (*.pdb)"
-            )
-            if not filename:
-                logger.info("Filename not selected")
-                return
-
-        logger.info("Opening database '%s'", filename)
-        file = File(filename)
-        if not file.exists:
-            QMessageBox.warning(
-                self,
-                tr.TR_MSG_FILE_NOT_FOUND_TITLE,
-                tr.TR_MSG_FILE_NOT_FOUND_BODY.format(filename),
-            )
-            return
-        content = sanitize_data(file.read())
-
-        database_container = Registry.get("database-container", DatabaseContainer)
-        database_container.create_database(content)
-        self.add_widget(database_container)
-
-        self._remember_folder(filename)
-        self.add_db_to_recents(filename)
-
-        db.file = file
-        db.is_active = True
-        logger.info("Database opened")
+    def open_database(self, filename: str):
+        if self._db_service.open(filename):
+            self.add_widget(Registry.get("database-container", DatabaseContainer))
 
     @pyqtSlot()
     def close_database(self):
-        db = Registry.get("db", DB)
-        if not db.is_active:
-            return
+        self._db_service.close()
 
-        if db.modified and not is_example_file(db.file):
-            value = QMessageBox.question(
-                self,
-                tr.TR_MSG_SAVE_CHANGES,
-                tr.TR_MSG_SAVE_CHANGES_BODY,
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Cancel,
-            )
-            if value == QMessageBox.StandardButton.Cancel:
-                return
+    def save_database(self):
+        self._db_service.save()
 
-            if value == QMessageBox.StandardButton.Yes:
-                self.save_database()
+    def save_database_as(self):
+        self._db_service.save_as()
 
-        db.is_active = False
+    def create_database_from_text(self):
+        pass
 
     @pyqtSlot()
-    def open_query(self, filename=""):
-        if not filename:
-            filename, _ = QFileDialog.getOpenFileName(
-                self, tr.TR_OPEN_QUERY, self._last_open_folder, "Pireal Query (*.qrf)"
-            )
-            if not filename:
-                return
-
-        self._remember_folder(filename)
-        self.new_query(filename)
+    def open_query(self, filename: str):
+        self._query_service.open(filename)
 
     @pyqtSlot()
-    def new_query(self, filename: str = ""):
-        database_widget = Registry.get("database-container", DatabaseContainer)
-        database_widget.new_query(filename)
+    def new_query(self, filename: str):
+        self._query_service.new(filename)
 
     @pyqtSlot()
     def save_query(self):
-        query_widget = Registry.get("query-widget", QueryWidget)
-        editor = query_widget.current_editor()
-        if editor is None:
-            return
-        if editor.file.is_new:
-            return self.save_query_as()
-        editor.file.save(editor.text())
-        editor.saved()
+        self._query_service.save()
 
     @pyqtSlot()
     def save_query_as(self):
-        query_widget = Registry.get("query-widget", QueryWidget)
-        editor = query_widget.current_editor()
-        if editor is None:
-            return
-        filename, _ = QFileDialog.getSaveFileName(
-            self,
-            tr.TR_MSG_SAVE_QUERY_FILE,
-            self._last_open_folder,
-            "Pireal Query File (*.pqf)",
-        )
-        if not filename:
-            return
-        if not filename.endswith(".pqf"):
-            filename += ".pqf"
-        editor.file = File(filename)
-        editor.file.save(editor.text())
-        editor.saved()
-        self._remember_folder(filename)
+        self._query_service.save_as()
 
     @pyqtSlot()
     def close_query(self):
-        query_widget = Registry.get("query-widget", QueryWidget)
-        query_widget.close_current_editor()
+        self._query_service.close()
 
     @pyqtSlot()
     def execute_queries(self) -> None:
-        database_widget = Registry.get("database-container", DatabaseContainer)
-        database_widget.execute_queries()
+        self._query_service.execute()
 
     @pyqtSlot()
     def create_relation(self):
-        def _create(relation, relation_name):
-            relation.name = relation_name
-
-            lateral_widget = Registry.get("lateral-widget", LateralWidget)
-            table_widget = Registry.get("table-widget", TableWidget)
-
-            table_widget.add_table_to_workspace(relation)
-            lateral_widget.add_item(relation, relation_type=RelationItemType.Normal)
-
-        new_relation_dialog = NewRelationDialog()
-        new_relation_dialog.created.connect(_create)
-        new_relation_dialog.exec()
+        pass
 
     @pyqtSlot()
     def about_pireal(self):
-        from pireal.gui.dialogs.about_dialog import AboutDialog
-
         dialog = AboutDialog(self)
         dialog.exec()
-
-    def _show_one_database_warning(self):
-        QMessageBox.information(self, tr.TR_MSG_INFORMATION, tr.TR_MSG_ONE_DB_AT_TIME)
-
-    def save_database(self):
-        db = Registry.get("db", DB)
-        if not db.is_active or not db.modified:
-            return
-
-        if db.is_new:
-            return self.save_database_as()
-
-        db.save()
-
-    def save_database_as(self):
-        db = Registry.get("db", DB)
-        if not db.is_active:
-            return
-
-        filename, _ = QFileDialog.getSaveFileName(
-            self,
-            tr.TR_MSG_SAVE_DB_AS,
-            self._last_open_folder,
-            "Pireal Database File (*.pdb)",
-        )
-        if not filename:
-            return
-
-        if not filename.endswith(".pdb"):
-            filename += ".pdb"
-
-        db.file = File(filename)
-        db.save()
-        self._remember_folder(filename)
-
-    def create_database_from_text(self):
-        db = Registry.get("db", DB)
-        if db.is_active:
-            self._show_one_database_warning()
-            return
-
-        from pireal.gui.dialogs.db_from_text_dialog import DBFromTextDialog
-
-        dialog = DBFromTextDialog(self)
-        if dialog.exec() != DBFromTextDialog.DialogCode.Accepted:
-            return
-
-        data = dialog.parsed_data()
-        if not data:
-            return
-
-        database_container = Registry.get("database-container", DatabaseContainer)
-        database_container.create_database(data)
-        self.add_widget(database_container)
-        db.is_active = True
 
     @pyqtSlot()
     def quit(self):
@@ -435,3 +240,9 @@ class Controller(QWidget):
 
         dialog = FeedbackDialog(self)
         dialog.exec()
+
+    def save_state(self) -> None:
+        qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
+        qsettings.setValue("recent_databases", self._recents.all())
+        last_folder = self._db_service.last_folder or self._query_service.last_folder
+        qsettings.setValue("last_open_folder", last_folder)

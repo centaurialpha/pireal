@@ -109,7 +109,6 @@ class MenuBuilder:
 
         # Acciones que requieren DB abierta Y modificada
         for action in self.modified_dependent_actions:
-            print(action)
             action.setEnabled(db.is_active and db.modified)
 
 
