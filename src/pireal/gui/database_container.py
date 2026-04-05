@@ -140,7 +140,6 @@ class DatabaseContainer(QSplitter):
         if editor is None:
             return
         queries = editor.text()
-        editor.editor.show_run_cursor()
 
         # Limpiar resultados anteriores
         lateral_widget.clear_results()
@@ -150,6 +149,7 @@ class DatabaseContainer(QSplitter):
         try:
             tree = parse(queries)
             editor.editor.highlight_error(-1)
+            editor.editor.show_run_cursor()
         except (MissingQuoteError, InvalidSyntaxError, ConsumeError) as err:
             editor.editor.highlight_error(err.lineno, message=str(err))
             return

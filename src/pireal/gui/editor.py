@@ -396,13 +396,14 @@ class Editor(QPlainTextEdit):
             end_pos = cursor.position()
         # Create extra selection
         selection = QTextEdit.ExtraSelection()
-        # selection.format.setBackground(self._highlight_line_color)
+        selection.format.setBackground(self.palette().highlight().color())
+        selection.format.setForeground(self.palette().highlightedText().color())
         selection.cursor = QTextCursor(cursor)
         selection.cursor.setPosition(start_pos)
         selection.cursor.setPosition(end_pos, QTextCursor.MoveMode.KeepAnchor)
         self.add_selection("run_cursor", [selection])
-        # Remove extra selection after 0.3 seconds
-        QTimer.singleShot(300, lambda: self.clear_selections("run_cursor"))
+        # Remove extra selection after 0.4 seconds
+        QTimer.singleShot(400, lambda: self.clear_selections("run_cursor"))
 
     def saved(self):
         self.modified = False
