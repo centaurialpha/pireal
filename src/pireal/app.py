@@ -25,6 +25,7 @@ from PyQt6.QtWidgets import QApplication
 from pireal.core.db import DB
 from pireal.dirs import THEMES_DIR
 from pireal.gui.controller import Controller
+from pireal.gui.query_widget import QueryWidget
 from pireal.gui.right_pane import RightPane
 from pireal.gui.status_bar import StatusBar
 from pireal.registry import Registry
@@ -84,7 +85,6 @@ class Application:
         from pireal.gui.query_widget import QueryWidget
         from pireal.gui.start_page import StartPage
         from pireal.gui.table_widget import TableWidget
-        from pireal.settings import settings
 
         logger.info("Widgets initialization")
 
@@ -94,12 +94,6 @@ class Application:
         lateral_widget = LateralWidget()
         self._registry.register("lateral-widget", lateral_widget)
 
-        controller = Controller()
-        self._registry.register("controller", controller)
-
-        start_page = StartPage()
-        self._registry.register("start-page", start_page)
-
         table_widget = TableWidget()
         self._registry.register("table-widget", table_widget)
 
@@ -107,13 +101,7 @@ class Application:
         self._registry.register("query-widget", query_widget)
 
         status_bar = StatusBar()
-        status_bar.symbolModeToggled.connect(query_widget.set_symbol_mode)
-        status_bar.show_symbol_mode(settings.symbol_mode)
         self._registry.register("status-bar", status_bar)
-
-        self._main_window = Pireal()
-        self._main_window.setWindowIcon(QIcon(image("pireal_icon.png")))
-        self._registry.register("pireal", self._main_window)
 
         right_pane = RightPane()
         self._registry.register("right-pane", right_pane)
@@ -121,10 +109,28 @@ class Application:
         database_container = DatabaseContainer()
         self._registry.register("database-container", database_container)
 
+        start_page = StartPage()
+        self._registry.register("start-page", start_page)
+
+        controller = Controller()
+        self._registry.register("controller", controller)
+
+        self._main_window = Pireal()
+        self._main_window.setWindowIcon(QIcon(image("pireal_icon.png")))
+        self._registry.register("pireal", self._main_window)
+
+        self._wire_components(status_bar, query_widget)
+
         self._main_window.setCentralWidget(controller)
         controller.add_widget(start_page)
 
         logger.info("Widgets initialized")
+
+    def _wire_components(self, status_bar: StatusBar, query_widget: QueryWidget) -> None:
+        from pireal.settings import settings
+
+        status_bar.symbolModeToggled.connect(query_widget.set_symbol_mode)
+        status_bar.show_symbol_mode(settings.symbol_mode)
 
     def run(self):
         self._main_window.showMaximized()

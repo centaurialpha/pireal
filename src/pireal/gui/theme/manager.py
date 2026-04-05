@@ -15,15 +15,27 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from pathlib import Path
 
-from PyQt6.QtCore import QObject, pyqtSignal
-from PyQt6.QtWidgets import QApplication, QStyleFactory
+from PyQt6.QtCore import (
+    QObject,
+    pyqtSignal,
+)
+from PyQt6.QtWidgets import (
+    QApplication,
+    QStyleFactory,
+)
 
 from pireal.gui.theme.base import Theme
-from pireal.gui.theme.builtin import DarkTheme, LightTheme
+from pireal.gui.theme.builtin import (
+    DarkTheme,
+    LightTheme,
+)
 from pireal.gui.theme.custom import discover_themes
 from pireal.gui.theme.schema import ColorScheme
+
+logger = logging.getLogger(__name__)
 
 
 class ThemeManager(QObject):
@@ -66,7 +78,7 @@ class ThemeManager(QObject):
 
     def register(self, theme: Theme):
         if theme.identifier in self._themes:
-            print("WARNINGGGGG")
+            logger.warning("Theme '%s' already registered, overwriting", theme.identifier)
 
         self._themes[theme.identifier] = theme
 
@@ -88,8 +100,6 @@ class ThemeManager(QObject):
         style = QStyleFactory.create(theme.qt_style())
         if style:
             QApplication.setStyle(style)
-        else:
-            print("WARNINGNGNGNGNGN")
 
         color_scheme = theme.color_scheme()
         QApplication.setPalette(color_scheme.to_palette())
