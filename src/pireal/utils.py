@@ -20,6 +20,10 @@ import logging
 logger = logging.getLogger("pireal.utils")
 
 
+class DatabaseSyntaxError(Exception):
+    pass
+
+
 def eval_expr(expr: str, names: dict):
     allowed_names = {}
     allowed_names.update(names)
@@ -60,24 +64,24 @@ def sanitize_data(data: str):
     result = {"tables": []}
 
     lines = data.strip().splitlines()
-    current_table: dict
+    current_table: dict | None = None
 
     for line in lines:
         if not line:
             continue
         if line.startswith("@"):
-            table_def = line[1:]
-            name, headers_str = table_def.split(":")
-            headers = headers_str.split(",")
+            try:
+                name, headers_str = line[1:].split(":", 1)
+            except ValueError as err:
+                raise DatabaseSyntaxError from err
 
             current_table = {
-                "name": name,
-                "header": headers,
+                "name": name.strip(),
+                "header": [header.strip() for header in headers_str.split(",")],
                 "tuples": [],
             }
             result["tables"].append(current_table)
         elif current_table:
-            values = tuple(line.split(","))
-            current_table["tuples"].append(values)
+            current_table["tuples"].append(tuple(value.strip() for value in line.split(",")))
 
     return result

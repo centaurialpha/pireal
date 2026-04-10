@@ -134,8 +134,8 @@ class DBFromTextDialog(QDialog):
 
         try:
             data = sanitize_data(text)
-        except Exception as err:
-            self._set_status(tr.TR_DB_FROM_TEXT_ERROR.format(err), ok=False)
+        except Exception:
+            self._set_status("●", ok=False)
             self._buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
             self._parsed_data = None
             return
@@ -172,7 +172,8 @@ class DBFromTextDialog(QDialog):
                 QTreeWidgetItem(root, [f"  ... ({cardinality - 5} +)"])
 
         n = len(tables)
-        self._set_status(tr.TR_DB_FROM_TEXT_VALID_MANY.format(n), ok=True)
+        label = "relation" if n == 1 else "relations"
+        self._set_status(f"● {n} {label}", ok=True)
         self._buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
         self._parsed_data = data
 

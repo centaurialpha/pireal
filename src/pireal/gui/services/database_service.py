@@ -8,6 +8,7 @@ from pireal.core.db import DB
 from pireal.core.pireal_file import File, is_example_file
 from pireal.core.recent_databases import RecentDatabases
 from pireal.gui.database_container import DatabaseContainer
+from pireal.gui.dialogs.db_from_text_dialog import DBFromTextDialog
 from pireal.gui.dialogs.new_db_dialog import NewDBInputDialog
 from pireal.registry import Registry
 from pireal.utils import sanitize_data
@@ -128,6 +129,24 @@ class DatabaseService:
         self._db.save()
         self._remember_folder(filename)
 
+        return True
+
+    def create_from_text(self) -> bool:
+        if self._db.is_active:
+            self._warn_one_db()
+            return False
+
+        dialog = DBFromTextDialog(self._parent)
+        if dialog.exec() != DBFromTextDialog.DialogCode.Accepted:
+            return False
+
+        data = dialog.parsed_data()
+        if not data:
+            return False
+
+        database_container = Registry.get("database-container", DatabaseContainer)
+        database_container.create_database(data)
+        self._db.is_active = True
         return True
 
     def _warn_one_db(self) -> None:

@@ -173,7 +173,8 @@ class Controller(QWidget):
         self._db_service.save_as()
 
     def create_database_from_text(self):
-        pass
+        if self._db_service.create_from_text():
+            self.add_widget(Registry.get("database-container", DatabaseContainer))
 
     @pyqtSlot()
     def open_query(self, filename: str):
