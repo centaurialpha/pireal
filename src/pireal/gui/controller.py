@@ -32,7 +32,9 @@ from pireal.gui.query_widget import QueryWidget
 from pireal.gui.services.database_service import DatabaseService
 from pireal.gui.services.query_service import QueryService
 from pireal.gui.table_widget import TableWidget
+from pireal.gui.theme.manager import get_theme_manager
 from pireal.registry import Registry
+from pireal.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -233,6 +235,19 @@ class Controller(QWidget):
         from pireal.gui.dialogs.feedback_dialog import FeedbackDialog
 
         dialog = FeedbackDialog(self)
+        dialog.exec()
+
+    @pyqtSlot(bool)
+    def toggle_theme(self, checked: bool) -> None:
+        theme_id = "dark" if checked else "light"
+        get_theme_manager().apply(theme_id)
+        settings.theme = theme_id
+
+    def show_settings(self) -> None:
+        from pireal.gui.dialogs.settings_dialog import SettingsDialog
+        from pireal.gui.main_window import Pireal
+
+        dialog = SettingsDialog(Pireal.instance())
         dialog.exec()
 
     def save_state(self) -> None:

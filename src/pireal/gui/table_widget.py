@@ -15,8 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QColor, QFontMetrics, QPainter, QPalette
+from PyQt6.QtCore import QEvent, QSize, Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -24,8 +24,7 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QSplitter,
     QStackedWidget,
-    QStyle,
-    QStyleOptionButton,
+    QToolButton,
     QVBoxLayout,
     QWidget,
 )
@@ -37,8 +36,9 @@ from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.model_view_delegate import create_view
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.gui.theme.schema import EditorColorRole
-from pireal.helpers import Font
+from pireal.helpers import svg_icon
 from pireal.registry import Registry
+from pireal.resources import icon
 
 
 class PlaceholderWidget(QWidget):
@@ -94,39 +94,6 @@ class PlaceholderWidget(QWidget):
         controller.add_relations_from_text()
 
 
-class _FAButton(QPushButton):
-    def __init__(self, fa, glyph: str, tooltip: str, icon_size: int = 13, color: QColor | None = None, parent=None):
-        super().__init__(parent)
-        self._glyph = glyph
-        self._fa_font = fa.font(icon_size)
-        self._color = color
-        self.setFlat(True)
-        self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.setFixedSize(28, 28)
-        self.setToolTip(tooltip)
-        self.setStyleSheet("border: none; background: transparent;")
-
-    def paintEvent(self, a0):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        opt = QStyleOptionButton()
-        self.initStyleOption(opt)
-        if opt.state & QStyle.StateFlag.State_MouseOver:
-            painter.fillRect(self.rect(), QColor(128, 128, 128, 35))
-
-        painter.setFont(self._fa_font)
-        color = self._color if self._color else self.palette().color(self.palette().ColorRole.ButtonText)
-        painter.setPen(color)
-        fm = QFontMetrics(self._fa_font)
-        br = fm.boundingRect(self._glyph)
-        x = (self.width() - br.width()) // 2 - br.x()
-        y = (self.height() - br.height()) // 2 - br.y()
-        painter.drawText(x, y, self._glyph)
-        painter.end()
-
-
 class TableWidget(QWidget):
     sqlRequested = pyqtSignal()
     treeRequested = pyqtSignal()
@@ -144,20 +111,19 @@ class TableWidget(QWidget):
         toolbar = QHBoxLayout()
         toolbar.setContentsMargins(0, 0, 0, 0)
         toolbar.addStretch()
-        fa = Font.instance()
 
-        self._btn_split = self._make_tool_btn(fa, "\uf0db", "Toggle split view")
+        self._btn_split = self._make_tool_btn("Toggle split view")
         self._btn_split.setCheckable(True)
         self._btn_split.toggled.connect(self._on_split_toggled)
         toolbar.addWidget(self._btn_split)
 
-        btn_sql = self._make_tool_btn(fa, "\uf121", "Show SQL", icon_size=11)
-        btn_sql.clicked.connect(self.sqlRequested.emit)
-        toolbar.addWidget(btn_sql)
+        self._btn_sql = self._make_tool_btn("Show SQL")
+        self._btn_sql.clicked.connect(self.sqlRequested.emit)
+        toolbar.addWidget(self._btn_sql)
 
-        btn_tree = self._make_tool_btn(fa, "\uf0e8", "Show execution tree")
-        btn_tree.clicked.connect(self.treeRequested.emit)
-        toolbar.addWidget(btn_tree)
+        self._btn_tree = self._make_tool_btn("Show execution tree")
+        self._btn_tree.clicked.connect(self.treeRequested.emit)
+        toolbar.addWidget(self._btn_tree)
 
         # Separador
         sep = QFrame()
@@ -165,11 +131,11 @@ class TableWidget(QWidget):
         sep.setFixedHeight(16)
         toolbar.addWidget(sep)
 
-        success_color = get_theme_manager().current_scheme.editor.get(EditorColorRole.SUCCESS)
-        btn_run = self._make_tool_btn(fa, "\uf04b", "Run queries", color=success_color)
-        btn_run.setStyleSheet(f"QToolButton {{ color: {success_color.name()}; }}")
-        btn_run.clicked.connect(self._on_run_queries)
-        toolbar.addWidget(btn_run)
+        # success_color = get_theme_manager().current_scheme.editor.get(EditorColorRole.SUCCESS)
+        self._btn_run = self._make_tool_btn("Run queries")
+        # self._btn_run.setStyleSheet(f"QToolButton {{ color: {success_color.name()}; }}")
+        self._btn_run.clicked.connect(self._on_run_queries)
+        toolbar.addWidget(self._btn_run)
 
         layout.addLayout(toolbar)
 
@@ -186,10 +152,30 @@ class TableWidget(QWidget):
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
         lateral_widget.resultClicked.connect(self._on_result_list_clicked)
 
-    def _make_tool_btn(
-        self, fa, glyph: str, tooltip: str, icon_size: int = 13, color: QColor | None = None
-    ) -> _FAButton:
-        return _FAButton(fa, glyph, tooltip, icon_size=icon_size, color=color)
+        self._refresh_icons()
+
+    def _make_tool_btn(self, tooltip: str, size: int = 16) -> QToolButton:
+        btn = QToolButton()
+        btn.setToolTip(tooltip)
+        btn.setIconSize(QSize(size, size))
+        btn.setFixedSize(28, 28)
+        btn.setAutoRaise(True)
+        return btn
+
+    def changeEvent(self, a0: QEvent | None) -> None:
+        super().changeEvent(a0)
+        if a0 is not None and a0.type() == QEvent.Type.PaletteChange:
+            self._refresh_icons()
+
+    def _refresh_icons(self) -> None:
+        normal = self.palette().color(self.palette().ColorRole.ButtonText)
+        success = get_theme_manager().current_scheme.editor.get(EditorColorRole.SUCCESS)
+        print(success.name())
+
+        self._btn_split.setIcon(svg_icon(icon("columns-2.svg"), normal))
+        self._btn_sql.setIcon(svg_icon(icon("code.svg"), normal))
+        self._btn_tree.setIcon(svg_icon(icon("network.svg"), normal))
+        self._btn_run.setIcon(svg_icon(icon("play.svg"), success))
 
     @pyqtSlot()
     def _on_run_queries(self):

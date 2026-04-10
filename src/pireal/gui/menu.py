@@ -22,6 +22,7 @@ from PyQt6.QtGui import QAction, QIcon
 
 from pireal import translations as tr
 from pireal.core.db import DB
+from pireal.gui.theme.manager import get_theme_manager
 from pireal.registry import Registry
 
 
@@ -73,6 +74,8 @@ class MenuBuilder:
                         qaction.setShortcut(item.shorcut)
                     if item.icon:
                         qaction.setIcon(QIcon(item.icon))
+                    if item.is_checkable:
+                        qaction.setChecked(get_theme_manager().current_id == "dark")
 
                     if item.target:
                         component, slot = item.target.split(":")
@@ -139,6 +142,11 @@ file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_QUERY, "controller:save_query_
 file_menu.add_item("separator")
 file_menu.add_item(Action(tr.TR_MENU_FILE_QUIT, "controller:quit", shorcut="Ctrl+Q"))
 
+view_menu = Menu("View")
+view_menu.add_item(Action("Dark Mode", "controller:toggle_theme", is_checkable=True))
+view_menu.add_item("separator")
+view_menu.add_item(Action(tr.TR_SETTINGS_TITLE, "controller:show_settings", shorcut="Ctrl+,"))
+
 scheme_menu = Menu("&Scheme")
 scheme_menu.add_item(Action(tr.TR_MENU_SCHEME_CREATE_RELATION, "controller:create_relation"))
 # scheme_menu.add_item(
@@ -152,4 +160,4 @@ help_menu.add_item(Action(tr.TR_MENU_HELP_REPORT_ISSUE, "controller:report_issue
 help_menu.add_item(Action(tr.TR_MENU_HELP_ABOUT_PIREAL, "controller:about_pireal"))
 help_menu.add_item(Action(tr.TR_MENU_HELP_ABOUT_QT, "controller:about_qt"))
 
-menus = [file_menu, scheme_menu, help_menu]
+menus = [file_menu, view_menu, scheme_menu, help_menu]

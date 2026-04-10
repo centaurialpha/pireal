@@ -16,14 +16,11 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from importlib.resources import files
+from pathlib import Path
 
 
 def _resources(subpackage: str):
     return files("pireal") / "resources" / subpackage
-
-
-def font(filename: str) -> str:
-    return str(_resources("images") / filename)
 
 
 def translation(lang: str) -> str:
@@ -36,3 +33,7 @@ def sample(filename: str) -> str:
 
 def image(filename: str) -> str:
     return str(_resources("images") / filename)
+
+
+def icon(filename: str) -> Path:
+    return _resources("icons") / filename

@@ -16,9 +16,8 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QCloseEvent
-from PyQt6.QtWidgets import QHBoxLayout, QMainWindow, QMessageBox, QWidget
+from PyQt6.QtWidgets import QMainWindow, QMessageBox
 
 from pireal import translations as tr
 from pireal.core.db import DB
@@ -26,10 +25,7 @@ from pireal.core.pireal_file import is_example_file
 from pireal.gui.controller import Controller
 from pireal.gui.menu import MenuBuilder
 from pireal.gui.query_widget import EditorWidget, QueryWidget
-from pireal.gui.status_bar import _ClickableLabel
-from pireal.gui.table_widget import _FAButton
 from pireal.gui.theme.manager import get_theme_manager
-from pireal.helpers import Font
 from pireal.registry import Registry
 from pireal.settings import settings
 
@@ -47,10 +43,8 @@ class Pireal(QMainWindow):
         menu_builder = MenuBuilder(self, controller)
         menu_builder.build()
 
-        corner = self._build_corner_widget(controller)
         menubar = self.menuBar()
         assert menubar is not None
-        menubar.setCornerWidget(corner, Qt.Corner.TopRightCorner)
 
         db = Registry.get("db", DB)
         db.hasModified.connect(self._update_title)
@@ -62,33 +56,6 @@ class Pireal(QMainWindow):
         statusbar = self.statusBar()
         assert statusbar is not None
         statusbar.hide()
-
-    def _build_corner_widget(self, controller) -> QWidget:
-        widget = QWidget()
-        layout = QHBoxLayout(widget)
-        layout.setContentsMargins(0, 0, 2, 4)
-        layout.setSpacing(8)
-
-        self._theme_label = _ClickableLabel()
-        self._theme_label.setCursor(Qt.CursorShape.PointingHandCursor)
-        self._theme_label.clicked.connect(
-            lambda: self._on_theme_requested("light" if get_theme_manager().current_id == "dark" else "dark")
-        )
-        get_theme_manager().themeChanged.connect(self._update_theme_label)
-        self._update_theme_label()
-        layout.addWidget(self._theme_label)
-
-        # Settings
-        fa = Font.instance()
-        settings_btn = _FAButton(fa, "\uf013", tr.TR_SETTINGS_TITLE)
-        settings_btn.clicked.connect(self._show_settings)
-
-        layout.addWidget(settings_btn)
-        return widget
-
-    def _update_theme_label(self) -> None:
-        name = get_theme_manager().current.name
-        self._theme_label.setText(f"Theme: {name}")
 
     def _start_updater(self):
         from PyQt6.QtCore import QThread
@@ -131,12 +98,6 @@ class Pireal(QMainWindow):
     @classmethod
     def instance(cls):
         return cls._instance
-
-    def _show_settings(self):
-        from pireal.gui.dialogs.settings_dialog import SettingsDialog
-
-        dialog = SettingsDialog(self)
-        dialog.exec()
 
     def _on_theme_requested(self, theme_id: str):
         theme_manager = get_theme_manager()

@@ -16,29 +16,28 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt6.QtGui import QFont, QFontDatabase
+from pathlib import Path
 
-from pireal.resources import font as get_font
+from PyQt6.QtCore import (
+    QByteArray,
+    QSize,
+    Qt,
+)
+from PyQt6.QtGui import (
+    QColor,
+    QIcon,
+    QPainter,
+    QPixmap,
+)
+from PyQt6.QtSvg import QSvgRenderer
 
 
-class Font:
-    _instance = None
-
-    def __init__(self):
-        font_id = QFontDatabase.addApplicationFont(get_font("font-awesome.otf"))
-        if font_id == -1:
-            raise RuntimeError("No se pudo cargar la fuente")
-
-        self.family = QFontDatabase.applicationFontFamilies(font_id)[0]
-
-    @classmethod
-    def instance(cls):
-        if cls._instance is None:
-            cls._instance = Font()
-        return cls._instance
-
-    def font(self, size: int = 12) -> QFont:
-        return QFont(self.family, size)
-
-    def apply_to(self, widget, size: int = 12):
-        widget.setFont(self.font(size))
+def svg_icon(path: Path, color: QColor, size: int = 16) -> QIcon:
+    svg = path.read_text(encoding="utf-8").replace("currentColor", color.name())
+    renderer = QSvgRenderer(QByteArray(svg.encode()))
+    pixmap = QPixmap(QSize(size, size))
+    pixmap.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(pixmap)
+    renderer.render(painter)
+    painter.end()
+    return QIcon(pixmap)
