@@ -21,6 +21,7 @@ import argparse
 def get_cli() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--database", help="Database file")
+    parser.add_argument("--terminal", action="store_true", help="Run in terminal/REPL mode")
     parser.add_argument(
         "-l",
         "--log-level",

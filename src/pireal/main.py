@@ -129,6 +129,12 @@ def run():
         print(__version__)
         sys.exit(0)
 
+    if args.terminal:
+        from pireal.cli import run as run_terminal
+
+        db_path = Path(args.database) if args.database else None
+        sys.exit(run_terminal(db_path))
+
     # Creo los dirs antes de leer logs. see #84
     create_app_dirs()
 
