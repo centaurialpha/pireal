@@ -72,8 +72,8 @@ class NewRelationDialog(QDialog):
         self._view.setModel(QStandardItemModel(0, 2))
         model = header.model()
         assert model is not None
-        model.setHeaderData(0, Qt.Orientation.Horizontal, self.tr("Field_1"))
-        model.setHeaderData(1, Qt.Orientation.Horizontal, self.tr("Field_2"))
+        model.setHeaderData(0, Qt.Orientation.Horizontal, tr.TR_RELATION_DIALOG_FIELD_1)
+        model.setHeaderData(1, Qt.Orientation.Horizontal, tr.TR_RELATION_DIALOG_FIELD_2)
         # Botones para crear/cancelar
         hhbox = QHBoxLayout()
         hhbox.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding))
@@ -168,7 +168,7 @@ class NewRelationDialog(QDialog):
                     header.append(str(text).strip())
             rela.header = header
         except Exception as reason:
-            QMessageBox.critical(self, "Header Error", str(reason))
+            QMessageBox.critical(self, tr.TR_RELATION_DIALOG_HEADER_ERROR, str(reason))
             return
 
         # Load relation

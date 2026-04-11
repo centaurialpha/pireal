@@ -306,3 +306,12 @@ TR_QUERY_PLAN_RESULT_FORMAT = QCoreApplication.translate("Pireal", "{op} - {tupl
 
 TR_MSG_FILE_NOT_FOUND_TITLE = QCoreApplication.translate("Pireal", "File not found")
 TR_MSG_FILE_NOT_FOUND_BODY = QCoreApplication.translate("Pireal", "The file '{}' no longer exists.")
+
+TR_DB_FROM_TEXT_TUPLE_SINGULAR = QCoreApplication.translate("Pireal", "tuple")
+TR_DB_FROM_TEXT_TUPLE_PLURAL = QCoreApplication.translate("Pireal", "tuples")
+TR_DB_FROM_TEXT_VALID_ONE = QCoreApplication.translate("Pireal", "● 1 relation")
+TR_DB_FROM_TEXT_VALID_MANY = QCoreApplication.translate("Pireal", "● {} relations")
+TR_RELATION_DIALOG_HEADER_ERROR = QCoreApplication.translate("Pireal", "Header Error")
+TR_RELATION_DIALOG_FIELD_1 = QCoreApplication.translate("Pireal", "Field_1")
+TR_RELATION_DIALOG_FIELD_2 = QCoreApplication.translate("Pireal", "Field_2")
+TR_NO_RECENT_DATABASES = QCoreApplication.translate("Pireal", "No recent databases.")

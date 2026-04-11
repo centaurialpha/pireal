@@ -293,7 +293,7 @@ class RecentDatabasesView(QFrame):
         label.setFont(font)
         vbox.addWidget(label)
 
-        self._empty_label = QLabel("No hay base de datos recientes.")
+        self._empty_label = QLabel(tr.TR_NO_RECENT_DATABASES)
         self._empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         palette = self._empty_label.palette()
         self._empty_label.setStyleSheet(f"color: {palette.color(QPalette.ColorRole.PlaceholderText).name()};")

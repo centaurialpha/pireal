@@ -150,9 +150,10 @@ class DBFromTextDialog(QDialog):
             tuples = table["tuples"]
 
             cardinality = len(tuples)
+            tuple_label = tr.TR_DB_FROM_TEXT_TUPLE_SINGULAR if cardinality == 1 else tr.TR_DB_FROM_TEXT_TUPLE_PLURAL
             root = QTreeWidgetItem(
                 self._preview,
-                [f"  {name}  ({cardinality} {'tupla' if cardinality == 1 else 'tuplas'})"],
+                [f"  {name}  ({cardinality} {tuple_label})"],
             )
             root.setExpanded(True)
 
@@ -169,8 +170,8 @@ class DBFromTextDialog(QDialog):
                 QTreeWidgetItem(root, [f"  ... ({cardinality - 5} +)"])
 
         n = len(tables)
-        label = "relation" if n == 1 else "relations"
-        self._set_status(f"● {n} {label}", ok=True)
+        status = tr.TR_DB_FROM_TEXT_VALID_ONE if n == 1 else tr.TR_DB_FROM_TEXT_VALID_MANY.format(n)
+        self._set_status(status, ok=True)
         self._buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
         self._parsed_data = data
 
