@@ -142,16 +142,13 @@ file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_QUERY, "controller:save_query_
 file_menu.add_item("separator")
 file_menu.add_item(Action(tr.TR_MENU_FILE_QUIT, "controller:quit", shorcut="Ctrl+Q"))
 
-view_menu = Menu("View")
+view_menu = Menu("&View")
 view_menu.add_item(Action("Dark Mode", "controller:toggle_theme", is_checkable=True))
 view_menu.add_item("separator")
 view_menu.add_item(Action(tr.TR_SETTINGS_TITLE, "controller:show_settings", shorcut="Ctrl+,"))
 
 scheme_menu = Menu("&Scheme")
 scheme_menu.add_item(Action(tr.TR_MENU_SCHEME_CREATE_RELATION, "controller:create_relation"))
-# scheme_menu.add_item(
-#     Action(tr.TR_MENU_SCHEME_REMOVE_RELATION, "controller:remove_relation")
-# )
 scheme_menu.add_item("separator")
 scheme_menu.add_item(Action(tr.TR_MENU_SCHEME_EXECUTE_QUERIES, "controller:execute_queries", shorcut="F5"))
 
