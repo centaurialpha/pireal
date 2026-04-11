@@ -30,8 +30,9 @@ from pireal.gui.database_container import DatabaseContainer
 from pireal.gui.dialogs.about_dialog import AboutDialog
 from pireal.gui.dialogs.db_from_text_dialog import DBFromTextDialog
 from pireal.gui.dialogs.feedback_dialog import FeedbackDialog
+from pireal.gui.dialogs.new_relation_dialog import NewRelationDialog
 from pireal.gui.dialogs.settings_dialog import SettingsDialog
-from pireal.gui.lateral_widget import LateralWidget
+from pireal.gui.lateral_widget import LateralWidget, RelationItemType
 from pireal.gui.query_widget import QueryWidget
 from pireal.gui.services.database_service import DatabaseService
 from pireal.gui.services.query_service import QueryService
@@ -89,8 +90,14 @@ class Controller(QWidget):
 
     @pyqtSlot()
     def add_relations_from_text(self):
+        if not self._db.is_active:
+            return
 
-        dialog = DBFromTextDialog(self)
+        dialog = DBFromTextDialog(
+            self,
+            title=tr.TR_ADD_RELATIONS_FROM_TEXT_TITLE,
+            editor_label=tr.TR_ADD_RELATIONS_FROM_TEXT_EDITOR_LABEL,
+        )
         if dialog.exec() != DBFromTextDialog.DialogCode.Accepted:
             return
 
@@ -99,7 +106,7 @@ class Controller(QWidget):
             return
 
         database_container = Registry.get("database-container", DatabaseContainer)
-        database_container.create_database(data)
+        database_container.add_relations(data)
 
     def remove_from_recents(self, path: str):
         self._recents.remove(path)
@@ -217,7 +224,11 @@ class Controller(QWidget):
 
     @pyqtSlot()
     def create_relation(self):
-        pass
+        if not self._db.is_active:
+            return
+        dialog = NewRelationDialog(self)
+        dialog.created.connect(self._on_relation_created)
+        dialog.exec()
 
     @pyqtSlot()
     def about_pireal(self):
@@ -261,3 +272,10 @@ class Controller(QWidget):
         qsettings.setValue("recent_databases", self._recents.all())
         last_folder = self._db_service.last_folder or self._query_service.last_folder
         qsettings.setValue("last_open_folder", last_folder)
+
+    def _on_relation_created(self, rela, relation_name: str) -> None:
+        rela.name = relation_name
+        table_widget = Registry.get("table-widget", TableWidget)
+        lateral_widget = Registry.get("lateral-widget", LateralWidget)
+        table_widget.add_table_to_workspace(rela)
+        lateral_widget.add_item(rela, RelationItemType.Normal)

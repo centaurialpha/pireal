@@ -34,10 +34,6 @@ from pireal.gui.db_highlighter import DBHighlighter
 from pireal.utils import sanitize_data
 
 PLACEHOLDER = """\
-% Escribí tu base de datos aquí
-% Formato: @nombre_relacion:attr1,attr2,...
-% Seguido de las tuplas, una por línea
-
 @personas:id,nombre,edad
 1,Gabriel,30
 2,Ana,25
@@ -49,9 +45,10 @@ PLACEHOLDER = """\
 
 
 class DBFromTextDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, *, title: str | None = None, editor_label: str | None = None):
         super().__init__(parent)
-        self.setWindowTitle(tr.TR_DB_FROM_TEXT_TITLE)
+        self.setWindowTitle(title or tr.TR_DB_FROM_TEXT_TITLE)
+        self._editor_label = editor_label or tr.TR_DB_FROM_TEXT_EDITOR_LABEL
         self.setMinimumSize(800, 500)
         self.resize(900, 560)
 
@@ -71,7 +68,7 @@ class DBFromTextDialog(QDialog):
         left_layout = QVBoxLayout(left)
         left_layout.setContentsMargins(0, 0, 0, 0)
         left_layout.setSpacing(4)
-        left_layout.addWidget(QLabel(tr.TR_DB_FROM_TEXT_EDITOR_LABEL))
+        left_layout.addWidget(QLabel(self._editor_label))
 
         self._editor = QPlainTextEdit()
         self._editor.setPlaceholderText(PLACEHOLDER)

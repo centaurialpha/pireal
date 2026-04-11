@@ -152,7 +152,10 @@ view_menu.add_item("separator")
 view_menu.add_item(Action(tr.TR_SETTINGS_TITLE, "controller:show_settings", shorcut="Ctrl+,"))
 
 scheme_menu = Menu("&Scheme")
-scheme_menu.add_item(Action(tr.TR_MENU_SCHEME_CREATE_RELATION, "controller:create_relation"))
+scheme_menu.add_item(Action(tr.TR_MENU_SCHEME_CREATE_RELATION, "controller:create_relation", requires_db=True))
+scheme_menu.add_item(
+    Action(tr.TR_MENU_SCHEME_ADD_RELATIONS_FROM_TEXT, "controller:add_relations_from_text", requires_db=True)
+)
 scheme_menu.add_item("separator")
 scheme_menu.add_item(
     Action(tr.TR_MENU_SCHEME_EXECUTE_QUERIES, "controller:execute_queries", shorcut="F5", requires_db=True)

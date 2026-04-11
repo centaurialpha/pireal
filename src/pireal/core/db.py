@@ -78,7 +78,6 @@ class DB(QObject):
             return
 
         self._relations.clear()
-        self.modified = True
         self.relationsChanged.emit([])
 
     def get(self, relation_name: str) -> Relation | None:

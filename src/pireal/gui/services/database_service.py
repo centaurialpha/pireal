@@ -63,8 +63,9 @@ class DatabaseService:
         self._db.file = file
         self._db.is_active = True
 
-        self._remember_folder(filename)
-        self._recents.add(filename)
+        if not is_example_file(file):
+            self._remember_folder(filename)
+            self._recents.add(filename)
 
         logger.info("Database opened")
         return True

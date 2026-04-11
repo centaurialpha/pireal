@@ -444,7 +444,7 @@ class StartPage(QWidget):
         main_layout.addLayout(hbox_footer)
 
         self._recent_databases_view._recent_dbs_list.doubleClicked.connect(self._on_listview_item_double_clicked)
-        btn_open_db.clicked.connect(self._open_database)
+        btn_open_db.clicked.connect(lambda _: self._open_database(""))
         btn_new_db.clicked.connect(self._new_database)
         btn_example.clicked.connect(self._open_example)
 
