@@ -17,7 +17,10 @@
 
 from __future__ import annotations
 
-import readline  # noqa: F401, activa historial/flechas en input() en Linux/macOS
+from contextlib import suppress
+
+with suppress(ImportError):
+    import readline  # noqa: F401, activa historial/flechas en input() en Linux/macOS
 from pathlib import Path
 
 from rich.console import Console
