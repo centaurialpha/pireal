@@ -21,6 +21,7 @@ classifiers = [
 dependencies = [
     "packaging>=24.2",
     "pyqt6>=6.8.1",
+    "rich>=14.3.4",
 ]
 
 [dependency-groups]
