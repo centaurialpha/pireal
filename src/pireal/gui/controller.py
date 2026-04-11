@@ -18,8 +18,9 @@
 import logging
 from pathlib import Path
 
-from PyQt6.QtCore import QSettings, pyqtSlot
-from PyQt6.QtWidgets import QMessageBox, QStackedWidget, QVBoxLayout, QWidget
+from PyQt6.QtCore import QSettings, QUrl, pyqtSlot
+from PyQt6.QtGui import QDesktopServices
+from PyQt6.QtWidgets import QApplication, QMessageBox, QStackedWidget, QVBoxLayout, QWidget
 
 from pireal import translations as tr
 from pireal.core.db import DB
@@ -27,6 +28,9 @@ from pireal.core.recent_databases import RecentDatabases
 from pireal.dirs import DATA_SETTINGS
 from pireal.gui.database_container import DatabaseContainer
 from pireal.gui.dialogs.about_dialog import AboutDialog
+from pireal.gui.dialogs.db_from_text_dialog import DBFromTextDialog
+from pireal.gui.dialogs.feedback_dialog import FeedbackDialog
+from pireal.gui.dialogs.settings_dialog import SettingsDialog
 from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.query_widget import QueryWidget
 from pireal.gui.services.database_service import DatabaseService
@@ -62,21 +66,22 @@ class Controller(QWidget):
 
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
         db = Registry.get("db", DB)
+        self._db = db
 
         self._db_service = DatabaseService(
-            db=db,
+            db=self._db,
             recents=self._recents,
             parent_widget=self,
             last_folder=last_folder,
         )
 
         self._query_service = QueryService(
-            db=db,
+            db=self._db,
             parent_widget=self,
             last_folder=last_folder,
         )
 
-        db.databaseStateChanged.connect(self._on_database_state_changed)
+        self._db.databaseStateChanged.connect(self._on_database_state_changed)
         lateral_widget.deleteRelationRequested.connect(self.remove_relation)
 
     def set_recent_databases(self, paths: list[str]) -> None:
@@ -84,7 +89,6 @@ class Controller(QWidget):
 
     @pyqtSlot()
     def add_relations_from_text(self):
-        from pireal.gui.dialogs.db_from_text_dialog import DBFromTextDialog
 
         dialog = DBFromTextDialog(self)
         if dialog.exec() != DBFromTextDialog.DialogCode.Accepted:
@@ -160,7 +164,7 @@ class Controller(QWidget):
             self.add_widget(Registry.get("database-container", DatabaseContainer))
 
     @pyqtSlot()
-    def open_database(self, filename: str):
+    def open_database(self, filename: str = "") -> None:
         if self._db_service.open(filename):
             self.add_widget(Registry.get("database-container", DatabaseContainer))
 
@@ -168,22 +172,29 @@ class Controller(QWidget):
     def close_database(self):
         self._db_service.close()
 
+    @pyqtSlot()
     def save_database(self):
         self._db_service.save()
 
+    @pyqtSlot()
     def save_database_as(self):
         self._db_service.save_as()
 
+    @pyqtSlot()
     def create_database_from_text(self):
         if self._db_service.create_from_text():
             self.add_widget(Registry.get("database-container", DatabaseContainer))
 
     @pyqtSlot()
-    def open_query(self, filename: str):
+    def open_query(self, filename: str = "") -> None:
+        if not self._db.is_active:
+            return
         self._query_service.open(filename)
 
     @pyqtSlot()
-    def new_query(self, filename: str):
+    def new_query(self, filename: str = "") -> None:
+        if not self._db.is_active:
+            return
         self._query_service.new(filename)
 
     @pyqtSlot()
@@ -200,6 +211,8 @@ class Controller(QWidget):
 
     @pyqtSlot()
     def execute_queries(self) -> None:
+        if not self._db.is_active:
+            return
         self._query_service.execute()
 
     @pyqtSlot()
@@ -219,21 +232,14 @@ class Controller(QWidget):
 
     @pyqtSlot()
     def report_issue(self):
-        from PyQt6.QtCore import QUrl
-        from PyQt6.QtGui import QDesktopServices
-
         QDesktopServices.openUrl(QUrl("https://github.com/centaurialpha/pireal/issues"))
 
     @pyqtSlot()
     def about_qt(self):
-        from PyQt6.QtWidgets import QApplication
-
         QApplication.aboutQt()
 
     @pyqtSlot()
     def send_feedback(self):
-        from pireal.gui.dialogs.feedback_dialog import FeedbackDialog
-
         dialog = FeedbackDialog(self)
         dialog.exec()
 
@@ -243,8 +249,8 @@ class Controller(QWidget):
         get_theme_manager().apply(theme_id)
         settings.theme = theme_id
 
+    @pyqtSlot()
     def show_settings(self) -> None:
-        from pireal.gui.dialogs.settings_dialog import SettingsDialog
         from pireal.gui.main_window import Pireal
 
         dialog = SettingsDialog(Pireal.instance())

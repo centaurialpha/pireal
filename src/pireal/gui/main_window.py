@@ -40,8 +40,8 @@ class Pireal(QMainWindow):
         controller = Registry.get("controller", Controller)
 
         # Menu bar
-        menu_builder = MenuBuilder(self, controller)
-        menu_builder.build()
+        self._menu_builder = MenuBuilder(self, controller)
+        self._menu_builder.build()
 
         menubar = self.menuBar()
         assert menubar is not None

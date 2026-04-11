@@ -100,7 +100,7 @@ class MenuBuilder:
 
         return menu_bar
 
-    def _update_actions(self):
+    def _update_actions(self, _: bool = False) -> None:
         from pireal.core.db import DB
         from pireal.registry import Registry
 
@@ -133,12 +133,16 @@ file_menu.add_item(
 file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_DB, "controller:save_database_as"))
 file_menu.add_item(Action(tr.TR_MENU_FILE_CLOSE_DB, "controller:close_database", shorcut="Ctrl+W"))
 file_menu.add_item(Section("Query"))
-file_menu.add_item(Action(tr.TR_MENU_FILE_NEW_QUERY, "controller:new_query", shorcut="Ctrl+T"))
-file_menu.add_item(Action(tr.TR_MENU_FILE_OPEN_QUERY, "controller:open_query", shorcut="Ctrl+Shift+O"))
-file_menu.add_item(Action(tr.TR_MENU_FILE_CLOSE_QUERY, "controller:close_query"))
+file_menu.add_item(Action(tr.TR_MENU_FILE_NEW_QUERY, "controller:new_query", shorcut="Ctrl+T", requires_db=True))
+file_menu.add_item(
+    Action(tr.TR_MENU_FILE_OPEN_QUERY, "controller:open_query", shorcut="Ctrl+Shift+O", requires_db=True)
+)
+file_menu.add_item(Action(tr.TR_MENU_FILE_CLOSE_QUERY, "controller:close_query", requires_db=True))
 file_menu.add_item("separator")
-file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_QUERY, "controller:save_query", shorcut="Ctrl+Shift+S"))
-file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_QUERY, "controller:save_query_as"))
+file_menu.add_item(
+    Action(tr.TR_MENU_FILE_SAVE_QUERY, "controller:save_query", shorcut="Ctrl+Shift+S", requires_db=True)
+)
+file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_QUERY, "controller:save_query_as", requires_db=True))
 file_menu.add_item("separator")
 file_menu.add_item(Action(tr.TR_MENU_FILE_QUIT, "controller:quit", shorcut="Ctrl+Q"))
 
@@ -150,7 +154,9 @@ view_menu.add_item(Action(tr.TR_SETTINGS_TITLE, "controller:show_settings", shor
 scheme_menu = Menu("&Scheme")
 scheme_menu.add_item(Action(tr.TR_MENU_SCHEME_CREATE_RELATION, "controller:create_relation"))
 scheme_menu.add_item("separator")
-scheme_menu.add_item(Action(tr.TR_MENU_SCHEME_EXECUTE_QUERIES, "controller:execute_queries", shorcut="F5"))
+scheme_menu.add_item(
+    Action(tr.TR_MENU_SCHEME_EXECUTE_QUERIES, "controller:execute_queries", shorcut="F5", requires_db=True)
+)
 
 help_menu = Menu("&Help")
 help_menu.add_item(Action(tr.TR_MENU_HELP_REPORT_ISSUE, "controller:report_issue"))
