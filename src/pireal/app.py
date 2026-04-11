@@ -18,7 +18,7 @@
 import logging
 import sys
 
-from PyQt6.QtCore import QTranslator
+from PyQt6.QtCore import QTimer, QTranslator
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication
 
@@ -134,4 +134,22 @@ class Application:
     def run(self):
         self._main_window.showMaximized()
 
+        QTimer.singleShot(400, self._check_olakase)
+
         sys.exit(self._app.exec())
+
+    def _check_olakase(self) -> None:
+        from pireal.core.olakase import _Kind, check_launch, mark_seen
+
+        momento = check_launch()
+        if momento is None:
+            return
+
+        if momento.kind == _Kind.A:
+            mark_seen()
+            QTimer.singleShot(800, self._show_obito)
+
+    def _show_obito(self) -> None:
+        from pireal.gui.dialogs.obito_dialog import ObitoDialog
+
+        ObitoDialog(self._main_window).show()

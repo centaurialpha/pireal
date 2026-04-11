@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QFileDialog
 
 from pireal import translations as tr
 from pireal.core.db import DB
+from pireal.core.olakase import check_relation
 from pireal.core.pireal_file import File
 from pireal.gui.lateral_widget import LateralWidget, RelationItemType
 from pireal.gui.query_widget import QueryWidget
@@ -144,3 +145,9 @@ class QueryService:
             self._db.add_query_result(name)
             table_widget.add_table_to_results(relation)
             lateral_widget.add_item(relation, RelationItemType.Result)
+
+        for name in self._db.relations_dict():
+            if check_relation(name) is not None:
+                status_bar = Registry.get("status-bar", StatusBar)
+                status_bar.show_message("buena elección de nombre", timeout=5000)
+                break

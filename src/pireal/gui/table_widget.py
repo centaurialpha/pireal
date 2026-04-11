@@ -170,7 +170,6 @@ class TableWidget(QWidget):
     def _refresh_icons(self) -> None:
         normal = self.palette().color(self.palette().ColorRole.ButtonText)
         success = get_theme_manager().current_scheme.editor.get(EditorColorRole.SUCCESS)
-        print(success.name())
 
         self._btn_split.setIcon(svg_icon(icon("columns-2.svg"), normal))
         self._btn_sql.setIcon(svg_icon(icon("code.svg"), normal))
