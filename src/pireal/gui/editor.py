@@ -403,7 +403,11 @@ class Editor(QPlainTextEdit):
         selection.cursor.setPosition(end_pos, QTextCursor.MoveMode.KeepAnchor)
         self.add_selection("run_cursor", [selection])
         # Remove extra selection after 0.4 seconds
-        QTimer.singleShot(400, lambda: self.clear_selections("run_cursor"))
+        timer = QTimer(self)
+        timer.setSingleShot(True)
+        timer.setInterval(400)
+        timer.timeout.connect(lambda: self.clear_selections("run_cursor"))
+        timer.start()
 
     def saved(self):
         self.modified = False
