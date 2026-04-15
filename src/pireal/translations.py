@@ -113,6 +113,8 @@ TR_RELATION_NAME_ALREADY_EXISTS = QCoreApplication.translate(
 # #
 TR_RELATIONS = QCoreApplication.translate("Pireal", "Relations")
 TR_RESULTS = QCoreApplication.translate("Pireal", "Results")
+TR_NO_RELATIONS = QCoreApplication.translate("Pireal", "No relations loaded")
+TR_NO_RESULTS = QCoreApplication.translate("Pireal", "No results yet")
 #
 # TR_QUERY_NOT_SAVED = QCoreApplication.translate("Pireal", "Queries not saved")
 # TR_QUERY_NOT_SAVED_BODY = QCoreApplication.translate(

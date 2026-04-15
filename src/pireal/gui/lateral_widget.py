@@ -20,7 +20,7 @@ from collections import namedtuple
 from typing import cast
 
 from PyQt6.QtCore import QAbstractListModel, QModelIndex, QRect, Qt, pyqtSignal
-from PyQt6.QtGui import QPainter, QPalette
+from PyQt6.QtGui import QFont, QFontMetrics, QPainter, QPalette
 from PyQt6.QtWidgets import (
     QFrame,
     QLabel,
@@ -37,6 +37,32 @@ from PyQt6.QtWidgets import (
 from pireal import translations as tr
 
 RelationItem = namedtuple("RelationItem", "name cardinality degree")
+
+
+class _EmptyListView(QListView):
+    """QListView que muestra un mensaje placeholder cuando el modelo está vacío."""
+
+    def __init__(self, empty_text: str, parent=None):
+        super().__init__(parent)
+        self._empty_text = empty_text
+
+    def paintEvent(self, e):
+        super().paintEvent(e)
+        model = self.model()
+        if model is None or model.rowCount() > 0:
+            return
+        viewport = self.viewport()
+        if viewport is None:
+            return
+        painter = QPainter(viewport)
+        painter.save()
+        painter.setPen(self.palette().color(QPalette.ColorRole.PlaceholderText))
+        painter.drawText(
+            viewport.rect(),
+            Qt.AlignmentFlag.AlignCenter,
+            self._empty_text,
+        )
+        painter.restore()
 
 
 # FIXME: mejores nombres
@@ -102,7 +128,7 @@ class RelationModel(QAbstractListModel):
 
 
 class RelationListView(QFrame):
-    def __init__(self, header_text="", parent=None):
+    def __init__(self, header_text="", empty_text="", parent=None):
         super().__init__(parent)
         self.setFrameShape(QFrame.Shape.StyledPanel)
         self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
@@ -119,7 +145,7 @@ class RelationListView(QFrame):
             header_lbl,
             # alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter,
         )
-        self.view = QListView()
+        self.view = _EmptyListView(empty_text)
         layout.addWidget(self.view)
 
 
@@ -162,31 +188,43 @@ class RelationDelegate(QStyledItemDelegate):
             meta_color = palette.color(QPalette.ColorRole.PlaceholderText)
 
         rect = opt.rect.adjusted(12, 4, -8, -4)
-        half = rect.height() // 2
+        name_font = QFont(painter.font())
+        name_font.setBold(True)
+        name_height = QFontMetrics(name_font).height()
+
+        meta_font = QFont(painter.font())
+        meta_font.setPointSize(meta_font.pointSize() - 1)
+        meta_height = QFontMetrics(meta_font).height()
+
+        top = rect.top() + (rect.height() - name_height - meta_height) // 2
+
+        painter.save()
 
         name = model.data(index, model.NameRole)
         cardinality = model.data(index, model.CardinalityRole)
         degree = model.data(index, model.DegreeRole)
         meta = f"{cardinality} tuples - {degree} attributes"
 
-        painter.save()
-
-        font = painter.font()
-        font.setBold(True)
-        painter.setFont(font)
+        painter.setFont(name_font)
         painter.setPen(name_color)
-        painter.drawText(QRect(rect.left(), rect.top(), rect.width(), half), Qt.AlignmentFlag.AlignVCenter, name)
+        painter.drawText(QRect(rect.left(), top, rect.width(), name_height), Qt.AlignmentFlag.AlignVCenter, name)
 
-        font.setBold(False)
-        font.setPointSize(font.pointSize() - 1)
-        painter.setFont(font)
+        painter.setFont(meta_font)
         painter.setPen(meta_color)
-        painter.drawText(QRect(rect.left(), rect.top() + half, rect.width(), half), Qt.AlignmentFlag.AlignVCenter, meta)
+        painter.drawText(
+            QRect(rect.left(), top + name_height, rect.width(), meta_height), Qt.AlignmentFlag.AlignVCenter, meta
+        )
         painter.restore()
 
     def sizeHint(self, option, index):
         size = super().sizeHint(option, index)
-        size.setHeight(44)
+        name_font = QFont(option.font)
+        name_font.setBold(True)
+        name_height = QFontMetrics(name_font).height()
+        meta_font = QFont(option.font)
+        meta_font.setPointSize(meta_font.pointSize() - 1)
+        meta_height = QFontMetrics(meta_font).height()
+        size.setHeight(name_height + meta_height + 14)
         return size
 
 
@@ -197,13 +235,13 @@ class LateralWidget(QSplitter):
 
     def __init__(self):
         super().__init__(orientation=Qt.Orientation.Vertical)
-        self._relations_list = RelationListView(tr.TR_RELATIONS)
+        self._relations_list = RelationListView(tr.TR_RELATIONS, tr.TR_NO_RELATIONS)
         self._relations_model = RelationModel()
         self._relations_list.view.setModel(self._relations_model)
         self._relations_list.view.setItemDelegate(RelationDelegate())
         self.addWidget(self._relations_list)
 
-        self._results_list = RelationListView(tr.TR_RESULTS)
+        self._results_list = RelationListView(tr.TR_RESULTS, tr.TR_NO_RESULTS)
         self._results_model = RelationModel()
         self._results_list.view.setModel(self._results_model)
         self._results_list.view.setItemDelegate(RelationDelegate())
@@ -223,10 +261,13 @@ class LateralWidget(QSplitter):
         index = self._relations_list.view.indexAt(pos)
         if not index.isValid():
             return
+        viewport = self._relations_list.view.viewport()
+        if viewport is None:
+            return
         menu = QMenu(self)
         delete_action = menu.addAction(tr.TR_MENU_SCHEME_REMOVE_RELATION)
-        viewport = self._relations_list.view.viewport()
-        if viewport is not None and menu.exec(viewport.mapToGlobal(pos)) and delete_action:
+        action = menu.exec(viewport.mapToGlobal(pos))
+        if action == delete_action:
             self.deleteRelationRequested.emit(index.row())
 
     def remove_relation(self, index: int):
