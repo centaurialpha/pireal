@@ -455,6 +455,12 @@ material = [
 ]
 
 [[package]]
+name = "nuitka"
+version = "4.0.8"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/1c/48/e54130d57b89fc015d702e98a1a217b5757625d01a01cc07d29fd046d336/nuitka-4.0.8.tar.gz", hash = "sha256:3f87e87e4d3773997944ce401145ef21461337121d39ea0fbe678274005e60ba", size = 4422692, upload-time = "2026-04-10T07:18:15.109Z" }
+
+[[package]]
 name = "packaging"
 version = "24.2"
 source = { registry = "https://pypi.org/simple" }
@@ -516,6 +522,7 @@ dev = [
     { name = "hatch-vcs" },
     { name = "hatchling" },
     { name = "ipython" },
+    { name = "nuitka" },
     { name = "pyqt6-stubs" },
     { name = "pytest" },
     { name = "pytest-qt" },
@@ -537,6 +544,7 @@ dev = [
     { name = "hatch-vcs", specifier = ">=0.4.0" },
     { name = "hatchling", specifier = ">=1.27.0" },
     { name = "ipython", specifier = ">=9.3.0" },
+    { name = "nuitka", specifier = ">=4.0.8" },
     { name = "pyqt6-stubs", specifier = ">=20250824" },
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "pytest-qt", specifier = ">=4.5.0" },
