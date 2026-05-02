@@ -7,3 +7,6 @@ pireal.egg-*
 venv/
 .venv/
 .tox/
+
+dist/
+build/linux/appimagetool
