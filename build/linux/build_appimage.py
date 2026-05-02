@@ -15,14 +15,17 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import argparse
+import os
 import shutil
 import stat
 import subprocess
 import sys
+import sysconfig
 import urllib.request
 from pathlib import Path
 
-ROOT = Path(__name__).parent.parent.parent
+ROOT = Path(__file__).parent.parent.parent
 SRC_MAIN = ROOT / "src" / "pireal" / "main.py"
 ICON_SRC = ROOT / "src" / "pireal" / "resources" / "images" / "pireal_icon.png"
 DIST_DIR = ROOT / "dist"
@@ -33,7 +36,7 @@ APPIMAGETOOL_URL = "https://github.com/AppImage/AppImageKit/releases/download/co
 
 DESKTOP_ENTRY = """\
 [Desktop Entry]
-Version=4.0.0
+Version=1.0
 Type=Application
 Name=Pireal
 GenericName=Relational Algebra Interpreter
@@ -46,7 +49,12 @@ Categories=Education;
 
 APPRUN = """\
 #!/bin/sh
-exec "$APPDIR/pireal" "$@"
+SELF=$(readlink -f "$0")
+HERE=${SELF%/*}
+export LD_LIBRARY_PATH="$HERE/PyQt6/Qt6/lib:$HERE:${LD_LIBRARY_PATH}"
+export QT_PLUGIN_PATH="$HERE/PyQt6/Qt6/plugins"
+export QT_QPA_PLATFORM_PLUGIN_PATH="$HERE/PyQt6/Qt6/plugins/platforms"
+exec "$HERE/pireal.bin" "$@"
 """
 
 
@@ -79,7 +87,7 @@ def ensure_appimagetool() -> Path:
 
 
 def build_nuitka(version: str) -> Path:
-    nuitka_dist = DIST_DIR / "pirea.dist"
+    nuitka_dist = DIST_DIR / "main.dist"
     if nuitka_dist.exists():
         log("cleaning previous nuitka output...")
         shutil.rmtree(nuitka_dist)
@@ -92,14 +100,15 @@ def build_nuitka(version: str) -> Path:
             "nuitka",
             "--standalone",
             "--enable-plugin=pyqt6",
-            "--include-package-data=pireal",
-            "--output-filename=pireal",
+            f"--include-data-dir={ROOT / 'src' / 'pireal' / 'resources'}=pireal/resources",
+            "--output-filename=pireal.bin",
             f"--output-dir={DIST_DIR}",
             "--product-name=Pireal",
             f"--product-version={version}",
             "--file-description=Relation Algebra Interpreter",
             "--copyright=Gabriel Acosta",
             f"--linux-icon={ICON_SRC}",
+            "--include-qt-plugins=all",
             str(SRC_MAIN),
         ],
         cwd=ROOT,
@@ -107,12 +116,65 @@ def build_nuitka(version: str) -> Path:
     return nuitka_dist
 
 
+def build_appdir(nuitka_dist: Path) -> Path:
+    if APPDIR.exists():
+        log("cleaning previous AppDir...")
+        shutil.rmtree(APPDIR)
+
+    log("assembling AppDir...")
+
+    shutil.copytree(nuitka_dist, APPDIR, dirs_exist_ok=True)
+
+    qt_libs_src = Path(sysconfig.get_path("purelib")) / "PyQt6" / "Qt6" / "lib"
+    qt_libs_dst = APPDIR / "PyQt6" / "Qt6" / "lib"
+    qt_libs_dst.mkdir(parents=True, exist_ok=True)
+    for lib in qt_libs_src.glob("libQt6*.so*"):
+        dst = qt_libs_dst / lib.name
+        if not dst.exists():
+            shutil.copy2(lib, dst)
+
+    apprun = APPDIR / "AppRun"
+    apprun.write_text(APPRUN)
+    make_executable(apprun)
+
+    shutil.copy(ICON_SRC, APPDIR / "pireal.png")
+
+    (APPDIR / "pireal.desktop").write_text(DESKTOP_ENTRY)
+
+    return APPDIR
+
+
+def build_appimage(appdir: Path, version: str) -> Path:
+    appimagetool = ensure_appimagetool()
+    output = DIST_DIR / f"Pireal-{version}-x86_64.AppImage"
+
+    if output.exists():
+        output.unlink()
+
+    log("building AppImage...")
+    env = os.environ.copy()
+    env["ARCH"] = "x86_64"
+    run([str(appimagetool), str(appdir), str(output)], env=env)
+
+    make_executable(output)
+    log(f"done: {output.relative_to(ROOT)}")
+    return output
+
+
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--skip-nuitka", action="store_true")
+    args = parser.parse_args()
+
     version = get_version()
     log(f"version: {version}")
 
-    nuitka_dist = build_nuitka(version)
-    print(nuitka_dist)
+    nuitka_dist = DIST_DIR / "main.dist"
+    if not args.skip_nuitka:
+        nuitka_dist = build_nuitka(version)
+
+    appdir = build_appdir(nuitka_dist)
+    build_appimage(appdir, version)
 
 
 if __name__ == "__main__":
