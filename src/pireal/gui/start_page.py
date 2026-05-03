@@ -30,7 +30,12 @@ from PyQt6.QtCore import (
     pyqtSignal,
     pyqtSlot as Slot,
 )
-from PyQt6.QtGui import QFont, QPainter, QPalette, QPixmap
+from PyQt6.QtGui import (
+    QFont,
+    QPainter,
+    QPalette,
+    QPixmap,
+)
 from PyQt6.QtWidgets import (
     QApplication,
     QFrame,
@@ -336,6 +341,11 @@ class StartPage(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        self._update_label = QLabel()
+        self._update_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self._update_label.setOpenExternalLinks(True)
+        self._update_label.hide()
+
         main_layout = QVBoxLayout(self)
         palette = self.palette()
         highlight = palette.color(palette.ColorRole.Highlight).name()
@@ -412,6 +422,7 @@ class StartPage(QWidget):
         main_layout.addStretch(1)
         main_layout.addWidget(title_lbl, alignment=Qt.AlignmentFlag.AlignHCenter)
         main_layout.addWidget(subtitle_lbl, alignment=Qt.AlignmentFlag.AlignHCenter)
+        main_layout.addWidget(self._update_label, alignment=Qt.AlignmentFlag.AlignHCenter)
         main_layout.addSpacing(16)
         main_layout.addLayout(hbox_btn)
         main_layout.addSpacing(4)
@@ -476,3 +487,10 @@ class StartPage(QWidget):
     def _new_database_from_text(self):
         controller = Registry.get("controller", Controller)
         controller.create_database_from_text()
+
+    def show_update(self, version: str, url: str) -> None:
+        palette = self.palette()
+        color = palette.color(palette.ColorRole.Link).name()
+        message = tr.TR_UPDATE_AVAILABLE.format(version=version)
+        self._update_label.setText(f'<a href="{url}" style="color:{color}; text-decoration:none;">{message}</a>')
+        self._update_label.show()

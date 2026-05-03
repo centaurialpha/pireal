@@ -1,4 +1,4 @@
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2026 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -22,43 +22,36 @@ from urllib.request import urlopen
 from packaging.version import Version
 from PyQt6.QtCore import (
     QObject,
-    QSettings,
     pyqtSignal,
 )
 
 from pireal import __version__
-from pireal.dirs import DATA_SETTINGS
 
 logger = logging.getLogger("updater")
 
-URL = "https://api.github.com/repos/centaurialpha/pireal/releases/latest"
+UPDATE_URL = "https://api.github.com/repos/centaurialpha/pireal/releases/latest"
+UPDATE_URL = "http://localhost:8765/version.json"
 
 
 class Updater(QObject):
     finished = pyqtSignal()
     updateAvailable = pyqtSignal(str, str)
 
-    def __init__(self):
+    def __init__(self, url: str = UPDATE_URL):
         QObject.__init__(self)
-        self.version = ""
+        self._url = url
 
     def check_updates(self):
         logger.info("Checking for updates...")
         try:
-            response = urlopen(URL, timeout=5)
+            response = urlopen(self._url, timeout=5)
             data = json.loads(response.read().decode())
-            web_version = Version(data["tag_name"].lstrip("v"))
+            web_version = Version(data["version"])
             current_version = Version(__version__)
 
             if current_version < web_version:
-                self.version = str(web_version)
-                self.download_url = data["html_url"]
-                logger.info("new version found: %s", self.version)
-
-                qs = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
-                qs.setValue("update_available_version", self.version)
-                qs.setValue("update_download_url", self.download_url)
-                self.updateAvailable.emit(self.version, self.download_url)
+                logger.info("new version found: %s", web_version)
+                self.updateAvailable.emit(str(web_version), data["url"])
             else:
                 logger.info("no new version available")
         except (URLError, KeyError, ValueError):

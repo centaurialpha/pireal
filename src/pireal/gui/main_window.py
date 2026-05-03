@@ -25,6 +25,7 @@ from pireal.core.pireal_file import is_example_file
 from pireal.gui.controller import Controller
 from pireal.gui.menu import MenuBuilder
 from pireal.gui.query_widget import EditorWidget, QueryWidget
+from pireal.gui.start_page import StartPage
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.registry import Registry
 from pireal.settings import settings
@@ -74,17 +75,8 @@ class Pireal(QMainWindow):
         updater_thread.start()
 
     def _on_update_available(self, version: str, url: str):
-        # theme_manager = get_theme_manager()
-        # highlight = theme_manager.current_scheme.highlight.name()
-
-        # FIXME: hacer esto
-        # msg = (
-        #     f'Nueva versión <b>{version}</b> disponible - <a href="{url}" '
-        #     f'style="color: {highlight}; text-decoration: none;">Descargar ↗</a>'
-        # )
-        # self._status_bar.show_message(msg, timeout=0)
-        # self._status_bar._message_label.setOpenExternalLinks(True)
-        pass
+        start_page = Registry.get("start-page", StartPage)
+        start_page.show_update(version, url)
 
     def _update_title(self, *args):
         db = Registry.get("db", DB)
@@ -93,7 +85,7 @@ class Pireal(QMainWindow):
             return
         name = db.file.display_name if db.file else "Untitled"
         modified = "*" if db.modified else ""
-        self.setWindowTitle(f"Pireal — {name}{modified}")
+        self.setWindowTitle(f"Pireal - {name}{modified}")
 
     @classmethod
     def instance(cls):

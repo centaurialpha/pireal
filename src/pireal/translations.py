@@ -317,3 +317,5 @@ TR_RELATION_DIALOG_HEADER_ERROR = QCoreApplication.translate("Pireal", "Header E
 TR_RELATION_DIALOG_FIELD_1 = QCoreApplication.translate("Pireal", "Field_1")
 TR_RELATION_DIALOG_FIELD_2 = QCoreApplication.translate("Pireal", "Field_2")
 TR_NO_RECENT_DATABASES = QCoreApplication.translate("Pireal", "No recent databases.")
+
+TR_UPDATE_AVAILABLE = QCoreApplication.translate("Pireal", "Nueva versión {version} disponible. Click acá!!")
