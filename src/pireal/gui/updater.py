@@ -17,7 +17,7 @@
 import json
 import logging
 from urllib.error import URLError
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 from packaging.version import Version
 from PyQt6.QtCore import (
@@ -29,8 +29,7 @@ from pireal import __version__
 
 logger = logging.getLogger("updater")
 
-UPDATE_URL = "https://api.github.com/repos/centaurialpha/pireal/releases/latest"
-UPDATE_URL = "http://localhost:8765/version.json"
+UPDATE_URL = "https://gabox.dev/pireal_version.json"
 
 
 class Updater(QObject):
@@ -44,7 +43,8 @@ class Updater(QObject):
     def check_updates(self):
         logger.info("Checking for updates...")
         try:
-            response = urlopen(self._url, timeout=5)
+            request = Request(self._url, headers={"User-Agent": "pireal-updater"})
+            response = urlopen(request, timeout=5)
             data = json.loads(response.read().decode())
             web_version = Version(data["version"])
             current_version = Version(__version__)
