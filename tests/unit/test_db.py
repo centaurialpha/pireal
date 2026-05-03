@@ -123,3 +123,16 @@ def test_db_save(db, tmp_path):
     assert result
     assert not db.modified
     assert filepath.exists()
+
+
+def test_remove_emits_relations_changed(qtbot):
+    db = DB()
+    r = Relation()
+    r.name = "estudiantes"
+    r.header = ["id", "nombre"]
+    db.load(r)
+
+    with qtbot.waitSignal(db.relationsChanged) as blocker:
+        db.remove("estudiantes")
+
+    assert blocker.args == [[]]

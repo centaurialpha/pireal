@@ -20,7 +20,7 @@ from pathlib import Path
 import pytest
 
 from pireal.core import file_manager, relation
-from pireal.utils import sanitize_data
+from pireal.utils import DatabaseSyntaxError, sanitize_data
 
 
 @pytest.mark.parametrize(
@@ -104,3 +104,15 @@ def test_sanitize_data():
         ]
     }
     assert expected == sanitize_data(data)
+
+
+def test_sanitize_data_tuple_wrong_size_raises():
+    data = "@people: name, age\nJohn, 25, extra\n"
+    with pytest.raises(DatabaseSyntaxError, match="expected 2 columns, got 3"):
+        sanitize_data(data)
+
+
+def test_sanitize_data_tuple_too_few_columns_raises():
+    data = "@people: name, age\nJohn\n"
+    with pytest.raises(DatabaseSyntaxError, match="expected 2 columns, got 1"):
+        sanitize_data(data)

@@ -72,6 +72,7 @@ class DB(QObject):
     def remove(self, relation_name: str) -> None:
         del self._relations[relation_name]
         self.modified = True
+        self.relationsChanged.emit(list(self._relations.keys()))
 
     def clear(self) -> None:
         if not self._relations:

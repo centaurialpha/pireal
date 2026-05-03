@@ -140,34 +140,6 @@ class Lexer:
 
         return Token(type=TokenTypes.STRING, value=value, line=line, col=col)
 
-    def analize_string(self) -> Token:
-        self.sc.next()
-        string = ""
-        count = 1
-        while self.sc.char is not None:
-            if self.sc.char == "'":
-                count -= 1
-                if count == 0:
-                    break
-                self.sc.next()
-
-            string += self.sc.char
-            self.sc.next()
-
-        if count == 1:
-            raise MissingQuoteError(lineno=1, col=1)
-        self.sc.next()
-
-        # Is date? is time? or just string?
-        ok, date = is_date(string)
-        if ok:
-            return Token(type=TokenTypes.DATE, value=date, line=self.sc.lineno, col=self.sc.colno)
-
-        ok, time = is_time(string)
-        if ok:
-            return Token(type=TokenTypes.TIME, value=time, line=self.sc.lineno, col=self.sc.colno)
-        return Token(type=TokenTypes.STRING, value=string, line=self.sc.lineno, col=self.sc.colno)
-
     def next_token(self) -> Token:
         """Lexical analyzer.
 

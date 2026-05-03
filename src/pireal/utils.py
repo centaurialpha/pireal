@@ -43,21 +43,7 @@ def eval_expr(expr: str, names: dict):
         return False
     except Exception:
         logger.exception("Error during evaluate expression")
-
-
-def _eval_expr(expr: str, names: dict):
-    allowed_names = {}
-    allowed_names.update(names)
-
-    code = compile(expr, "<string>", "eval")
-    try:
-        return eval(
-            code,
-            {"__builtins__": {}, "datetime": __import__("datetime")},
-            allowed_names,
-        )
-    except Exception:
-        logger.exception("Error during evaluate expression")
+        return False
 
 
 def sanitize_data(data: str):
@@ -82,6 +68,12 @@ def sanitize_data(data: str):
             }
             result["tables"].append(current_table)
         elif current_table:
-            current_table["tuples"].append(tuple(value.strip() for value in line.split(",")))
+            values = tuple(value.strip() for value in line.split(","))
+            expected = len(current_table["header"])
+            if len(values) != expected:
+                raise DatabaseSyntaxError(
+                    f"Table '{current_table['name']}': expected {expected} columns, got {len(values)}"
+                )
+            current_table["tuples"].append(values)
 
     return result
