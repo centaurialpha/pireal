@@ -1,0 +1,33 @@
+[Setup]
+AppId={{8F3A2B1C-4D5E-6F7A-8B9C-0D1E2F3A4B5C}
+AppName=Pireal
+AppVersion=$version
+AppPublisher=Gabriel Acosta
+AppPublisherURL=https://github.com/centaurialpha/pireal
+DefaultDirName={autopf}\Pireal
+DefaultGroupName=Pireal
+OutputDir=$output_dir
+OutputBaseFilename=Pireal-$version-windows-x86_64-setup
+SetupIconFile=$icon
+Compression=lzma2/ultra64
+SolidCompression=yes
+WizardStyle=modern
+ArchitecturesInstallIn64BitMode=x64compatible
+
+[Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
+
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
+
+[Files]
+Source: "$source_dir\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+
+[Icons]
+Name: "{group}\Pireal"; Filename: "{app}\pireal.exe"
+Name: "{group}\{cm:UninstallProgram,Pireal}"; Filename: "{uninstallexe}"
+Name: "{commondesktop}\Pireal"; Filename: "{app}\pireal.exe"; Tasks: desktopicon
+
+[Run]
+Filename: "{app}\pireal.exe"; Description: "{cm:LaunchProgram,Pireal}"; Flags: nowait postinstall skipifsilent
