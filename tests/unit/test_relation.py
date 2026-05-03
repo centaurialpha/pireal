@@ -362,3 +362,20 @@ def test_str_repr():
     expected_repr = "Relation(name=test_r, degree=2, cardinality=1)"
     assert r.__str__() == expected_str
     assert r.__repr__() == expected_repr
+
+
+def test_njoin_multiple_shared_fields_partial_match():
+    """
+    Si solo ALGUNOS campos compartidos coinciden, no debe haber join
+    Esto era un bug que estuvo mucho tiempo ptm
+    """
+    r1 = Relation()
+    r1.header = ["a", "b", "c"]
+    r1.insert(("1", "3", "x"))
+
+    r2 = Relation()
+    r2.header = ["a", "b", "d"]
+    r2.insert(("1", "4", "y"))
+
+    result = r1.njoin(r2)
+    assert not list(result.content), "njoin no debe insertar si solo un subconjunto de los campos compartidos coincide"

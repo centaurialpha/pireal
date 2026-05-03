@@ -196,7 +196,6 @@ class Relation:
     def njoin(self, other_relation):
         # Combino los headers
         header = self._header + other_relation.header
-
         new_relation = Relation()
         new_relation.header = header
 
@@ -207,35 +206,32 @@ class Relation:
         indexes_or = [other_relation.header.index(i) for i in sharedf]
 
         for i, j in itertools.product(self.content, other_relation.content):
-            for k, L in itertools.product(indexes_r, indexes_or):
-                if i[k] == j[L]:
-                    new_relation.insert(i + j)
+            if all(i[k] == j[L] for k, L in zip(indexes_r, indexes_or, strict=False)):
+                new_relation.insert(i + j)
+
         # Project para eliminar campos repetidos
         return new_relation.project(*final_fields)
 
     def louter(self, other_relation):
         header = self.header + other_relation.header
-
         new_relation = Relation()
         new_relation.header = header
 
         sharedf = set(self._header).intersection(set(other_relation.header))
         final_fields = self._header + [i for i in other_relation.header if i not in sharedf]
-
         indexes_r = [self._header.index(i) for i in sharedf]
         indexes_or = [other_relation.header.index(i) for i in sharedf]
 
         for i in self.content:
             added = False
             for j in other_relation.content:
-                for k, L in itertools.product(indexes_r, indexes_or):
-                    if i[k] == j[L]:
-                        # Esto es un producto cartesiano con la
-                        # condición equi-join
-                        new_relation.insert(i + j)
-                        added = True
+                # Esto es un producto cartesiano con la
+                # condición equi-join
+                if all(i[k] == j[L] for k, L in zip(indexes_r, indexes_or, strict=True)):
+                    new_relation.insert(i + j)
+                    added = True
             if not added:
-                nulls = ["null" for _ in range(len(other_relation.header))]
+                nulls = ["null"] * len(other_relation.header)
                 new_relation.insert(tuple(list(i) + nulls))
 
         return new_relation.project(*final_fields)
