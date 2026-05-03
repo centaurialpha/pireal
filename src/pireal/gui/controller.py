@@ -116,7 +116,7 @@ class Controller(QWidget):
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
         db = Registry.get("db", DB)
 
-        relation_name = lateral_widget._relations_model.relation_by_index(index).name
+        relation_name = lateral_widget.relation_name_by_index(index)
 
         ret = QMessageBox.question(
             self,

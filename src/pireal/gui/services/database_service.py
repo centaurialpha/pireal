@@ -63,6 +63,8 @@ class DatabaseService:
         self._db.file = file
         self._db.is_active = True
 
+        self._check_olakase_names()
+
         if not is_example_file(file):
             self._remember_folder(filename)
             self._recents.add(filename)
@@ -148,6 +150,7 @@ class DatabaseService:
         database_container = Registry.get("database-container", DatabaseContainer)
         database_container.create_database(data)
         self._db.is_active = True
+        self._check_olakase_names()
         return True
 
     def _warn_one_db(self) -> None:
@@ -156,3 +159,13 @@ class DatabaseService:
             tr.TR_MSG_INFORMATION,
             tr.TR_MSG_ONE_DB_AT_TIME,
         )
+
+    def _check_olakase_names(self) -> None:
+        from pireal.core.olakase import check_relation
+        from pireal.gui.status_bar import StatusBar
+
+        for name in self._db.relations_dict():
+            if check_relation(name) is not None:
+                status_bar = Registry.get("status-bar", StatusBar)
+                status_bar.show_message("buena elección de nombre", timeout=5000)
+                break

@@ -75,8 +75,7 @@ class OrderedSet(MutableSet):
     def __getitem__(self, index):
         if isinstance(index, slice) or hasattr(index, "__index__"):
             return self._items[index]
-        else:
-            raise TypeError("Mmmm error with %r", index)
+        raise TypeError(f"Invalid index type: {index!r}")
 
     def __setitem__(self, index, data):
         del self._map[self._items[index]]

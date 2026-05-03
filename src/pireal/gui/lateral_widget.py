@@ -282,3 +282,6 @@ class LateralWidget(QSplitter):
 
     def clear_results(self):
         self._results_model.clear()
+
+    def relation_name_by_index(self, index: int) -> str:
+        return self._relations_model.relation_by_index(index).name

@@ -19,9 +19,8 @@ def init_settings(tmp_path, qapp):
 
 @pytest.fixture(autouse=True)
 def clean_registry():
-    Registry._components.clear()
     yield
-    Registry._components.clear()
+    Registry.clear()
 
 
 @pytest.fixture(autouse=True)

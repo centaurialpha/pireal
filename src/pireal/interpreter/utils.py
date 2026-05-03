@@ -22,19 +22,16 @@ import datetime
 from pireal.interpreter import rast as ast
 from pireal.interpreter.tokens import TokenTypes
 
+_DATE_FORMATS = ("%d/%m/%Y", "%Y/%m/%d", "%Y-%m-%d")
+
 
 def is_date(string) -> tuple[bool, datetime.date | None]:
-    ok = True
-    date = None
-    try:
-        date = datetime.datetime.strptime(string, "%d/%m/%Y").date()
-    except ValueError:
+    for fmt in _DATE_FORMATS:
         try:
-            date = datetime.datetime.strptime(string, "%Y/%m/%d").date()
+            return True, datetime.datetime.strptime(string, fmt).date()
         except ValueError:
-            ok = False
-
-    return ok, date
+            continue
+    return False, None
 
 
 def is_time(string) -> tuple[bool, datetime.time | None]:

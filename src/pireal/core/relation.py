@@ -42,23 +42,19 @@ class FieldError(Error):
 
 
 class InvalidFieldNameError(FieldError):
-    """Excepción lanzada cuando un nombre de campo no es válido."""
-
-    def __init__(self, campo, msg=None):
-        super().__init__(campo, msg=f"El nombre de campo '{campo}' no es válido")
+    def __init__(self, field, msg=None):
+        super().__init__(field, msg=f"El nombre de campo '{field}' no es válido")
 
 
 class DuplicateFieldError(FieldError):
-    def __init__(self, campo, msg=None):
-        super().__init__(campo, msg=f"Campo duplicado '{campo}' en la operación producto")
+    def __init__(self, field, msg=None):
+        super().__init__(field, msg=f"Campo duplicado '{field}' en la operación producto")
 
 
 class FieldNotInHeaderError(FieldError):
-    """Excepción lanzada cuando un campo no existe en la relación."""
-
-    def __init__(self, campo, relacion, msg=None):
-        super().__init__(campo, msg=f"El campo '{campo}' no existe en '{relacion}'")
-        self.nombre_relacion = relacion
+    def __init__(self, field, relation_name, msg=None):
+        super().__init__(field, msg=f"El campo '{field}' no existe en '{relation_name}'")
+        self.relation_name = relation_name
 
 
 class WrongSizeError(Error):
@@ -85,12 +81,16 @@ class UnionCompatibleError(Error):
 
 
 def union_compatible(operation):
-    """Decorador que comprueba que dos relaciones sean compatibles."""
+    """
+    Decorador que comprueba que dos relaciones sean compatibles
+    """
 
     def inner(self, *args, **kwargs):
         header_other = args[0].header
-        if len(self._header) != len(header_other):
-            raise UnionCompatibleError(f"Union not compatible for '{operation.__name__}'")
+        if self._header != header_other:
+            raise UnionCompatibleError(
+                f"Union not compatible for '{operation.__name__}': headers {self._header} and {header_other} differ"
+            )
         return operation(self, *args, **kwargs)
 
     return inner
@@ -200,10 +200,10 @@ class Relation:
         new_relation.header = header
 
         # Campos en común
-        sharedf = set(self._header).intersection(set(other_relation.header))
+        sharedf = [f for f in self._header if f in other_relation.header]
         final_fields = self._header + [i for i in other_relation.header if i not in sharedf]
-        indexes_r = [self._header.index(i) for i in sharedf]
-        indexes_or = [other_relation.header.index(i) for i in sharedf]
+        indexes_r = [self._header.index(f) for f in sharedf]
+        indexes_or = [other_relation.header.index(f) for f in sharedf]
 
         for i, j in itertools.product(self.content, other_relation.content):
             if all(i[k] == j[L] for k, L in zip(indexes_r, indexes_or, strict=False)):
@@ -217,10 +217,10 @@ class Relation:
         new_relation = Relation()
         new_relation.header = header
 
-        sharedf = set(self._header).intersection(set(other_relation.header))
+        sharedf = [f for f in self._header if f in other_relation.header]
         final_fields = self._header + [i for i in other_relation.header if i not in sharedf]
-        indexes_r = [self._header.index(i) for i in sharedf]
-        indexes_or = [other_relation.header.index(i) for i in sharedf]
+        indexes_r = [self._header.index(f) for f in sharedf]
+        indexes_or = [other_relation.header.index(f) for f in sharedf]
 
         for i in self.content:
             added = False

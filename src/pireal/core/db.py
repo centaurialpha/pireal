@@ -84,16 +84,6 @@ class DB(QObject):
     def get(self, relation_name: str) -> Relation | None:
         return self._relations.get(relation_name)
 
-    def update(self, relations: dict[str, Relation]) -> None:
-        for name, relation in relations.items():
-            is_new = name not in self._relations
-            self._relations[name] = relation
-
-            if is_new:
-                # emitir señal?
-                pass
-        # FIXME: modified?
-
     @property
     def relations(self) -> list[Relation]:
         return list(self._relations.values())

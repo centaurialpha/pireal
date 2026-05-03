@@ -37,3 +37,7 @@ class Registry:
         if not isinstance(widget, widget_type):
             raise TypeError(f"Component '{name}' is {type(widget).__name__}, expected {widget_type.__name__}")
         return widget
+
+    @classmethod
+    def clear(cls) -> None:
+        cls._components.clear()

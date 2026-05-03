@@ -19,7 +19,7 @@ import unittest
 import pytest
 
 from pireal.core import relation
-from pireal.core.relation import Relation
+from pireal.core.relation import Relation, UnionCompatibleError
 
 
 class RelationTestCase(unittest.TestCase):
@@ -240,6 +240,19 @@ def test_relation_compatible(relation_fixture):
     r1, r2, _ = relation_fixture
     with pytest.raises(relation.UnionCompatibleError):
         r1.intersect(r2)
+
+
+def test_union_compatible_same_length_different_names():
+    r1 = Relation()
+    r1.header = ["a", "b"]
+    r1.insert(("1", "2"))
+
+    r2 = Relation()
+    r2.header = ["x", "y"]
+    r2.insert(("1", "2"))
+
+    with pytest.raises(UnionCompatibleError):
+        r1.union(r2)
 
 
 def test_intersect():

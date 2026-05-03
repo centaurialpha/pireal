@@ -18,12 +18,9 @@
 from importlib.resources import files
 from pathlib import Path
 
-from PyQt6.QtCore import QObject
 
-
-class File(QObject):
+class File:
     def __init__(self, filename: str = "", display_name: str = ""):
-        super().__init__()
         self._filename = Path(filename) if filename else None
         self._display_name = display_name
 
