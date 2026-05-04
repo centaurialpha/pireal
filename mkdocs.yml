@@ -15,9 +15,9 @@ theme:
   logo: images/pireal_icon.png
   favicon: images/pireal_icon.ico
   palette:
-      scheme: slate
-      primary: custom
-      accent: custom
+    scheme: slate
+    primary: custom
+    accent: custom
   features:
     - navigation.tabs
     - navigation.sections
@@ -27,6 +27,9 @@ theme:
     - content.action.edit
   icon:
     repo: fontawesome/brands/github
+  font:
+    text: Inter
+    code: JetBrains Mono
 
 extra_css:
   - stylesheets/home.css
@@ -54,26 +57,26 @@ plugins:
       reconfigure_material: true
       reconfigure_search: true
       languages:
-        - locale: es
-          default: true
-          name: Español
-          build: true
         - locale: en
+          default: true
           name: English
           build: true
+        - locale: es
+          name: Español
+          build: true
           nav_translations:
-            Inicio: Home
-            Primeros pasos: Getting Started
-            Álgebra Relacional: Relational Algebra
-            Operadores: Operators
-            Ejemplos: Examples
-            Guía de uso: User Guide
-            Bases de datos: Databases
-            Consultas: Queries
-            Cómo funciona: Under the Hood
-            El intérprete: The Interpreter
-            Crear temas: Creating Themes
-            Contribuir: Contributing
+            Home: Inicio
+            Getting Started: Primeros pasos
+            Relational Algebra: Álgebra Relacional
+            Operators: Operadores
+            Examples: Ejemplos
+            User Guide: Guía de uso
+            Databases: Bases de datos
+            Queries: Consultas
+            Under the Hood: Cómo funciona
+            The Interpreter: El intérprete
+            Creating Themes: Crear temas
+            Contributing: Contribuir
 
 markdown_extensions:
   - admonition

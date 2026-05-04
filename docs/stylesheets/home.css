@@ -19,7 +19,7 @@
 }
 
 .pi-symbol {
-  color: #5c6bc0;
+  color: #3465a4;
 }
 
 .pi-badges {
@@ -62,7 +62,7 @@
 }
 
 .pi-btn-download {
-  background: #5c6bc0 !important;
+  background: #3465a4 !important;
   color: #ffffff !important;
   font-weight: 600;
   font-size: 0.9rem;
@@ -113,4 +113,18 @@
   width: 14rem;
   vertical-align: middle;
   margin-bottom: 0.15em;
+}
+
+@media screen and (max-width: 45em) {
+  .pi-hero__buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pi-btn-download,
+  .pi-btn-secondary {
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+  }
 }
