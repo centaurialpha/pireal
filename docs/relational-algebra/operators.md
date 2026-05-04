@@ -1,183 +1,183 @@
-# Operadores
+# Operators
 
-Pireal soporta los operadores centrales del Álgebra Relacional. Todas las consultas siguen esta sintaxis:
+Pireal supports the core operators of Relational Algebra. All queries follow this syntax:
 
 ```
-nombre_resultado := expresión;
+result_name := expression;
 ```
 
 ---
 
-## Operadores unarios
+## Unary operators
 
-Toman una sola relación como entrada.
+They take a single relation as input.
 
-### Selección - `select`
+### Selection - `select`
 
-Filtra las filas que satisfacen una condición. Devuelve una relación con las mismas columnas pero solo las filas que cumplen el criterio.
-
-```
-resultado := select condición (relación);
-```
-
-**Ejemplo:**
+Filters the rows that satisfy a condition. Returns a relation with the same columns but only the rows that meet the criteria.
 
 ```
-adultos := select edad >= 18 (alumno);
+result := select condition (relation);
 ```
 
-**Operadores de comparación:**
+**Example:**
 
-| Operador | Significado   |
+```
+adults := select age >= 18 (student);
+```
+
+**Comparison operators:**
+
+| Operator | Meaning       |
 |----------|---------------|
-| `=`      | igual         |
-| `<>`     | distinto      |
-| `<`      | menor que     |
-| `<=`     | menor o igual |
-| `>`      | mayor que     |
-| `>=`     | mayor o igual |
+| `=`      | equal         |
+| `<>`     | not equal     |
+| `<`      | less than     |
+| `<=`     | less or equal |
+| `>`      | greater than  |
+| `>=`     | greater or equal |
 
-**Operadores lógicos** `and`/`or` para combinar condiciones:
-
-```
-resultado := select edad >= 18 and edad <= 30 (alumno);
-```
-
-**Comparar con strings y fechas:**
+**Logical operators** `and`/`or` to combine conditions:
 
 ```
-resultado := select nombre = 'Juan' (alumno);
-resultado := select fecha_inicio > '01/03/2017' (curso);
+result := select age >= 18 and age <= 30 (student);
+```
+
+**Comparing strings and dates:**
+
+```
+result := select name = 'Juan' (student);
+result := select start_date > '01/03/2017' (course);
 ```
 
 ---
 
-### Proyección - `project`
+### Projection - `project`
 
-Selecciona columnas específicas de una relación.
-
-```
-resultado := project col1, col2 (relación);
-```
-
-**Ejemplo:**
+Selects specific columns from a relation.
 
 ```
-nombres := project nombre (alumno);
+result := project col1, col2 (relation);
 ```
 
-!!! warning "Eliminación de duplicados"
-    La proyección elimina automáticamente las filas duplicadas, ya que las relaciones son conjuntos.
+**Example:**
+
+```
+names := project name (student);
+```
+
+!!! warning "Duplicate elimination"
+    Projection automatically removes duplicate rows, since relations are sets.
 
 ---
 
-## Operadores binarios
+## Binary operators
 
-Toman dos relaciones como entrada.
+They take two relations as input.
 
-### Join Natural - `njoin`
+### Natural Join - `njoin`
 
-Une dos relaciones por las columnas que comparten el mismo nombre. Solo incluye las filas donde los valores de las columnas compartidas coinciden en ambas relaciones.
-
-```
-resultado := izquierda njoin derecha;
-```
-
-**Ejemplo:**
+Joins two relations on the columns that share the same name. Only includes rows where the shared column values match in both relations.
 
 ```
-resultado := alumno njoin inscripto;
+result := left njoin right;
+```
+
+**Example:**
+
+```
+result := student njoin enrolled;
 ```
 
 ---
 
 ### Outer Joins
 
-Como el join natural, pero conservan las filas sin coincidencia, rellenando los valores faltantes con `null`.
+Like the natural join, but keep the rows without a match, filling missing values with `null`.
 
-| Sintaxis         | Conserva filas sin match de... |
-|------------------|-------------------------------|
-| `izq louter der` | relación izquierda            |
-| `izq router der` | relación derecha              |
-| `izq fouter der` | ambas relaciones              |
+| Syntax           | Keeps unmatched rows from... |
+|------------------|------------------------------|
+| `left louter right` | left relation             |
+| `left router right` | right relation            |
+| `left fouter right` | both relations            |
 
-**Ejemplo:**
-
-```
-% Todos los alumnos, incluso los que no están inscriptos en ningún curso
-resultado := alumno louter inscripto;
-```
-
----
-
-### Unión - `union`
-
-Devuelve todas las filas de ambas relaciones. Ambas deben tener exactamente las mismas columnas — mismos nombres y mismo orden. Los duplicados se eliminan.
+**Example:**
 
 ```
-resultado := r1 union r2;
+% All students, even those not enrolled in any course
+result := student louter enrolled;
 ```
 
 ---
 
-### Intersección - `intersect`
+### Union - `union`
 
-Devuelve solo las filas que aparecen en ambas relaciones.
-
-```
-resultado := r1 intersect r2;
-```
-
----
-
-### Diferencia - `difference`
-
-Devuelve las filas que están en la primera relación pero no en la segunda.
+Returns all rows from both relations. Both must have exactly the same columns — same names and same order. Duplicates are removed.
 
 ```
-resultado := r1 difference r2;
+result := r1 union r2;
 ```
 
 ---
 
-### Producto cartesiano - `product`
+### Intersection - `intersect`
 
-Devuelve todas las combinaciones posibles de filas de ambas relaciones.
-
-```
-resultado := r1 product r2;
-```
-
-!!! warning "Resultados grandes"
-    Si `r1` tiene 100 filas y `r2` tiene 50, el producto tiene 5.000 filas. Usarlo con cuidado.
-
----
-
-## Anidamiento de expresiones
-
-Los operadores se pueden anidar libremente:
+Returns only the rows that appear in both relations.
 
 ```
-q1 := alumno njoin (inscripto njoin curso);
-q2 := project nombre, nombre_curso (q1);
-q3 := select nombre_curso = 'Python' (q2);
+result := r1 intersect r2;
 ```
 
 ---
 
-## Comentarios
+### Difference - `difference`
 
-Las líneas que empiezan con `%` son comentarios:
+Returns the rows that are in the first relation but not in the second.
 
 ```
-% Selecciona todos los alumnos adultos
-adultos := select edad >= 18 (alumno);
+result := r1 difference r2;
 ```
 
 ---
 
-## ¿Y la división?
+### Cartesian product - `product`
 
-El operador de división no está implementado directamente en Pireal, y es intencional. La división puede expresarse combinando los operadores que ya tenés: producto cartesiano, diferencia y proyección.
+Returns all possible combinations of rows from both relations.
 
-Deducir cómo hacerlo es un ejercicio excelente para entender el Álgebra Relacional en profundidad. Si llegás a la solución, significa que realmente entendés cómo funciona.
+```
+result := r1 product r2;
+```
+
+!!! warning "Large results"
+    If `r1` has 100 rows and `r2` has 50, the product has 5,000 rows. Use with care.
+
+---
+
+## Nesting expressions
+
+Operators can be freely nested:
+
+```
+q1 := student njoin (enrolled njoin course);
+q2 := project name, course_name (q1);
+q3 := select course_name = 'Python' (q2);
+```
+
+---
+
+## Comments
+
+Lines starting with `%` are comments:
+
+```
+% Select all adult students
+adults := select age >= 18 (student);
+```
+
+---
+
+## What about division?
+
+The division operator is not directly implemented in Pireal, and that is intentional. Division can be expressed by combining the operators you already have: cartesian product, difference and projection.
+
+Figuring out how to do it is an excellent exercise for understanding Relational Algebra in depth. If you get to the solution, it means you truly understand how it works.

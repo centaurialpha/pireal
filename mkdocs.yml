@@ -36,18 +36,18 @@ extra_css:
   - stylesheets/custom.css
 
 nav:
-  - Inicio: index.md
-  - Primeros pasos: getting-started.md
-  - Álgebra Relacional:
-      - Operadores: relational-algebra/operators.md
-      - Ejemplos: relational-algebra/examples.md
-  - Guía de uso:
-      - Bases de datos: user-guide/databases.md
-      - Consultas: user-guide/queries.md
-  - Cómo funciona:
-      - El intérprete: internals/interpreter.md
-      - Crear temas: internals/themes.md
-  - Contribuir: contributing.md
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Relational Algebra:
+      - Operators: relational-algebra/operators.md
+      - Examples: relational-algebra/examples.md
+  - User Guide:
+      - Databases: user-guide/databases.md
+      - Queries: user-guide/queries.md
+  - Under the Hood:
+      - The Interpreter: internals/interpreter.md
+      - Creating Themes: internals/themes.md
+  - Contributing: contributing.md
 
 plugins:
   - search

@@ -1,96 +1,96 @@
-# El intérprete
+# The interpreter
 
-> *"Si no sabes cómo funcionan los compiladores, entonces no sabes cómo funcionan las computadoras. Si no estás 100% seguro de cómo funcionan los compiladores, entonces no sabes cómo funcionan las computadoras."*
+> *"If you don't know how compilers work, then you don't know how computers work. If you're not 100% sure how compilers work, then you don't know how computers work."*
 > -- Steve Yegge
 
-El núcleo de Pireal es su intérprete de Álgebra Relacional, construido completamente desde cero en Python. No depende de ninguna librería de parsing externa — cada componente fue diseñado e implementado a mano.
+The core of Pireal is its Relational Algebra interpreter, built entirely from scratch in Python. It does not depend on any external parsing library -- every component was designed and implemented by hand.
 
-Entender cómo funciona un intérprete es uno de los temas más valiosos en la carrera de Ingeniería de Software. Pireal es un ejemplo real, pequeño y legible de estos conceptos en acción.
-
----
-
-## ¿Por qué construir un intérprete desde cero?
-
-Existen librerías que generan parsers automáticamente (ANTLR, PLY, Lark). Usarlas hubiera sido más rápido, pero el objetivo de Pireal no es solo funcionar — es ser un **ejemplo didáctico** de cómo se procesa un lenguaje formal.
-
-Además, el Álgebra Relacional tiene una gramática relativamente simple que se puede implementar con un parser recursivo descendente sin demasiada complejidad. Esto lo hace ideal para entender los conceptos sin ahogarse en casos edge.
+Understanding how an interpreter works is one of the most valuable topics in a Software Engineering degree. Pireal is a real, small, and readable example of these concepts in action.
 
 ---
 
-## Arquitectura del pipeline
+## Why build an interpreter from scratch?
 
-Una consulta como esta:
+There are libraries that generate parsers automatically (ANTLR, PLY, Lark). Using them would have been faster, but Pireal's goal is not just to work -- it is to be a **didactic example** of how a formal language is processed.
+
+Besides, Relational Algebra has a relatively simple grammar that can be implemented with a recursive descent parser without too much complexity. This makes it ideal for understanding the concepts without drowning in edge cases.
+
+---
+
+## Pipeline architecture
+
+A query like this:
 
 ```
-q := project nombre (select edad = 25 (estudiantes));
+q := project name (select age = 25 (students));
 ```
 
-Pasa por cuatro etapas antes de producir un resultado:
+Goes through four stages before producing a result:
 
 ```
-Texto fuente
+Source text
     |
     v
 ┌─────────┐
-│ Scanner │  Convierte el texto en una secuencia de caracteres con contexto
+│ Scanner │  Wraps the text to expose character-level navigation
 └─────────┘
     |
     v
 ┌───────┐
-│ Lexer │  Agrupa los caracteres en tokens con significado
+│ Lexer │  Groups characters into meaningful tokens
 └───────┘
     |
     v
 ┌────────┐
-│ Parser │  Construye el AST (árbol de sintaxis abstracta)
+│ Parser │  Builds the AST (abstract syntax tree)
 └────────┘
     |
     v
 ┌───────────┐
-│ Evaluator │  Recorre el AST y ejecuta las operaciones relacionales
+│ Evaluator │  Walks the AST and executes the relational operations
 └───────────┘
     |
     v
-Relation (resultado)
+Relation (result)
 ```
 
 ---
 
 ## Scanner
 
-El `Scanner` es la capa más baja. Recibe el texto fuente como string y lo envuelve para exponer una interfaz de navegación: avanzar carácter a carácter, mirar el siguiente sin consumirlo (*peek*), y llevar el número de línea actual.
+The `Scanner` is the lowest layer. It receives the source text as a string and wraps it to expose a navigation interface: advance character by character, peek at the next one without consuming it, and track the current line number.
 
 ```python
-scanner = Scanner("select edad = 25 (estudiantes)")
+scanner = Scanner("select age = 25 (students)")
 scanner.current_char   # 's'
 scanner.advance()
 scanner.current_char   # 'e'
 scanner.lineno         # 1
 ```
 
-Su responsabilidad es única: navegación sobre el texto. No sabe nada de tokens ni de gramática.
+Its only responsibility is navigating over the text. It knows nothing about tokens or grammar.
 
 ---
 
-## Lexer (tokenizador)
+## Lexer (tokenizer)
 
-El `Lexer` usa el Scanner para agrupar caracteres en **tokens** -- las unidades mínimas con significado del lenguaje.
+The `Lexer` uses the Scanner to group characters into **tokens** -- the smallest meaningful units of the language.
 
-Por ejemplo, el texto `select edad = 25` produce:
+For example, the text `select age = 25` produces:
 
-| Token    | Tipo        |
+| Token    | Type        |
 |----------|-------------|
 | `select` | `SELECT`    |
-| `edad`   | `ID`        |
+| `age`    | `ID`        |
 | `=`      | `EQUAL`     |
 | `25`     | `INTEGER`   |
 
-El Lexer reconoce palabras clave (`select`, `project`, `njoin`, etc.), identificadores, números, strings entre comillas simples, fechas, operadores y símbolos de puntuación.
+The Lexer recognizes keywords (`select`, `project`, `njoin`, etc.), identifiers, numbers, single-quoted strings, dates, operators and punctuation symbols.
 
 ```python
-lexer = Lexer(Scanner("select edad = 25"))
+lexer = Lexer(Scanner("select age = 25"))
 lexer.next_token()  # Token(SELECT, 'select')
-lexer.next_token()  # Token(ID, 'edad')
+lexer.next_token()  # Token(ID, 'age')
 lexer.next_token()  # Token(EQUAL, '=')
 lexer.next_token()  # Token(INTEGER, '25')
 ```
@@ -99,39 +99,39 @@ lexer.next_token()  # Token(INTEGER, '25')
 
 ## Parser
 
-El `Parser` es el corazón del intérprete. Consume tokens del Lexer y construye un **AST (Abstract Syntax Tree)** -- una representación en árbol de la estructura lógica de la consulta.
+The `Parser` is the heart of the interpreter. It consumes tokens from the Lexer and builds an **AST (Abstract Syntax Tree)** -- a tree representation of the logical structure of the query.
 
-Implementa un **parser recursivo descendente**: cada regla de la gramática se corresponde con un método de Python.
+It implements a **recursive descent parser**: each grammar rule corresponds to a Python method.
 
-La gramática (simplificada) de Pireal es:
+The (simplified) grammar of Pireal is:
 
 ```
-programa      ::= asignación+
-asignación    ::= ID ':=' expresión ';'
-expresión     ::= expresión_binaria | proyección | selección | variable
-proyección    ::= 'project' atributos '(' expresión ')'
-selección     ::= 'select' condición '(' expresión ')'
-expresión_bin ::= expresión operador expresión
-condición     ::= operando comparador operando
-operador      ::= 'union' | 'intersect' | 'difference' | 'njoin' | ...
+program       ::= assignment+
+assignment    ::= ID ':=' expression ';'
+expression    ::= binary_expr | projection | selection | variable
+projection    ::= 'project' attributes '(' expression ')'
+selection     ::= 'select' condition '(' expression ')'
+binary_expr   ::= expression operator expression
+condition     ::= operand comparator operand
+operator      ::= 'union' | 'intersect' | 'difference' | 'njoin' | ...
 ```
 
-Para la consulta `q := project nombre (select edad = 25 (estudiantes))`, el AST resultante es:
+For the query `q := project name (select age = 25 (students))`, the resulting AST is:
 
 ```
 Compound
 └── Assignment(name='q')
-    └── ProjectExpr(attrs=['nombre'])
+    └── ProjectExpr(attrs=['name'])
         └── SelectExpr
-            ├── Condition(op1='edad', op='=', op2='25')
-            └── Variable('estudiantes')
+            ├── Condition(op1='age', op='=', op2='25')
+            └── Variable('students')
 ```
 
 ---
 
 ## Evaluator
 
-El `Evaluator` implementa el patrón **Visitor** sobre el AST. Recorre el árbol de arriba hacia abajo y ejecuta cada nodo llamando al método correspondiente.
+The `Evaluator` implements the **Visitor** pattern over the AST. It walks the tree top-down and executes each node by calling the corresponding method.
 
 ```python
 class Evaluator(NodeVisitor):
@@ -155,43 +155,43 @@ class Evaluator(NodeVisitor):
         return getattr(left, BINARY_OP_MAP[node.op])(right)
 ```
 
-El resultado de cada `visit_*` es una `Relation`. Al final de la evaluación, `_results` contiene todas las relaciones nombradas que se muestran al usuario.
+The result of each `visit_*` is a `Relation`. At the end of evaluation, `_results` contains all the named relations shown to the user.
 
-!!! note "¿Por qué Visitor?"
-    El patrón Visitor permite agregar operaciones nuevas sobre el AST sin modificar los nodos. Por ejemplo, Pireal también tiene un `SQLGenerator` que recorre el mismo árbol y genera SQL equivalente -- sin tocar el código del evaluador ni del parser.
+!!! note "Why Visitor?"
+    The Visitor pattern lets you add new operations over the AST without modifying the nodes. For example, Pireal also has a `SQLGenerator` that walks the same tree and generates equivalent SQL -- without touching the evaluator or parser code.
 
 ---
 
-## La clase Relation
+## The Relation class
 
-`Relation` es el tipo de dato que fluye entre todos los operadores. Internamente almacena:
+`Relation` is the data type that flows between all operators. Internally it stores:
 
-- `header`: lista de nombres de columnas
-- `content`: conjunto de tuplas (set de Python, garantiza unicidad)
+- `header`: list of column names
+- `content`: set of tuples (Python set, guarantees uniqueness)
 
 ```python
 r = Relation()
-r.header = ["id", "nombre", "edad"]
+r.header = ["id", "name", "age"]
 r.insert(("1", "Gabriel", "25"))
 r.insert(("2", "Marisel", "30"))
 
-r.degree()       # 3  (cantidad de columnas)
-r.cardinality()  # 2  (cantidad de filas)
+r.degree()       # 3  (number of columns)
+r.cardinality()  # 2  (number of rows)
 ```
 
-Cada operación relacional (`.project()`, `.select()`, `.njoin()`, etc.) devuelve una nueva `Relation` sin modificar la original.
+Each relational operation (`.project()`, `.select()`, `.njoin()`, etc.) returns a new `Relation` without modifying the original.
 
 ---
 
-## Para profundizar
+## Going deeper
 
-Si querés explorar el código:
+If you want to explore the code:
 
-- `src/pireal/interpreter/scanner.py` -- navegación sobre el texto
-- `src/pireal/interpreter/lexer.py` -- tokenización
-- `src/pireal/interpreter/parser.py` -- construcción del AST
-- `src/pireal/interpreter/rast.py` -- definición de los nodos del AST
-- `src/pireal/interpreter/evaluator.py` -- ejecución
-- `src/pireal/core/relation.py` -- el tipo de dato central
+- `src/pireal/interpreter/scanner.py` -- text navigation
+- `src/pireal/interpreter/lexer.py` -- tokenization
+- `src/pireal/interpreter/parser.py` -- AST construction
+- `src/pireal/interpreter/rast.py` -- AST node definitions
+- `src/pireal/interpreter/evaluator.py` -- execution
+- `src/pireal/core/relation.py` -- the central data type
 
-Los tests de integración en `tests/integration/` muestran el pipeline completo de punta a punta.
+The integration tests in `tests/integration/` show the full pipeline end to end.

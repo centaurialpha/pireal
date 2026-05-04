@@ -1,12 +1,12 @@
-# Contribuir
+# Contributing
 
-Las contribuciones son bienvenidas. Ya sea un reporte de bug, una funcionalidad nueva, o una corrección en la documentación — todo ayuda.
+Contributions are welcome. Whether it is a bug report, a new feature, or a documentation fix — everything helps.
 
 ---
 
-## Configurar el entorno de desarrollo
+## Setting up the development environment
 
-Pireal usa [uv](https://docs.astral.sh/uv/) para gestionar dependencias.
+Pireal uses [uv](https://docs.astral.sh/uv/) to manage dependencies.
 
 ```bash
 git clone https://github.com/centaurialpha/pireal
@@ -14,7 +14,7 @@ cd pireal
 uv sync --group dev
 ```
 
-Para ejecutar Pireal desde el código fuente:
+To run Pireal from source:
 
 ```bash
 uv run pireal
@@ -22,19 +22,19 @@ uv run pireal
 
 ---
 
-## Ejecutar los tests
+## Running tests
 
 ```bash
 uv run pytest
 ```
 
-Solo los tests del intérprete:
+Interpreter tests only:
 
 ```bash
 uv run pytest -m interpreter
 ```
 
-Solo los tests de la GUI:
+GUI tests only:
 
 ```bash
 uv run pytest -m gui
@@ -44,7 +44,7 @@ uv run pytest -m gui
 
 ## Type checking
 
-Pireal usa [ty](https://github.com/astral-sh/ty) como type checker:
+Pireal uses [ty](https://github.com/astral-sh/ty) as its type checker:
 
 ```bash
 uvx ty check
@@ -52,7 +52,7 @@ uvx ty check
 
 ---
 
-## Linting y formato
+## Linting and formatting
 
 ```bash
 uv run ruff check src/
@@ -61,22 +61,22 @@ uv run ruff format src/
 
 ---
 
-## Estructura del proyecto
+## Project structure
 
 ```
 pireal/
 ├── src/pireal/
-│   ├── core/             # Relation, DB, y lógica central sin dependencias Qt
+│   ├── core/             # Relation, DB, and central logic with no Qt dependencies
 │   ├── interpreter/      # Lexer, Parser, Evaluator, AST
 │   │   ├── lexer.py
 │   │   ├── parser.py
 │   │   ├── evaluator.py
-│   │   └── rast.py       # Nodos del AST
-│   ├── gui/              # Interfaz PyQt6
+│   │   └── rast.py       # AST nodes
+│   ├── gui/              # PyQt6 interface
 │   │   ├── services/     # DatabaseService, QueryService
-│   │   ├── dialogs/      # Diálogos
-│   │   └── theme/        # Temas y colores
-│   ├── cli/              # Modo terminal (REPL)
+│   │   ├── dialogs/      # Dialogs
+│   │   └── theme/        # Themes and colors
+│   ├── cli/              # Terminal mode (REPL)
 │   └── main.py
 ├── tests/
 │   ├── unit/
@@ -86,37 +86,37 @@ pireal/
 └── pyproject.toml
 ```
 
-!!! note "Regla importante"
-    `core/` e `interpreter/` son Python puro, sin imports de PyQt6. Todo lo que dependa de Qt va en `gui/`.
+!!! note "Important rule"
+    `core/` and `interpreter/` are pure Python, no PyQt6 imports. Everything that depends on Qt goes in `gui/`.
 
 ---
 
-## Hacer cambios
+## Making changes
 
-1. Hacer fork del repositorio
-2. Crear una rama: `git checkout -b feature/mi-feature`
-3. Hacer los cambios y agregar tests
-4. Ejecutar los tests: `uv run pytest`
-5. Abrir un Pull Request
-
----
-
-## Reportar bugs
-
-Abrir un issue en [GitHub](https://github.com/centaurialpha/pireal/issues) con:
-
-- Qué hiciste
-- Qué esperabas que pasara
-- Qué pasó realmente
-- Tu sistema operativo y versión de Pireal
+1. Fork the repository
+2. Create a branch: `git checkout -b feature/my-feature`
+3. Make your changes and add tests
+4. Run the tests: `uv run pytest`
+5. Open a Pull Request
 
 ---
 
-## Construir la documentación localmente
+## Reporting bugs
+
+Open an issue on [GitHub](https://github.com/centaurialpha/pireal/issues) with:
+
+- What you did
+- What you expected to happen
+- What actually happened
+- Your operating system and Pireal version
+
+---
+
+## Building the documentation locally
 
 ```bash
 uv sync --group docs
 uv run mkdocs serve
 ```
 
-Abrí [http://localhost:8000](http://localhost:8000). La documentación se reconstruye automáticamente al editar archivos.
+Open [http://localhost:8000](http://localhost:8000). The documentation rebuilds automatically when you edit files.

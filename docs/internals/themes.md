@@ -1,27 +1,27 @@
-# Crear temas
+# Creating themes
 
-¿No te convence ninguno de los temas que vienen por defecto? Podés crear el tuyo. Los temas son archivos JSON simples — no hace falta saber programar, solo elegir colores.
+Not happy with the built-in themes? You can create your own. Themes are simple JSON files -- no programming knowledge needed, just pick some colors.
 
 ---
 
-## Ubicación de los temas
+## Theme location
 
-Pireal busca temas en el directorio de datos del usuario:
+Pireal looks for themes in the user data directory:
 
 - **Linux:** `~/.pireal/themes/`
-- **Windows / macOS:** en la carpeta de datos de aplicación estándar del sistema
+- **Windows / macOS:** in the system's standard application data folder
 
-Cualquier archivo `.json` que pongas en ese directorio aparece automáticamente en **Ajustes -> Tema**. Así de simple.
+Any `.json` file you put in that directory automatically appears in **Settings -> Theme**. That simple.
 
 ---
 
-## Estructura de un tema
+## Theme structure
 
-Un tema es un archivo JSON con dos secciones: `editor` y `app`.
+A theme is a JSON file with two sections: `editor` and `app`.
 
 ```json
 {
-  "name": "Mi Tema",
+  "name": "My Theme",
   "editor": {
     "background": "#1e1e2e",
     "foreground": "#cdd6f4",
@@ -52,49 +52,49 @@ Un tema es un archivo JSON con dos secciones: `editor` y `app`.
 }
 ```
 
-### Sección `editor`
+### `editor` section
 
-Controla el aspecto del editor de consultas y la vista de base de datos.
+Controls the appearance of the query editor and database view.
 
-| Clave                | Descripción                                        |
-|----------------------|----------------------------------------------------|
-| `background`         | Color de fondo del editor                          |
-| `foreground`         | Color del texto base                               |
-| `current_line`       | Resaltado de la línea donde está el cursor         |
-| `line_number_fg`     | Color del texto de los números de línea            |
-| `line_number_bg`     | Fondo del margen de números de línea               |
-| `selection_bg`       | Fondo del texto seleccionado                       |
-| `selection_fg`       | Color del texto seleccionado                       |
-| `keyword`            | Palabras clave (`select`, `project`, `njoin`, etc.)|
-| `variable`           | Nombres de relaciones y variables                  |
-| `string`             | Strings entre comillas simples                     |
-| `number`             | Valores numéricos                                  |
-| `comment`            | Comentarios (líneas con `%`)                       |
-| `operator`           | Operadores (`:=`, `=`, `<`, etc.)                  |
-| `bracket_match`      | Paréntesis que hace par con el cursor              |
-| `bracket_mismatch`   | Paréntesis sin par (error de balance)              |
-| `sidebar_background` | Fondo de la barra lateral                          |
-| `sidebar_foreground` | Texto de la barra lateral                          |
-| `error`              | Color semántico para errores y mensajes negativos  |
-| `success`            | Color semántico para acciones exitosas (ej: consulta ejecutada correctamente) |
+| Key                  | Description                                         |
+|----------------------|-----------------------------------------------------|
+| `background`         | Editor background color                             |
+| `foreground`         | Base text color                                     |
+| `current_line`       | Highlight for the line where the cursor is          |
+| `line_number_fg`     | Line number text color                              |
+| `line_number_bg`     | Line number margin background                       |
+| `selection_bg`       | Selected text background                            |
+| `selection_fg`       | Selected text color                                 |
+| `keyword`            | Keywords (`select`, `project`, `njoin`, etc.)       |
+| `variable`           | Relation names and variables                        |
+| `string`             | Single-quoted strings                               |
+| `number`             | Numeric values                                      |
+| `comment`            | Comments (lines starting with `%`)                  |
+| `operator`           | Operators (`:=`, `=`, `<`, etc.)                    |
+| `bracket_match`      | Parenthesis that matches the one at the cursor      |
+| `bracket_mismatch`   | Unmatched parenthesis (balance error)               |
+| `sidebar_background` | Sidebar background                                  |
+| `sidebar_foreground` | Sidebar text                                        |
+| `error`              | Semantic color for errors and negative feedback     |
+| `success`            | Semantic color for successful actions (e.g. query ran successfully) |
 
-!!! note "error y success"
-    `error` y `success` son colores **semánticos** -- no son parte del resaltado de sintaxis. Se usan en la interfaz para comunicar resultados: `error` para mensajes de fallo y `success` para confirmaciones positivas como una consulta ejecutada correctamente. No afectan el coloreado del código en el editor.
+!!! note "error and success"
+    `error` and `success` are **semantic** colors -- they are not part of syntax highlighting. They are used in the interface to communicate results: `error` for failure messages and `success` for positive confirmations like a query that ran successfully. They do not affect code coloring in the editor.
 
-### Sección `app`
+### `app` section
 
-Controla los colores generales de la interfaz.
+Controls the general interface colors.
 
-| Clave        | Descripción                              |
+| Key          | Description                              |
 |--------------|------------------------------------------|
-| `background` | Fondo general de la aplicación           |
-| `foreground` | Texto en paneles y barra lateral         |
-| `accent`     | Color de énfasis (botones, tabs activos) |
-| `border`     | Bordes entre paneles                     |
+| `background` | General application background          |
+| `foreground` | Text in panels and sidebar               |
+| `accent`     | Emphasis color (buttons, active tabs)    |
+| `border`     | Borders between panels                   |
 
 ---
 
-## Ejemplo: tema Catppuccin Mocha
+## Example: Catppuccin Mocha theme
 
 ```json
 {
@@ -129,15 +129,15 @@ Controla los colores generales de la interfaz.
 }
 ```
 
-Guardá este archivo como `~/.pireal/themes/catppuccin-mocha.json` y aparecerá en la lista de temas.
+Save this file as `~/.pireal/themes/catppuccin-mocha.json` and it will appear in the theme list.
 
 ---
 
-## Ejemplo: tema claro
+## Example: light theme
 
 ```json
 {
-  "name": "Claro",
+  "name": "Light",
   "editor": {
     "background": "#ffffff",
     "foreground": "#383a42",
@@ -170,17 +170,17 @@ Guardá este archivo como `~/.pireal/themes/catppuccin-mocha.json` y aparecerá 
 
 ---
 
-## Tips para diseñar temas
+## Tips for designing themes
 
-- Usá herramientas como [Coolors](https://coolors.co) o [Lospec](https://lospec.com/palette-list) para elegir paletas de colores.
-- Asegurate de que haya suficiente contraste entre el fondo y el texto para que sea legible.
-- Las paletas populares como **Dracula**, **Nord**, **Solarized** o **Catppuccin** son buenos puntos de partida.
-- Podés verificar el contraste con herramientas de accesibilidad como [Contrast Checker](https://webaim.org/resources/contrastchecker/).
+- Use tools like [Coolors](https://coolors.co) or [Lospec](https://lospec.com/palette-list) to pick color palettes.
+- Make sure there is enough contrast between the background and text to keep things readable.
+- Popular palettes like **Dracula**, **Nord**, **Solarized** or **Catppuccin** are great starting points.
+- You can check contrast with accessibility tools like [Contrast Checker](https://webaim.org/resources/contrastchecker/).
 
 ---
 
-## Compartir tu tema
+## Sharing your theme
 
-Si creás un tema que te quedó bueno, compartilo — abrí un Pull Request o publicalo como gist en GitHub y linkealo en las issues.
+If you create a theme you are happy with, share it -- open a Pull Request or publish it as a GitHub gist and link it in the issues.
 
-A los que compartan un tema y sea aceptado al repo les invito una cerveza 🍺 (o una gaseosa, sin presiones).
+Anyone who shares a theme that gets merged into the repo gets a beer on me 🍺 (or a soda, no pressure).

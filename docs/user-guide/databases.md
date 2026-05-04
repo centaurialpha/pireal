@@ -1,94 +1,94 @@
-# Bases de datos
+# Databases
 
-Una base de datos de Pireal (archivo `.pdb`) es un archivo de texto plano que define una o más relaciones. Podés crearla desde la interfaz gráfica o escribirla directamente con cualquier editor de texto.
+A Pireal database (`.pdb` file) is a plain text file that defines one or more relations. You can create it from the graphical interface or write it directly with any text editor.
 
 ---
 
-## Formato del archivo
+## File format
 
-Cada relación empieza con una línea de encabezado que define el nombre y las columnas, seguida de una fila por línea:
-
-```
-@nombre_relacion:col1,col2,col3
-valor1,valor2,valor3
-valor4,valor5,valor6
-```
-
-Una base de datos completa con múltiples relaciones:
+Each relation starts with a header line that defines the name and columns, followed by one row per line:
 
 ```
-@estudiantes:id,nombre,edad
+@relation_name:col1,col2,col3
+value1,value2,value3
+value4,value5,value6
+```
+
+A complete database with multiple relations:
+
+```
+@students:id,name,age
 1,Gabriel,25
 2,Marisel,30
 3,Rodrigo,25
 
-@cursos:id_curso,nombre_curso,valor
-10,Bases de Datos,2500
-20,Redes,3500
+@courses:course_id,course_name,price
+10,Databases,2500
+20,Networks,3500
 30,Python,1500
 
-@inscripto:id,id_curso
+@enrolled:id,course_id
 1,10
 1,30
 2,20
 ```
 
-!!! note "Formato del encabezado"
-    El nombre de la relación va precedido por `@` y separado de las columnas por `:`. Las columnas se separan con `,` sin espacios.
+!!! note "Header format"
+    The relation name is preceded by `@` and separated from the columns by `:`. Columns are separated by `,` with no spaces.
 
 ---
 
-## Crear una base de datos
+## Creating a database
 
-### Desde la interfaz
+### From the interface
 
-Ir a **Archivo -> Nueva base de datos**. Se abre un editor donde podés escribir la base de datos usando la sintaxis de texto. Al guardar, Pireal escribe el archivo `.pdb`.
+Go to **File -> New database**. An editor opens where you can write the database using the text syntax. When you save, Pireal writes the `.pdb` file.
 
-### Con el diálogo de nueva relación
+### With the new relation dialog
 
-Ir a **Base de datos -> Nueva relación** para abrir un formulario donde podés definir columnas e ingresar filas sin escribir la sintaxis manualmente.
+Go to **Database -> New relation** to open a form where you can define columns and enter rows without writing the syntax manually.
 
-### Abrir un archivo existente
+### Opening an existing file
 
-Ir a **Archivo -> Abrir** y seleccionar un archivo `.pdb`. Los archivos recientes también aparecen en **Archivo -> Recientes**.
-
----
-
-## Editar relaciones
-
-Podés editar el contenido de la base de datos directamente en el editor. Los cambios se aplican al guardar.
-
-!!! note "Indicador de cambios sin guardar"
-    Cuando una base de datos tiene cambios sin guardar, la pestaña muestra un `*` antes del nombre del archivo. Usá `Ctrl+S` para guardar.
+Go to **File -> Open** and select a `.pdb` file. Recent files also appear under **File -> Recent**.
 
 ---
 
-## Tipos de datos
+## Editing relations
 
-Todos los valores se almacenan como texto, pero Pireal los interpreta correctamente al comparar en una consulta:
+You can edit the database content directly in the editor. Changes take effect when you save.
 
-| Tipo    | Ejemplos                          |
+!!! note "Unsaved changes indicator"
+    When a database has unsaved changes, the tab shows a `*` before the filename. Use `Ctrl+S` to save.
+
+---
+
+## Data types
+
+All values are stored as text, but Pireal interprets them correctly when comparing in a query:
+
+| Type    | Examples                          |
 |---------|-----------------------------------|
-| Números | `25`, `3500`, `3.14`              |
-| Strings | `'Gabriel'`, `'Bases de Datos'`   |
-| Fechas  | `'15/03/2017'`, `'2024-01-01'`    |
-| Horas   | `'10:30'`, `'23:59'`              |
+| Numbers | `25`, `3500`, `3.14`              |
+| Strings | `'Gabriel'`, `'Databases'`        |
+| Dates   | `'15/03/2017'`, `'2024-01-01'`    |
+| Times   | `'10:30'`, `'23:59'`              |
 
-Al comparar en una condición `select`, los strings y fechas van entre comillas simples:
-
-```
-resultado := select nombre = 'Gabriel' (estudiantes);
-resultado := select fecha_inicio > '01/03/2017' (cursos);
-```
-
-Los números se comparan sin comillas:
+When comparing in a `select` condition, strings and dates go in single quotes:
 
 ```
-resultado := select valor >= 2000 (cursos);
+result := select name = 'Gabriel' (students);
+result := select start_date > '01/03/2017' (courses);
+```
+
+Numbers are compared without quotes:
+
+```
+result := select price >= 2000 (courses);
 ```
 
 ---
 
-## Base de datos de ejemplo
+## Sample database
 
-Pireal incluye una base de datos de ejemplo lista para usar. Abrila desde **Archivo → Abrir ejemplo** para explorar un escenario académico con estudiantes, cursos e inscripciones, sin tener que crear nada desde cero.
+Pireal includes a ready-to-use sample database. Open it from **File -> Open example** to explore an academic scenario with students, courses and enrollments, without creating anything from scratch.
