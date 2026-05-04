@@ -1,0 +1,65 @@
+{% extends "main.html" %}
+
+{% block tabs %}
+{{ super() }}
+
+<style>
+  .md-header { position: initial }
+  .md-main__inner { margin: 0 }
+  .md-content { display: none }
+
+  @media screen and (min-width: 60em) {
+    .md-sidebar--secondary { display: none }
+  }
+
+  @media screen and (min-width: 76.25em) {
+    .md-sidebar--primary { display: none }
+  }
+</style>
+
+<section class="pi-hero">
+  <div class="pi-hero__inner md-typeset">
+
+    <h1 class="pi-hero__title">
+      <img src="../images/pireal_logo-white.png" class="pi-hero__logo" alt="pireal">
+    </h1>
+
+    <p class="pi-hero__subtitle" id="pi-subtitle">
+      Un intérprete de <strong>Álgebra Relacional</strong>
+      para aprender bases de datos desde cero.
+    </p>
+
+    <p class="pi-hero__desc" id="pi-desc">
+      Escribí consultas, explorá resultados, visualizá el árbol de sintaxis
+      y generá SQL equivalente, sin instalar un motor de base de datos.
+    </p>
+
+    <div class="pi-hero__buttons">
+      <a id="pi-download-btn"
+         href="https://github.com/centaurialpha/pireal/releases/latest"
+         class="md-button pi-btn-download">
+        <span id="pi-download-text">Descargar</span>
+      </a>
+      <a href="getting-started/"
+         class="md-button pi-btn-secondary">
+        <span id="pi-getstarted-text">Primeros pasos</span>
+      </a>
+    </div>
+
+    <p class="pi-hero__version">
+      v<strong>{{ config.extra.version | default("4.0.0") }}</strong>
+      &nbsp;·&nbsp;
+      <span id="pi-license-text">Libre y de código abierto</span>
+      &nbsp;·&nbsp;
+      <a href="{{ config.repo_url }}/blob/main/LICENSE">GPL v3</a>
+    </p>
+
+  </div>
+</section>
+
+<script src="../javascripts/download.js"></script>
+
+{% endblock %}
+
+{% block content %}{% endblock %}
+{% block footer %}{{ super() }}{% endblock %}

@@ -1,0 +1,116 @@
+.pi-hero {
+  background: #1e2129;
+  padding: 3rem 2rem 4rem;
+}
+
+.pi-hero__inner {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.pi-hero__title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin: 0 0 1rem;
+  color: #ffffff;
+  line-height: 1.05;
+}
+
+.pi-symbol {
+  color: #5c6bc0;
+}
+
+.pi-badges {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.pi-badges img {
+  height: 20px;
+}
+
+.pi-hero__subtitle {
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
+  color: var(--md-default-fg-color--light);
+  line-height: 1.5;
+}
+
+.pi-hero__subtitle strong {
+  color: var(--md-default-fg-color);
+  font-weight: 600;
+}
+
+.pi-hero__desc {
+  font-size: 0.95rem;
+  color: var(--md-default-fg-color--lighter);
+  margin: 0 0 1.5rem;
+  line-height: 1.7;
+}
+
+/* Buttons */
+.pi-hero__buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.pi-btn-download {
+  background: #5c6bc0 !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.6rem 1.6rem;
+  border-radius: 0.25rem;
+  border: none !important;
+  transition: opacity 0.15s;
+}
+
+.pi-btn-download:hover {
+  opacity: 0.88;
+  color: #ffffff !important;
+}
+
+.pi-btn-secondary {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.65) !important;
+  font-size: 0.9rem;
+  padding: 0.6rem 1.6rem;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.pi-btn-secondary:hover {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  color: #ffffff !important;
+}
+
+/* Version line */
+.pi-hero__version {
+  font-size: 0.78rem;
+  color: var(--md-default-fg-color--lighter);
+  margin: 0;
+}
+
+.pi-hero__version a {
+  color: var(--md-default-fg-color--light);
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  text-decoration: none;
+}
+
+.pi-hero__version a:hover {
+  color: var(--md-default-fg-color);
+}
+
+.pi-hero__logo {
+  width: 14rem;
+  vertical-align: middle;
+  margin-bottom: 0.15em;
+}

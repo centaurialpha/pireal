@@ -1,6 +1,6 @@
 # Contribuir
 
-Las contribuciones son bienvenidas y apreciadas. Ya sea un reporte de bug, una funcionalidad nueva, o una corrección en la documentación — todo ayuda.
+Las contribuciones son bienvenidas. Ya sea un reporte de bug, una funcionalidad nueva, o una corrección en la documentación — todo ayuda.
 
 ---
 
@@ -34,6 +34,31 @@ Solo los tests del intérprete:
 uv run pytest -m interpreter
 ```
 
+Solo los tests de la GUI:
+
+```bash
+uv run pytest -m gui
+```
+
+---
+
+## Type checking
+
+Pireal usa [ty](https://github.com/astral-sh/ty) como type checker:
+
+```bash
+uvx ty check
+```
+
+---
+
+## Linting y formato
+
+```bash
+uv run ruff check src/
+uv run ruff format src/
+```
+
 ---
 
 ## Estructura del proyecto
@@ -41,21 +66,28 @@ uv run pytest -m interpreter
 ```
 pireal/
 ├── src/pireal/
-│   ├── core/          # Modelo de Relation y lógica central
-│   ├── interpreter/   # Scanner, Lexer, Parser, Evaluator
-│   │   ├── scanner.py
+│   ├── core/             # Relation, DB, y lógica central sin dependencias Qt
+│   ├── interpreter/      # Lexer, Parser, Evaluator, AST
 │   │   ├── lexer.py
 │   │   ├── parser.py
 │   │   ├── evaluator.py
-│   │   └── rast.py    # Definición de nodos del AST
-│   ├── gui/           # Interfaz PyQt6
+│   │   └── rast.py       # Nodos del AST
+│   ├── gui/              # Interfaz PyQt6
+│   │   ├── services/     # DatabaseService, QueryService
+│   │   ├── dialogs/      # Diálogos
+│   │   └── theme/        # Temas y colores
+│   ├── cli/              # Modo terminal (REPL)
 │   └── main.py
 ├── tests/
 │   ├── unit/
-│   └── integration/
-├── docs/              # Esta documentación
+│   ├── integration/
+│   └── gui/
+├── docs/
 └── pyproject.toml
 ```
+
+!!! note "Regla importante"
+    `core/` e `interpreter/` son Python puro, sin imports de PyQt6. Todo lo que dependa de Qt va en `gui/`.
 
 ---
 
@@ -76,22 +108,11 @@ Abrir un issue en [GitHub](https://github.com/centaurialpha/pireal/issues) con:
 - Qué hiciste
 - Qué esperabas que pasara
 - Qué pasó realmente
-- Tu sistema operativo y versión de Python
+- Tu sistema operativo y versión de Pireal
 
 ---
 
 ## Construir la documentación localmente
-
-Agregar el grupo de docs al `pyproject.toml`:
-
-```toml
-[dependency-groups]
-docs = [
-    "mkdocs-material>=9.5",
-]
-```
-
-Luego:
 
 ```bash
 uv sync --group docs

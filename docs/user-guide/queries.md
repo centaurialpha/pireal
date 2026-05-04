@@ -1,6 +1,6 @@
 # Consultas
 
-Los archivos de consultas (`.pqf`) contienen las expresiones de Álgebra Relacional a evaluar contra una base de datos. Son archivos de texto plano que podés guardar, compartir y reutilizar.
+Los archivos de consultas (`.pqf`) contienen las expresiones de Álgebra Relacional a evaluar contra una base de datos abierta. Son archivos de texto plano que podés guardar, compartir y reutilizar.
 
 ---
 
@@ -25,10 +25,10 @@ q2 := project nombre (q1);
 
 ## Ejecutar consultas
 
-Con una base de datos abierta, presioná **F5** o ir a **Consulta → Ejecutar**.
+Con una base de datos abierta, presioná **F5** o ir a **Consulta -> Ejecutar**.
 
 !!! warning "Se necesita una base de datos abierta"
-    Las consultas necesitan una base de datos para ejecutarse. Abrí o creá una base de datos antes de ejecutar consultas.
+    Las consultas necesitan una base de datos para ejecutarse. Abrí o creá una antes de ejecutar.
 
 ---
 
@@ -47,7 +47,7 @@ q := project nombre (adultos);  % solo nombres
 
 ## Mensajes de error
 
-Si una consulta tiene un error, Pireal muestra un mensaje descriptivo. Errores comunes:
+Si una consulta tiene un error, Pireal muestra un mensaje descriptivo. Algunos ejemplos comunes:
 
 **Relación no definida:**
 
@@ -73,51 +73,59 @@ q := project nombre (estudiantes);
 
 ---
 
-## Ejemplo de archivo de consultas
+## Funciones extra
+
+### Árbol de sintaxis (AST)
+
+Pireal puede mostrarte el árbol que construye internamente al parsear tu consulta. Es una forma concreta de ver cómo un intérprete "entiende" tu código, muy útil si estás cursando Compiladores o simplemente tenés curiosidad.
+
+Activalo desde **Consulta -> Ver AST**.
+
+### Generador de SQL
+
+Cada consulta de Álgebra Relacional tiene un equivalente en SQL. Pireal puede generarlo automáticamente para que puedas comparar ambos lenguajes y entender cómo se relacionan.
+
+Activalo desde **Consulta -> Generar SQL**.
+
+---
+
+## Modo terminal
+
+Si preferís trabajar desde la línea de comandos, Pireal tiene un modo REPL que corre sin interfaz gráfica:
+
+```bash
+pireal --terminal mi_base.pdb
+```
+
+Si omitís el archivo, Pireal te lo pide al arrancar.
+
+Una vez dentro, escribís consultas igual que en la interfaz, terminando con `;` para ejecutar:
 
 ```
-% === Análisis de estudiantes y cursos ===
-
-% Todos los estudiantes inscriptos en algún curso
-inscriptos := estudiantes njoin inscripciones;
-
-% Cursos con valor menor a 3000
-accesibles := select valor < 3000 (cursos);
-
-% Estudiantes inscriptos en cursos accesibles
-q1 := inscriptos njoin accesibles;
-q2 := project nombre, nombre_curso (q1);
-
-% Cursos que comienzan después de marzo (referencia)
-cursos_tardios := select fecha_inicio > '01/03/2017' (cursos);
+pireal> q := select edad >= 18 (estudiantes);
 ```
+
+Los resultados se muestran directamente en la terminal. Las consultas que ocupan más de una línea también funcionan, Pireal espera hasta que encontrás el `;`:
+
+```
+pireal> q := project nombre (
+     …      select edad >= 18 (estudiantes)
+     …  );
+```
+
+**Comandos disponibles:**
+
+| Comando      | Acción                              |
+|--------------|-------------------------------------|
+| `\h`         | Mostrar ayuda                       |
+| `\r`         | Listar las relaciones cargadas      |
+| `\r nombre`  | Ver el contenido de una relación    |
+| `exit` / `quit` / `:q` | Salir                  |
 
 ---
 
 ## Tips
 
-- Dividí las consultas complejas en pasos con nombres intermedios — es más fácil de depurar y entender.
+- Dividí las consultas complejas en pasos con nombres intermedios, es más fácil de entender y depurar.
 - Usá comentarios para explicar qué hace cada paso.
-- Podés volver a ejecutar las consultas después de modificar la base de datos o el archivo de consultas sin reiniciar Pireal.
-
----
-
-## Más funciones
-
-### Árbol de sintaxis (AST)
-
-<!-- SCREENSHOT: vista del AST generado para una consulta -->
-
-Pireal puede mostrarte el árbol de sintaxis abstracta que construye internamente al parsear tu consulta. Es una forma concreta de ver cómo un intérprete "entiende" tu código — muy útil si estás cursando Compiladores o simplemente tenés curiosidad.
-
-### Generador de SQL
-
-<!-- SCREENSHOT: panel con el SQL generado -->
-
-Cada consulta de Álgebra Relacional tiene un equivalente en SQL. Pireal puede generarlo automáticamente, lo que permite comparar ambos lenguajes y entender la relación entre ellos.
-
-### Escribir la base de datos como código
-
-<!-- SCREENSHOT: editor con sintaxis .pdb -->
-
-En lugar de usar el formulario de creación de relaciones, podés escribir tu base de datos directamente en texto. Es más rápido, más fácil de compartir y se lleva bien con git.
+- Podés volver a ejecutar las consultas después de modificar la base de datos sin reiniciar Pireal.

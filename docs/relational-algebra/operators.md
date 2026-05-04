@@ -12,7 +12,7 @@ nombre_resultado := expresión;
 
 Toman una sola relación como entrada.
 
-### Selección — `select`
+### Selección - `select`
 
 Filtra las filas que satisfacen una condición. Devuelve una relación con las mismas columnas pero solo las filas que cumplen el criterio.
 
@@ -23,36 +23,36 @@ resultado := select condición (relación);
 **Ejemplo:**
 
 ```
-adultos := select edad >= 18 (estudiantes);
+adultos := select edad >= 18 (alumno);
 ```
 
 **Operadores de comparación:**
 
-| Operador | Significado    |
-|----------|----------------|
-| `=`      | igual          |
-| `<>`     | distinto       |
-| `<`      | menor que      |
-| `<=`     | menor o igual  |
-| `>`      | mayor que      |
-| `>=`     | mayor o igual  |
+| Operador | Significado   |
+|----------|---------------|
+| `=`      | igual         |
+| `<>`     | distinto      |
+| `<`      | menor que     |
+| `<=`     | menor o igual |
+| `>`      | mayor que     |
+| `>=`     | mayor o igual |
 
-**Operadores lógicos** `and` / `or` para combinar condiciones:
+**Operadores lógicos** `and`/`or` para combinar condiciones:
 
 ```
-resultado := select edad >= 18 and edad <= 30 (estudiantes);
+resultado := select edad >= 18 and edad <= 30 (alumno);
 ```
 
 **Comparar con strings y fechas:**
 
 ```
-resultado := select nombre = 'Gabriel' (estudiantes);
-resultado := select fecha_inicio > '01/03/2017' (cursos);
+resultado := select nombre = 'Juan' (alumno);
+resultado := select fecha_inicio > '01/03/2017' (curso);
 ```
 
 ---
 
-### Proyección — `project`
+### Proyección - `project`
 
 Selecciona columnas específicas de una relación.
 
@@ -63,7 +63,7 @@ resultado := project col1, col2 (relación);
 **Ejemplo:**
 
 ```
-nombres := project nombre (estudiantes);
+nombres := project nombre (alumno);
 ```
 
 !!! warning "Eliminación de duplicados"
@@ -75,9 +75,9 @@ nombres := project nombre (estudiantes);
 
 Toman dos relaciones como entrada.
 
-### Join Natural — `njoin`
+### Join Natural - `njoin`
 
-Une dos relaciones por las columnas que comparten el mismo nombre.
+Une dos relaciones por las columnas que comparten el mismo nombre. Solo incluye las filas donde los valores de las columnas compartidas coinciden en ambas relaciones.
 
 ```
 resultado := izquierda njoin derecha;
@@ -86,7 +86,7 @@ resultado := izquierda njoin derecha;
 **Ejemplo:**
 
 ```
-inscriptos := estudiantes njoin inscripciones;
+resultado := alumno njoin inscripto;
 ```
 
 ---
@@ -95,17 +95,24 @@ inscriptos := estudiantes njoin inscripciones;
 
 Como el join natural, pero conservan las filas sin coincidencia, rellenando los valores faltantes con `null`.
 
-| Sintaxis                  | Conserva filas sin match de... |
-|---------------------------|-------------------------------|
-| `izq louter der`          | relación izquierda             |
-| `izq router der`          | relación derecha               |
-| `izq fouter der`          | ambas relaciones               |
+| Sintaxis         | Conserva filas sin match de... |
+|------------------|-------------------------------|
+| `izq louter der` | relación izquierda            |
+| `izq router der` | relación derecha              |
+| `izq fouter der` | ambas relaciones              |
+
+**Ejemplo:**
+
+```
+% Todos los alumnos, incluso los que no están inscriptos en ningún curso
+resultado := alumno louter inscripto;
+```
 
 ---
 
-### Unión — `union`
+### Unión - `union`
 
-Devuelve todas las filas de ambas relaciones. Ambas deben tener las mismas columnas. Los duplicados se eliminan.
+Devuelve todas las filas de ambas relaciones. Ambas deben tener exactamente las mismas columnas — mismos nombres y mismo orden. Los duplicados se eliminan.
 
 ```
 resultado := r1 union r2;
@@ -113,7 +120,7 @@ resultado := r1 union r2;
 
 ---
 
-### Intersección — `intersect`
+### Intersección - `intersect`
 
 Devuelve solo las filas que aparecen en ambas relaciones.
 
@@ -123,7 +130,7 @@ resultado := r1 intersect r2;
 
 ---
 
-### Diferencia — `difference`
+### Diferencia - `difference`
 
 Devuelve las filas que están en la primera relación pero no en la segunda.
 
@@ -133,9 +140,9 @@ resultado := r1 difference r2;
 
 ---
 
-### Producto cartesiano — `product`
+### Producto cartesiano - `product`
 
-Devuelve todas las combinaciones de filas de ambas relaciones.
+Devuelve todas las combinaciones posibles de filas de ambas relaciones.
 
 ```
 resultado := r1 product r2;
@@ -151,9 +158,9 @@ resultado := r1 product r2;
 Los operadores se pueden anidar libremente:
 
 ```
-q1 := estudiantes njoin (inscripciones njoin cursos);
+q1 := alumno njoin (inscripto njoin curso);
 q2 := project nombre, nombre_curso (q1);
-q3 := select nombre_curso = 'Bases de Datos' (q2);
+q3 := select nombre_curso = 'Python' (q2);
 ```
 
 ---
@@ -163,14 +170,14 @@ q3 := select nombre_curso = 'Bases de Datos' (q2);
 Las líneas que empiezan con `%` son comentarios:
 
 ```
-% Selecciona todos los estudiantes adultos
-adultos := select edad >= 18 (estudiantes);
+% Selecciona todos los alumnos adultos
+adultos := select edad >= 18 (alumno);
 ```
 
 ---
 
 ## ¿Y la división?
 
-El operador de división no está implementado directamente en Pireal — y es intencional. La división puede expresarse combinando los operadores que ya tenés: producto cartesiano, diferencia y proyección.
+El operador de división no está implementado directamente en Pireal, y es intencional. La división puede expresarse combinando los operadores que ya tenés: producto cartesiano, diferencia y proyección.
 
 Deducir cómo hacerlo es un ejercicio excelente para entender el Álgebra Relacional en profundidad. Si llegás a la solución, significa que realmente entendés cómo funciona.

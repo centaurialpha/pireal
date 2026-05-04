@@ -10,25 +10,49 @@ result_name := expression;
 
 ## Unary operators
 
-### Selection — `select`
+They take a single relation as input.
 
-Filters rows that satisfy a condition.
+### Selection - `select`
+
+Filters the rows that satisfy a condition. Returns a relation with the same columns but only the rows that meet the criteria.
 
 ```
 result := select condition (relation);
 ```
 
-**Comparison operators:** `=`, `<>`, `<`, `<=`, `>`, `>=`
-
-**Logical operators** `and` / `or` to combine conditions:
+**Example:**
 
 ```
-result := select age >= 18 and age <= 30 (students);
+adults := select age >= 18 (student);
+```
+
+**Comparison operators:**
+
+| Operator | Meaning       |
+|----------|---------------|
+| `=`      | equal         |
+| `<>`     | not equal     |
+| `<`      | less than     |
+| `<=`     | less or equal |
+| `>`      | greater than  |
+| `>=`     | greater or equal |
+
+**Logical operators** `and`/`or` to combine conditions:
+
+```
+result := select age >= 18 and age <= 30 (student);
+```
+
+**Comparing strings and dates:**
+
+```
+result := select name = 'Juan' (student);
+result := select start_date > '01/03/2017' (course);
 ```
 
 ---
 
-### Projection — `project`
+### Projection - `project`
 
 Selects specific columns from a relation.
 
@@ -36,36 +60,59 @@ Selects specific columns from a relation.
 result := project col1, col2 (relation);
 ```
 
+**Example:**
+
+```
+names := project name (student);
+```
+
 !!! warning "Duplicate elimination"
-    Projection automatically eliminates duplicate rows.
+    Projection automatically removes duplicate rows, since relations are sets.
 
 ---
 
 ## Binary operators
 
-### Natural Join — `njoin`
+They take two relations as input.
 
-Joins two relations on columns that share the same name.
+### Natural Join - `njoin`
+
+Joins two relations on the columns that share the same name. Only includes rows where the shared column values match in both relations.
 
 ```
 result := left njoin right;
+```
+
+**Example:**
+
+```
+result := student njoin enrolled;
 ```
 
 ---
 
 ### Outer Joins
 
-| Syntax              | Keeps unmatched from... |
-|---------------------|-------------------------|
-| `left louter right` | left relation           |
-| `left router right` | right relation          |
-| `left fouter right` | both relations          |
+Like the natural join, but keep the rows without a match, filling missing values with `null`.
+
+| Syntax           | Keeps unmatched rows from... |
+|------------------|------------------------------|
+| `left louter right` | left relation             |
+| `left router right` | right relation            |
+| `left fouter right` | both relations            |
+
+**Example:**
+
+```
+% All students, even those not enrolled in any course
+result := student louter enrolled;
+```
 
 ---
 
-### Union — `union`
+### Union - `union`
 
-Returns all rows from both relations (same columns required). Duplicates eliminated.
+Returns all rows from both relations. Both must have exactly the same columns — same names and same order. Duplicates are removed.
 
 ```
 result := r1 union r2;
@@ -73,9 +120,9 @@ result := r1 union r2;
 
 ---
 
-### Intersection — `intersect`
+### Intersection - `intersect`
 
-Returns only rows that appear in both relations.
+Returns only the rows that appear in both relations.
 
 ```
 result := r1 intersect r2;
@@ -83,9 +130,9 @@ result := r1 intersect r2;
 
 ---
 
-### Difference — `difference`
+### Difference - `difference`
 
-Returns rows in the first relation but not the second.
+Returns the rows that are in the first relation but not in the second.
 
 ```
 result := r1 difference r2;
@@ -93,24 +140,27 @@ result := r1 difference r2;
 
 ---
 
-### Cartesian Product — `product`
+### Cartesian product - `product`
 
-Returns all combinations of rows from both relations.
+Returns all possible combinations of rows from both relations.
 
 ```
 result := r1 product r2;
 ```
 
 !!! warning "Large results"
-    Use with care — results grow multiplicatively.
+    If `r1` has 100 rows and `r2` has 50, the product has 5,000 rows. Use with care.
 
 ---
 
 ## Nesting expressions
 
+Operators can be freely nested:
+
 ```
-q1 := students njoin (enrollments njoin courses);
+q1 := student njoin (enrolled njoin course);
 q2 := project name, course_name (q1);
+q3 := select course_name = 'Python' (q2);
 ```
 
 ---
@@ -121,13 +171,13 @@ Lines starting with `%` are comments:
 
 ```
 % Select all adult students
-adults := select age >= 18 (students);
+adults := select age >= 18 (student);
 ```
 
 ---
 
 ## What about division?
 
-The division operator isn't implemented in Pireal — and that's intentional. Division can be expressed by combining the operators you already have: cartesian product, difference, and projection.
+The division operator is not directly implemented in Pireal, and that is intentional. Division can be expressed by combining the operators you already have: cartesian product, difference and projection.
 
-Figuring out how is a great exercise for understanding Relational Algebra at a deeper level. If you get there, you really get it.
+Figuring out how to do it is an excellent exercise for understanding Relational Algebra in depth. If you get to the solution, it means you truly understand how it works.

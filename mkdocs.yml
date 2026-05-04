@@ -4,21 +4,20 @@ repo_url: https://github.com/centaurialpha/pireal
 repo_name: centaurialpha/pireal
 edit_uri: edit/main/docs/
 
+copyright: Copyright &copy; 2015-2026 Gabriel Acosta
+
+extra:
+  version: "4.0.0"
+
 theme:
   name: material
+  custom_dir: overrides
+  logo: images/pireal_icon.png
+  favicon: images/pireal_icon.ico
   palette:
-    - scheme: default
-      primary: indigo
-      accent: deep purple
-      toggle:
-        icon: material/brightness-7
-        name: Cambiar a modo oscuro
-    - scheme: slate
-      primary: indigo
-      accent: deep purple
-      toggle:
-        icon: material/brightness-4
-        name: Cambiar a modo claro
+      scheme: slate
+      primary: custom
+      accent: custom
   features:
     - navigation.tabs
     - navigation.sections
@@ -29,18 +28,22 @@ theme:
   icon:
     repo: fontawesome/brands/github
 
+extra_css:
+  - stylesheets/home.css
+  - stylesheets/custom.css
+
 nav:
   - Inicio: index.md
   - Primeros pasos: getting-started.md
   - Álgebra Relacional:
-    - Operadores: relational-algebra/operators.md
-    - Ejemplos: relational-algebra/examples.md
+      - Operadores: relational-algebra/operators.md
+      - Ejemplos: relational-algebra/examples.md
   - Guía de uso:
-    - Bases de datos: user-guide/databases.md
-    - Consultas: user-guide/queries.md
+      - Bases de datos: user-guide/databases.md
+      - Consultas: user-guide/queries.md
   - Cómo funciona:
-    - El intérprete: internals/interpreter.md
-    - Crear temas: internals/themes.md
+      - El intérprete: internals/interpreter.md
+      - Crear temas: internals/themes.md
   - Contribuir: contributing.md
 
 plugins:

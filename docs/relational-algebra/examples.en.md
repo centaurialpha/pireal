@@ -1,133 +1,135 @@
 # Examples
 
-Practical examples using a classic academic database. All examples use these relations:
+Practical examples using the sample database that comes with Pireal. Open it from **File -> Open example** and run the queries directly.
 
-**`students`** — enrolled students
+---
 
-| id | name    | guardian        |
-|----|---------|-----------------|
-| 1  | Gabriel | Ana Acosta      |
-| 2  | Marisel | Carlos Pereyra  |
-| 3  | Rodrigo | Hector Fuentes  |
+## The database
 
-**`courses`** — available courses
+**`student`**
 
-| course_id | course_name | price | start_date   |
-|-----------|-------------|-------|--------------|
-| 10        | Databases   | 2500  | 15/03/2017   |
-| 20        | Networking  | 3500  | 10/04/2017   |
-| 30        | Python      | 1500  | 01/02/2017   |
+| student_id | name   | city         | age |
+|------------|--------|--------------|-----|
+| 11         | Juan   | Buenos Aires | 18  |
+| 41         | Manuel | Lima         | 16  |
+| 01         | Pedro  | Santiago     | 14  |
+| 21         | Diego  | Lima         | 12  |
+| 31         | Rosita | Concepción   | 15  |
 
-**`enrollments`** — which student is enrolled in which course
+**`course`**
 
-| id | course_id |
-|----|-----------|
-| 1  | 10        |
-| 1  | 30        |
-| 2  | 20        |
+| course_id | course_name            | start_date | duration | price |
+|-----------|------------------------|------------|----------|-------|
+| 03547     | Intro to OOP           | 01/03/2017 | 30       | 4000  |
+| 05478     | Machine Learning       | 20/04/2017 | 20       | 5000  |
+| 01142     | Python                 | 13/01/2017 | 15       | 4000  |
+| 04578     | Functional Programming | 05/04/2017 | 10       | 1500  |
+| 02145     | Django                 | 15/02/2017 | 12       | 2500  |
+
+**`enrolled`**
+
+| enrollment_id | student_id | course_id |
+|---------------|------------|-----------|
+| 5             | 41         | 03547     |
+| 4             | 21         | 02145     |
+| 3             | 11         | 03547     |
+| 2             | 01         | 02145     |
+| 1             | 01         | 05478     |
 
 ---
 
 ## Basic selection
 
-Get all courses cheaper than 3000:
+Students older than 14:
 
 ```
-cheap := select price < 3000 (courses);
+older := select age > 14 (student);
 ```
 
-Get courses that start after March:
+Courses with a price below 3000:
 
 ```
-late := select start_date > '01/03/2017' (courses);
+affordable := select price < 3000 (course);
 ```
 
-Combine conditions with `and`:
+Courses starting after March:
 
 ```
-mid_range := select price >= 1500 and price <= 3000 (courses);
+late := select start_date > '01/03/2017' (course);
+```
+
+Combined conditions:
+
+```
+mid_range := select price >= 1500 and price <= 3000 (course);
 ```
 
 ---
 
 ## Basic projection
 
-Show only names and prices of all courses:
+Show only name and city of students:
 
 ```
-catalog := project course_name, price (courses);
+locations := project name, city (student);
 ```
 
 ---
 
-## Selection + projection
+## Selection and projection combined
 
-Show names of courses cheaper than 3000:
-
-```
-q1 := select price < 3000 (courses);
-q2 := project course_name (q1);
-```
-
-Or in one expression:
+Names of courses with a price below 3000:
 
 ```
-result := project course_name (select price < 3000 (courses));
+q := project course_name (select price < 3000 (course));
 ```
 
 ---
 
 ## Natural join
 
-Get the full name of each student alongside their guardian:
+Students with the courses they are enrolled in:
 
 ```
-q := students njoin guardians;
-```
-
-Get all students with the courses they're enrolled in:
-
-```
-q1 := students njoin (enrollments njoin courses);
-q2 := project name, course_name (q1);
+q1 := student njoin enrolled;
+q2 := q1 njoin course;
+q3 := project name, course_name (q2);
 ```
 
 ---
 
 ## Left outer join
 
-Show all students, including those not enrolled in any course:
+All students, even those not enrolled in any course:
 
 ```
-result := students louter enrollments;
+result := student louter enrolled;
 ```
 
-Students without enrollments will appear with `null` in the `course_id` column.
+Students with no enrollments appear with `null` in the `course_id` column.
 
 ---
 
 ## Set operations
 
-Given two groups of students:
-
 ```
-group_a := select id = 1 or id = 2 (students);
-group_b := select id = 2 or id = 3 (students);
+group_a := select city = 'Lima' (student);
+group_b := select age >= 15 (student);
 ```
 
-**Union** — all students from either group:
+**Union** - students that meet either condition:
 
 ```
-everyone := group_a union group_b;
+all := group_a union group_b;
 ```
 
-**Intersection** — students in both groups:
+**Intersection** - students that meet both conditions:
 
 ```
 both := group_a intersect group_b;
 ```
 
-**Difference** — students in group_a but not in group_b:
+**Difference** - students from Lima who are under 15:
 
 ```
 only_a := group_a difference group_b;
@@ -135,20 +137,20 @@ only_a := group_a difference group_b;
 
 ---
 
-## Putting it all together
+## Full step-by-step example
 
-Find the names of students enrolled in courses starting after March:
+Names of students enrolled in courses that start after March:
 
 ```
-% Step 1: courses that start after March
-late_courses := select start_date > '01/03/2017' (courses);
+% Step 1: courses starting after March
+late_courses := select start_date > '01/03/2017' (course);
 
-% Step 2: join enrollments with those courses
-late_enrollments := enrollments njoin late_courses;
+% Step 2: enrollments in those courses
+late_enrollments := enrolled njoin late_courses;
 
 % Step 3: join with students to get names
-with_names := students njoin late_enrollments;
+with_names := student njoin late_enrollments;
 
-% Step 4: project only the relevant columns
+% Step 4: project the relevant columns
 result := project name, course_name (with_names);
 ```

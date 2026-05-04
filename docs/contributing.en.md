@@ -1,12 +1,12 @@
 # Contributing
 
-Contributions are welcome and appreciated. Whether it's a bug report, a new feature, or a documentation fix — everything helps.
+Contributions are welcome. Whether it is a bug report, a new feature, or a documentation fix — everything helps.
 
 ---
 
-## Development setup
+## Setting up the development environment
 
-Pireal uses [uv](https://docs.astral.sh/uv/) for dependency management.
+Pireal uses [uv](https://docs.astral.sh/uv/) to manage dependencies.
 
 ```bash
 git clone https://github.com/centaurialpha/pireal
@@ -28,10 +28,35 @@ uv run pireal
 uv run pytest
 ```
 
-Run only interpreter tests:
+Interpreter tests only:
 
 ```bash
 uv run pytest -m interpreter
+```
+
+GUI tests only:
+
+```bash
+uv run pytest -m gui
+```
+
+---
+
+## Type checking
+
+Pireal uses [ty](https://github.com/astral-sh/ty) as its type checker:
+
+```bash
+uvx ty check
+```
+
+---
+
+## Linting and formatting
+
+```bash
+uv run ruff check src/
+uv run ruff format src/
 ```
 
 ---
@@ -41,21 +66,28 @@ uv run pytest -m interpreter
 ```
 pireal/
 ├── src/pireal/
-│   ├── core/          # Relation model and core logic
-│   ├── interpreter/   # Scanner, Lexer, Parser, Evaluator
-│   │   ├── scanner.py
+│   ├── core/             # Relation, DB, and central logic with no Qt dependencies
+│   ├── interpreter/      # Lexer, Parser, Evaluator, AST
 │   │   ├── lexer.py
 │   │   ├── parser.py
 │   │   ├── evaluator.py
-│   │   └── rast.py    # AST node definitions
-│   ├── gui/           # PyQt6 interface
+│   │   └── rast.py       # AST nodes
+│   ├── gui/              # PyQt6 interface
+│   │   ├── services/     # DatabaseService, QueryService
+│   │   ├── dialogs/      # Dialogs
+│   │   └── theme/        # Themes and colors
+│   ├── cli/              # Terminal mode (REPL)
 │   └── main.py
 ├── tests/
 │   ├── unit/
-│   └── integration/
-├── docs/              # This documentation
+│   ├── integration/
+│   └── gui/
+├── docs/
 └── pyproject.toml
 ```
+
+!!! note "Important rule"
+    `core/` and `interpreter/` are pure Python, no PyQt6 imports. Everything that depends on Qt goes in `gui/`.
 
 ---
 
@@ -64,7 +96,7 @@ pireal/
 1. Fork the repository
 2. Create a branch: `git checkout -b feature/my-feature`
 3. Make your changes and add tests
-4. Run the test suite: `uv run pytest`
+4. Run the tests: `uv run pytest`
 5. Open a Pull Request
 
 ---
@@ -76,14 +108,15 @@ Open an issue on [GitHub](https://github.com/centaurialpha/pireal/issues) with:
 - What you did
 - What you expected to happen
 - What actually happened
-- Your OS and Python version
+- Your operating system and Pireal version
 
 ---
 
 ## Building the documentation locally
 
 ```bash
+uv sync --group docs
 uv run mkdocs serve
 ```
 
-Then open [http://localhost:8000](http://localhost:8000) in your browser. The docs rebuild automatically when you edit files.
+Open [http://localhost:8000](http://localhost:8000). The documentation rebuilds automatically when you edit files.

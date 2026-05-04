@@ -1,7 +1,7 @@
 # El intérprete
 
 > *"Si no sabes cómo funcionan los compiladores, entonces no sabes cómo funcionan las computadoras. Si no estás 100% seguro de cómo funcionan los compiladores, entonces no sabes cómo funcionan las computadoras."*
-> — Steve Yegge
+> -- Steve Yegge
 
 El núcleo de Pireal es su intérprete de Álgebra Relacional, construido completamente desde cero en Python. No depende de ninguna librería de parsing externa — cada componente fue diseñado e implementado a mano.
 
@@ -29,28 +29,28 @@ Pasa por cuatro etapas antes de producir un resultado:
 
 ```
 Texto fuente
-    │
-    ▼
+    |
+    v
 ┌─────────┐
 │ Scanner │  Convierte el texto en una secuencia de caracteres con contexto
 └─────────┘
-    │
-    ▼
+    |
+    v
 ┌───────┐
 │ Lexer │  Agrupa los caracteres en tokens con significado
 └───────┘
-    │
-    ▼
+    |
+    v
 ┌────────┐
 │ Parser │  Construye el AST (árbol de sintaxis abstracta)
 └────────┘
-    │
-    ▼
+    |
+    v
 ┌───────────┐
 │ Evaluator │  Recorre el AST y ejecuta las operaciones relacionales
 └───────────┘
-    │
-    ▼
+    |
+    v
 Relation (resultado)
 ```
 
@@ -74,7 +74,7 @@ Su responsabilidad es única: navegación sobre el texto. No sabe nada de tokens
 
 ## Lexer (tokenizador)
 
-El `Lexer` usa el Scanner para agrupar caracteres en **tokens** — las unidades mínimas con significado del lenguaje.
+El `Lexer` usa el Scanner para agrupar caracteres en **tokens** -- las unidades mínimas con significado del lenguaje.
 
 Por ejemplo, el texto `select edad = 25` produce:
 
@@ -99,21 +99,21 @@ lexer.next_token()  # Token(INTEGER, '25')
 
 ## Parser
 
-El `Parser` es el corazón del intérprete. Consume tokens del Lexer y construye un **AST (Abstract Syntax Tree)** — una representación en árbol de la estructura lógica de la consulta.
+El `Parser` es el corazón del intérprete. Consume tokens del Lexer y construye un **AST (Abstract Syntax Tree)** -- una representación en árbol de la estructura lógica de la consulta.
 
 Implementa un **parser recursivo descendente**: cada regla de la gramática se corresponde con un método de Python.
 
 La gramática (simplificada) de Pireal es:
 
 ```
-programa      → asignación+
-asignación    → ID ':=' expresión ';'
-expresión     → expresión_binaria | proyección | selección | variable
-proyección    → 'project' atributos '(' expresión ')'
-selección     → 'select' condición '(' expresión ')'
-expresión_bin → expresión operador expresión
-condición     → operando comparador operando
-operador      → 'union' | 'intersect' | 'difference' | 'njoin' | ...
+programa      ::= asignación+
+asignación    ::= ID ':=' expresión ';'
+expresión     ::= expresión_binaria | proyección | selección | variable
+proyección    ::= 'project' atributos '(' expresión ')'
+selección     ::= 'select' condición '(' expresión ')'
+expresión_bin ::= expresión operador expresión
+condición     ::= operando comparador operando
+operador      ::= 'union' | 'intersect' | 'difference' | 'njoin' | ...
 ```
 
 Para la consulta `q := project nombre (select edad = 25 (estudiantes))`, el AST resultante es:
@@ -155,10 +155,10 @@ class Evaluator(NodeVisitor):
         return getattr(left, BINARY_OP_MAP[node.op])(right)
 ```
 
-El resultado de cada `visit_*` es una `Relation` — el tipo de datos central de Pireal. Al final de la evaluación, `_results` contiene todas las relaciones nombradas que se mostraron al usuario.
+El resultado de cada `visit_*` es una `Relation`. Al final de la evaluación, `_results` contiene todas las relaciones nombradas que se muestran al usuario.
 
 !!! note "¿Por qué Visitor?"
-    El patrón Visitor permite agregar operaciones nuevas sobre el AST sin modificar los nodos. Por ejemplo, Pireal también tiene un `SQLGenerator` que recorre el mismo árbol y genera SQL equivalente — sin tocar el código del evaluador ni del parser.
+    El patrón Visitor permite agregar operaciones nuevas sobre el AST sin modificar los nodos. Por ejemplo, Pireal también tiene un `SQLGenerator` que recorre el mismo árbol y genera SQL equivalente -- sin tocar el código del evaluador ni del parser.
 
 ---
 
@@ -179,7 +179,7 @@ r.degree()       # 3  (cantidad de columnas)
 r.cardinality()  # 2  (cantidad de filas)
 ```
 
-Cada operación relacional (`.project()`, `.select()`, `.njoin()`, etc.) devuelve una nueva `Relation` sin modificar la original — las relaciones son inmutables por operación.
+Cada operación relacional (`.project()`, `.select()`, `.njoin()`, etc.) devuelve una nueva `Relation` sin modificar la original.
 
 ---
 
@@ -187,11 +187,11 @@ Cada operación relacional (`.project()`, `.select()`, `.njoin()`, etc.) devuelv
 
 Si querés explorar el código:
 
-- `src/pireal/interpreter/scanner.py` — navegación sobre el texto
-- `src/pireal/interpreter/lexer.py` — tokenización
-- `src/pireal/interpreter/parser.py` — construcción del AST
-- `src/pireal/interpreter/rast.py` — definición de los nodos del AST
-- `src/pireal/interpreter/evaluator.py` — ejecución
-- `src/pireal/core/relation.py` — el tipo de dato central
+- `src/pireal/interpreter/scanner.py` -- navegación sobre el texto
+- `src/pireal/interpreter/lexer.py` -- tokenización
+- `src/pireal/interpreter/parser.py` -- construcción del AST
+- `src/pireal/interpreter/rast.py` -- definición de los nodos del AST
+- `src/pireal/interpreter/evaluator.py` -- ejecución
+- `src/pireal/core/relation.py` -- el tipo de dato central
 
 Los tests de integración en `tests/integration/` muestran el pipeline completo de punta a punta.
