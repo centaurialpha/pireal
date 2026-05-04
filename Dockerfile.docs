@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir \
 
 COPY mkdocs.yml .
 COPY docs/ docs/
+COPY overrides/ overrides/
 
 RUN mkdocs build --strict
 
