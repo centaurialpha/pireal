@@ -16,25 +16,137 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QPainter
+from PyQt6.QtGui import QColor, QPainter, QPalette
 from PyQt6.QtWidgets import QHBoxLayout, QLabel, QSizePolicy, QWidget
 
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.gui.theme.schema import ColorScheme, EditorColorRole
 
 
-class _ClickableLabel(QLabel):
+class _SymbolModePill(QWidget):
     clicked = pyqtSignal()
 
-    def __init__(self, text="", parent=None):
-        super().__init__(text, parent)
-        self.setCursor(Qt.CursorShape.PointingHandCursor)
+    _PADDING_H = 8
+    _PADDING_V = 3
 
-    def mousePressEvent(self, ev):
-        assert ev is not None
-        if ev.button() == Qt.MouseButton.LeftButton:
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._enabled = False
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.setToolTip("Toggle symbol mode (σ, π, ⋈...)")
+        fm = self.fontMetrics()
+        self._text_on = "σ  symbols"
+        self._text_off = "σ  symbols"
+        width = fm.horizontalAdvance(self._text_on) + self._PADDING_H * 2
+        height = fm.height() + self._PADDING_V * 2
+        self.setFixedSize(width, height)
+
+    def set_enabled(self, enabled: bool) -> None:
+        self._enabled = enabled
+        self.update()
+
+    def mousePressEvent(self, a0):
+        if a0 is not None and a0.button() == Qt.MouseButton.LeftButton:
             self.clicked.emit()
-        super().mousePressEvent(ev)
+        super().mousePressEvent(a0)
+
+    def paintEvent(self, a0) -> None:
+        _ = a0
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        scheme = get_theme_manager().current_scheme
+        if self._enabled:
+            color = scheme.editor.get(EditorColorRole.SUCCESS)
+        else:
+            color = self.palette().color(QPalette.ColorRole.PlaceholderText)
+
+        bg = QColor(color)
+        bg.setAlpha(35)
+        painter.setBrush(bg)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.drawRoundedRect(self.rect(), 3, 3)
+
+        painter.setPen(color)
+        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, "σ  symbols")
+
+
+class _DbPill(QWidget):
+    _PADDING_H = 8
+    _PADDING_V = 3
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._text = ""
+        fm = self.fontMetrics()
+        self._h = fm.height() + self._PADDING_V * 2
+        self.setFixedHeight(self._h)
+
+    def set_text(self, text: str) -> None:
+        self._text = text
+        fm = self.fontMetrics()
+        w = fm.horizontalAdvance(text) + self._PADDING_H * 2
+        self.setFixedWidth(max(w, 10))
+        self.update()
+
+    def paintEvent(self, a0) -> None:
+        _ = a0
+
+        if not self._text:
+            return
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        scheme = get_theme_manager().current_scheme
+        color = scheme.highlight
+
+        bg = QColor(color)
+        bg.setAlpha(35)
+        painter.setBrush(bg)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.drawRoundedRect(self.rect(), 3, 3)
+
+        painter.setPen(color)
+        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._text)
+
+
+class _LineColPill(QWidget):
+    _PADDING_H = 8
+    _PADDING_V = 3
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._text = ""
+        fm = self.fontMetrics()
+        self._h = fm.height() + self._PADDING_V * 2
+        self.setFixedHeight(self._h)
+        self.hide()
+
+    def set_text(self, text: str) -> None:
+        self._text = text
+        fm = self.fontMetrics()
+        w = fm.horizontalAdvance(text) + self._PADDING_H * 2
+        self.setFixedWidth(max(w, 10))
+        self.update()
+
+    def paintEvent(self, a0) -> None:
+        _ = a0
+
+        if not self._text:
+            return
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        color = self.palette().color(QPalette.ColorRole.PlaceholderText)
+
+        bg = QColor(color)
+        bg.setAlpha(35)
+        painter.setBrush(bg)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.drawRoundedRect(self.rect(), 3, 3)
+
+        painter.setPen(color)
+        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._text)
 
 
 class StatusBar(QWidget):
@@ -65,7 +177,7 @@ class StatusBar(QWidget):
         layout.setSpacing(0)
 
         # Left - db name (always visible, StatusBar only lives with an open DB)
-        self._db_label = QLabel()
+        self._db_label = _DbPill()
         layout.addWidget(self._db_label)
 
         # Center - temporary messages (expanding)
@@ -75,23 +187,18 @@ class StatusBar(QWidget):
         layout.addWidget(self._message_label)
 
         # Right - technical indicators
-        self._line_col_label = QLabel()
-        self._line_col_label.hide()
+        self._line_col_label = _LineColPill()
+        # self._line_col_label.hide()
 
-        self._sep1 = QLabel(self._SEPARATOR)
-        self._sep1.hide()
-
-        self._symbol_mode_label = _ClickableLabel()
+        self._symbol_mode_label = _SymbolModePill()
         self._symbol_mode_label.hide()
         self._symbol_mode_label.clicked.connect(self._on_symbol_mode_clicked)
 
-        # Right side: line_col, symbol_mode
-        for widget in (
-            self._line_col_label,
-            self._sep1,
-            self._symbol_mode_label,
-        ):
-            layout.addWidget(widget)
+        layout.addWidget(self._line_col_label)
+        gap = QLabel(" ")
+        gap.setStyleSheet(f"color: {self.palette().color(QPalette.ColorRole.Mid).name()};")
+        layout.addWidget(gap)
+        layout.addWidget(self._symbol_mode_label)
 
         self._apply_theme(get_theme_manager().current_scheme)
         get_theme_manager().themeChanged.connect(self._apply_theme)
@@ -108,22 +215,21 @@ class StatusBar(QWidget):
             self._timer.start(timeout)
 
     def update_db_name(self, name: str) -> None:
-        self._db_label.setText(name)
+        self._db_label.set_text(name)
 
     def update_line_col(self, line: int, col: int) -> None:
-        self._line_col_label.setText(f"Ln {line}, Col {col}")
+        self._line_col_label.set_text(f"Ln {line}, Col {col}")
         self._line_col_label.show()
-        self._sep1.show()
+        # self._sep1.show()
 
     def hide_line_col(self) -> None:
         self._line_col_label.hide()
-        self._sep1.hide()
+        # self._sep1.hide()
 
     def show_symbol_mode(self, enabled: bool) -> None:
         self._symbol_mode_on = enabled
-        self._symbol_mode_label.setText(f"Symbol Mode: {'On' if enabled else 'Off'}")
+        self._symbol_mode_label.set_enabled(enabled)
         self._symbol_mode_label.show()
-        self._refresh_symbol_mode_color()
 
     @pyqtSlot()
     def _on_symbol_mode_clicked(self) -> None:
@@ -137,8 +243,10 @@ class StatusBar(QWidget):
 
     @pyqtSlot(ColorScheme)
     def _apply_theme(self, scheme: ColorScheme) -> None:
-        accent = scheme.editor.get(EditorColorRole.KEYWORD).name()
-        self._db_label.setStyleSheet(f"color: {accent};")
+        # FIXME: no se usa acá, revisar este slot
+        # accent = scheme.editor.get(EditorColorRole.KEYWORD).name()
+        # self._db_label.setStyleSheet(f"color: {accent};")
+        self._db_label.update()
         self._refresh_symbol_mode_color()
 
     def _refresh_symbol_mode_color(self) -> None:

@@ -405,10 +405,12 @@ class StartPage(QWidget):
         or_font = or_lbl.font()
         or_font.setPointSize(9)
         or_lbl.setFont(or_font)
-        or_lbl.setStyleSheet("color: #888;")
+        color = self.palette().color(QPalette.ColorRole.PlaceholderText).name()
+        or_lbl.setStyleSheet(f"color: {color};")
 
+        link_color = self.palette().color(QPalette.ColorRole.Link).name()
         code_link = QLabel(
-            '<a href="code" style="text-decoration:none; color:#1565c0;">'
+            f'<a href="code" style="text-decoration:none; color:{link_color};">'
             "<tt>&lt;/&gt;</tt> code your database directly →"
             "</a>"
         )

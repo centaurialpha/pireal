@@ -20,7 +20,7 @@ from collections import namedtuple
 from typing import cast
 
 from PyQt6.QtCore import QAbstractListModel, QModelIndex, QRect, Qt, pyqtSignal
-from PyQt6.QtGui import QFont, QFontMetrics, QPainter, QPalette
+from PyQt6.QtGui import QColor, QFont, QFontMetrics, QPainter, QPalette
 from PyQt6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -129,7 +129,81 @@ class RelationModel(QAbstractListModel):
         }
 
 
+class _CountBadge(QWidget):
+    _PADDING_H = 6
+    _PADDING_V = 2
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._count = 0
+        self.hide()
+        fm = self.fontMetrics()
+        self.setFixedHeight(fm.height() + self._PADDING_V * 2)
+
+    def set_count(self, count: int) -> None:
+        self._count = count
+        if count > 0:
+            fm = self.fontMetrics()
+            w = fm.horizontalAdvance(str(count)) + self._PADDING_H * 2
+            self.setFixedWidth(w)
+            self.show()
+        else:
+            self.hide()
+        self.update()
+
+    def paintEvent(self, a0) -> None:
+        if self._count == 0:
+            return
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        color = self.palette().color(QPalette.ColorRole.PlaceholderText)
+        bg = QColor(color)
+        bg.setAlpha(35)
+        painter.setBrush(bg)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.drawRoundedRect(self.rect(), 3, 3)
+
+        painter.setPen(color)
+        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, str(self._count))
+
+
 class _SectionHeader(QWidget):
+    def __init__(self, text: str, parent=None):
+        super().__init__(parent)
+        self._count = 0
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(8, 6, 8, 4)
+
+        label = QLabel(text.upper())
+        fm = label.fontMetrics()
+        font = label.font()
+        font.setPointSize(max(7, fm.height() // 2))
+        font.setLetterSpacing(QFont.SpacingType.AbsoluteSpacing, 1.5)
+        font.setBold(True)
+        label.setFont(font)
+        label.setStyleSheet(f"color: {label.palette().color(QPalette.ColorRole.PlaceholderText).name()};")
+        layout.addWidget(label)
+        layout.addStretch()
+
+        self._badge = _CountBadge()
+        layout.addWidget(self._badge)
+
+    def set_model(self, model: "RelationModel") -> None:
+        model.rowsInserted.connect(lambda *_: self._badge.set_count(model.rowCount()))
+        model.rowsRemoved.connect(lambda *_: self._badge.set_count(model.rowCount()))
+        model.modelReset.connect(lambda: self._badge.set_count(0))
+
+    def paintEvent(self, a0) -> None:
+        super().paintEvent(a0)
+        painter = QPainter(self)
+        color = self.palette().color(QPalette.ColorRole.Mid)
+        color.setAlpha(80)
+        painter.setPen(color)
+        painter.drawLine(0, self.height() - 1, self.width(), self.height() - 1)
+
+
+class __SectionHeader(QWidget):
     def __init__(self, text: str, parent=None):
         super().__init__(parent)
         layout = QHBoxLayout(self)
@@ -148,13 +222,50 @@ class _SectionHeader(QWidget):
         layout.addWidget(label)
         layout.addStretch()
 
+    def set_model(self, model: "RelationModel") -> None:
+        model.rowsInserted.connect(lambda *_: self._update_count(model))
+        model.rowsRemoved.connect(lambda *_: self._update_count(model))
+        model.modelReset.connect(lambda: self._update_count(model))
+        self._update_count(model)
+
+    def _update_count(self, model: "RelationModel") -> None:
+        self._count = model.rowCount()
+        self.update()
+
     def paintEvent(self, a0) -> None:
         super().paintEvent(a0)
         painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        # línea separadora abajo
         color = self.palette().color(QPalette.ColorRole.Mid)
         color.setAlpha(80)
         painter.setPen(color)
         painter.drawLine(0, self.height() - 1, self.width(), self.height() - 1)
+
+        if self._count == 0:
+            return
+
+        # badge
+        text = str(self._count)
+        fm = self.fontMetrics()
+        padding_h, padding_v = 6, 2
+        badge_w = fm.horizontalAdvance(text) + padding_h * 2
+        badge_h = fm.height() + padding_v * 2
+        x = self.width() - badge_w - 8
+        y = (self.height() - badge_h) // 2
+        badge_rect = QRect(x, y, badge_w, badge_h)
+
+        accent = self.palette().color(QPalette.ColorRole.PlaceholderText)
+        bg = QColor(accent)
+        bg.setAlpha(35)
+        painter.setBrush(bg)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.drawRoundedRect(badge_rect, 3, 3)
+
+        painter.setPen(accent)
+        painter.setFont(self.font())
+        painter.drawText(badge_rect, Qt.AlignmentFlag.AlignCenter, text)
 
 
 class RelationListView(QFrame):
@@ -166,19 +277,14 @@ class RelationListView(QFrame):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(3, 3, 3, 3)
         layout.setSpacing(0)
-        # header_lbl = QLabel(header_text.upper())
-        # header_lbl.setObjectName("section_title")
-        # font = header_lbl.font()
-        # font.setPointSize(11)
-        # header_lbl.setFont(font)
-        # layout.addWidget(
-        #     header_lbl,
-        #     # alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter,
-        # )
-        header = _SectionHeader(header_text)
-        layout.addWidget(header)
+        self._header = _SectionHeader(header_text)
+        layout.addWidget(self._header)
         self.view = _EmptyListView(empty_text)
         layout.addWidget(self.view)
+
+    def set_model(self, model: "RelationModel") -> None:
+        self.view.setModel(model)
+        self._header.set_model(model)
 
 
 class RelationDelegate(QStyledItemDelegate):
@@ -349,13 +455,13 @@ class LateralWidget(QSplitter):
         super().__init__(orientation=Qt.Orientation.Vertical)
         self._relations_list = RelationListView(tr.TR_RELATIONS, tr.TR_NO_RELATIONS)
         self._relations_model = RelationModel()
-        self._relations_list.view.setModel(self._relations_model)
+        self._relations_list.set_model(self._relations_model)
         self._relations_list.view.setItemDelegate(RelationDelegate())
         self.addWidget(self._relations_list)
 
         self._results_list = RelationListView(tr.TR_RESULTS, tr.TR_NO_RESULTS)
         self._results_model = RelationModel()
-        self._results_list.view.setModel(self._results_model)
+        self._results_list.set_model(self._results_model)
         self._results_list.view.setItemDelegate(RelationDelegate())
         self.addWidget(self._results_list)
 

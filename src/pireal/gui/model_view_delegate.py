@@ -153,19 +153,43 @@ class View(QTableView):
         self._apply_hover_style()
 
     def _apply_hover_style(self):
-        theme_manager = get_theme_manager()
-        palette = theme_manager.current_scheme
+        scheme = get_theme_manager().current_scheme
 
-        alternate = palette.alternate_base
-        hover_color = palette.highlight
-        hover_color.setAlpha(35)
+        alternate = scheme.alternate_base
+        highlight = scheme.highlight
+
+        hover = QColor(highlight)
+        hover.setAlpha(30)
+        selected = QColor(highlight)
+        selected.setAlpha(45)
+
+        header_bg = scheme.base
+        header_border = QColor(scheme.text)
+        header_border.setAlpha(20)
 
         self.setStyleSheet(f"""
             QTableView {{
                 alternate-background-color: {alternate.name()};
+                selection-background-color: {selected.name(QColor.NameFormat.HexArgb)};
+                selection-color: {scheme.text.name()};
             }}
-            QTableView::item:hover {{
-                background-color: {hover_color.name(QColor.NameFormat.HexArgb)};
+            QTableView::item:hover:!selected {{
+                background-color: {hover.name(QColor.NameFormat.HexArgb)};
+            }}
+            QHeaderView::section {{
+                background-color: {header_bg.name()};
+                color: {scheme.text.name()};
+                font-weight: bold;
+                padding: 4px 10px;
+                border: none;
+                border-right: 1px solid {header_border.name(QColor.NameFormat.HexArgb)};
+                border-bottom: 1px solid {header_border.name(QColor.NameFormat.HexArgb)};
+            }}
+            QHeaderView::section:last {{
+                border-right: none;
+            }}
+            QHeaderView::section:hover {{
+                background-color: {hover.name(QColor.NameFormat.HexArgb)};
             }}
         """)
 
@@ -182,7 +206,7 @@ class View(QTableView):
                 width = header.sectionSize(column)
                 header.setSectionResizeMode(column, QHeaderView.ResizeMode.Interactive)
                 header.resizeSection(column, width)
-            header.setMinimumHeight(32)
+            header.setMinimumHeight(36)
 
 
 class Header(QHeaderView):
