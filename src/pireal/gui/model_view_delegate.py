@@ -24,13 +24,21 @@ from PyQt6.QtCore import (
     Qt,
     pyqtSlot as Slot,
 )
-from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import QAbstractItemView, QHeaderView, QInputDialog, QItemDelegate, QTableView
+from PyQt6.QtGui import (
+    QColor,
+    QFont,
+)
+from PyQt6.QtWidgets import (
+    QAbstractItemView,
+    QHeaderView,
+    QInputDialog,
+    QItemDelegate,
+    QTableView,
+)
 
 from pireal import translations as tr
 from pireal.core.db import DB
 from pireal.gui.theme.manager import get_theme_manager
-from pireal.gui.theme.schema import EditorColorRole
 from pireal.registry import Registry
 
 logger = logging.getLogger("gui.model_view_delegate")
@@ -45,11 +53,11 @@ class RelationModel(QAbstractTableModel):
         self.editable = True
         self.relation = relation_object
         theme_manager = get_theme_manager()
-        self._null_text_color = theme_manager.current_scheme.editor.get(EditorColorRole.COMMENT)
+        self._null_color = theme_manager.current_scheme.placeholder_text
         theme_manager.themeChanged.connect(self._on_theme_changed)
 
     def _on_theme_changed(self, scheme):
-        self._null_text_color = scheme.editor.get(EditorColorRole.COMMENT)
+        self._null_color = scheme.placeholder_text
 
     def rowCount(self, parent: QModelIndex | None = None) -> int:
         """Devuelve la cardinalidad de la relación"""
@@ -71,10 +79,12 @@ class RelationModel(QAbstractTableModel):
         data = self.relation.content
         if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
             return data[row][column]
-        elif role == Qt.ItemDataRole.ForegroundRole:
-            value = data[row][column]
-            if value == "null":
-                return self._null_text_color
+        elif role == Qt.ItemDataRole.ForegroundRole and data[row][column] == "null":
+            return self._null_color
+        elif role == Qt.ItemDataRole.FontRole and data[row][column] == "null":
+            font = QFont()
+            font.setItalic(True)
+            return font
         return None
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
