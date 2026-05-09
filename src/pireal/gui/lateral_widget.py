@@ -23,6 +23,7 @@ from PyQt6.QtCore import QAbstractListModel, QModelIndex, QRect, Qt, pyqtSignal
 from PyQt6.QtGui import QFont, QFontMetrics, QPainter, QPalette
 from PyQt6.QtWidgets import (
     QFrame,
+    QHBoxLayout,
     QLabel,
     QListView,
     QMenu,
@@ -32,6 +33,7 @@ from PyQt6.QtWidgets import (
     QStyledItemDelegate,
     QStyleOptionViewItem,
     QVBoxLayout,
+    QWidget,
 )
 
 from pireal import translations as tr
@@ -127,6 +129,34 @@ class RelationModel(QAbstractListModel):
         }
 
 
+class _SectionHeader(QWidget):
+    def __init__(self, text: str, parent=None):
+        super().__init__(parent)
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(8, 6, 8, 4)
+
+        label = QLabel(text.upper())
+        fm = label.fontMetrics()
+        font = label.font()
+        font.setPointSize(max(7, fm.height() // 2))
+        font.setLetterSpacing(QFont.SpacingType.AbsoluteSpacing, 1.5)
+        font.setBold(True)
+        label.setFont(font)
+
+        palette = label.palette()
+        label.setStyleSheet(f"color: {palette.color(QPalette.ColorRole.PlaceholderText).name()};")
+        layout.addWidget(label)
+        layout.addStretch()
+
+    def paintEvent(self, a0) -> None:
+        super().paintEvent(a0)
+        painter = QPainter(self)
+        color = self.palette().color(QPalette.ColorRole.Mid)
+        color.setAlpha(80)
+        painter.setPen(color)
+        painter.drawLine(0, self.height() - 1, self.width(), self.height() - 1)
+
+
 class RelationListView(QFrame):
     def __init__(self, header_text="", empty_text="", parent=None):
         super().__init__(parent)
@@ -136,15 +166,17 @@ class RelationListView(QFrame):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(3, 3, 3, 3)
         layout.setSpacing(0)
-        header_lbl = QLabel(header_text.upper())
-        header_lbl.setObjectName("section_title")
-        font = header_lbl.font()
-        font.setPointSize(11)
-        header_lbl.setFont(font)
-        layout.addWidget(
-            header_lbl,
-            # alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter,
-        )
+        # header_lbl = QLabel(header_text.upper())
+        # header_lbl.setObjectName("section_title")
+        # font = header_lbl.font()
+        # font.setPointSize(11)
+        # header_lbl.setFont(font)
+        # layout.addWidget(
+        #     header_lbl,
+        #     # alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter,
+        # )
+        header = _SectionHeader(header_text)
+        layout.addWidget(header)
         self.view = _EmptyListView(empty_text)
         layout.addWidget(self.view)
 
