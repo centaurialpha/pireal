@@ -182,7 +182,87 @@ class RelationListView(QFrame):
 
 
 class RelationDelegate(QStyledItemDelegate):
-    def paint(
+    def paint(self, painter, option, index):
+        if painter is None:
+            return
+
+        model = cast(RelationModel, index.model())
+        if model is None:
+            return
+
+        opt = QStyleOptionViewItem(option)
+        self.initStyleOption(opt, index)
+        opt.text = ""
+
+        is_selected = bool(opt.state & QStyle.StateFlag.State_Selected)
+        is_hover = bool(opt.state & QStyle.StateFlag.State_MouseOver)
+        palette = opt.palette
+        rect = opt.rect.adjusted(4, 3, -4, -3)
+
+        painter.save()
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        if is_selected:
+            bg = palette.color(QPalette.ColorRole.Highlight)
+            bg.setAlpha(25)
+            painter.fillRect(opt.rect, bg)
+        elif is_hover:
+            bg = palette.color(QPalette.ColorRole.Highlight)
+            bg.setAlpha(10)
+            painter.fillRect(opt.rect, bg)
+
+        if is_selected:
+            name_color = palette.color(QPalette.ColorRole.Highlight)
+            meta_color = palette.color(QPalette.ColorRole.Highlight)
+            meta_color.setAlpha(180)
+        else:
+            name_color = palette.color(QPalette.ColorRole.Text)
+            meta_color = palette.color(QPalette.ColorRole.PlaceholderText)
+
+        text_rect = rect.adjusted(10, 4, -8, -4)
+
+        name_font = QFont(painter.font())
+        name_font.setBold(True)
+        name_height = QFontMetrics(name_font).height()
+
+        meta_font = QFont(painter.font())
+        meta_font.setPointSize(meta_font.pointSize() - 1)
+        meta_height = QFontMetrics(meta_font).height()
+
+        top = text_rect.top() + (text_rect.height() - name_height - meta_height) // 2
+
+        name = model.data(index, model.NameRole)
+        cardinality = model.data(index, model.CardinalityRole)
+        degree = model.data(index, model.DegreeRole)
+
+        painter.setFont(name_font)
+        painter.setPen(name_color)
+        painter.drawText(
+            QRect(text_rect.left(), top, text_rect.width(), name_height), Qt.AlignmentFlag.AlignVCenter, name
+        )
+
+        painter.setFont(meta_font)
+        painter.setPen(meta_color)
+        painter.drawText(
+            QRect(text_rect.left(), top + name_height, text_rect.width(), meta_height),
+            Qt.AlignmentFlag.AlignVCenter,
+            f"{cardinality} tuples · {degree} attrs",
+        )
+
+        painter.restore()
+
+    def sizeHint(self, option, index):
+        name_font = QFont(option.font)
+        name_font.setBold(True)
+        name_height = QFontMetrics(name_font).height()
+        meta_font = QFont(option.font)
+        meta_font.setPointSize(meta_font.pointSize() - 1)
+        meta_height = QFontMetrics(meta_font).height()
+        size = super().sizeHint(option, index)
+        size.setHeight(name_height + meta_height + 26)
+        return size
+
+    def _paint(
         self,
         painter: QPainter | None,
         option: "QStyleOptionViewItem",
@@ -248,7 +328,7 @@ class RelationDelegate(QStyledItemDelegate):
         )
         painter.restore()
 
-    def sizeHint(self, option, index):
+    def _sizeHint(self, option, index):
         size = super().sizeHint(option, index)
         name_font = QFont(option.font)
         name_font.setBold(True)

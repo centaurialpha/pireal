@@ -37,7 +37,6 @@ from PyQt6.QtGui import (
     QPixmap,
 )
 from PyQt6.QtWidgets import (
-    QApplication,
     QFrame,
     QHBoxLayout,
     QLabel,
@@ -121,14 +120,25 @@ class RecentDBDelegate(QStyledItemDelegate):
         self.initStyleOption(opt, index)
         opt.text = ""
 
-        style = opt.widget.style() if opt.widget else QApplication.style()
-        if style is None:
-            return
-        if opt.state & QStyle.StateFlag.State_Selected:
-            highlight = opt.palette.color(QPalette.ColorRole.Highlight)
-            highlight.setAlpha(150)
-            opt.palette.setColor(QPalette.ColorRole.Highlight, highlight)
-        style.drawControl(QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget)
+        is_selected = bool(opt.state & QStyle.StateFlag.State_Selected)
+        is_hover = bool(opt.state & QStyle.StateFlag.State_MouseOver)
+
+        if is_selected:
+            bg = opt.palette.color(QPalette.ColorRole.Highlight)
+            bg.setAlpha(25)
+            painter.fillRect(option.rect, bg)
+        elif is_hover:
+            bg = opt.palette.color(QPalette.ColorRole.Highlight)
+            bg.setAlpha(10)
+            painter.fillRect(option.rect, bg)
+        # style = opt.widget.style() if opt.widget else QApplication.style()
+        # if style is None:
+        #     return
+        # if opt.state & QStyle.StateFlag.State_Selected:
+        #     highlight = opt.palette.color(QPalette.ColorRole.Highlight)
+        #     highlight.setAlpha(150)
+        #     opt.palette.setColor(QPalette.ColorRole.Highlight, highlight)
+        # style.drawControl(QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget)
 
         painter.save()
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
@@ -136,20 +146,31 @@ class RecentDBDelegate(QStyledItemDelegate):
         palette = opt.palette
 
         exits = index.data(Qt.ItemDataRole.UserRole + 1)
-        is_selected = bool(opt.state & QStyle.StateFlag.State_Selected)
 
-        if is_selected:
-            text_color = palette.color(QPalette.ColorRole.HighlightedText)
-        elif not exits:
+        if not exits:
             text_color = palette.color(QPalette.ColorRole.PlaceholderText)
         else:
-            text_color = palette.color(QPalette.ColorRole.Text)
+            text_color = (
+                palette.color(QPalette.ColorRole.Highlight) if is_selected else palette.color(QPalette.ColorRole.Text)
+            )
 
-        if is_selected:
-            sub_color = palette.color(QPalette.ColorRole.HighlightedText)
-        else:
-            sub_color = palette.color(QPalette.ColorRole.Text)
+        sub_color = (
+            palette.color(QPalette.ColorRole.Highlight) if is_selected else palette.color(QPalette.ColorRole.Text)
+        )
+        if not is_selected:
             sub_color.setAlpha(160)
+        # if is_selected:
+        #     text_color = palette.color(QPalette.ColorRole.HighlightedText)
+        # elif not exits:
+        #     text_color = palette.color(QPalette.ColorRole.PlaceholderText)
+        # else:
+        #     text_color = palette.color(QPalette.ColorRole.Text)
+
+        # if is_selected:
+        #     sub_color = palette.color(QPalette.ColorRole.HighlightedText)
+        # else:
+        #     sub_color = palette.color(QPalette.ColorRole.Text)
+        #     sub_color.setAlpha(160)
 
         rect = option.rect.adjusted(self._PADDING, 0, -self._BTN_SIZE - self._PADDING, 0)
         half = rect.height() // 2
