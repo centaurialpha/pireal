@@ -56,6 +56,7 @@ OPERATOR_TOOLTIPS = {
     "difference": tr.TR_TOOLTIP_DIFFERENCE,
     "intersect": tr.TR_TOOLTIP_INTERSECT,
     "union": tr.TR_TOOLTIP_UNION,
+    "divide": tr.TR_TOOLTIP_DIVIDE,
 }
 
 

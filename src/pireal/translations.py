@@ -228,6 +228,10 @@ TR_TOOLTIP_INTERSECT = QCoreApplication.translate(
 TR_TOOLTIP_UNION = QCoreApplication.translate(
     "Pireal", "All tuples from both relations.\nUsage: relation1 union relation2"
 )
+TR_TOOLTIP_DIVIDE = QCoreApplication.translate(
+    "Pireal",
+    "Division: returns tuples paired with every tuple in the divisor.\nUsage: relation1 divide relation2",
+)
 
 # DB from text dialog
 TR_DB_FROM_TEXT_TITLE = QCoreApplication.translate("Pireal", "New Database from Text")

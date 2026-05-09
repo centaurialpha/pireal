@@ -307,7 +307,7 @@ def test_product_after_complex_expressions(make_parser):
 
 
 @pytest.mark.parametrize(
-    "operator", ["union", "intersect", "difference", "product", "njoin", "louter", "router", "fouter"]
+    "operator", ["union", "intersect", "difference", "product", "njoin", "louter", "router", "fouter", "divide"]
 )
 def test_all_binary_operators_after_project(make_parser, operator):
     """Todos los operadores binarios deben funcionar después de project"""

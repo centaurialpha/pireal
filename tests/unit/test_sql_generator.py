@@ -66,3 +66,8 @@ def _generate(query: str) -> dict:
 def test_generate(query, expected):
     result = _generate(query)
     assert result["q"] == expected
+
+
+def test_divide_raises_not_implemented():
+    with pytest.raises(NotImplementedError):
+        _generate("q := r1 divide r2;")
