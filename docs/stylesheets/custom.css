@@ -3,3 +3,27 @@
   --md-primary-bg-color: #ffffff;
   --md-accent-fg-color:  #3465a4;
 }
+
+.md-typeset a {
+  color: #3465a4 !important;
+}
+
+.md-typeset a:hover {
+  color: #7c3aed !important;
+}
+
+.md-typeset .admonition.success p a {
+  color: #7c3aed !important;
+}
+
+/* Link color activo en la nav lateral */
+.md-nav__link--active,
+.md-nav__link[aria-current="page"] {
+  color: #3465a4 !important;
+  font-weight: bold;
+}
+
+/* Links normales de la nav lateral */
+.md-nav__link {
+  color: var(--md-default-fg-color) !important;
+}

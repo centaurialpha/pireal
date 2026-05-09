@@ -154,3 +154,22 @@ with_names := student njoin late_enrollments;
 % Step 4: project the relevant columns
 result := project name, course_name (with_names);
 ```
+
+---
+
+## Division
+
+Which students are enrolled in **every** available course?
+
+```
+% Project only the (student, course) pairs
+enrollments  := project id_alumno, cod_curso (inscripto);
+
+% The full set of courses
+all_courses  := project cod_curso (curso);
+
+% Students present in every course
+result := enrollments divide all_courses;
+```
+
+The result contains only the `id_alumno` values that are paired with **every** `cod_curso` in `enrollments`. If a student is missing even one course, they are excluded

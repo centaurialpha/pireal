@@ -176,8 +176,45 @@ adultos := select edad >= 18 (alumno);
 
 ---
 
-## ¿Y la división?
+## ~~¿Y la división?~~
 
-El operador de división no está implementado directamente en Pireal, y es intencional. La división puede expresarse combinando los operadores que ya tenés: producto cartesiano, diferencia y proyección.
+~~El operador de división no está implementado directamente en Pireal, y es intencional. La división puede expresarse combinando los operadores que ya tenés: producto cartesiano, diferencia y proyección.~~
 
-Deducir cómo hacerlo es un ejercicio excelente para entender el Álgebra Relacional en profundidad. Si llegás a la solución, significa que realmente entendés cómo funciona.
+~~Deducir cómo hacerlo es un ejercicio excelente para entender el Álgebra Relacional en profundidad. Si llegás a la solución, significa que realmente entendés cómo funciona.~~
+
+!!! success "Actualización: la división ya está implementada"
+    El ejercicio era tan bueno que terminé implementándolo. Ver más abajo.
+
+### División - `divide`
+
+Devuelve todas las tuplas de la relación **izquierda** (proyectadas sobre las columnas que no están en la derecha) tales que se combinan con **cada** tupla de la relación derecha y esa combinación existe en la relación izquierda.
+
+En términos prácticos: encontrá cada valor en R que esté "emparejado con todos" los valores en S.
+
+```
+resultado := dividendo divide divisor;
+```
+
+**Precondiciones:**
+
+- Las columnas del divisor deben ser un subconjunto de las columnas del dividendo.
+- El dividendo debe tener al menos una columna que no esté en el divisor.
+
+**Ejemplo:**
+
+Encontrar todos los alumnos inscriptos en todos los cursos disponibles:
+
+```
+inscripciones  := project id_alumno, cod_curso (inscripto);
+todos_cursos   := project cod_curso (curso);
+en_todos       := inscripciones divide todos_cursos;
+```
+
+**Símbolo unicode:** se puede usar `÷` en lugar de `divide`:
+
+```
+en_todos := inscripciones ÷ todos_cursos;
+```
+
+!!! note "Columnas del resultado"
+    El resultado contiene solo las columnas del dividendo que **no** están presentes en el divisor. En el ejemplo, el resultado tiene únicamente `id_alumno`.

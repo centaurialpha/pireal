@@ -89,3 +89,4 @@ markdown_extensions:
   - pymdownx.details
   - attr_list
   - tables
+  - pymdownx.tilde

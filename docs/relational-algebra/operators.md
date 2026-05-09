@@ -176,8 +176,45 @@ adults := select age >= 18 (student);
 
 ---
 
-## What about division?
+## ~~What about division?~~
 
-The division operator is not directly implemented in Pireal, and that is intentional. Division can be expressed by combining the operators you already have: cartesian product, difference and projection.
+~~The division operator is not directly implemented in Pireal, and that is intentional. Division can be expressed by combining the operators you already have: cartesian product, difference and projection.~~
 
-Figuring out how to do it is an excellent exercise for understanding Relational Algebra in depth. If you get to the solution, it means you truly understand how it works.
+~~Figuring out how to do it is an excellent exercise for understanding Relational Algebra in depth. If you get to the solution, it means you truly understand how it works.~~
+
+!!! success "Update: division is now implemented"
+    Turns out the exercise was so good we implemented it. See below.
+
+### Division - `divide`
+
+Returns all tuples from the **left** relation (projected onto the columns not in the right relation) such that they are combined with **every** tuple in the right relation and the combination exists in the left relation.
+
+In practical terms: find every value in R that is "paired with all" values in S.
+
+```
+result := dividend divide divisor;
+```
+
+**Preconditions:**
+
+- The divisor columns must be a subset of the dividend columns.
+- The dividend must have at least one column that is not in the divisor.
+
+**Example:**
+
+Find all students enrolled in every available course:
+
+```
+enrollments  := project student_id, course_id (enrolled);
+all_courses  := project course_id (course);
+in_all       := enrollments divide all_courses;
+```
+
+**Unicode symbol:** `÷` can be used instead of `divide`:
+
+```
+in_all := enrollments ÷ all_courses;
+```
+
+!!! note "Result columns"
+    The result contains only the columns from the dividend that are **not** present in the divisor. In the example above, the result has only `student_id`.
