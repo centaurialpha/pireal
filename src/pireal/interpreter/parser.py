@@ -35,6 +35,7 @@
                     | <Expression> DIFFERENCE <Expression>
                     | <Expression> INTERSECT <Expression>
                     | <Expression> UNION <Expression>
+                    | <Expression> DIVIDE <Expression>
 <BooleanExpression> : <Formula>
                     | <Formula> AND <Formula>
                     | <Formula> OR <Formula>

@@ -144,3 +144,25 @@ def test_select_nested_undefined_attribute(relations):
     with pytest.raises(UndefinedAttributeError) as exc:
         evaluate("q := select age=25 and nonexistent='x' (personas);", relations)
     assert exc.value.attribute == "nonexistent"
+
+
+def test_divide():
+    enrollments = make_relation(
+        ["student_id", "course_id"],
+        [
+            ("1", "math"),
+            ("1", "physics"),
+            ("2", "math"),
+            ("3", "math"),
+            ("3", "physics"),
+        ],
+    )
+    required = make_relation(["course_id"], [("math",), ("physics",)])
+
+    results = evaluate(
+        "q := enrollments divide required;",
+        {"enrollments": enrollments, "required": required},
+    )
+
+    assert results["q"].header == ["student_id"]
+    assert results["q"].content == {("1",), ("3",)}

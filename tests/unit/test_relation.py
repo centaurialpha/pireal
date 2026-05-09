@@ -19,7 +19,8 @@ import unittest
 import pytest
 
 from pireal.core import relation
-from pireal.core.relation import Relation, UnionCompatibleError
+from pireal.core.relation import DivisionIncompatibleError, Relation, UnionCompatibleError
+from tests.helpers import make_relation
 
 
 class RelationTestCase(unittest.TestCase):
@@ -392,3 +393,99 @@ def test_njoin_multiple_shared_fields_partial_match():
 
     result = r1.njoin(r2)
     assert not list(result.content), "njoin no debe insertar si solo un subconjunto de los campos compartidos coincide"
+
+
+def test_divide_basic():
+    # Estudiantes y los cursos en los que están inscriptos.
+    # Queremos los estudiantes inscriptos en TODOS los cursos requeridos.
+    enrollments = make_relation(
+        ["student_id", "course_id"],
+        [
+            ("1", "math"),
+            ("1", "physics"),
+            ("2", "math"),
+            ("3", "math"),
+            ("3", "physics"),
+        ],
+    )
+    required_courses = make_relation(["course_id"], [("math",), ("physics",)])
+
+    result = enrollments.divide(required_courses)
+
+    assert result.header == ["student_id"]
+    assert result.content == {("1",), ("3",)}
+
+
+def test_divide_excludes_partial_matches():
+    # El estudiante 2 solo está en math, no en physics, no califica.
+    enrollments = make_relation(
+        ["student_id", "course_id"],
+        [("1", "math"), ("1", "physics"), ("2", "math")],
+    )
+    required_courses = make_relation(["course_id"], [("math",), ("physics",)])
+
+    result = enrollments.divide(required_courses)
+
+    assert ("1",) in result.content
+    assert ("2",) not in result.content
+
+
+def test_divide_empty_divisor_returns_all_projected_tuples():
+    # Dividir por una relación vacía es vacuamente verdadero, devuelve todo T.
+    enrollments = make_relation(
+        ["student_id", "course_id"],
+        [("1", "math"), ("2", "physics")],
+    )
+    no_requirements = make_relation(["course_id"], [])
+
+    result = enrollments.divide(no_requirements)
+
+    assert result.header == ["student_id"]
+    assert result.content == {("1",), ("2",)}
+
+
+def test_divide_returns_empty_when_no_tuple_qualifies():
+    # Ningún estudiante está en todos los cursos requeridos, resultado vacío.
+    enrollments = make_relation(
+        ["student_id", "course_id"],
+        [("1", "math"), ("2", "physics")],
+    )
+    required_courses = make_relation(["course_id"], [("math",), ("physics",)])
+
+    result = enrollments.divide(required_courses)
+
+    assert result.cardinality() == 0
+
+
+def test_divide_error_when_divisor_column_not_in_dividend():
+    # El divisor tiene una columna que no existe en el dividendo.
+    dividend = make_relation(["student_id", "course_id"], [("1", "math")])
+    divisor = make_relation(["subject"], [("math",)])
+
+    with pytest.raises(DivisionIncompatibleError):
+        dividend.divide(divisor)
+
+
+def test_divide_error_when_same_columns():
+    # Si dividend y divisor tienen las mismas columnas no hay columnas "izquierdas".
+    r = make_relation(["a", "b"], [("1", "x")])
+    s = make_relation(["a", "b"], [("1", "x")])
+
+    with pytest.raises(DivisionIncompatibleError):
+        r.divide(s)
+
+
+def test_divide_does_not_mutate_operands():
+    # divide() no debe modificar ninguno de los dos operandos.
+    enrollments = make_relation(
+        ["student_id", "course_id"],
+        [("1", "math"), ("1", "physics")],
+    )
+    required_courses = make_relation(["course_id"], [("math",)])
+    enrollments_snapshot = set(enrollments.content)
+    required_courses_snapshot = set(required_courses.content)
+
+    enrollments.divide(required_courses)
+
+    assert set(enrollments.content) == enrollments_snapshot
+    assert set(required_courses.content) == required_courses_snapshot

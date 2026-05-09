@@ -32,6 +32,7 @@ BINARY_OP_SYMBOLS = {
     TokenTypes.INTERSECT: "∩",
     TokenTypes.DIFFERENCE: "−",
     TokenTypes.PRODUCT: "×",
+    TokenTypes.DIVIDE: "÷",
 }
 
 COMPARISON_SYMBOLS = {

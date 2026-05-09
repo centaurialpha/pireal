@@ -32,6 +32,7 @@ def test_binary_operators():
         "louter": TokenTypes.LOUTER,
         "router": TokenTypes.ROUTER,
         "fouter": TokenTypes.FOUTER,
+        "divide": TokenTypes.DIVIDE,
     }
     assert expected == BINARY_OPERATORS
 
@@ -48,6 +49,7 @@ def test_reserved_keywords():
         "louter": TokenTypes.LOUTER,
         "router": TokenTypes.ROUTER,
         "fouter": TokenTypes.FOUTER,
+        "divide": TokenTypes.DIVIDE,
         "and": TokenTypes.AND,
         "or": TokenTypes.OR,
     }
@@ -65,6 +67,7 @@ def test_reserved_keywords():
         "louter",
         "router",
         "fouter",
+        "divide",
     ],
 )
 def test_binary_operators_are_in_reserved_keywords(op):

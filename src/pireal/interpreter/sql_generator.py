@@ -102,6 +102,8 @@ class SQLGenerator(ast.NodeVisitor):
         right = self.visit(node.right)
         op = BINARY_OP_MAP[node.op]
 
+        if node.op is TokenTypes.DIVIDE:
+            raise NotImplementedError("Division (÷) has no direct SQL equivalent and cannot be translated")
         if node.op in (TokenTypes.UNION, TokenTypes.INTERSECT, TokenTypes.DIFFERENCE):
             return f"{left}\n{op}\n{right}"
 
