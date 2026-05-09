@@ -38,6 +38,7 @@ class Highlighter(QSyntaxHighlighter):
         "difference",
         "intersect",
         "union",
+        "divide",
         "and",
         "or",
     ]

@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import QFileDialog
 from pireal import translations as tr
 from pireal.core.db import DB
 from pireal.core.pireal_file import File
+from pireal.core.relation import DivisionIncompatibleError
 from pireal.gui.lateral_widget import LateralWidget, RelationItemType
 from pireal.gui.query_widget import QueryWidget
 from pireal.gui.status_bar import StatusBar
@@ -103,6 +104,10 @@ class QueryService:
         query_widget = Registry.get("query-widget", QueryWidget)
         query_widget.close_current_editor()
 
+    def _show_runtime_error(self, msg: str) -> None:
+        status_bar = Registry.get("status-bar", StatusBar)
+        status_bar.show_message(msg, timeout=0, error=True)
+
     def execute(self) -> None:
         query_widget = Registry.get("query-widget", QueryWidget)
         table_widget = Registry.get("table-widget", TableWidget)
@@ -131,13 +136,18 @@ class QueryService:
             editor.editor.highlight_error(err.lineno, message=str(err))
             return
         except UndefinedAttributeError as err:
-            status_bar = Registry.get("status-bar", StatusBar)
-            status_bar.show_message(str(err))
+            self._show_runtime_error(str(err))
             return
         except DuplicateRelationNameError as err:
-            status_bar = Registry.get("status-bar", StatusBar)
-            status_bar.show_message(str(err))
+            self._show_runtime_error(str(err))
             return
+        except DivisionIncompatibleError as err:
+            self._show_runtime_error(str(err))
+            return
+
+        # Ejecución exitosa: limpiar cualquier error previo de runtime
+        status_bar = Registry.get("status-bar", StatusBar)
+        status_bar.show_message("", timeout=0)
 
         for name, relation in results.items():
             self._db.load(relation)
