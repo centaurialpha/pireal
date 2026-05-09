@@ -65,13 +65,60 @@ class _SymbolModePill(QWidget):
         bg.setAlpha(35)
         painter.setBrush(bg)
         painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawRoundedRect(self.rect(), 3, 3)
+        painter.drawRoundedRect(self.rect(), 2, 2)
 
         painter.setPen(color)
         painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, "σ  symbols")
 
 
 class _DbPill(QWidget):
+    _PADDING_H = 8
+    _PADDING_V = 3
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._text = ""
+        self._modified = False
+        self.setFixedHeight(self.fontMetrics().height() + self._PADDING_V * 2)
+
+    def set_text(self, text: str) -> None:
+        self._text = text
+        self._update_width()
+
+    def set_modified(self, modified: bool) -> None:
+        self._modified = modified
+        self._update_width()
+
+    def _update_width(self) -> None:
+        display = self._display_text()
+        w = self.fontMetrics().horizontalAdvance(display) + self._PADDING_H * 2
+        self.setFixedWidth(max(w, 10))
+        self.update()
+
+    def _display_text(self) -> str:
+        return f"{self._text} •" if self._modified else self._text
+
+    def paintEvent(self, a0) -> None:
+        if not self._text:
+            return
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        scheme = get_theme_manager().current_scheme
+        # color = self.palette().color(QPalette.ColorRole.LinkVisited) if self._modified else scheme.highlight
+        color = QColor(210, 140, 30) if self._modified else scheme.highlight
+
+        bg = QColor(color)
+        bg.setAlpha(35)
+        painter.setBrush(bg)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.drawRoundedRect(self.rect(), 2, 2)
+
+        painter.setPen(color)
+        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._display_text())
+
+
+class __DbPill(QWidget):
     _PADDING_H = 8
     _PADDING_V = 3
 
@@ -104,7 +151,7 @@ class _DbPill(QWidget):
         bg.setAlpha(35)
         painter.setBrush(bg)
         painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawRoundedRect(self.rect(), 3, 3)
+        painter.drawRoundedRect(self.rect(), 2, 2)
 
         painter.setPen(color)
         painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._text)
@@ -143,7 +190,7 @@ class _LineColPill(QWidget):
         bg.setAlpha(35)
         painter.setBrush(bg)
         painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawRoundedRect(self.rect(), 3, 3)
+        painter.drawRoundedRect(self.rect(), 2, 2)
 
         painter.setPen(color)
         painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._text)
@@ -173,8 +220,8 @@ class StatusBar(QWidget):
         self._timer.timeout.connect(self._clear_message)
 
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(8, 0, 8, 0)
-        layout.setSpacing(0)
+        layout.setContentsMargins(4, 0, 8, 0)
+        layout.setSpacing(2)
 
         # Left - db name (always visible, StatusBar only lives with an open DB)
         self._db_label = _DbPill()
@@ -264,3 +311,6 @@ class StatusBar(QWidget):
         color.setAlpha(120)
         painter.setPen(color)
         painter.drawLine(0, 0, self.width(), 0)
+
+    def set_db_modified(self, modified: bool) -> None:
+        self._db_label.set_modified(modified)
