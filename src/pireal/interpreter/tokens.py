@@ -58,6 +58,7 @@ class TokenTypes(enum.Enum):
     LOUTER = "louter"
     ROUTER = "router"
     FOUTER = "fouter"  # no cambiar
+    DIVIDE = "divide"
     # Conditional
     AND = "and"
     OR = "or"  # no cambiar
@@ -74,6 +75,7 @@ BINARY_OPERATORS: dict[str, TokenTypes] = {
     TokenTypes.LOUTER.value: TokenTypes.LOUTER,
     TokenTypes.ROUTER.value: TokenTypes.ROUTER,
     TokenTypes.FOUTER.value: TokenTypes.FOUTER,
+    TokenTypes.DIVIDE.value: TokenTypes.DIVIDE,
 }
 
 RESERVED_KEYWORDS: dict[str, TokenTypes] = {
@@ -96,6 +98,7 @@ KEYWORD_SYMBOLS: dict[str, TokenTypes] = {
     "⟕": TokenTypes.LOUTER,
     "⟖": TokenTypes.ROUTER,
     "⟗": TokenTypes.FOUTER,
+    "÷": TokenTypes.DIVIDE,
 }
 
 KEYWORD_TO_SYMBOL: dict[str, str] = {token_type.value: symbol for symbol, token_type in KEYWORD_SYMBOLS.items()}

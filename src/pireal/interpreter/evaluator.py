@@ -38,6 +38,7 @@ BINARY_OP_MAP = {
     TokenTypes.LOUTER: "louter",
     TokenTypes.ROUTER: "router",
     TokenTypes.FOUTER: "fouter",
+    TokenTypes.DIVIDE: "divide",
 }
 
 

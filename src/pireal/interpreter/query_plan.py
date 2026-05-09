@@ -40,6 +40,7 @@ class OperatorType(Enum):
     LOUTER = "⟕"
     ROUTER = "⟖"
     FOUTER = "⟗"
+    DIVIDE = "÷"
     # Leaf
     RELATION = "R"
 
@@ -160,6 +161,7 @@ class QueryPlanBuilder:
             TokenTypes.LOUTER: OperatorType.LOUTER,
             TokenTypes.ROUTER: OperatorType.ROUTER,
             TokenTypes.FOUTER: OperatorType.FOUTER,
+            TokenTypes.DIVIDE: OperatorType.DIVIDE,
         }
 
         operator = op_map[node.op]
@@ -210,6 +212,7 @@ class QueryPlanEvaluator:
             OperatorType.LOUTER: self._eval_binary("louter"),
             OperatorType.ROUTER: self._eval_binary("router"),
             OperatorType.FOUTER: self._eval_binary("fouter"),
+            OperatorType.DIVIDE: self._eval_binary("divide"),
         }
 
     def _eval_node(self, node: QueryPlanNode) -> Relation:

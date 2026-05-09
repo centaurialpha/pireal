@@ -51,6 +51,19 @@ class DuplicateFieldError(FieldError):
         super().__init__(field, msg=f"Campo duplicado '{field}' en la operación producto")
 
 
+class DivisionIncompatibleError(Error):
+    def __init__(self, left_header: list, right_header: list, msg: str | None = None):
+        if msg is None:
+            unknown = [col for col in right_header if col not in left_header]
+            if unknown:
+                msg = f"Division error: columns {unknown} in the divisor are not in the dividend"
+            else:
+                msg = "Division error: dividend and divisor have the same columns, result would be empty"
+        super().__init__(msg)
+        self.left_header = left_header
+        self.right_header = right_header
+
+
 class FieldNotInHeaderError(FieldError):
     def __init__(self, field, relation_name, msg=None):
         super().__init__(field, msg=f"El campo '{field}' no existe en '{relation_name}'")
@@ -313,6 +326,22 @@ class Relation:
                 new_relation.insert(i + e)
 
         return new_relation
+
+    def divide(self, other_relation: "Relation") -> "Relation":
+        unknown = [col for col in other_relation.header if col not in self._header]
+        if unknown:
+            raise DivisionIncompatibleError(self._header, other_relation.header)
+
+        left_cols = [col for col in self._header if col not in other_relation.header]
+        if not left_cols:
+            raise DivisionIncompatibleError(self._header, other_relation.header)
+
+        t = self.project(*left_cols)
+        cross = t.product(other_relation)
+        r_proj = self.project(*left_cols, *other_relation.header)
+        missing = cross.difference(r_proj)
+        missing_left = missing.project(*left_cols)
+        return t.difference(missing_left)
 
     def __str__(self):
         header = ""
