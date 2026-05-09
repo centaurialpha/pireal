@@ -280,7 +280,6 @@ TR_FEEDBACK_ATTACH_BTN = QCoreApplication.translate("Pireal", "Attach image (opt
 TR_FEEDBACK_ATTACH_DIALOG = QCoreApplication.translate("Pireal", "Select Image")
 TR_FEEDBACK_ATTACH_FILTER = QCoreApplication.translate("Pireal", "Images (*.png *.jpg *.jpeg)")
 TR_FEEDBACK_BTN_SEND = QCoreApplication.translate("Pireal", "Send")
-TR_FEEDBACK_BTN_SEND_START_PAGE = QCoreApplication.translate("Pireal", "Send me feedback")
 TR_FEEDBACK_BTN_SENDING = QCoreApplication.translate("Pireal", "Sending to botcito...")
 TR_FEEDBACK_BTN_RETRY = QCoreApplication.translate("Pireal", "Retry")
 TR_FEEDBACK_SUCCESS = QCoreApplication.translate("Pireal", "Sent! Thanks for helping to improve Pireal :).")

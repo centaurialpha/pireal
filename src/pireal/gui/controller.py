@@ -29,7 +29,6 @@ from pireal.dirs import DATA_SETTINGS
 from pireal.gui.database_container import DatabaseContainer
 from pireal.gui.dialogs.about_dialog import AboutDialog
 from pireal.gui.dialogs.db_from_text_dialog import DBFromTextDialog
-from pireal.gui.dialogs.feedback_dialog import FeedbackDialog
 from pireal.gui.dialogs.new_relation_dialog import NewRelationDialog
 from pireal.gui.dialogs.settings_dialog import SettingsDialog
 from pireal.gui.lateral_widget import LateralWidget, RelationItemType
@@ -249,10 +248,10 @@ class Controller(QWidget):
     def about_qt(self):
         QApplication.aboutQt()
 
-    @pyqtSlot()
-    def send_feedback(self):
-        dialog = FeedbackDialog(self)
-        dialog.exec()
+    # @pyqtSlot()
+    # def send_feedback(self):
+    #     dialog = FeedbackDialog(self)
+    #     dialog.exec()
 
     @pyqtSlot(bool)
     def toggle_theme(self, checked: bool) -> None:

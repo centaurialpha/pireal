@@ -431,26 +431,26 @@ class StartPage(QWidget):
         main_layout.addSpacing(12)
         main_layout.addWidget(self._recent_databases_view, alignment=Qt.AlignmentFlag.AlignHCenter)
         main_layout.addStretch(1)
-        if True:
-            feedback_layout = QHBoxLayout()
-            feedback_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        # if True:
+        #     feedback_layout = QHBoxLayout()
+        #     feedback_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
-            feedback_btn = QPushButton(tr.TR_FEEDBACK_BTN_SEND_START_PAGE)
-            palette = feedback_btn.palette()
-            normal_color = palette.color(palette.ColorRole.Link).name()
-            feedback_btn.setStyleSheet(f"""
-            QPushButton {{
-                color: {normal_color};
-                border: 1px solid {normal_color};
-                border-radius: 4px;
-                padding: 3px 10px;
-            }}
-            QPushButton:hover {{ background-color: rgba(0,0,0,0.05); }}
-        """)
-            feedback_btn.clicked.connect(self._send_feedback)
+        #     feedback_btn = QPushButton(tr.TR_FEEDBACK_BTN_SEND_START_PAGE)
+        #     palette = feedback_btn.palette()
+        #     normal_color = palette.color(palette.ColorRole.Link).name()
+        #     feedback_btn.setStyleSheet(f"""
+        #     QPushButton {{
+        #         color: {normal_color};
+        #         border: 1px solid {normal_color};
+        #         border-radius: 4px;
+        #         padding: 3px 10px;
+        #     }}
+        #     QPushButton:hover {{ background-color: rgba(0,0,0,0.05); }}
+        # """)
+        #     feedback_btn.clicked.connect(self._send_feedback)
 
-            feedback_layout.addWidget(feedback_btn)
-            main_layout.addLayout(feedback_layout)
+        #     feedback_layout.addWidget(feedback_btn)
+        #     main_layout.addLayout(feedback_layout)
 
         main_layout.addLayout(hbox_footer)
 
@@ -459,9 +459,9 @@ class StartPage(QWidget):
         btn_new_db.clicked.connect(self._new_database)
         btn_example.clicked.connect(self._open_example)
 
-    def _send_feedback(self):
-        controller = Registry.get("controller", Controller)
-        controller.send_feedback()
+    # def _send_feedback(self):
+    #     controller = Registry.get("controller", Controller)
+    #     controller.send_feedback()
 
     def _new_database(self):
         controller = Registry.get("controller", Controller)

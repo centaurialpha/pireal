@@ -285,3 +285,16 @@ class LateralWidget(QSplitter):
 
     def relation_name_by_index(self, index: int) -> str:
         return self._relations_model.relation_by_index(index).name
+
+    def select_relation(self, index: int) -> None:
+        self._select_in_view(self._relations_list.view, index)
+
+    def select_result(self, index: int) -> None:
+        self._select_in_view(self._results_list.view, index)
+
+    def _select_in_view(self, view, index: int) -> None:
+        model = view.model()
+        if model is None or model.rowCount() == 0:
+            return
+        idx = model.index(index, 0)
+        view.setCurrentIndex(idx)

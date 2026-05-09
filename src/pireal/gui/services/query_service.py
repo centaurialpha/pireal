@@ -154,3 +154,6 @@ class QueryService:
             self._db.add_query_result(name)
             table_widget.add_table_to_results(relation)
             lateral_widget.add_item(relation, RelationItemType.Result)
+
+        lateral_widget.select_result(len(results) - 1)
+        status_bar.show_message("", timeout=0)
