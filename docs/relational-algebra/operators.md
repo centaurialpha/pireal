@@ -1,176 +1,220 @@
-# Operadores
+# Operators
 
-Pireal soporta los operadores centrales del Álgebra Relacional. Todas las consultas siguen esta sintaxis:
-
-```
-nombre_resultado := expresión;
-```
-
----
-
-## Operadores unarios
-
-Toman una sola relación como entrada.
-
-### Selección — `select`
-
-Filtra las filas que satisfacen una condición. Devuelve una relación con las mismas columnas pero solo las filas que cumplen el criterio.
+Pireal supports the core operators of Relational Algebra. All queries follow this syntax:
 
 ```
-resultado := select condición (relación);
-```
-
-**Ejemplo:**
-
-```
-adultos := select edad >= 18 (estudiantes);
-```
-
-**Operadores de comparación:**
-
-| Operador | Significado    |
-|----------|----------------|
-| `=`      | igual          |
-| `<>`     | distinto       |
-| `<`      | menor que      |
-| `<=`     | menor o igual  |
-| `>`      | mayor que      |
-| `>=`     | mayor o igual  |
-
-**Operadores lógicos** `and` / `or` para combinar condiciones:
-
-```
-resultado := select edad >= 18 and edad <= 30 (estudiantes);
-```
-
-**Comparar con strings y fechas:**
-
-```
-resultado := select nombre = 'Gabriel' (estudiantes);
-resultado := select fecha_inicio > '01/03/2017' (cursos);
+result_name := expression;
 ```
 
 ---
 
-### Proyección — `project`
+## Unary operators
 
-Selecciona columnas específicas de una relación.
+They take a single relation as input.
 
-```
-resultado := project col1, col2 (relación);
-```
+### Selection - `select`
 
-**Ejemplo:**
+Filters the rows that satisfy a condition. Returns a relation with the same columns but only the rows that meet the criteria.
 
 ```
-nombres := project nombre (estudiantes);
+result := select condition (relation);
 ```
 
-!!! warning "Eliminación de duplicados"
-    La proyección elimina automáticamente las filas duplicadas, ya que las relaciones son conjuntos.
+**Example:**
+
+```
+adults := select age >= 18 (student);
+```
+
+**Comparison operators:**
+
+| Operator | Meaning       |
+|----------|---------------|
+| `=`      | equal         |
+| `<>`     | not equal     |
+| `<`      | less than     |
+| `<=`     | less or equal |
+| `>`      | greater than  |
+| `>=`     | greater or equal |
+
+**Logical operators** `and`/`or` to combine conditions:
+
+```
+result := select age >= 18 and age <= 30 (student);
+```
+
+**Comparing strings and dates:**
+
+```
+result := select name = 'Juan' (student);
+result := select start_date > '01/03/2017' (course);
+```
 
 ---
 
-## Operadores binarios
+### Projection - `project`
 
-Toman dos relaciones como entrada.
-
-### Join Natural — `njoin`
-
-Une dos relaciones por las columnas que comparten el mismo nombre.
+Selects specific columns from a relation.
 
 ```
-resultado := izquierda njoin derecha;
+result := project col1, col2 (relation);
 ```
 
-**Ejemplo:**
+**Example:**
 
 ```
-inscriptos := estudiantes njoin inscripciones;
+names := project name (student);
+```
+
+!!! warning "Duplicate elimination"
+    Projection automatically removes duplicate rows, since relations are sets.
+
+---
+
+## Binary operators
+
+They take two relations as input.
+
+### Natural Join - `njoin`
+
+Joins two relations on the columns that share the same name. Only includes rows where the shared column values match in both relations.
+
+```
+result := left njoin right;
+```
+
+**Example:**
+
+```
+result := student njoin enrolled;
 ```
 
 ---
 
 ### Outer Joins
 
-Como el join natural, pero conservan las filas sin coincidencia, rellenando los valores faltantes con `null`.
+Like the natural join, but keep the rows without a match, filling missing values with `null`.
 
-| Sintaxis                  | Conserva filas sin match de... |
-|---------------------------|-------------------------------|
-| `izq louter der`          | relación izquierda             |
-| `izq router der`          | relación derecha               |
-| `izq fouter der`          | ambas relaciones               |
+| Syntax           | Keeps unmatched rows from... |
+|------------------|------------------------------|
+| `left louter right` | left relation             |
+| `left router right` | right relation            |
+| `left fouter right` | both relations            |
 
----
-
-### Unión — `union`
-
-Devuelve todas las filas de ambas relaciones. Ambas deben tener las mismas columnas. Los duplicados se eliminan.
+**Example:**
 
 ```
-resultado := r1 union r2;
+% All students, even those not enrolled in any course
+result := student louter enrolled;
 ```
 
 ---
 
-### Intersección — `intersect`
+### Union - `union`
 
-Devuelve solo las filas que aparecen en ambas relaciones.
-
-```
-resultado := r1 intersect r2;
-```
-
----
-
-### Diferencia — `difference`
-
-Devuelve las filas que están en la primera relación pero no en la segunda.
+Returns all rows from both relations. Both must have exactly the same columns — same names and same order. Duplicates are removed.
 
 ```
-resultado := r1 difference r2;
+result := r1 union r2;
 ```
 
 ---
 
-### Producto cartesiano — `product`
+### Intersection - `intersect`
 
-Devuelve todas las combinaciones de filas de ambas relaciones.
-
-```
-resultado := r1 product r2;
-```
-
-!!! warning "Resultados grandes"
-    Si `r1` tiene 100 filas y `r2` tiene 50, el producto tiene 5.000 filas. Usarlo con cuidado.
-
----
-
-## Anidamiento de expresiones
-
-Los operadores se pueden anidar libremente:
+Returns only the rows that appear in both relations.
 
 ```
-q1 := estudiantes njoin (inscripciones njoin cursos);
-q2 := project nombre, nombre_curso (q1);
-q3 := select nombre_curso = 'Bases de Datos' (q2);
+result := r1 intersect r2;
 ```
 
 ---
 
-## Comentarios
+### Difference - `difference`
 
-Las líneas que empiezan con `%` son comentarios:
+Returns the rows that are in the first relation but not in the second.
 
 ```
-% Selecciona todos los estudiantes adultos
-adultos := select edad >= 18 (estudiantes);
+result := r1 difference r2;
 ```
 
 ---
 
-## ¿Y la división?
+### Cartesian product - `product`
 
-El operador de división no está implementado directamente en Pireal — y es intencional. La división puede expresarse combinando los operadores que ya tenés: producto cartesiano, diferencia y proyección.
+Returns all possible combinations of rows from both relations.
 
-Deducir cómo hacerlo es un ejercicio excelente para entender el Álgebra Relacional en profundidad. Si llegás a la solución, significa que realmente entendés cómo funciona.
+```
+result := r1 product r2;
+```
+
+!!! warning "Large results"
+    If `r1` has 100 rows and `r2` has 50, the product has 5,000 rows. Use with care.
+
+---
+
+## Nesting expressions
+
+Operators can be freely nested:
+
+```
+q1 := student njoin (enrolled njoin course);
+q2 := project name, course_name (q1);
+q3 := select course_name = 'Python' (q2);
+```
+
+---
+
+## Comments
+
+Lines starting with `%` are comments:
+
+```
+% Select all adult students
+adults := select age >= 18 (student);
+```
+
+---
+
+## ~~What about division?~~
+
+~~The division operator is not directly implemented in Pireal, and that is intentional. Division can be expressed by combining the operators you already have: cartesian product, difference and projection.~~
+
+~~Figuring out how to do it is an excellent exercise for understanding Relational Algebra in depth. If you get to the solution, it means you truly understand how it works.~~
+
+!!! success "Update: division is now implemented"
+    Turns out the exercise was so good we implemented it. See below.
+
+### Division - `divide`
+
+Returns all tuples from the **left** relation (projected onto the columns not in the right relation) such that they are combined with **every** tuple in the right relation and the combination exists in the left relation.
+
+In practical terms: find every value in R that is "paired with all" values in S.
+
+```
+result := dividend divide divisor;
+```
+
+**Preconditions:**
+
+- The divisor columns must be a subset of the dividend columns.
+- The dividend must have at least one column that is not in the divisor.
+
+**Example:**
+
+Find all students enrolled in every available course:
+
+```
+enrollments  := project student_id, course_id (enrolled);
+all_courses  := project course_id (course);
+in_all       := enrollments divide all_courses;
+```
+
+**Unicode symbol:** `÷` can be used instead of `divide`:
+
+```
+in_all := enrollments ÷ all_courses;
+```
+
+!!! note "Result columns"
+    The result contains only the columns from the dividend that are **not** present in the divisor. In the example above, the result has only `student_id`.

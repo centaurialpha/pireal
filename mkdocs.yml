@@ -4,21 +4,20 @@ repo_url: https://github.com/centaurialpha/pireal
 repo_name: centaurialpha/pireal
 edit_uri: edit/main/docs/
 
+copyright: Copyright &copy; 2015-2026 Gabriel Acosta
+
+extra:
+  version: "4.0.0"
+
 theme:
   name: material
+  custom_dir: overrides
+  logo: images/pireal_icon.png
+  favicon: images/pireal_icon.ico
   palette:
-    - scheme: default
-      primary: indigo
-      accent: deep purple
-      toggle:
-        icon: material/brightness-7
-        name: Cambiar a modo oscuro
-    - scheme: slate
-      primary: indigo
-      accent: deep purple
-      toggle:
-        icon: material/brightness-4
-        name: Cambiar a modo claro
+    scheme: slate
+    primary: custom
+    accent: custom
   features:
     - navigation.tabs
     - navigation.sections
@@ -28,20 +27,27 @@ theme:
     - content.action.edit
   icon:
     repo: fontawesome/brands/github
+  font:
+    text: Inter
+    code: JetBrains Mono
+
+extra_css:
+  - stylesheets/home.css
+  - stylesheets/custom.css
 
 nav:
-  - Inicio: index.md
-  - Primeros pasos: getting-started.md
-  - Álgebra Relacional:
-    - Operadores: relational-algebra/operators.md
-    - Ejemplos: relational-algebra/examples.md
-  - Guía de uso:
-    - Bases de datos: user-guide/databases.md
-    - Consultas: user-guide/queries.md
-  - Cómo funciona:
-    - El intérprete: internals/interpreter.md
-    - Crear temas: internals/themes.md
-  - Contribuir: contributing.md
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Relational Algebra:
+      - Operators: relational-algebra/operators.md
+      - Examples: relational-algebra/examples.md
+  - User Guide:
+      - Databases: user-guide/databases.md
+      - Queries: user-guide/queries.md
+  - Under the Hood:
+      - The Interpreter: internals/interpreter.md
+      - Creating Themes: internals/themes.md
+  - Contributing: contributing.md
 
 plugins:
   - search
@@ -51,26 +57,26 @@ plugins:
       reconfigure_material: true
       reconfigure_search: true
       languages:
-        - locale: es
-          default: true
-          name: Español
-          build: true
         - locale: en
+          default: true
           name: English
           build: true
+        - locale: es
+          name: Español
+          build: true
           nav_translations:
-            Inicio: Home
-            Primeros pasos: Getting Started
-            Álgebra Relacional: Relational Algebra
-            Operadores: Operators
-            Ejemplos: Examples
-            Guía de uso: User Guide
-            Bases de datos: Databases
-            Consultas: Queries
-            Cómo funciona: Under the Hood
-            El intérprete: The Interpreter
-            Crear temas: Creating Themes
-            Contribuir: Contributing
+            Home: Inicio
+            Getting Started: Primeros pasos
+            Relational Algebra: Álgebra Relacional
+            Operators: Operadores
+            Examples: Ejemplos
+            User Guide: Guía de uso
+            Databases: Bases de datos
+            Queries: Consultas
+            Under the Hood: Cómo funciona
+            The Interpreter: El intérprete
+            Creating Themes: Crear temas
+            Contributing: Contribuir
 
 markdown_extensions:
   - admonition
@@ -83,3 +89,4 @@ markdown_extensions:
   - pymdownx.details
   - attr_list
   - tables
+  - pymdownx.tilde

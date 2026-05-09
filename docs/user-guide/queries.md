@@ -1,123 +1,131 @@
-# Consultas
+# Queries
 
-Los archivos de consultas (`.pqf`) contienen las expresiones de Álgebra Relacional a evaluar contra una base de datos. Son archivos de texto plano que podés guardar, compartir y reutilizar.
-
----
-
-## Escribir consultas
-
-Cada consulta es una asignación:
-
-```
-nombre_resultado := expresión;
-```
-
-El `:=` asigna el resultado de la expresión a un nombre. Ese nombre aparece en la barra lateral y puede usarse en expresiones posteriores.
-
-Múltiples consultas en el mismo archivo se ejecutan en orden, de arriba hacia abajo:
-
-```
-q1 := select edad >= 18 (estudiantes);
-q2 := project nombre (q1);
-```
+Query files (`.pqf`) contain the Relational Algebra expressions to evaluate against an open database. They are plain text files you can save, share and reuse.
 
 ---
 
-## Ejecutar consultas
+## Writing queries
 
-Con una base de datos abierta, presioná **F5** o ir a **Consulta → Ejecutar**.
-
-!!! warning "Se necesita una base de datos abierta"
-    Las consultas necesitan una base de datos para ejecutarse. Abrí o creá una base de datos antes de ejecutar consultas.
-
----
-
-## Comentarios
-
-Usá `%` para agregar comentarios:
+Each query is an assignment:
 
 ```
-% Seleccionar estudiantes mayores de 18
-adultos := select edad >= 18 (estudiantes);
+result_name := expression;
+```
 
-q := project nombre (adultos);  % solo nombres
+The `:=` assigns the result of the expression to a name. That name appears in the sidebar and can be used in subsequent expressions.
+
+Multiple queries in the same file are executed in order, top to bottom:
+
+```
+q1 := select age >= 18 (students);
+q2 := project name (q1);
 ```
 
 ---
 
-## Mensajes de error
+## Running queries
 
-Si una consulta tiene un error, Pireal muestra un mensaje descriptivo. Errores comunes:
+With a database open, press **F5** or go to **Query -> Run**.
 
-**Relación no definida:**
+!!! warning "A database must be open"
+    Queries need a database to run against. Open or create one before executing.
 
-```
-q := select edad = 25 (typo);
-% Error: La relación 'typo' no está definida
-```
+---
 
-**Atributo no definido:**
+## Comments
 
-```
-q := project inexistente (estudiantes);
-% Error: El atributo 'inexistente' no está definido en la relación 'estudiantes'
-```
-
-**Nombre de resultado duplicado:**
+Use `%` to add comments:
 
 ```
-q := select edad = 25 (estudiantes);
-q := project nombre (estudiantes);
-% Error: Ya existe un resultado llamado 'q'
+% Select students older than 18
+adults := select age >= 18 (students);
+
+q := project name (adults);  % names only
 ```
 
 ---
 
-## Ejemplo de archivo de consultas
+## Error messages
+
+If a query has an error, Pireal shows a descriptive message. Some common examples:
+
+**Undefined relation:**
 
 ```
-% === Análisis de estudiantes y cursos ===
-
-% Todos los estudiantes inscriptos en algún curso
-inscriptos := estudiantes njoin inscripciones;
-
-% Cursos con valor menor a 3000
-accesibles := select valor < 3000 (cursos);
-
-% Estudiantes inscriptos en cursos accesibles
-q1 := inscriptos njoin accesibles;
-q2 := project nombre, nombre_curso (q1);
-
-% Cursos que comienzan después de marzo (referencia)
-cursos_tardios := select fecha_inicio > '01/03/2017' (cursos);
+q := select age = 25 (typo);
+% Error: relation 'typo' is not defined
 ```
+
+**Undefined attribute:**
+
+```
+q := project nonexistent (students);
+% Error: attribute 'nonexistent' is not defined in relation 'students'
+```
+
+**Duplicate result name:**
+
+```
+q := select age = 25 (students);
+q := project name (students);
+% Error: a result named 'q' already exists
+```
+
+---
+
+## Extra features
+
+### Syntax tree (AST)
+
+Pireal can show you the tree it builds internally when parsing your query. It's a concrete way to see how an interpreter "understands" your code, great if you're studying Compilers or just curious about how things work.
+
+Enable it from **Query -> View AST**.
+
+### SQL generator
+
+Every Relational Algebra query has an equivalent in SQL. Pireal can generate it automatically so you can compare both languages and understand how they relate.
+
+Enable it from **Query -> Generate SQL**.
+
+---
+
+## Terminal mode
+
+If you prefer working from the command line, Pireal has a REPL mode that runs without a graphical interface:
+
+```bash
+pireal --terminal my_database.pdb
+```
+
+If you omit the file, Pireal will ask for it on startup.
+
+Once inside, you write queries just like in the interface, ending with `;` to execute:
+
+```
+pireal> q := select age >= 18 (students);
+```
+
+Results are displayed directly in the terminal. Multi-line queries work too, Pireal waits until it finds the `;`:
+
+```
+pireal> q := project name (
+     …      select age >= 18 (students)
+     …  );
+```
+
+**Available commands:**
+
+| Command      | Action                              |
+|--------------|-------------------------------------|
+| `\h`         | Show help                           |
+| `\r`         | List loaded relations               |
+| `\r name`    | Show the contents of a relation     |
+| `exit` / `quit` / `:q` | Exit                   |
 
 ---
 
 ## Tips
 
-- Dividí las consultas complejas en pasos con nombres intermedios — es más fácil de depurar y entender.
-- Usá comentarios para explicar qué hace cada paso.
-- Podés volver a ejecutar las consultas después de modificar la base de datos o el archivo de consultas sin reiniciar Pireal.
-
----
-
-## Más funciones
-
-### Árbol de sintaxis (AST)
-
-<!-- SCREENSHOT: vista del AST generado para una consulta -->
-
-Pireal puede mostrarte el árbol de sintaxis abstracta que construye internamente al parsear tu consulta. Es una forma concreta de ver cómo un intérprete "entiende" tu código — muy útil si estás cursando Compiladores o simplemente tenés curiosidad.
-
-### Generador de SQL
-
-<!-- SCREENSHOT: panel con el SQL generado -->
-
-Cada consulta de Álgebra Relacional tiene un equivalente en SQL. Pireal puede generarlo automáticamente, lo que permite comparar ambos lenguajes y entender la relación entre ellos.
-
-### Escribir la base de datos como código
-
-<!-- SCREENSHOT: editor con sintaxis .pdb -->
-
-En lugar de usar el formulario de creación de relaciones, podés escribir tu base de datos directamente en texto. Es más rápido, más fácil de compartir y se lleva bien con git.
+- Break complex queries into steps with intermediate names, easier to understand and debug.
+- Use comments to explain what each step does.
+- You can re-run queries after modifying the database without restarting Pireal.

@@ -1,14 +1,14 @@
-# Primeros pasos
+# Getting Started
 
-## Instalación
+## Installation
 
 ### Windows
 
-Descargá el instalador desde la [página de releases](https://github.com/centaurialpha/pireal/releases) y seguí los pasos. Next, next, finish.
+Download the installer from the [releases page](https://github.com/centaurialpha/pireal/releases) and follow the steps. Next, next, finish.
 
 ### Linux
 
-Descargá el AppImage desde la [página de releases](https://github.com/centaurialpha/pireal/releases):
+Download the AppImage from the [releases page](https://github.com/centaurialpha/pireal/releases):
 
 ```bash
 chmod +x Pireal-x86_64.AppImage
@@ -17,11 +17,11 @@ chmod +x Pireal-x86_64.AppImage
 
 ### macOS
 
-Todavía no hay instalador para macOS. Si usás Mac y sabés empaquetar apps Python, ¡tu contribución sería muy bienvenida! Abrí un [issue en GitHub](https://github.com/centaurialpha/pireal/issues) y coordinamos.
+There is no macOS installer yet. If you use a Mac and know how to package Python apps, your contribution would be very welcome. Open an [issue on GitHub](https://github.com/centaurialpha/pireal/issues) and we can coordinate.
 
-### Desde el código fuente
+### From source
 
-Para cualquier plataforma, con [uv](https://docs.astral.sh/uv/) instalado:
+On any platform, with [uv](https://docs.astral.sh/uv/) installed:
 
 ```bash
 git clone https://github.com/centaurialpha/pireal
@@ -31,73 +31,81 @@ uv run pireal
 
 ---
 
-## Primeros pasos
+## The interface
 
-Al abrir Pireal por primera vez, vas a ver tres paneles:
+When you first open Pireal you will see the start screen with shortcuts to create or open a database. Once you open one, three panels appear:
 
-- **Barra lateral izquierda** — muestra las relaciones de la base de datos y los resultados de las consultas
-- **Área superior** — la vista de la base de datos, donde ves y editás tus relaciones
-- **Editor inferior** — donde escribís tus consultas de Álgebra Relacional
-
-### 1. Abrir la base de datos de ejemplo
-
-Ir a **Archivo → Abrir ejemplo** para cargar una base de datos prediseñada. Es la forma más rápida de empezar a escribir consultas sin crear nada desde cero.
-
-El ejemplo incluye relaciones como `alumno`, `curso` e `inscripto` — un escenario académico clásico.
-
-### 2. Crear tu propia base de datos
-
-Ir a **Archivo → Nueva base de datos**. Podés definir relaciones usando la sintaxis de texto directamente en el editor:
-
-```
-estudiantes(id, nombre, edad)
-1, Gabriel, 25
-2, Marisel, 30
-3, Rodrigo, 25
-```
-
-Cada relación comienza con `nombre(col1, col2, ...)` seguido de una fila por línea.
-
-!!! note "Extensiones de archivo"
-    Las bases de datos de Pireal se guardan como `.pdb`. Los archivos de consultas usan `.pqf`.
-
-### 3. Escribir tu primera consulta
-
-En el editor de consultas inferior, escribí:
-
-```
-q := select edad = 25 (estudiantes);
-```
-
-Presioná **F5** (o **Consulta → Ejecutar**) para ejecutar. El resultado aparece en la barra lateral y se abre en una nueva pestaña.
-
-### 4. Encadenar operaciones
-
-Las consultas se pueden anidar y asignar a nombres:
-
-```
-jovenes := select edad < 30 (estudiantes);
-nombres  := project nombre (jovenes);
-```
-
-Cada asignación crea un nuevo resultado que podés inspeccionar de forma independiente.
+- **Left sidebar** - shows the database relations and query results
+- **Top panel** - the database view, where you see and edit your relations
+- **Bottom editor** - where you write your Relational Algebra queries
 
 ---
 
-## Atajos de teclado
+## 1. Open the sample database
 
-| Acción                | Atajo           |
-|-----------------------|-----------------|
-| Ejecutar consultas    | `F5`            |
-| Nueva base de datos   | `Ctrl+N`        |
-| Abrir archivo         | `Ctrl+O`        |
-| Guardar archivo       | `Ctrl+S`        |
-| Modo oscuro           | `Ctrl+Shift+D`  |
+Go to **File -> Open example** to load a pre-built database. It is the fastest way to start writing queries without creating anything from scratch.
+
+The example includes relations like `student`, `course` and `enrolled` - a classic academic scenario.
 
 ---
 
-## Próximos pasos
+## 2. Create your own database
 
-- Conocer todos los [operadores](relational-algebra/operators.md) disponibles
-- Ver [ejemplos](relational-algebra/examples.md) prácticos con consultas reales
-- Leer sobre los [archivos de base de datos](user-guide/databases.md) y la sintaxis en detalle
+Go to **File -> New database**. You can define relations using the text syntax directly in the editor:
+
+```
+@students:id,name,age
+1,Gabriel,25
+2,Marisel,30
+3,Rodrigo,25
+```
+
+Each relation starts with `@name:col1,col2,...` followed by one row per line.
+
+!!! note "File extensions"
+    Pireal databases are saved as `.pdb`. Query files use `.pqf`.
+
+---
+
+## 3. Write your first query
+
+In the bottom query editor, write:
+
+```
+q := select age = 25 (students);
+```
+
+Press **F5** (or **Query -> Run**) to execute. The result appears in the sidebar and opens in a new tab.
+
+---
+
+## 4. Chain operations
+
+Queries can be nested and assigned to names:
+
+```
+young    := select age < 30 (students);
+names    := project name (young);
+```
+
+Each assignment creates a new result you can inspect independently.
+
+---
+
+## Keyboard shortcuts
+
+| Action            | Shortcut       |
+|-------------------|----------------|
+| Run queries       | `F5`           |
+| New database      | `Ctrl+N`       |
+| Open file         | `Ctrl+O`       |
+| Save file         | `Ctrl+S`       |
+| Dark mode         | `Ctrl+Shift+D` |
+
+---
+
+## Next steps
+
+- Learn all the available [operators](relational-algebra/operators.md)
+- See practical [examples](relational-algebra/examples.md) with real queries
+- Read about [database files](user-guide/databases.md) and the syntax in detail

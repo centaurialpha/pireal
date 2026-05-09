@@ -1,139 +1,175 @@
-# Ejemplos
+# Examples
 
-Ejemplos prácticos usando una base de datos académica clásica.
-
-**`estudiantes`**
-
-| id | nombre  | apoderado       |
-|----|---------|-----------------|
-| 1  | Gabriel | Ana Acosta      |
-| 2  | Marisel | Carlos Pereyra  |
-| 3  | Rodrigo | Hector Fuentes  |
-
-**`cursos`**
-
-| id_curso | nombre_curso | valor | fecha_inicio |
-|----------|--------------|-------|--------------|
-| 10       | Bases de Datos | 2500 | 15/03/2017 |
-| 20       | Redes        | 3500  | 10/04/2017   |
-| 30       | Python       | 1500  | 01/02/2017   |
-
-**`inscripto`**
-
-| id | id_curso |
-|----|----------|
-| 1  | 10       |
-| 1  | 30       |
-| 2  | 20       |
+Practical examples using the sample database that comes with Pireal. Open it from **File -> Open example** and run the queries directly.
 
 ---
 
-## Selección básica
+## The database
 
-Cursos con valor menor a 3000:
+**`student`**
 
-```
-baratos := select valor < 3000 (cursos);
-```
+| student_id | name   | city         | age |
+|------------|--------|--------------|-----|
+| 11         | Juan   | Buenos Aires | 18  |
+| 41         | Manuel | Lima         | 16  |
+| 01         | Pedro  | Santiago     | 14  |
+| 21         | Diego  | Lima         | 12  |
+| 31         | Rosita | Concepción   | 15  |
 
-Cursos que comienzan después de marzo:
+**`course`**
 
-```
-tardios := select fecha_inicio > '01/03/2017' (cursos);
-```
+| course_id | course_name            | start_date | duration | price |
+|-----------|------------------------|------------|----------|-------|
+| 03547     | Intro to OOP           | 01/03/2017 | 30       | 4000  |
+| 05478     | Machine Learning       | 20/04/2017 | 20       | 5000  |
+| 01142     | Python                 | 13/01/2017 | 15       | 4000  |
+| 04578     | Functional Programming | 05/04/2017 | 10       | 1500  |
+| 02145     | Django                 | 15/02/2017 | 12       | 2500  |
 
-Condiciones combinadas:
+**`enrolled`**
 
-```
-rango_medio := select valor >= 1500 and valor <= 3000 (cursos);
-```
+| enrollment_id | student_id | course_id |
+|---------------|------------|-----------|
+| 5             | 41         | 03547     |
+| 4             | 21         | 02145     |
+| 3             | 11         | 03547     |
+| 2             | 01         | 02145     |
+| 1             | 01         | 05478     |
 
 ---
 
-## Proyección básica
+## Basic selection
 
-Mostrar solo nombre y valor de los cursos:
-
-```
-catalogo := project nombre_curso, valor (cursos);
-```
-
----
-
-## Selección + proyección
-
-Nombres de cursos con valor menor a 3000:
+Students older than 14:
 
 ```
-q := project nombre_curso (select valor < 3000 (cursos));
+older := select age > 14 (student);
+```
+
+Courses with a price below 3000:
+
+```
+affordable := select price < 3000 (course);
+```
+
+Courses starting after March:
+
+```
+late := select start_date > '01/03/2017' (course);
+```
+
+Combined conditions:
+
+```
+mid_range := select price >= 1500 and price <= 3000 (course);
 ```
 
 ---
 
-## Join natural
+## Basic projection
 
-Estudiantes con los cursos en los que están inscriptos:
+Show only name and city of students:
 
 ```
-q1 := estudiantes njoin (inscripto njoin cursos);
-q2 := project nombre, nombre_curso (q1);
+locations := project name, city (student);
+```
+
+---
+
+## Selection and projection combined
+
+Names of courses with a price below 3000:
+
+```
+q := project course_name (select price < 3000 (course));
+```
+
+---
+
+## Natural join
+
+Students with the courses they are enrolled in:
+
+```
+q1 := student njoin enrolled;
+q2 := q1 njoin course;
+q3 := project name, course_name (q2);
 ```
 
 ---
 
 ## Left outer join
 
-Todos los estudiantes, incluso los que no están inscriptos en ningún curso:
+All students, even those not enrolled in any course:
 
 ```
-resultado := estudiantes louter inscripto;
+result := student louter enrolled;
 ```
 
-Los estudiantes sin inscripciones aparecen con `null` en la columna `id_curso`.
+Students with no enrollments appear with `null` in the `course_id` column.
 
 ---
 
-## Operaciones de conjunto
+## Set operations
 
 ```
-grupo_a := select id = 1 or id = 2 (estudiantes);
-grupo_b := select id = 2 or id = 3 (estudiantes);
+group_a := select city = 'Lima' (student);
+group_b := select age >= 15 (student);
 ```
 
-**Unión** — todos los estudiantes de cualquiera de los grupos:
+**Union** - students that meet either condition:
 
 ```
-todos := grupo_a union grupo_b;
+all := group_a union group_b;
 ```
 
-**Intersección** — estudiantes en ambos grupos:
+**Intersection** - students that meet both conditions:
 
 ```
-ambos := grupo_a intersect grupo_b;
+both := group_a intersect group_b;
 ```
 
-**Diferencia** — estudiantes en grupo_a pero no en grupo_b:
+**Difference** - students from Lima who are under 15:
 
 ```
-solo_a := grupo_a difference grupo_b;
+only_a := group_a difference group_b;
 ```
 
 ---
 
-## Ejemplo completo paso a paso
+## Full step-by-step example
 
-Nombres de los estudiantes inscriptos en cursos que comienzan después de marzo:
+Names of students enrolled in courses that start after March:
 
 ```
-% Paso 1: cursos que comienzan después de marzo
-cursos_tardios := select fecha_inicio > '01/03/2017' (cursos);
+% Step 1: courses starting after March
+late_courses := select start_date > '01/03/2017' (course);
 
-% Paso 2: inscripciones en esos cursos
-inscripciones_tardias := inscripto njoin cursos_tardios;
+% Step 2: enrollments in those courses
+late_enrollments := enrolled njoin late_courses;
 
-% Paso 3: unir con estudiantes para obtener nombres
-con_nombres := estudiantes njoin inscripciones_tardias;
+% Step 3: join with students to get names
+with_names := student njoin late_enrollments;
 
-% Paso 4: proyectar las columnas relevantes
-resultado := project nombre, nombre_curso (con_nombres);
+% Step 4: project the relevant columns
+result := project name, course_name (with_names);
 ```
+
+---
+
+## Division
+
+Which students are enrolled in **every** available course?
+
+```
+% Project only the (student, course) pairs
+enrollments  := project id_alumno, cod_curso (inscripto);
+
+% The full set of courses
+all_courses  := project cod_curso (curso);
+
+% Students present in every course
+result := enrollments divide all_courses;
+```
+
+The result contains only the `id_alumno` values that are paired with **every** `cod_curso` in `enrollments`. If a student is missing even one course, they are excluded

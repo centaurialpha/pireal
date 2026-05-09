@@ -1,91 +1,94 @@
-# Bases de datos
+# Databases
 
-Una base de datos de Pireal (archivo `.pdb`) es un archivo de texto plano que define una o más relaciones. Podés crearla y editarla directamente en la interfaz de Pireal o con cualquier editor de texto.
-
----
-
-## Formato del archivo
-
-Cada relación comienza con una línea de encabezado que define el nombre y las columnas, seguida de una fila por línea:
-
-```
-nombre_relacion(col1, col2, col3)
-valor1, valor2, valor3
-valor4, valor5, valor6
-```
-
-Una base de datos completa con múltiples relaciones:
-
-```
-estudiantes(id, nombre, edad)
-1, Gabriel, 25
-2, Marisel, 30
-3, Rodrigo, 25
-
-cursos(id_curso, nombre_curso, valor)
-10, Bases de Datos, 2500
-20, Redes, 3500
-30, Python, 1500
-
-inscripto(id, id_curso)
-1, 10
-1, 30
-2, 20
-```
+A Pireal database (`.pdb` file) is a plain text file that defines one or more relations. You can create it from the graphical interface or write it directly with any text editor.
 
 ---
 
-## Crear una base de datos
+## File format
 
-### Desde la interfaz
+Each relation starts with a header line that defines the name and columns, followed by one row per line:
 
-Ir a **Archivo → Nueva base de datos**. Se abre un editor donde podés escribir la base de datos usando la sintaxis de texto. Al guardar, Pireal escribe el archivo `.pdb`.
+```
+@relation_name:col1,col2,col3
+value1,value2,value3
+value4,value5,value6
+```
 
-### Con el diálogo de creación de relaciones
+A complete database with multiple relations:
 
-Ir a **Base de datos → Nueva relación** para abrir un formulario donde podés definir columnas e ingresar filas sin escribir la sintaxis manualmente.
+```
+@students:id,name,age
+1,Gabriel,25
+2,Marisel,30
+3,Rodrigo,25
 
-### Abrir un archivo existente
+@courses:course_id,course_name,price
+10,Databases,2500
+20,Networks,3500
+30,Python,1500
 
-Ir a **Archivo → Abrir** y seleccionar un archivo `.pdb`.
+@enrolled:id,course_id
+1,10
+1,30
+2,20
+```
+
+!!! note "Header format"
+    The relation name is preceded by `@` and separated from the columns by `:`. Columns are separated by `,` with no spaces.
 
 ---
 
-## Editar relaciones
+## Creating a database
 
-Podés editar el texto de la base de datos directamente en el editor. Los cambios se aplican después de guardar el archivo.
+### From the interface
 
-!!! note "Indicador de cambios sin guardar"
-    Cuando una base de datos tiene cambios sin guardar, la pestaña muestra un `*` antes del nombre del archivo. Usá `Ctrl+S` para guardar.
+Go to **File -> New database**. An editor opens where you can write the database using the text syntax. When you save, Pireal writes the `.pdb` file.
 
----
+### With the new relation dialog
 
-## Tipos de datos
+Go to **Database -> New relation** to open a form where you can define columns and enter rows without writing the syntax manually.
 
-Todos los valores en Pireal se almacenan como texto internamente, pero el intérprete maneja las comparaciones correctamente para:
+### Opening an existing file
 
-| Tipo    | Ejemplos                             |
-|---------|--------------------------------------|
-| Números | `25`, `3500`, `3.14`                 |
-| Strings | `'Gabriel'`, `'Bases de Datos'`      |
-| Fechas  | `'15/03/2017'`, `'2024-01-01'`       |
-| Horas   | `'10:30'`, `'23:59:00'`              |
-
-Al comparar en una condición `select`, los strings y fechas van entre comillas simples:
-
-```
-resultado := select nombre = 'Gabriel' (estudiantes);
-resultado := select fecha_inicio > '01/03/2017' (cursos);
-```
-
-Los números se comparan sin comillas:
-
-```
-resultado := select valor >= 2000 (cursos);
-```
+Go to **File -> Open** and select a `.pdb` file. Recent files also appear under **File -> Recent**.
 
 ---
 
-## Base de datos de ejemplo
+## Editing relations
 
-Pireal incluye una base de datos de ejemplo. Abrila desde **Archivo → Abrir ejemplo** para ver un escenario académico listo para usar con estudiantes, cursos e inscripciones.
+You can edit the database content directly in the editor. Changes take effect when you save.
+
+!!! note "Unsaved changes indicator"
+    When a database has unsaved changes, the tab shows a `*` before the filename. Use `Ctrl+S` to save.
+
+---
+
+## Data types
+
+All values are stored as text, but Pireal interprets them correctly when comparing in a query:
+
+| Type    | Examples                          |
+|---------|-----------------------------------|
+| Numbers | `25`, `3500`, `3.14`              |
+| Strings | `'Gabriel'`, `'Databases'`        |
+| Dates   | `'15/03/2017'`, `'2024-01-01'`    |
+| Times   | `'10:30'`, `'23:59'`              |
+
+When comparing in a `select` condition, strings and dates go in single quotes:
+
+```
+result := select name = 'Gabriel' (students);
+result := select start_date > '01/03/2017' (courses);
+```
+
+Numbers are compared without quotes:
+
+```
+result := select price >= 2000 (courses);
+```
+
+---
+
+## Sample database
+
+Pireal includes a ready-to-use sample database. Open it from **File -> Open example** to explore an academic scenario with students, courses and enrollments, without creating anything from scratch.
