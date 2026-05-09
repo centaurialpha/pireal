@@ -27,13 +27,14 @@ _HOME_DIR = Path.home()
 
 def _data_dir() -> Path:
     """Return the app data dir for Pireal."""
-    pireal_dir_name = ".pireal"
 
     if platform.system() == "Linux":
         # Store data files in $HOME
+        pireal_dir_name = ".pireal"
         pireal_data_dir = _HOME_DIR / pireal_dir_name
     else:
         # In windows and mac, use standard paths provided by Qt
+        pireal_dir_name = "pireal"
         pireal_data_dir = (
             Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.GenericDataLocation)) / pireal_dir_name
         )
