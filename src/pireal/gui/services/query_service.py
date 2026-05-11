@@ -1,17 +1,26 @@
 import logging
 from pathlib import Path
 
-from PyQt6.QtWidgets import QFileDialog, QMessageBox
+from PyQt6.QtWidgets import (
+    QFileDialog,
+    QMessageBox,
+)
 
 from pireal import translations as tr
 from pireal.core.db import DB
-from pireal.core.pireal_file import File, is_example_file
+from pireal.core.pireal_file import (
+    File,
+    is_example_file,
+)
 from pireal.core.relation import DivisionIncompatibleError
 from pireal.gui.lateral_widget import (
     LateralWidget,
     RelationItemType,
 )
-from pireal.gui.query_widget import EditorWidget, QueryWidget
+from pireal.gui.query_widget import (
+    EditorWidget,
+    QueryWidget,
+)
 from pireal.gui.status_bar import StatusBar
 from pireal.gui.table_widget import TableWidget
 from pireal.interpreter.evaluator import (
@@ -89,7 +98,7 @@ class QueryService:
         filename, _ = QFileDialog.getSaveFileName(
             self._parent,
             tr.TR_MSG_SAVE_QUERY_FILE,
-            "",
+            self._last_folder,
             "Pireal Query File (*.pqf)",
         )
         if not filename:
@@ -195,5 +204,6 @@ class QueryService:
         if answer == QMessageBox.StandardButton.Save:
             for editor in unsaved:
                 query_widget._editor_tabs.setCurrentWidget(editor)
-                self.save()
+                if not self.save():
+                    return False
         return True

@@ -165,6 +165,7 @@ class QueryWidget(QWidget):
 
     def clear(self):
         self._editor_tabs.clear()
+        self.hide()
 
     def add_editor(self, editor_widget: "EditorWidget"):
         status_bar = Registry.get("status-bar", StatusBar)
@@ -192,10 +193,11 @@ class QueryWidget(QWidget):
 
     def _show_tree(self):
         editor = self.current_editor()
-        if editor is not None:
-            queries = editor.text()
-            if not queries.strip():
-                return
+        if editor is None:
+            return
+        queries = editor.text()
+        if not queries.strip():
+            return
 
         try:
             tree = Parser(Lexer(Scanner(queries))).parse()
@@ -226,10 +228,11 @@ class QueryWidget(QWidget):
 
     def _show_sql(self):
         editor = self.current_editor()
-        if editor is not None:
-            queries = editor.text()
-            if not queries.strip():
-                return
+        if editor is None:
+            return
+        queries = editor.text()
+        if not queries.strip():
+            return
 
         try:
             tree = Parser(Lexer(Scanner(queries))).parse()

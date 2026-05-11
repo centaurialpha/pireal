@@ -297,3 +297,4 @@ class Controller(QWidget):
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
         table_widget.add_table_to_workspace(rela)
         lateral_widget.add_item(rela, RelationItemType.Normal)
+        lateral_widget.select_relation(lateral_widget._relations_model.rowCount() - 1)

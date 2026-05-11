@@ -380,6 +380,7 @@ class TableWidget(QWidget):
             if widget is not None:
                 self._stacked_results.removeWidget(widget)
                 widget.deleteLater()
+        self._btn_split.setChecked(False)
 
     def clear(self):
         # limpiar workspace
