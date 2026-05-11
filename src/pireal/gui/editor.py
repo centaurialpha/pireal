@@ -223,11 +223,8 @@ class Editor(QPlainTextEdit):
         # Completer
         self.completer = PirealCompleter(self)
 
-        # self._symbol_mode = settings.symbol_mode
-        # if self._symbol_mode:
-        #     self.toggle_symbol_mode(True)
-        # settings.settingsChanged.connect(self._on_settings_changed)
         # Connection
+        settings.settingsChanged.connect(self._on_settings_changed)
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
 
     def set_query_blocks(self, blocks: list[tuple[int, int, int]]) -> None:
@@ -294,8 +291,6 @@ class Editor(QPlainTextEdit):
 
         # Re-highlight línea actual
         self._highlight_current_line()
-
-        settings.settingsChanged.connect(self._on_settings_changed)
 
     def _on_settings_changed(self, key: str):
         if key in ("font_family", "font_size"):
