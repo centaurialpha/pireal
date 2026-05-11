@@ -59,6 +59,7 @@ class DatabaseService:
                 tr.TR_MSG_FILE_NOT_FOUND_TITLE,
                 tr.TR_MSG_FILE_NOT_FOUND_BODY.format(filename),
             )
+            self._recents.remove(filename)
             return False
 
         content = sanitize_data(file.read())
