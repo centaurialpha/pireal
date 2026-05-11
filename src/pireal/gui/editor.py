@@ -611,6 +611,10 @@ class Editor(QPlainTextEdit):
             self._handle_return()
             return
 
+        if e.key() == Qt.Key.Key_Tab:
+            self.textCursor().insertText("    ")
+            return
+
         # Auto-dedent en ) al inicio de línea
         if e.text() == ")":
             cursor = self.textCursor()
