@@ -16,11 +16,18 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt6.QtCore import QObject, pyqtSignal
+import logging
+
+from PyQt6.QtCore import (
+    QObject,
+    pyqtSignal,
+)
 
 from pireal.core.file_manager import generate_database
 from pireal.core.pireal_file import File
 from pireal.core.relation import Relation
+
+logger = logging.getLogger(__name__)
 
 
 class DB(QObject):
@@ -63,23 +70,36 @@ class DB(QObject):
         self._relations[relation.name] = relation
         self.modified = True
         self.relationsChanged.emit(list(self._relations.keys()))
+        logger.debug("add(%r) → relations: %s", relation.name, list(self._relations.keys()))
 
     def load(self, relation: Relation) -> None:
         """Cargar relación sin marcar como modificado (para carga inicial)"""
         self._relations[relation.name] = relation
         self.relationsChanged.emit(list(self._relations.keys()))
+        logger.debug("load(%r) → relations: %s", relation.name, list(self._relations.keys()))
 
     def remove(self, relation_name: str) -> None:
         del self._relations[relation_name]
         self.modified = True
         self.relationsChanged.emit(list(self._relations.keys()))
+        logger.debug("remove(%r) → relations: %s", relation_name, list(self._relations.keys()))
 
     def clear(self) -> None:
         if not self._relations:
             return
 
         self._relations.clear()
+        self._query_results.clear()
         self.relationsChanged.emit([])
+        logger.debug("clear() → relations: %s", list(self._relations.keys()))
+
+    def clear_query_results(self) -> None:
+        for name in self._query_results[:]:
+            if name in self._relations:
+                del self._relations[name]
+                self.relationsChanged.emit(list(self._relations.keys()))
+        self._query_results.clear()
+        logger.debug("clear_query_results() → relations: %s", list(self._relations.keys()))
 
     def get(self, relation_name: str) -> Relation | None:
         return self._relations.get(relation_name)
@@ -110,13 +130,6 @@ class DB(QObject):
 
     def relations_dict(self) -> dict[str, Relation]:
         return dict(self._relations)
-
-    def clear_query_results(self) -> None:
-        for name in self._query_results[:]:
-            if name in self._relations:
-                del self._relations[name]
-                self.relationsChanged.emit(list(self._relations.keys()))
-        self._query_results.clear()
 
     @property
     def is_new(self) -> bool:
