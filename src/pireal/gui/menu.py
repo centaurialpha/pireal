@@ -36,7 +36,7 @@ class Action:
     name: str
     target: str
     is_checkable: bool = False
-    shorcut: str = ""
+    shortcut: str = ""
     icon: str = ""
     requires_db: bool = False
     requires_modified: bool = False
@@ -70,8 +70,8 @@ class MenuBuilder:
                     qaction = QAction(item.name, self.main_window)
                     qaction.setCheckable(item.is_checkable)
 
-                    if item.shorcut:
-                        qaction.setShortcut(item.shorcut)
+                    if item.shortcut:
+                        qaction.setShortcut(item.shortcut)
                     if item.icon:
                         qaction.setIcon(QIcon(item.icon))
                     if item.is_checkable:
@@ -117,39 +117,39 @@ class MenuBuilder:
 
 file_menu = Menu(tr.TR_MENU_FILE)
 file_menu.add_item(Section("Database"))
-file_menu.add_item(Action(tr.TR_MENU_FILE_NEW_DB, "controller:create_database", shorcut="Ctrl+N"))
+file_menu.add_item(Action(tr.TR_MENU_FILE_NEW_DB, "controller:create_database", shortcut="Ctrl+N"))
 file_menu.add_item(
     Action(
         tr.TR_MENU_FILE_NEW_DB_FROM_TEXT,
         "controller:create_database_from_text",
-        shorcut="Ctrl+Shift+N",
+        shortcut="Ctrl+Shift+N",
     )
 )
-file_menu.add_item(Action(tr.TR_MENU_FILE_OPEN_DB, "controller:open_database", shorcut="Ctrl+O"))
+file_menu.add_item(Action(tr.TR_MENU_FILE_OPEN_DB, "controller:open_database", shortcut="Ctrl+O"))
 file_menu.add_item("separator")
 file_menu.add_item(
-    Action(tr.TR_MENU_FILE_SAVE_DB, "controller:save_database", shorcut="Ctrl+S", requires_modified=True)
+    Action(tr.TR_MENU_FILE_SAVE_DB, "controller:save_database", shortcut="Ctrl+S", requires_modified=True)
 )
 file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_DB, "controller:save_database_as", requires_db=True))
-file_menu.add_item(Action(tr.TR_MENU_FILE_CLOSE_DB, "controller:close_database", shorcut="Ctrl+W"))
+file_menu.add_item(Action(tr.TR_MENU_FILE_CLOSE_DB, "controller:close_database", shortcut="Ctrl+W"))
 file_menu.add_item(Section("Query"))
-file_menu.add_item(Action(tr.TR_MENU_FILE_NEW_QUERY, "controller:new_query", shorcut="Ctrl+T", requires_db=True))
+file_menu.add_item(Action(tr.TR_MENU_FILE_NEW_QUERY, "controller:new_query", shortcut="Ctrl+T", requires_db=True))
 file_menu.add_item(
-    Action(tr.TR_MENU_FILE_OPEN_QUERY, "controller:open_query", shorcut="Ctrl+Shift+O", requires_db=True)
+    Action(tr.TR_MENU_FILE_OPEN_QUERY, "controller:open_query", shortcut="Ctrl+Shift+O", requires_db=True)
 )
 file_menu.add_item(Action(tr.TR_MENU_FILE_CLOSE_QUERY, "controller:close_query", requires_db=True))
 file_menu.add_item("separator")
 file_menu.add_item(
-    Action(tr.TR_MENU_FILE_SAVE_QUERY, "controller:save_query", shorcut="Ctrl+Shift+S", requires_db=True)
+    Action(tr.TR_MENU_FILE_SAVE_QUERY, "controller:save_query", shortcut="Ctrl+Shift+S", requires_db=True)
 )
 file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_QUERY, "controller:save_query_as", requires_db=True))
 file_menu.add_item("separator")
-file_menu.add_item(Action(tr.TR_MENU_FILE_QUIT, "controller:quit", shorcut="Ctrl+Q"))
+file_menu.add_item(Action(tr.TR_MENU_FILE_QUIT, "controller:quit", shortcut="Ctrl+Q"))
 
 view_menu = Menu("&View")
 view_menu.add_item(Action("Dark Mode", "controller:toggle_theme", is_checkable=True))
 view_menu.add_item("separator")
-view_menu.add_item(Action(tr.TR_SETTINGS_TITLE, "controller:show_settings", shorcut="Ctrl+,"))
+view_menu.add_item(Action(tr.TR_SETTINGS_TITLE, "controller:show_settings", shortcut="Ctrl+,"))
 
 scheme_menu = Menu("&Scheme")
 scheme_menu.add_item(Action(tr.TR_MENU_SCHEME_CREATE_RELATION, "controller:create_relation", requires_db=True))
@@ -158,7 +158,7 @@ scheme_menu.add_item(
 )
 scheme_menu.add_item("separator")
 scheme_menu.add_item(
-    Action(tr.TR_MENU_SCHEME_EXECUTE_QUERIES, "controller:execute_queries", shorcut="F5", requires_db=True)
+    Action(tr.TR_MENU_SCHEME_EXECUTE_QUERIES, "controller:execute_queries", shortcut="F5", requires_db=True)
 )
 
 help_menu = Menu("&Help")

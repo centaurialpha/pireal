@@ -16,14 +16,25 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt6.QtCore import QSettings, Qt, pyqtSlot
+from PyQt6.QtCore import (
+    QSettings,
+    Qt,
+    pyqtSlot,
+)
 from PyQt6.QtWidgets import QSplitter
 
 from pireal.core.db import DB
 from pireal.core.relation_loader import load_relations
 from pireal.dirs import DATA_SETTINGS
-from pireal.gui.lateral_widget import LateralWidget, RelationItemType
-from pireal.gui.model_view_delegate import Delegate, RelationModel, View
+from pireal.gui.lateral_widget import (
+    LateralWidget,
+    RelationItemType,
+)
+from pireal.gui.model_view_delegate import (
+    Delegate,
+    RelationModel,
+    View,
+)
 from pireal.gui.query_widget import QueryWidget
 from pireal.gui.right_pane import RightPane
 from pireal.gui.status_bar import StatusBar
@@ -73,10 +84,10 @@ class DatabaseContainer(QSplitter):
 
         relations = list(load_relations(data))
         for relation in relations:
+            self._database.load(relation)
             table_widget.add_table_to_workspace(relation)
             lateral_widget.add_item(relation, RelationItemType.Normal)
 
-        self._database.modified = False
         lateral_widget.select_relation(len(relations) - 1)
 
     def add_relations(self, data):
@@ -85,6 +96,7 @@ class DatabaseContainer(QSplitter):
 
         relations = list(load_relations(data))
         for relation in relations:
+            self._database.add(relation)
             table_widget.add_table_to_workspace(relation)
             lateral_widget.add_item(relation, RelationItemType.Normal)
 
@@ -93,7 +105,7 @@ class DatabaseContainer(QSplitter):
     @pyqtSlot(int)
     def _on_relation_clicked(self, row: int):
         table_widget = Registry.get("table-widget", TableWidget)
-        table_widget._stacked.setCurrentIndex(row)
+        table_widget.show_relation_at(row)
 
     def showEvent(self, a0):
         super().showEvent(a0)

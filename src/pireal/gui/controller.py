@@ -292,6 +292,7 @@ class Controller(QWidget):
 
     def _on_relation_created(self, rela, relation_name: str) -> None:
         rela.name = relation_name
+        self._db.add(rela)
         table_widget = Registry.get("table-widget", TableWidget)
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
         table_widget.add_table_to_workspace(rela)

@@ -43,7 +43,6 @@ from PyQt6.QtWidgets import (
 )
 
 from pireal import translations as tr
-from pireal.core.db import DB
 from pireal.core.relation import Relation
 from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.model_view_delegate import create_view
@@ -255,6 +254,9 @@ class TableWidget(QWidget):
 
         self._refresh_icons()
 
+    def show_relation_at(self, index: int) -> None:
+        self._stacked.setCurrentIndex(index)
+
     def _make_tool_btn(self, tooltip: str, size: int = 16) -> QToolButton:
         btn = QToolButton()
         btn.setToolTip(tooltip)
@@ -357,11 +359,9 @@ class TableWidget(QWidget):
         self._stacked_results.setCurrentIndex(index)
 
     def add_table_to_workspace(self, relation: Relation, editable=True):
-        db = Registry.get("db", DB)
         self._remove_placeholder()
         view = create_view(relation, editable=editable)
-        db.add(relation)
-        self._relation_widgets[relation.name] = view  # ← registrar
+        self._relation_widgets[relation.name] = view
         self._stacked.addWidget(view)
         self._stacked.setCurrentWidget(view)
 
