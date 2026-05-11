@@ -79,6 +79,8 @@ class Settings(QObject):
         self.match_parenthesis: bool = self._qs.value("match_parenthesis", True, type=bool)
         self.dark_mode: bool = self._qs.value("dark_mode", True, type=bool)
         self.symbol_mode: bool = self._qs.value("symbol_mode", False, type=bool)
+        self.autocomplete: bool = self._qs.value("autocomplete", True, type=bool)
+        self.show_query_blocks: bool = self._qs.value("show_query_blocks", True, type=bool)
 
         default_theme = "light" if not self._qs.contains("theme") else self._qs.value("theme")
         self.theme: str = default_theme
@@ -97,6 +99,8 @@ class Settings(QObject):
         self._qs.setValue("dark_mode", self.dark_mode)
         self._qs.setValue("theme", self.theme)
         self._qs.setValue("symbol_mode", self.symbol_mode)
+        self._qs.setValue("autocomplete", self.autocomplete)
+        self._qs.setValue("show_query_blocks", self.show_query_blocks)
 
         self._qs.sync()
 

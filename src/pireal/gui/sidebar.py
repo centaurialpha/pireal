@@ -21,12 +21,32 @@ based on:
 john.nachtimwald.com/2009/08/19/better-qplaintextedit-with-line-numbers/
 """
 
-from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtGui import QFontMetrics, QPainter, QPen
+from PyQt6.QtCore import (
+    QSize,
+    Qt,
+)
+from PyQt6.QtGui import (
+    QColor,
+    QFontMetrics,
+    QPainter,
+    QPen,
+)
 from PyQt6.QtWidgets import QFrame
 
 from pireal.gui.theme.manager import get_theme_manager
-from pireal.gui.theme.schema import ColorScheme, EditorColorRole
+from pireal.gui.theme.schema import (
+    ColorScheme,
+    EditorColorRole,
+)
+from pireal.settings import settings
+
+_QUERY_COLORS = [
+    QColor("#5c6bc0"),  # indigo
+    QColor("#26a69a"),  # teal
+    QColor("#e5a550"),  # amber
+    QColor("#8d6e63"),  # marrón
+    QColor("#546e7a"),  # gris-azul
+]
 
 
 class Sidebar(QFrame):
@@ -84,8 +104,18 @@ class Sidebar(QFrame):
         """
         painter = QPainter(self)
         painter.fillRect(a0.rect(), self._background_color)
-        width = self.width() - 8
+
         height = self.editor.fontMetrics().height()
+
+        if settings.show_query_blocks:
+            for top, line_num, _ in self.editor.visible_blocks:
+                for start, end, idx in self.editor._query_blocks:
+                    if start <= line_num <= end:
+                        color = _QUERY_COLORS[idx % len(_QUERY_COLORS)]
+                        painter.fillRect(0, int(top), 3, height, color)
+                        break
+
+        width = self.width() - 8
         font = self.editor.font()
         font_bold = self.editor.font()
         font_bold.setBold(True)

@@ -76,9 +76,17 @@ class SettingsDialog(QDialog):
         self._check_symbol_mode = QCheckBox(tr.TR_SETTINGS_SYMBOL_MODE)
         self._check_symbol_mode.setChecked(settings.symbol_mode)
 
+        self._check_autocomplete = QCheckBox(tr.TR_SETTINGS_AUTOCOMPLETE)
+        self._check_autocomplete.setChecked(settings.autocomplete)
+
+        self._check_query_blocks = QCheckBox(tr.TR_SETTINGS_SHOW_QUERY_BLOCKS)
+        self._check_query_blocks.setChecked(settings.show_query_blocks)
+
         layout.addWidget(self._check_highlight_line, 0, 0)
         layout.addWidget(self._check_match_parenthesis, 0, 1)
         layout.addWidget(self._check_symbol_mode, 1, 0)
+        layout.addWidget(self._check_autocomplete, 1, 1)
+        layout.addWidget(self._check_query_blocks, 2, 0)
 
         return group
 
@@ -116,6 +124,8 @@ class SettingsDialog(QDialog):
         settings.font_family = self._combo_font_family.currentText()
         settings.font_size = int(self._combo_font_size.currentText())
         settings.symbol_mode = self._check_symbol_mode.isChecked()
+        settings.autocomplete = self._check_autocomplete.isChecked()
+        settings.show_query_blocks = self._check_query_blocks.isChecked()
 
         super().accept()
 

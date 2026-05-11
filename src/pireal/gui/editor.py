@@ -17,7 +17,12 @@
 
 from typing import cast
 
-from PyQt6.QtCore import QEvent, Qt, QTimer, pyqtSignal
+from PyQt6.QtCore import (
+    QEvent,
+    Qt,
+    QTimer,
+    pyqtSignal,
+)
 from PyQt6.QtGui import (
     QColor,
     QFont,
@@ -27,14 +32,31 @@ from PyQt6.QtGui import (
     QTextCursor,
     QTextDocument,
 )
-from PyQt6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPlainTextEdit, QTextEdit, QToolButton, QToolTip
+from PyQt6.QtWidgets import (
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QPlainTextEdit,
+    QTextEdit,
+    QToolButton,
+    QToolTip,
+)
 
 from pireal import translations as tr
-from pireal.gui import highlighter, sidebar
+from pireal.gui import (
+    highlighter,
+    sidebar,
+)
 from pireal.gui.completer import PirealCompleter
 from pireal.gui.theme.manager import get_theme_manager
-from pireal.gui.theme.schema import ColorScheme, EditorColorRole
-from pireal.interpreter.tokens import KEYWORD_TO_SYMBOL, SYMBOL_TO_KEYWORD
+from pireal.gui.theme.schema import (
+    ColorScheme,
+    EditorColorRole,
+)
+from pireal.interpreter.tokens import (
+    KEYWORD_TO_SYMBOL,
+    SYMBOL_TO_KEYWORD,
+)
 from pireal.settings import settings
 
 BRACKETS = "()"
@@ -158,6 +180,9 @@ class Editor(QPlainTextEdit):
         # Extra selections
         self._selections = {}
 
+        # (start, end, idx) 0-based
+        self._query_blocks: list[tuple[int, int, int]] = []
+
         self._error_line = -1
         self._error_message = ""
 
@@ -197,6 +222,10 @@ class Editor(QPlainTextEdit):
         # settings.settingsChanged.connect(self._on_settings_changed)
         # Connection
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
+
+    def set_query_blocks(self, blocks: list[tuple[int, int, int]]) -> None:
+        self._query_blocks = blocks
+        self._sidebar.update()
 
     def toggle_symbol_mode(self, enable: bool) -> None:
         """Convierte keywords, símbolos en el documento."""
@@ -269,6 +298,8 @@ class Editor(QPlainTextEdit):
             self.toggle_symbol_mode(self._symbol_mode)
         if key == "highlight_current_line":
             self._highlight_current_line()
+        if key == "show_query_blocks" and not settings.show_query_blocks:
+            self.set_query_blocks([])
 
     def _highlight_current_line(self):
         if not settings.highlight_current_line:
@@ -553,10 +584,10 @@ class Editor(QPlainTextEdit):
 
     def keyPressEvent(self, e: QKeyEvent | None) -> None:
         popup = self.completer.popup()
-        model = self.completer.completionModel()
-        e = cast(QKeyEvent, e)
         if popup is None:
             return
+        model = self.completer.completionModel()
+        e = cast(QKeyEvent, e)
         if model is None:
             return
         if popup.isVisible() and e.key() in (
@@ -568,6 +599,10 @@ class Editor(QPlainTextEdit):
             e.ignore()
             return
         super().keyPressEvent(e)
+
+        if not settings.autocomplete:
+            popup.hide()
+            return
 
         if e.modifiers() or not e.text():
             return
@@ -584,7 +619,8 @@ class Editor(QPlainTextEdit):
         scrollbar = popup.verticalScrollBar()
         if scrollbar is None:
             return
-        rect.setWidth(popup.sizeHintForColumn(0) + scrollbar.sizeHint().width())
+        scrollbar_width = scrollbar.sizeHint().width() if scrollbar.isVisible() else 0
+        rect.setWidth(popup.sizeHintForColumn(0) + scrollbar_width)
         self.completer.complete(rect)
 
     def _text_under_cursor(self) -> str:

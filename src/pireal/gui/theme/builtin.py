@@ -19,7 +19,7 @@ from dataclasses import dataclass
 
 from PyQt6.QtGui import QColor
 
-from pireal.gui.theme.schema import ColorScheme, EditorColors
+from pireal.gui.theme.schema import ColorScheme, EditorColorRole, EditorColors
 
 
 @dataclass(frozen=True)
@@ -69,20 +69,18 @@ class DarkTheme:
         )
 
     def stylesheet(self) -> str:
-        return """
-        QToolTip {
-            color: #ffffff;
-            background-color: #2a82da;
-            border: 1px solid white;
+        scheme = self.color_scheme()
+        bg = scheme.tooltip_base.name()
+        fg = scheme.tooltip_text.name()
+        border = scheme.editor.get(EditorColorRole.FOREGROUND).name()
+        return f"""
+        QToolTip {{
+            color: {fg};
+            background-color: {bg};
+            border: 1px solid {border};
             padding: 4px;
             border-radius: 3px;
-        }
-        QPushButton:hover {
-            background-color: #505050;
-        }
-        QPushButton:pressed {
-            background-color: #404040;
-        }
+        }}
         """
 
     def qt_style(self) -> str:

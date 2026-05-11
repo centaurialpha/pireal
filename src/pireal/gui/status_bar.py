@@ -77,6 +77,7 @@ class SymbolModePill(ClickablePill):
     def __init__(self, parent=None):
         self._enabled = False
         super().__init__(color_fn=self._symbol_color, text="σ symbols", parent=parent)
+        self.setToolTip("Toggle symbol mode (σ/π/⋈...)")
 
     def _symbol_color(self) -> QColor:
         scheme = get_theme_manager().current_scheme

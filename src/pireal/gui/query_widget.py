@@ -99,6 +99,22 @@ class QueryWidget(QWidget):
             status_bar.hide_pipeline()
             return
 
+        # Rangos de bloques (0-based)
+        lines_list = text.split("\n")
+        assignments = tree.children
+        blocks = []
+        for idxi, assignment in enumerate(assignments):
+            start = (assignment.rname.lineno or 1) - 1  # 0-based
+            # el fin real es la línea donde está el ;
+            end = start
+            for idxj in range(start, len(lines_list)):
+                if ";" in lines_list[idxj]:
+                    end = idxj
+                    break
+            blocks.append((start, end, idxi))
+
+        editor_widget.editor.set_query_blocks(blocks)
+
         # Encontrar el assignment cuyo rango de líneas incluye current_line
         target = None
         for assignment in tree.children:

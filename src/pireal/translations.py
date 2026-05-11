@@ -322,3 +322,6 @@ TR_RELATION_DIALOG_FIELD_2 = QCoreApplication.translate("Pireal", "Field_2")
 TR_NO_RECENT_DATABASES = QCoreApplication.translate("Pireal", "No recent databases.")
 
 TR_UPDATE_AVAILABLE = QCoreApplication.translate("Pireal", "Nueva versión {version} disponible. Click acá!!")
+
+TR_SETTINGS_AUTOCOMPLETE = QCoreApplication.translate("Pireal", "Autocomplete")
+TR_SETTINGS_SHOW_QUERY_BLOCKS = QCoreApplication.translate("Pireal", "Show query block indicators")
