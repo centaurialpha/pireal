@@ -26,6 +26,7 @@ from PyQt6.QtCore import (
 from PyQt6.QtGui import (
     QColor,
     QFont,
+    QFontMetricsF,
     QHelpEvent,
     QKeyEvent,
     QTextCharFormat,
@@ -107,8 +108,13 @@ class EditorNotification(QFrame):
 class BracketHighlighter:
     def _make_selection(self, block, column_index, matched):
         selection = QTextEdit.ExtraSelection()
-        color = "#ffff00" if matched else "#ff0000"
-        selection.format.setBackground(QColor(color))
+        scheme = get_theme_manager().current_scheme
+        color = (
+            scheme.editor.get(EditorColorRole.BRACKET_MATCH)
+            if matched
+            else scheme.editor.get(EditorColorRole.BRACKET_MISMATCH)
+        )
+        selection.format.setBackground(color)
         selection.cursor = QTextCursor(block)
         selection.cursor.setPosition(block.position() + column_index)
         selection.cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor)
@@ -177,6 +183,7 @@ class Editor(QPlainTextEdit):
 
     def __init__(self, pfile=None):
         super().__init__()
+        self.setTabStopDistance(QFontMetricsF(self.font()).horizontalAdvance(" ") * 4)
         # Extra selections
         self._selections = {}
 
@@ -598,6 +605,26 @@ class Editor(QPlainTextEdit):
         ):
             e.ignore()
             return
+
+        # Auto-indent en Enter
+        if e.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+            self._handle_return()
+            return
+
+        # Auto-dedent en ) al inicio de línea
+        if e.text() == ")":
+            cursor = self.textCursor()
+            before = cursor.block().text()[: cursor.positionInBlock()]
+            if before.strip() == "":
+                new_indent = max(0, len(before) - 4)
+                cursor.movePosition(QTextCursor.MoveOperation.StartOfBlock)
+                cursor.movePosition(
+                    QTextCursor.MoveOperation.EndOfBlock,
+                    QTextCursor.MoveMode.KeepAnchor,
+                )
+                cursor.insertText(" " * new_indent + ")")
+                self.setTextCursor(cursor)
+                return
         super().keyPressEvent(e)
 
         if not settings.autocomplete:
@@ -627,3 +654,21 @@ class Editor(QPlainTextEdit):
         cursor = self.textCursor()
         cursor.select(cursor.SelectionType.WordUnderCursor)
         return cursor.selectedText()
+
+    def _handle_return(self) -> None:
+        cursor = self.textCursor()
+        block = cursor.block()
+        full_text = block.text()
+        col = cursor.positionInBlock()
+        before = full_text[:col]
+
+        # indentación de la línea actual
+        indent = len(full_text) - len(full_text.lstrip(" "))
+        indent_str = " " * indent
+
+        # si la línea termina con '(' antes del cursor → indent extra
+        if before.rstrip().endswith("("):
+            indent_str += "    "
+
+        cursor.insertText("\n" + indent_str)
+        self.setTextCursor(cursor)
