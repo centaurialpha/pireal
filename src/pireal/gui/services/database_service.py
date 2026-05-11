@@ -1,11 +1,17 @@
 import logging
 from pathlib import Path
 
-from PyQt6.QtWidgets import QFileDialog, QMessageBox
+from PyQt6.QtWidgets import (
+    QFileDialog,
+    QMessageBox,
+)
 
 from pireal import translations as tr
 from pireal.core.db import DB
-from pireal.core.pireal_file import File, is_example_file
+from pireal.core.pireal_file import (
+    File,
+    is_example_file,
+)
 from pireal.core.recent_databases import RecentDatabases
 from pireal.gui.database_container import DatabaseContainer
 from pireal.gui.dialogs.db_from_text_dialog import DBFromTextDialog

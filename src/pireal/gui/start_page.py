@@ -132,14 +132,6 @@ class RecentDBDelegate(QStyledItemDelegate):
             bg = opt.palette.color(QPalette.ColorRole.Highlight)
             bg.setAlpha(10)
             painter.fillRect(option.rect, bg)
-        # style = opt.widget.style() if opt.widget else QApplication.style()
-        # if style is None:
-        #     return
-        # if opt.state & QStyle.StateFlag.State_Selected:
-        #     highlight = opt.palette.color(QPalette.ColorRole.Highlight)
-        #     highlight.setAlpha(150)
-        #     opt.palette.setColor(QPalette.ColorRole.Highlight, highlight)
-        # style.drawControl(QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget)
 
         painter.save()
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
@@ -160,18 +152,6 @@ class RecentDBDelegate(QStyledItemDelegate):
         )
         if not is_selected:
             sub_color.setAlpha(160)
-        # if is_selected:
-        #     text_color = palette.color(QPalette.ColorRole.HighlightedText)
-        # elif not exits:
-        #     text_color = palette.color(QPalette.ColorRole.PlaceholderText)
-        # else:
-        #     text_color = palette.color(QPalette.ColorRole.Text)
-
-        # if is_selected:
-        #     sub_color = palette.color(QPalette.ColorRole.HighlightedText)
-        # else:
-        #     sub_color = palette.color(QPalette.ColorRole.Text)
-        #     sub_color.setAlpha(160)
 
         rect = option.rect.adjusted(self._PADDING, 0, -self._BTN_SIZE - self._PADDING, 0)
         half = rect.height() // 2
@@ -238,32 +218,8 @@ class RecentDBDelegate(QStyledItemDelegate):
                 return True
         return super().editorEvent(event, model, option, index)
 
-    def _draw_background(self, painter, rect, state):
-        # if state & QStyle.StateFlag.State_Selected:
-        #     # bg_color = QColor(theme_manager.get_color("Highlight"))
-        #     # border_color = QColor(theme_manager.get_color("Shadow"))
-        # elif state & QStyle.StateFlag.State_MouseOver:
-        #     bg_color = QColor(theme_manager.get_color("AlternateBase"))
-        #     border_color = QColor(theme_manager.get_color("Mid"))
-        # else:
-        #     bg_color = QColor(theme_manager.get_color("Base"))
-        #     border_color = QColor(theme_manager.get_color("Dark"))
-
-        # # painter.setBrush(QBrush(bg_color))
-        # pen = QPen(border_color)
-        # painter.setPen(pen)
-
-        painter.drawRect(rect)
-
     def _draw_content(self, painter, rect, title, subtitle, state):
         """Dibuja el contenido usando roles estándar de Qt."""
-
-        # if state & QStyle.StateFlag.State_Selected:
-        #     title_color = QColor(theme_manager.get_color("HighlightedText"))
-        # else:
-        #     title_color = QColor(theme_manager.get_color("Text"))
-
-        # subtitle_color = QColor(theme_manager.get_color("Light"))
 
         font = painter.font()
         font.setBold(True)
@@ -336,7 +292,7 @@ class RecentDatabasesView(QFrame):
 
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
         model_data = []
-        for recent_db in qsettings.value("recent_databases", type=list):
+        for recent_db in qsettings.value("recent_databases", defaultValue=[], type=list):
             name = os.path.splitext(os.path.basename(recent_db))[0]
             model_data.append((name, recent_db))
 
@@ -473,26 +429,6 @@ class StartPage(QWidget):
         main_layout.addSpacing(12)
         main_layout.addWidget(self._recent_databases_view, alignment=Qt.AlignmentFlag.AlignHCenter)
         main_layout.addStretch(1)
-        # if True:
-        #     feedback_layout = QHBoxLayout()
-        #     feedback_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-
-        #     feedback_btn = QPushButton(tr.TR_FEEDBACK_BTN_SEND_START_PAGE)
-        #     palette = feedback_btn.palette()
-        #     normal_color = palette.color(palette.ColorRole.Link).name()
-        #     feedback_btn.setStyleSheet(f"""
-        #     QPushButton {{
-        #         color: {normal_color};
-        #         border: 1px solid {normal_color};
-        #         border-radius: 4px;
-        #         padding: 3px 10px;
-        #     }}
-        #     QPushButton:hover {{ background-color: rgba(0,0,0,0.05); }}
-        # """)
-        #     feedback_btn.clicked.connect(self._send_feedback)
-
-        #     feedback_layout.addWidget(feedback_btn)
-        #     main_layout.addLayout(feedback_layout)
 
         main_layout.addLayout(hbox_footer)
 
@@ -500,10 +436,6 @@ class StartPage(QWidget):
         btn_open_db.clicked.connect(lambda _: self._open_database(""))
         btn_new_db.clicked.connect(self._new_database)
         btn_example.clicked.connect(self._open_example)
-
-    # def _send_feedback(self):
-    #     controller = Registry.get("controller", Controller)
-    #     controller.send_feedback()
 
     def _new_database(self):
         controller = Registry.get("controller", Controller)

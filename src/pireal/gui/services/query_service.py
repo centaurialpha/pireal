@@ -1,17 +1,23 @@
 import logging
 from pathlib import Path
 
-from PyQt6.QtWidgets import QFileDialog
+from PyQt6.QtWidgets import QFileDialog, QMessageBox
 
 from pireal import translations as tr
 from pireal.core.db import DB
-from pireal.core.pireal_file import File
+from pireal.core.pireal_file import File, is_example_file
 from pireal.core.relation import DivisionIncompatibleError
-from pireal.gui.lateral_widget import LateralWidget, RelationItemType
-from pireal.gui.query_widget import QueryWidget
+from pireal.gui.lateral_widget import (
+    LateralWidget,
+    RelationItemType,
+)
+from pireal.gui.query_widget import EditorWidget, QueryWidget
 from pireal.gui.status_bar import StatusBar
 from pireal.gui.table_widget import TableWidget
-from pireal.interpreter.evaluator import Evaluator, UndefinedRelationError
+from pireal.interpreter.evaluator import (
+    Evaluator,
+    UndefinedRelationError,
+)
 from pireal.interpreter.exceptions import (
     ConsumeError,
     DuplicateRelationNameError,
@@ -157,3 +163,38 @@ class QueryService:
 
         lateral_widget.select_result(len(results) - 1)
         status_bar.show_message("", timeout=0)
+
+    def confirm_close(self) -> bool:
+        """
+        Pregunta al usuario qué hacer con las queries modificadas.
+        Retorna False si el usuario canceló, True si puede proceder.
+        """
+        from pireal.gui.main_window import Pireal
+
+        query_widget = Registry.get("query-widget", QueryWidget)
+        unsaved = [
+            w
+            for i in range(query_widget._editor_tabs.count())
+            if isinstance((w := query_widget._editor_tabs.widget(i)), EditorWidget)
+            and (doc := w.editor.document()) is not None
+            and doc.isModified()
+            and not is_example_file(w.file)
+        ]
+
+        if not unsaved:
+            return True
+
+        names = ", ".join(e.file.display_name for e in unsaved)
+        answer = QMessageBox.question(
+            Pireal.instance(),
+            tr.TR_UNSAVED_QUERIES_TITLE,
+            tr.TR_UNSAVED_QUERIES_BODY.format(names=names),
+            QMessageBox.StandardButton.Save | QMessageBox.StandardButton.Discard | QMessageBox.StandardButton.Cancel,
+        )
+        if answer == QMessageBox.StandardButton.Cancel:
+            return False
+        if answer == QMessageBox.StandardButton.Save:
+            for editor in unsaved:
+                query_widget._editor_tabs.setCurrentWidget(editor)
+                self.save()
+        return True

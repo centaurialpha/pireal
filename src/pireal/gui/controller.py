@@ -18,9 +18,19 @@
 import logging
 from pathlib import Path
 
-from PyQt6.QtCore import QSettings, QUrl, pyqtSlot
+from PyQt6.QtCore import (
+    QSettings,
+    QUrl,
+    pyqtSlot,
+)
 from PyQt6.QtGui import QDesktopServices
-from PyQt6.QtWidgets import QApplication, QMessageBox, QStackedWidget, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import (
+    QApplication,
+    QMessageBox,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
 from pireal import translations as tr
 from pireal.core.db import DB
@@ -31,7 +41,10 @@ from pireal.gui.dialogs.about_dialog import AboutDialog
 from pireal.gui.dialogs.db_from_text_dialog import DBFromTextDialog
 from pireal.gui.dialogs.new_relation_dialog import NewRelationDialog
 from pireal.gui.dialogs.settings_dialog import SettingsDialog
-from pireal.gui.lateral_widget import LateralWidget, RelationItemType
+from pireal.gui.lateral_widget import (
+    LateralWidget,
+    RelationItemType,
+)
 from pireal.gui.query_widget import QueryWidget
 from pireal.gui.services.database_service import DatabaseService
 from pireal.gui.services.query_service import QueryService
@@ -174,8 +187,13 @@ class Controller(QWidget):
         if self._db_service.open(filename):
             self.add_widget(Registry.get("database-container", DatabaseContainer))
 
+    def can_close(self) -> bool:
+        return self._query_service.confirm_close()
+
     @pyqtSlot()
     def close_database(self):
+        if not self.can_close():
+            return
         self._db_service.close()
 
     @pyqtSlot()

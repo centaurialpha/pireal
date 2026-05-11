@@ -27,10 +27,6 @@ from pireal.core.db import DB
 from pireal.core.pireal_file import is_example_file
 from pireal.gui.controller import Controller
 from pireal.gui.menu import MenuBuilder
-from pireal.gui.query_widget import (
-    EditorWidget,
-    QueryWidget,
-)
 from pireal.gui.start_page import StartPage
 from pireal.gui.status_bar import StatusBar
 from pireal.gui.theme.manager import get_theme_manager
@@ -110,35 +106,11 @@ class Pireal(QMainWindow):
     def closeEvent(self, a0: QCloseEvent | None) -> None:
         controller = Registry.get("controller", Controller)
         db = Registry.get("db", DB)
-        query_widget = Registry.get("query-widget", QueryWidget)
 
-        unsaved_editors = [
-            w
-            for i in range(query_widget._editor_tabs.count())
-            if isinstance((w := query_widget._editor_tabs.widget(i)), EditorWidget)
-            and (doc := w.editor.document()) is not None
-            and doc.isModified()
-            and not is_example_file(w.file)
-        ]
-
-        if unsaved_editors:
-            names = ", ".join(e.file.display_name for e in unsaved_editors)
-            ret = QMessageBox.question(
-                self,
-                tr.TR_UNSAVED_QUERIES_TITLE,
-                tr.TR_UNSAVED_QUERIES_BODY.format(names=names),
-                QMessageBox.StandardButton.Save
-                | QMessageBox.StandardButton.Discard
-                | QMessageBox.StandardButton.Cancel,
-            )
-            if ret == QMessageBox.StandardButton.Cancel:
-                if a0:
-                    a0.ignore()
-                return
-            if ret == QMessageBox.StandardButton.Save:
-                for editor in unsaved_editors:
-                    query_widget._editor_tabs.setCurrentWidget(editor)
-                    controller.save_query()
+        if not controller.can_close():
+            if a0:
+                a0.ignore()
+            return
 
         if db.is_active and db.modified and not is_example_file(db.file):
             ret = QMessageBox.question(
