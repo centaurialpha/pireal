@@ -15,8 +15,22 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtCore import QEvent, QPoint, QRect, QSize, Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QColor, QFont, QPainter, QPalette
+from PyQt6.QtCore import (
+    QEvent,
+    QPoint,
+    QRect,
+    QSize,
+    Qt,
+    pyqtSignal,
+    pyqtSlot,
+)
+from PyQt6.QtGui import (
+    QColor,
+    QFont,
+    QPainter,
+    QPalette,
+    QPolygon,
+)
 from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -107,7 +121,6 @@ class _RunPill(QWidget):
             icon_rect.bottomLeft() + QPoint(2, -1),
             QPoint(icon_rect.right() - 1, y_center),
         ]
-        from PyQt6.QtGui import QPolygon
 
         painter.setBrush(self._success_color)
         painter.setPen(Qt.PenStyle.NoPen)
@@ -209,12 +222,6 @@ class TableWidget(QWidget):
         self._btn_tree.clicked.connect(self.treeRequested.emit)
         toolbar.addWidget(self._btn_tree)
 
-        # Separador
-        # sep = QFrame()
-        # sep.setFrameShape(QFrame.Shape.VLine)
-        # sep.setFixedHeight(16)
-        # toolbar.addWidget(sep)
-
         sep = QWidget()
         sep.setFixedSize(1, 14)
         sep.setAutoFillBackground(True)
@@ -227,11 +234,6 @@ class TableWidget(QWidget):
         toolbar.addWidget(sep)
         toolbar.addSpacing(4)
 
-        # success_color = get_theme_manager().current_scheme.editor.get(EditorColorRole.SUCCESS)
-        # self._btn_run = self._make_tool_btn("Run queries")
-        # # self._btn_run.setStyleSheet(f"QToolButton {{ color: {success_color.name()}; }}")
-        # self._btn_run.clicked.connect(self._on_run_queries)
-        # toolbar.addWidget(self._btn_run)
         self._btn_run = self._make_tool_btn("Run queries (F5)")
         self._btn_run.clicked.connect(self._on_run_queries)
         toolbar.addWidget(self._btn_run)
@@ -258,7 +260,6 @@ class TableWidget(QWidget):
         btn.setToolTip(tooltip)
         btn.setIconSize(QSize(size, size))
         btn.setFixedSize(28, 28)
-        btn.setAutoRaise(True)
         return btn
 
     def changeEvent(self, a0: QEvent | None) -> None:
@@ -275,19 +276,44 @@ class TableWidget(QWidget):
         self._btn_tree.setIcon(svg_icon(icon("network.svg"), normal))
         self._btn_run.setIcon(svg_icon(icon("play.svg"), success))
 
-        bg = QColor(success)
-        bg.setAlpha(25)
-        self._btn_run.setStyleSheet(f"""
+        hover = self.palette().color(self.palette().ColorRole.Highlight)
+        hover.setAlpha(35)
+        hover_hex = hover.name(QColor.NameFormat.HexArgb)
+
+        tool_btn_style = f"""
             QToolButton {{
-                background-color: {bg.name(QColor.NameFormat.HexArgb)};
+                border: none;
                 border-radius: 4px;
+                background: transparent;
             }}
             QToolButton:hover {{
-                background-color: {
-            QColor(success.red(), success.green(), success.blue(), 80).name(QColor.NameFormat.HexArgb)
-        };
+                background-color: {hover_hex};
             }}
-        """)
+            QToolButton:checked {{
+                background-color: {hover_hex};
+            }}
+        """
+
+        success_bg = QColor(success)
+        success_bg.setAlpha(45)
+        success_hover = QColor(success)
+        success_hover.setAlpha(70)
+
+        run_style = f"""
+            QToolButton {{
+                border: none;
+                border-radius: 4px;
+                background-color: {success_bg.name(QColor.NameFormat.HexArgb)};
+            }}
+            QToolButton:hover {{
+                background-color: {success_hover.name(QColor.NameFormat.HexArgb)};
+            }}
+        """
+
+        for btn in (self._btn_split, self._btn_sql, self._btn_tree):
+            btn.setStyleSheet(tool_btn_style)
+
+        self._btn_run.setStyleSheet(run_style)
 
     @pyqtSlot()
     def _on_run_queries(self):

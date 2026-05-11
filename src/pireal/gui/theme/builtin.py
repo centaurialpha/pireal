@@ -96,7 +96,7 @@ class LightTheme:
 
     def color_scheme(self) -> ColorScheme:
         editor = EditorColors(
-            keyword=QColor("#cf222e"),
+            keyword=QColor("#0f766e"),
             variable=QColor("#953800"),
             operator=QColor("#0550ae"),
             number=QColor("#0550ae"),

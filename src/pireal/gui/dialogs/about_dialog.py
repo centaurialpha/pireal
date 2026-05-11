@@ -18,42 +18,35 @@
 from datetime import datetime
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QColor, QPainter, QPalette, QPixmap
-from PyQt6.QtWidgets import QDialog, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout, QWidget
+from PyQt6.QtGui import (
+    QPalette,
+    QPixmap,
+)
+from PyQt6.QtWidgets import (
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+)
 
 from pireal import (
     __version__,
     gui,
     translations as tr,
 )
+from pireal.gui.widgets import Pill
 
 
-class _VersionPill(QWidget):
-    _PADDING_H = 12
-    _PADDING_V = 4
-
-    def __init__(self, text: str, parent=None):
-        super().__init__(parent)
-        self._text = text
-        fm = self.fontMetrics()
-        self.setFixedSize(
-            fm.horizontalAdvance(text) + self._PADDING_H * 2,
-            fm.height() + self._PADDING_V * 2,
+class VersionPill(Pill):
+    def __init__(self, parent=None):
+        super().__init__(
+            color_fn=lambda: self.palette().color(QPalette.ColorRole.PlaceholderText),
+            text=f"v{__version__}",
+            parent=parent,
         )
-
-    def paintEvent(self, a0) -> None:
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        color = self.palette().color(QPalette.ColorRole.PlaceholderText)
-        bg = QColor(color)
-        bg.setAlpha(35)
-        painter.setBrush(bg)
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawRoundedRect(self.rect(), 3, 3)
-
-        painter.setPen(color)
-        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._text)
 
 
 class AboutDialog(QDialog):
@@ -68,14 +61,8 @@ class AboutDialog(QDialog):
         vbox.addWidget(banner)
 
         # Version
-        version_pill = _VersionPill(f"v{__version__}")
+        version_pill = VersionPill(self)
         vbox.addWidget(version_pill, alignment=Qt.AlignmentFlag.AlignHCenter)
-        # lbl_version = QLabel(f"{__version__}")
-        # lbl_version.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        # font = lbl_version.font()
-        # font.setPointSize(10)
-        # lbl_version.setFont(font)
-        # vbox.addWidget(lbl_version)
 
         # Description
         description = QLabel(tr.TR_DIALOG_ABOUT_PIREAL_BODY)

@@ -15,185 +15,80 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtCore import Qt, QTimer, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QColor, QPainter, QPalette
-from PyQt6.QtWidgets import QHBoxLayout, QLabel, QSizePolicy, QWidget
+from PyQt6.QtCore import (
+    Qt,
+    QTimer,
+    pyqtSignal,
+    pyqtSlot,
+)
+from PyQt6.QtGui import (
+    QColor,
+    QPainter,
+    QPalette,
+)
+from PyQt6.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QSizePolicy,
+    QWidget,
+)
 
 from pireal.gui.theme.manager import get_theme_manager
-from pireal.gui.theme.schema import ColorScheme, EditorColorRole
+from pireal.gui.theme.schema import (
+    ColorScheme,
+    EditorColorRole,
+)
+from pireal.gui.widgets import (
+    ClickablePill,
+    Pill,
+)
 
 
-class _SymbolModePill(QWidget):
-    clicked = pyqtSignal()
-
-    _PADDING_H = 8
-    _PADDING_V = 3
-
+class _DbPill(Pill):
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__(color_fn=lambda: get_theme_manager().current_scheme.highlight, parent=parent)
+        self._modified = False
+        self._base_text = ""
+
+    def set_text(self, text: str) -> None:
+        self._base_text = text
+        super().set_text(self._display_text())
+
+    def set_modified(self, modified: bool) -> None:
+        self._modified = modified
+        self._color_fn = lambda: (
+            QColor(210, 140, 30) if self._modified else get_theme_manager().current_scheme.highlight
+        )
+        super().set_text(self._display_text())
+
+    def _display_text(self) -> str:
+        return f"{self._base_text} •" if self._modified else self._base_text
+
+
+class LineColPill(Pill):
+    def __init__(self, parent: QWidget | None = None):
+        super().__init__(color_fn=self._pill_color, parent=parent)
+
+    def _pill_color(self):
+        return super().palette().color(QPalette.ColorRole.PlaceholderText)
+
+
+class SymbolModePill(ClickablePill):
+    def __init__(self, parent=None):
         self._enabled = False
-        self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.setToolTip("Toggle symbol mode (σ, π, ⋈...)")
-        fm = self.fontMetrics()
-        self._text_on = "σ  symbols"
-        self._text_off = "σ  symbols"
-        width = fm.horizontalAdvance(self._text_on) + self._PADDING_H * 2
-        height = fm.height() + self._PADDING_V * 2
-        self.setFixedSize(width, height)
+        super().__init__(color_fn=self._symbol_color, text="σ symbols", parent=parent)
+
+    def _symbol_color(self) -> QColor:
+        scheme = get_theme_manager().current_scheme
+        return (
+            scheme.editor.get(EditorColorRole.SUCCESS)
+            if self._enabled
+            else scheme.editor.get(EditorColorRole.FOREGROUND)
+        )
 
     def set_enabled(self, enabled: bool) -> None:
         self._enabled = enabled
         self.update()
-
-    def mousePressEvent(self, a0):
-        if a0 is not None and a0.button() == Qt.MouseButton.LeftButton:
-            self.clicked.emit()
-        super().mousePressEvent(a0)
-
-    def paintEvent(self, a0) -> None:
-        _ = a0
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        scheme = get_theme_manager().current_scheme
-        if self._enabled:
-            color = scheme.editor.get(EditorColorRole.SUCCESS)
-        else:
-            color = self.palette().color(QPalette.ColorRole.PlaceholderText)
-
-        bg = QColor(color)
-        bg.setAlpha(35)
-        painter.setBrush(bg)
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawRoundedRect(self.rect(), 2, 2)
-
-        painter.setPen(color)
-        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, "σ  symbols")
-
-
-class _DbPill(QWidget):
-    _PADDING_H = 8
-    _PADDING_V = 3
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self._text = ""
-        self._modified = False
-        self.setFixedHeight(self.fontMetrics().height() + self._PADDING_V * 2)
-
-    def set_text(self, text: str) -> None:
-        self._text = text
-        self._update_width()
-
-    def set_modified(self, modified: bool) -> None:
-        self._modified = modified
-        self._update_width()
-
-    def _update_width(self) -> None:
-        display = self._display_text()
-        w = self.fontMetrics().horizontalAdvance(display) + self._PADDING_H * 2
-        self.setFixedWidth(max(w, 10))
-        self.update()
-
-    def _display_text(self) -> str:
-        return f"{self._text} •" if self._modified else self._text
-
-    def paintEvent(self, a0) -> None:
-        if not self._text:
-            return
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        scheme = get_theme_manager().current_scheme
-        # color = self.palette().color(QPalette.ColorRole.LinkVisited) if self._modified else scheme.highlight
-        color = QColor(210, 140, 30) if self._modified else scheme.highlight
-
-        bg = QColor(color)
-        bg.setAlpha(35)
-        painter.setBrush(bg)
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawRoundedRect(self.rect(), 2, 2)
-
-        painter.setPen(color)
-        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._display_text())
-
-
-class __DbPill(QWidget):
-    _PADDING_H = 8
-    _PADDING_V = 3
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self._text = ""
-        fm = self.fontMetrics()
-        self._h = fm.height() + self._PADDING_V * 2
-        self.setFixedHeight(self._h)
-
-    def set_text(self, text: str) -> None:
-        self._text = text
-        fm = self.fontMetrics()
-        w = fm.horizontalAdvance(text) + self._PADDING_H * 2
-        self.setFixedWidth(max(w, 10))
-        self.update()
-
-    def paintEvent(self, a0) -> None:
-        _ = a0
-
-        if not self._text:
-            return
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        scheme = get_theme_manager().current_scheme
-        color = scheme.highlight
-
-        bg = QColor(color)
-        bg.setAlpha(35)
-        painter.setBrush(bg)
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawRoundedRect(self.rect(), 2, 2)
-
-        painter.setPen(color)
-        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._text)
-
-
-class _LineColPill(QWidget):
-    _PADDING_H = 8
-    _PADDING_V = 3
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self._text = ""
-        fm = self.fontMetrics()
-        self._h = fm.height() + self._PADDING_V * 2
-        self.setFixedHeight(self._h)
-        self.hide()
-
-    def set_text(self, text: str) -> None:
-        self._text = text
-        fm = self.fontMetrics()
-        w = fm.horizontalAdvance(text) + self._PADDING_H * 2
-        self.setFixedWidth(max(w, 10))
-        self.update()
-
-    def paintEvent(self, a0) -> None:
-        _ = a0
-
-        if not self._text:
-            return
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        color = self.palette().color(QPalette.ColorRole.PlaceholderText)
-
-        bg = QColor(color)
-        bg.setAlpha(35)
-        painter.setBrush(bg)
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawRoundedRect(self.rect(), 2, 2)
-
-        painter.setPen(color)
-        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._text)
 
 
 class StatusBar(QWidget):
@@ -221,7 +116,7 @@ class StatusBar(QWidget):
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(4, 0, 8, 0)
-        layout.setSpacing(2)
+        layout.setSpacing(6)
 
         # Left - db name (always visible, StatusBar only lives with an open DB)
         self._db_label = _DbPill()
@@ -233,22 +128,32 @@ class StatusBar(QWidget):
         self._message_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         layout.addWidget(self._message_label)
 
-        # Right - technical indicators
-        self._line_col_label = _LineColPill()
-        # self._line_col_label.hide()
+        self._pipeline_pill = Pill(
+            color_fn=lambda: get_theme_manager().current_scheme.editor.get(EditorColorRole.KEYWORD),
+            radius=3,
+        )
+        self._pipeline_pill.hide()
 
-        self._symbol_mode_label = _SymbolModePill()
+        # Right - technical indicators
+        self._line_col_label = LineColPill(self)
+
+        self._symbol_mode_label = SymbolModePill()
         self._symbol_mode_label.hide()
         self._symbol_mode_label.clicked.connect(self._on_symbol_mode_clicked)
 
         layout.addWidget(self._line_col_label)
-        gap = QLabel(" ")
-        gap.setStyleSheet(f"color: {self.palette().color(QPalette.ColorRole.Mid).name()};")
-        layout.addWidget(gap)
+        layout.addWidget(self._pipeline_pill)
         layout.addWidget(self._symbol_mode_label)
 
         self._apply_theme(get_theme_manager().current_scheme)
         get_theme_manager().themeChanged.connect(self._apply_theme)
+
+    def show_pipeline(self, text: str) -> None:
+        self._pipeline_pill.set_text(text)
+        self._pipeline_pill.show()
+
+    def hide_pipeline(self) -> None:
+        self._pipeline_pill.hide()
 
     def show_message(self, msg: str, timeout: int = 4000, error: bool = False) -> None:
         self._timer.stop()
@@ -267,11 +172,9 @@ class StatusBar(QWidget):
     def update_line_col(self, line: int, col: int) -> None:
         self._line_col_label.set_text(f"Ln {line}, Col {col}")
         self._line_col_label.show()
-        # self._sep1.show()
 
     def hide_line_col(self) -> None:
         self._line_col_label.hide()
-        # self._sep1.hide()
 
     def show_symbol_mode(self, enabled: bool) -> None:
         self._symbol_mode_on = enabled
@@ -290,19 +193,8 @@ class StatusBar(QWidget):
 
     @pyqtSlot(ColorScheme)
     def _apply_theme(self, scheme: ColorScheme) -> None:
-        # FIXME: no se usa acá, revisar este slot
-        # accent = scheme.editor.get(EditorColorRole.KEYWORD).name()
-        # self._db_label.setStyleSheet(f"color: {accent};")
         self._db_label.update()
-        self._refresh_symbol_mode_color()
-
-    def _refresh_symbol_mode_color(self) -> None:
-        scheme = get_theme_manager().current_scheme
-        if self._symbol_mode_on:
-            color = scheme.editor.get(EditorColorRole.SUCCESS).name()
-        else:
-            color = scheme.editor.get(EditorColorRole.ERROR).name()
-        self._symbol_mode_label.setStyleSheet(f"color: {color};")
+        self._symbol_mode_label.update()
 
     def paintEvent(self, a0) -> None:
         super().paintEvent(a0)

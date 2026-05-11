@@ -114,8 +114,8 @@ class DB(QObject):
     def clear_query_results(self) -> None:
         for name in self._query_results[:]:
             if name in self._relations:
-                self.remove(name)
-
+                del self._relations[name]
+                self.relationsChanged.emit(list(self._relations.keys()))
         self._query_results.clear()
 
     @property
@@ -126,7 +126,10 @@ class DB(QObject):
         if self._file is None:
             return False
 
-        content = generate_database(self._relations)
+        base_relations = {
+            name: relation for name, relation in self._relations.items() if name not in self._query_results
+        }
+        content = generate_database(base_relations)
         self._file.save(content)
         self.modified = False
         return True

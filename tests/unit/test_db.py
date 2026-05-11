@@ -136,3 +136,50 @@ def test_remove_emits_relations_changed(qtbot):
         db.remove("estudiantes")
 
     assert blocker.args == [[]]
+
+
+def test_save_excludes_query_results(db, tmp_path):
+    from pireal.core.pireal_file import File
+
+    filepath = tmp_path / "test.pdb"
+    db.file = File(str(filepath))
+
+    # Relación base
+    base = Relation()
+    base.name = "students"
+    base.header = ["id", "name"]
+    base.insert(("1", "Gabriel"))
+    db.load(base)
+
+    # Resultado de query, no debería persistir
+    result = Relation()
+    result.name = "q1"
+    result.header = ["name"]
+    result.insert(("Gabriel",))
+    db.load(result)
+    db.add_query_result("q1")
+
+    db.save()
+
+    content = filepath.read_text()
+    assert "students" in content
+    assert "q1" not in content
+
+
+def test_clear_query_results_does_not_mark_modified(db):
+    base = Relation()
+    base.name = "students"
+    base.header = ["id"]
+    db.load(base)
+
+    result = Relation()
+    result.name = "q1"
+    result.header = ["id"]
+    db.load(result)
+    db.add_query_result("q1")
+
+    db.modified = False  # simular que ya fue guardado
+
+    db.clear_query_results()
+
+    assert not db.modified

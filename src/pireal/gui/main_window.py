@@ -17,14 +17,20 @@
 
 
 from PyQt6.QtGui import QCloseEvent
-from PyQt6.QtWidgets import QMainWindow, QMessageBox
+from PyQt6.QtWidgets import (
+    QMainWindow,
+    QMessageBox,
+)
 
 from pireal import translations as tr
 from pireal.core.db import DB
 from pireal.core.pireal_file import is_example_file
 from pireal.gui.controller import Controller
 from pireal.gui.menu import MenuBuilder
-from pireal.gui.query_widget import EditorWidget, QueryWidget
+from pireal.gui.query_widget import (
+    EditorWidget,
+    QueryWidget,
+)
 from pireal.gui.start_page import StartPage
 from pireal.gui.status_bar import StatusBar
 from pireal.gui.theme.manager import get_theme_manager

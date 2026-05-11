@@ -114,15 +114,16 @@ class RelationModel(QAbstractTableModel):
             if current_value != value:
                 self.relation.update(index.row(), index.column(), value)
                 self.dataChanged.emit(index, index)
-                logger.debug(
-                    "Editing %d:%d - Current: %s, New: %s",
-                    index.row(),
-                    index.column(),
-                    current_value,
-                    value,
-                )
-                db = Registry.get("db", DB)
-                db.modified = True
+                if self.editable:
+                    logger.debug(
+                        "Editing %d:%d - Current: %s, New: %s",
+                        index.row(),
+                        index.column(),
+                        current_value,
+                        value,
+                    )
+                    db = Registry.get("db", DB)
+                    db.modified = True
                 return True
         return False
 
@@ -228,6 +229,8 @@ class Header(QHeaderView):
             model = self.model()
             if model is not None:
                 model.setHeaderData(index, Qt.Orientation.Horizontal, name.strip())
+                db = Registry.get("db", DB)
+                db.modified = True
 
 
 class Delegate(QItemDelegate):
@@ -254,4 +257,7 @@ def create_view(relation, *, editable=False):
     model.editable = editable
     view.setModel(model)
     view.setItemDelegate(Delegate())
+    if editable:
+        header = Header()
+        view.setHorizontalHeader(header)
     return view
