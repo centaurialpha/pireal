@@ -31,6 +31,7 @@ from PyQt6.QtCore import (
     pyqtSlot as Slot,
 )
 from PyQt6.QtGui import (
+    QColor,
     QFont,
     QPainter,
     QPalette,
@@ -392,6 +393,24 @@ class StartPage(QWidget):
         btn_example = QPushButton(tr.TR_EXAMPLE_DB)
         btn_example.setMinimumSize(150, 0)
         btn_example.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        highlight = self.palette().color(QPalette.ColorRole.Highlight)
+        bg = QColor(highlight)
+        bg.setAlpha(35)
+        btn_example.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {bg.name(QColor.NameFormat.HexArgb)};
+                color: {highlight.name()};
+                border: none;
+                border-radius: 4px;
+                padding: 6px 20px;
+                font-weight: 500;
+            }}
+            QPushButton:hover {{
+                background-color: {
+            QColor(highlight.red(), highlight.green(), highlight.blue(), 60).name(QColor.NameFormat.HexArgb)
+        };
+            }}
+        """)
 
         hbox_btn.addStretch()
         hbox_btn.addWidget(btn_open_db)
@@ -405,10 +424,12 @@ class StartPage(QWidget):
         or_font = or_lbl.font()
         or_font.setPointSize(9)
         or_lbl.setFont(or_font)
-        or_lbl.setStyleSheet("color: #888;")
+        color = self.palette().color(QPalette.ColorRole.PlaceholderText).name()
+        or_lbl.setStyleSheet(f"color: {color};")
 
+        link_color = self.palette().color(QPalette.ColorRole.Link).name()
         code_link = QLabel(
-            '<a href="code" style="text-decoration:none; color:#1565c0;">'
+            f'<a href="code" style="text-decoration:none; color:{link_color};">'
             "<tt>&lt;/&gt;</tt> code your database directly →"
             "</a>"
         )

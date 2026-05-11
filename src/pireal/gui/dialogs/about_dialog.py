@@ -18,14 +18,35 @@
 from datetime import datetime
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPixmap
-from PyQt6.QtWidgets import QDialog, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout
+from PyQt6.QtGui import (
+    QPalette,
+    QPixmap,
+)
+from PyQt6.QtWidgets import (
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+)
 
 from pireal import (
     __version__,
     gui,
     translations as tr,
 )
+from pireal.gui.widgets import Pill
+
+
+class VersionPill(Pill):
+    def __init__(self, parent=None):
+        super().__init__(
+            color_fn=lambda: self.palette().color(QPalette.ColorRole.PlaceholderText),
+            text=f"v{__version__}",
+            parent=parent,
+        )
 
 
 class AboutDialog(QDialog):
@@ -40,12 +61,8 @@ class AboutDialog(QDialog):
         vbox.addWidget(banner)
 
         # Version
-        lbl_version = QLabel(f"{__version__}")
-        lbl_version.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        font = lbl_version.font()
-        font.setPointSize(10)
-        lbl_version.setFont(font)
-        vbox.addWidget(lbl_version)
+        version_pill = VersionPill(self)
+        vbox.addWidget(version_pill, alignment=Qt.AlignmentFlag.AlignHCenter)
 
         # Description
         description = QLabel(tr.TR_DIALOG_ABOUT_PIREAL_BODY)

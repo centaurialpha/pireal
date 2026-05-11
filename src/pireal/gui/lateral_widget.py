@@ -19,8 +19,21 @@ import enum
 from collections import namedtuple
 from typing import cast
 
-from PyQt6.QtCore import QAbstractListModel, QModelIndex, QRect, Qt, pyqtSignal
-from PyQt6.QtGui import QFont, QFontMetrics, QPainter, QPalette
+from PyQt6.QtCore import (
+    QAbstractListModel,
+    QEvent,
+    QModelIndex,
+    QRect,
+    Qt,
+    pyqtSignal,
+)
+from PyQt6.QtGui import (
+    QColor,
+    QFont,
+    QFontMetrics,
+    QPainter,
+    QPalette,
+)
 from PyQt6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -129,24 +142,79 @@ class RelationModel(QAbstractListModel):
         }
 
 
+class _CountBadge(QWidget):
+    _PADDING_H = 6
+    _PADDING_V = 2
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._count = 0
+        self.hide()
+        fm = self.fontMetrics()
+        self.setFixedHeight(fm.height() + self._PADDING_V * 2)
+
+    def set_count(self, count: int) -> None:
+        self._count = count
+        if count > 0:
+            fm = self.fontMetrics()
+            w = fm.horizontalAdvance(str(count)) + self._PADDING_H * 2
+            self.setFixedWidth(w)
+            self.show()
+        else:
+            self.hide()
+        self.update()
+
+    def paintEvent(self, a0) -> None:
+        _ = a0
+        if self._count == 0:
+            return
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        color = self.palette().color(QPalette.ColorRole.PlaceholderText)
+        bg = QColor(color)
+        bg.setAlpha(35)
+        painter.setBrush(bg)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.drawRoundedRect(self.rect(), 3, 3)
+
+        painter.setPen(color)
+        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, str(self._count))
+
+
 class _SectionHeader(QWidget):
     def __init__(self, text: str, parent=None):
         super().__init__(parent)
         layout = QHBoxLayout(self)
         layout.setContentsMargins(8, 6, 8, 4)
 
-        label = QLabel(text.upper())
-        fm = label.fontMetrics()
-        font = label.font()
+        self._label = QLabel(text.upper())
+        fm = self._label.fontMetrics()
+        font = self._label.font()
         font.setPointSize(max(7, fm.height() // 2))
         font.setLetterSpacing(QFont.SpacingType.AbsoluteSpacing, 1.5)
         font.setBold(True)
-        label.setFont(font)
+        self._label.setFont(font)
+        self._refresh_label_color()
+        layout.addWidget(self._label)
 
-        palette = label.palette()
-        label.setStyleSheet(f"color: {palette.color(QPalette.ColorRole.PlaceholderText).name()};")
-        layout.addWidget(label)
+        self._badge = _CountBadge()
+        layout.addWidget(self._badge)
         layout.addStretch()
+
+    def _refresh_label_color(self) -> None:
+        color = self.palette().color(QPalette.ColorRole.PlaceholderText).name()
+        self._label.setStyleSheet(f"color: {color};")
+
+    def changeEvent(self, a0) -> None:
+        super().changeEvent(a0)
+        if a0 is not None and a0.type() == QEvent.Type.PaletteChange:
+            self._refresh_label_color()
+
+    def set_model(self, model: "RelationModel") -> None:
+        model.rowsInserted.connect(lambda *_: self._badge.set_count(model.rowCount()))
+        model.rowsRemoved.connect(lambda *_: self._badge.set_count(model.rowCount()))
+        model.modelReset.connect(lambda: self._badge.set_count(0))
 
     def paintEvent(self, a0) -> None:
         super().paintEvent(a0)
@@ -166,19 +234,14 @@ class RelationListView(QFrame):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(3, 3, 3, 3)
         layout.setSpacing(0)
-        # header_lbl = QLabel(header_text.upper())
-        # header_lbl.setObjectName("section_title")
-        # font = header_lbl.font()
-        # font.setPointSize(11)
-        # header_lbl.setFont(font)
-        # layout.addWidget(
-        #     header_lbl,
-        #     # alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter,
-        # )
-        header = _SectionHeader(header_text)
-        layout.addWidget(header)
+        self._header = _SectionHeader(header_text)
+        layout.addWidget(self._header)
         self.view = _EmptyListView(empty_text)
         layout.addWidget(self.view)
+
+    def set_model(self, model: "RelationModel") -> None:
+        self.view.setModel(model)
+        self._header.set_model(model)
 
 
 class RelationDelegate(QStyledItemDelegate):
@@ -343,19 +406,20 @@ class RelationDelegate(QStyledItemDelegate):
 class LateralWidget(QSplitter):
     relationClicked = pyqtSignal(int)
     resultClicked = pyqtSignal(int)
+    relationSelected = pyqtSignal(str, int, int)
     deleteRelationRequested = pyqtSignal(int)
 
     def __init__(self):
         super().__init__(orientation=Qt.Orientation.Vertical)
         self._relations_list = RelationListView(tr.TR_RELATIONS, tr.TR_NO_RELATIONS)
         self._relations_model = RelationModel()
-        self._relations_list.view.setModel(self._relations_model)
+        self._relations_list.set_model(self._relations_model)
         self._relations_list.view.setItemDelegate(RelationDelegate())
         self.addWidget(self._relations_list)
 
         self._results_list = RelationListView(tr.TR_RESULTS, tr.TR_NO_RESULTS)
         self._results_model = RelationModel()
-        self._results_list.view.setModel(self._results_model)
+        self._results_list.set_model(self._results_model)
         self._results_list.view.setItemDelegate(RelationDelegate())
         self.addWidget(self._results_list)
 
@@ -367,7 +431,9 @@ class LateralWidget(QSplitter):
         self._relations_list.view.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self._relations_list.view.customContextMenuRequested.connect(self._on_relations_context_menu)
         self._relations_list.view.clicked.connect(lambda index: self.relationClicked.emit(index.row()))
+        self._relations_list.view.clicked.connect(self._on_relation_clicked)
         self._results_list.view.clicked.connect(lambda index: self.resultClicked.emit(index.row()))
+        self._results_list.view.clicked.connect(self._on_result_clicked)
 
     def _on_relations_context_menu(self, pos):
         index = self._relations_list.view.indexAt(pos)
@@ -410,3 +476,17 @@ class LateralWidget(QSplitter):
             return
         idx = model.index(index, 0)
         view.setCurrentIndex(idx)
+
+    def _on_result_clicked(self, index) -> None:
+        self.resultClicked.emit(index.row())
+        self._emit_relation_selected(self._results_model, index)
+
+    def _on_relation_clicked(self, index) -> None:
+        self.relationClicked.emit(index.row())
+        self._emit_relation_selected(self._relations_model, index)
+
+    def _emit_relation_selected(self, model: RelationModel, index) -> None:
+        name = model.data(index, RelationModel.NameRole)
+        cardinality = model.data(index, RelationModel.CardinalityRole)
+        degree = model.data(index, RelationModel.DegreeRole)
+        self.relationSelected.emit(name, cardinality, degree)

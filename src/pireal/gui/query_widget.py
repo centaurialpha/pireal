@@ -29,10 +29,26 @@ from PyQt6.QtWidgets import (
 )
 
 from pireal import translations as tr
-from pireal.core.pireal_file import File, is_example_file
+from pireal.core.db import DB
+from pireal.core.pireal_file import (
+    File,
+    is_example_file,
+)
+from pireal.gui.dialogs.query_plan_dialog import QueryPlanDialog
+from pireal.gui.dialogs.sql_dialog import SQLDialog
 from pireal.gui.editor import Editor
 from pireal.gui.status_bar import StatusBar
-from pireal.interpreter.exceptions import ConsumeError, InvalidSyntaxError, MissingQuoteError
+from pireal.interpreter.exceptions import (
+    ConsumeError,
+    InvalidSyntaxError,
+    MissingQuoteError,
+)
+from pireal.interpreter.lexer import Lexer
+from pireal.interpreter.operator_pipeline import pipeline_text
+from pireal.interpreter.parser import Parser
+from pireal.interpreter.query_plan import QueryPlanBuilder
+from pireal.interpreter.scanner import Scanner
+from pireal.interpreter.sql_generator import SQLGenerator
 from pireal.interpreter.tokens import SYMBOL_TO_KEYWORD
 from pireal.registry import Registry
 from pireal.settings import settings
@@ -60,6 +76,49 @@ class QueryWidget(QWidget):
         self._editor_tabs.tabCloseRequested.connect(self._on_tab_close_requested)
 
         self.hide()
+
+    def _on_cursor_moved(self, editor_widget: "EditorWidget") -> None:
+        status_bar = Registry.get("status-bar", StatusBar)
+        cursor = editor_widget.editor.textCursor()
+        line = cursor.blockNumber() + 1
+        col = cursor.columnNumber() + 1
+        status_bar.update_line_col(line, col)
+        self._update_pipeline(editor_widget, line)
+
+    def _update_pipeline(self, editor_widget: "EditorWidget", current_line: int) -> None:
+        status_bar = Registry.get("status-bar", StatusBar)
+
+        text = editor_widget.text()
+        if not text:
+            status_bar.hide_pipeline()
+            return
+
+        try:
+            tree = Parser(Lexer(Scanner(text))).parse()
+        except Exception:
+            status_bar.hide_pipeline()
+            return
+
+        # Encontrar el assignment cuyo rango de líneas incluye current_line
+        target = None
+        for assignment in tree.children:
+            if assignment.rname.lineno is not None:
+                if assignment.rname.lineno <= current_line:
+                    target = assignment
+                else:
+                    break
+        else:
+            target = tree.children[-1] if tree.children else None
+
+        if target is None:
+            status_bar.hide_pipeline()
+            return
+
+        text_pipeline = pipeline_text(target)
+        if text_pipeline:
+            status_bar.show_pipeline(text_pipeline)
+        else:
+            status_bar.hide_pipeline()
 
     def set_symbol_mode(self, enabled: bool) -> None:
         self._symbol_mode_on = enabled
@@ -120,13 +179,6 @@ class QueryWidget(QWidget):
         self._editor_tabs.setTabToolTip(index, editor_widget.file.path)
         self._editor_tabs.setCurrentIndex(index)
 
-    def _on_cursor_moved(self, editor_widget: "EditorWidget") -> None:
-        from pireal.gui.status_bar import StatusBar
-
-        status_bar = Registry.get("status-bar", StatusBar)
-        cursor = editor_widget.editor.textCursor()
-        status_bar.update_line_col(cursor.blockNumber() + 1, cursor.columnNumber() + 1)
-
     def create_editor(self, file: File | None = None) -> "EditorWidget":
         editor = EditorWidget()
         if file is not None:
@@ -139,14 +191,6 @@ class QueryWidget(QWidget):
         return editor
 
     def _show_tree(self):
-        from pireal.core.db import DB
-        from pireal.gui.dialogs.query_plan_dialog import QueryPlanDialog
-        from pireal.interpreter.lexer import Lexer
-        from pireal.interpreter.parser import Parser
-        from pireal.interpreter.query_plan import QueryPlanBuilder
-        from pireal.interpreter.scanner import Scanner
-        from pireal.registry import Registry
-
         editor = self.current_editor()
         if editor is not None:
             queries = editor.text()
@@ -181,12 +225,6 @@ class QueryWidget(QWidget):
             logger.exception("Unexpected error building query plan")
 
     def _show_sql(self):
-        from pireal.gui.dialogs.sql_dialog import SQLDialog
-        from pireal.interpreter.lexer import Lexer
-        from pireal.interpreter.parser import Parser
-        from pireal.interpreter.scanner import Scanner
-        from pireal.interpreter.sql_generator import SQLGenerator
-
         editor = self.current_editor()
         if editor is not None:
             queries = editor.text()
@@ -285,8 +323,6 @@ class EditorWidget(QWidget):
                 tabs.setTabText(idx, self.file.display_name)
 
     def _get_tabs(self):
-        from PyQt6.QtWidgets import QTabWidget
-
         parent = self.parent()
         while parent is not None:
             if isinstance(parent, QTabWidget):

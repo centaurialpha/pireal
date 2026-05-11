@@ -23,6 +23,7 @@ from PyQt6.QtGui import (
     QColor,
     QFont,
     QPainter,
+    QPalette,
     QPen,
 )
 from PyQt6.QtWidgets import (
@@ -48,12 +49,84 @@ from pireal.gui.model_view_delegate import (
     View,
 )
 from pireal.gui.theme.manager import get_theme_manager
-from pireal.gui.theme.schema import blend_colors
+from pireal.gui.theme.schema import (
+    EditorColorRole,
+    blend_colors,
+)
+from pireal.gui.widgets import Pill
 from pireal.interpreter.query_plan import (
     NodeState,
     QueryPlanEvaluator,
     QueryPlanNode,
 )
+
+
+class StatusPill(Pill):
+    def __init__(self, parent=None):
+        super().__init__(color_fn=self._current_color, parent=parent)
+        self._state = "ready"  # "ready" | "step" | "completed"
+
+    def _current_color(self) -> QColor:
+        palette = self.palette()
+        match self._state:
+            case "step":
+                return palette.color(QPalette.ColorRole.Highlight)
+            case "completed":
+                return get_theme_manager().current_scheme.editor.get(EditorColorRole.SUCCESS)
+            case "error":
+                return get_theme_manager().current_scheme.editor.get(EditorColorRole.ERROR)
+            case _:
+                return palette.color(QPalette.ColorRole.PlaceholderText)
+
+    def set_ready(self) -> None:
+        self._state = "ready"
+        self._set_text(tr.TR_QUERY_PLAN_STATUS_READY)
+
+    def set_step(self, current: int, total: int) -> None:
+        self._state = "step"
+        self._set_text(tr.TR_QUERY_PLAN_STEP_COUNT.format(current=current, total=total))
+
+    def set_completed(self) -> None:
+        self._state = "completed"
+        self._set_text(tr.TR_QUERY_PLAN_COMPLETED)
+
+    def set_error(self, msg: str) -> None:
+        self._state = "error"
+        self._set_text(f"Error: {msg}")
+
+    def _set_text(self, text: str) -> None:
+        self._text = text
+        fm = self.fontMetrics()
+        w = fm.horizontalAdvance(text) + self._PADDING_H * 2
+        self.setFixedWidth(w)
+        self.update()
+
+    def paintEvent(self, a0) -> None:
+        _ = a0
+        if not self._text:
+            return
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        palette = self.palette()
+        match self._state:
+            case "step":
+                color = palette.color(QPalette.ColorRole.Highlight)
+            case "completed":
+                color = get_theme_manager().current_scheme.editor.get(EditorColorRole.SUCCESS)
+            case "error":
+                color = get_theme_manager().current_scheme.editor.get(EditorColorRole.ERROR)
+            case _:
+                color = palette.color(QPalette.ColorRole.PlaceholderText)
+
+        bg = QColor(color)
+        bg.setAlpha(35)
+        painter.setBrush(bg)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.drawRoundedRect(self.rect(), 3, 3)
+
+        painter.setPen(color)
+        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._text)
 
 
 class QueryPlanNodeItem(QGraphicsRectItem):
@@ -166,7 +239,7 @@ class QueryPlanScene(QGraphicsScene):
         if node.is_leaf():
             x = offset
             y = level * self.LEVEL_HEIGHT
-            positions[id(node)] = (x, y)  # ← id(node)
+            positions[id(node)] = (x, y)
             return QueryPlanNodeItem.NODE_WIDTH + self.NODE_SPACING
 
         child_offset = offset
@@ -250,26 +323,27 @@ class QueryPlanDialog(QDialog):
 
         layout.addLayout(selector_layout)
 
-        # Controles de paso a paso
-        controls = QHBoxLayout()
-
-        self.status_label = QLabel(tr.TR_QUERY_PLAN_STATUS_READY)
-        controls.addWidget(self.status_label)
-        controls.addStretch()
-
+        hbox = QHBoxLayout()
+        buttons_layout = QHBoxLayout()
+        buttons_layout.addStretch()
         self.btn_step = QPushButton(tr.TR_QUERY_PLAN_BTN_STEP)
         self.btn_step.clicked.connect(self._step_forward)
-        controls.addWidget(self.btn_step)
-
         self.btn_run_all = QPushButton(tr.TR_QUERY_PLAN_BTN_RUN_ALL)
         self.btn_run_all.clicked.connect(self._run_all)
-        controls.addWidget(self.btn_run_all)
-
         self.btn_reset = QPushButton(tr.TR_QUERY_PLAN_BTN_RESET)
         self.btn_reset.clicked.connect(self._reset)
-        controls.addWidget(self.btn_reset)
+        buttons_layout.addWidget(self.btn_step)
+        buttons_layout.addWidget(self.btn_run_all)
+        buttons_layout.addWidget(self.btn_reset)
 
-        layout.addLayout(controls)
+        status_layout = QHBoxLayout()
+        self.status_label = StatusPill(self)
+        self.status_label.set_ready()
+        status_layout.addWidget(self.status_label)
+        status_layout.addStretch()
+        hbox.addLayout(status_layout)
+        hbox.addLayout(buttons_layout)
+        layout.addLayout(hbox)
 
         # Contenedor para el árbol (se recrea al cambiar query)
         self.tree_container = QWidget()
@@ -328,8 +402,10 @@ class QueryPlanDialog(QDialog):
 
         # Resetear controles
         self.btn_step.setEnabled(True)
-        self.status_label.setText(tr.TR_QUERY_PLAN_STATUS_READY)
+        self.status_label.set_ready()
         self.result_view.setModel(None)
+
+        self.status_label.set_ready()
 
     def _build_execution_order(self, node: QueryPlanNode):
         """Build post-order (leaves first, root last)"""
@@ -346,21 +422,33 @@ class QueryPlanDialog(QDialog):
 
     def _step_forward(self):
         if self._current_step >= len(self._execution_order):
-            self.status_label.setText(tr.TR_QUERY_PLAN_COMPLETED)
+            self.status_label.set_completed()
             self.btn_step.setEnabled(False)
             return
 
         node = self._execution_order[self._current_step]
         self._evaluate_and_show(node)
-
         self._current_step += 1
-        self.status_label.setText(
-            tr.TR_QUERY_PLAN_STEP_COUNT.format(current=self._current_step, total=len(self._execution_order))
-        )
+        self.status_label.set_step(self._current_step, len(self._execution_order))
 
         if self._current_step >= len(self._execution_order):
             self.btn_step.setEnabled(False)
-            self.status_label.setText(tr.TR_QUERY_PLAN_COMPLETED)
+            self.status_label.set_completed()
+
+    def __step_forward(self):
+        if self._current_step >= len(self._execution_order):
+            self.status_label.set_step(self._current_step, len(self._execution_order))
+            self.btn_step.setEnabled(False)
+            return
+
+        node = self._execution_order[self._current_step]
+        self._evaluate_and_show(node)
+        self._current_step += 1
+        self.status_label.set_step(self._current_step, len(self._execution_order))
+
+        if self._current_step >= len(self._execution_order):
+            self.btn_step.setEnabled(False)
+            self.status_label.set_completed()
 
     def _run_all(self):
         """Execute all the steps at once."""
@@ -373,26 +461,20 @@ class QueryPlanDialog(QDialog):
         final_node = self._execution_order[-1]
         self._show_result(final_node)
 
-        self.status_label.setText(tr.TR_QUERY_PLAN_COMPLETED)
+        self.status_label.set_completed()
         self.btn_step.setEnabled(False)
 
     def _reset(self):
         self._current_step = 0
         self.evaluator.cache.clear()
-
-        # Resetear estados de todos los nodos
         for node in self._execution_order:
             node.state = NodeState.PENDING
             node.result = None
             node.error = ""
-
-            # Actualizar visualización
             if id(node) in self.scene.node_items:
                 self.scene.node_items[id(node)]._update_style()
-
-        self.status_label.setText(tr.TR_QUERY_PLAN_STATUS_READY)
+        self.status_label.set_ready()
         self.btn_step.setEnabled(True)
-        self.result_label.setText(tr.TR_QUERY_PLAN_SELECT_NODE)
         self.result_view.setModel(None)
 
     def _evaluate_and_show(self, node: QueryPlanNode, show_in_table=True):
@@ -409,7 +491,7 @@ class QueryPlanDialog(QDialog):
                 self._show_result(node)
 
         except Exception as e:
-            self.status_label.setText(f"Error: {e}")
+            self.status_label.set_error(str(e))
             node_item = self.scene.node_items[id(node)]
             node_item._update_style()
 
