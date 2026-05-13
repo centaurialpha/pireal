@@ -39,7 +39,7 @@ class Application:
         self._translator = None
         self._app = QApplication(sys.argv)
         self._app.setApplicationName("Pireal")
-        self._app.setApplicationDisplayName("Pireal")
+        self._app.setDesktopFileName("pireal")
         self._registry = Registry()
 
         self._initialize_settings()
