@@ -82,7 +82,10 @@ class Settings(QObject):
         self.autocomplete: bool = self._qs.value("autocomplete", True, type=bool)
         self.show_query_blocks: bool = self._qs.value("show_query_blocks", True, type=bool)
 
-        default_theme = "light" if not self._qs.contains("theme") else self._qs.value("theme")
+        if not self._qs.contains("theme"):
+            default_theme = "dark" if self.dark_mode else "light"
+        else:
+            default_theme = self._qs.value("theme")
         self.theme: str = default_theme
 
         self._loaded = True
