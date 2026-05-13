@@ -88,7 +88,9 @@ class DatabaseContainer(QSplitter):
             table_widget.add_table_to_workspace(relation)
             lateral_widget.add_item(relation, RelationItemType.Normal)
 
-        lateral_widget.select_relation(len(relations) - 1)
+        last = len(relations) - 1
+        lateral_widget.select_relation(last)
+        table_widget.show_relation_at(last)
 
     def add_relations(self, data):
         table_widget = Registry.get("table-widget", TableWidget)
@@ -100,7 +102,9 @@ class DatabaseContainer(QSplitter):
             table_widget.add_table_to_workspace(relation)
             lateral_widget.add_item(relation, RelationItemType.Normal)
 
-        lateral_widget.select_relation(len(relations) - 1)
+        last = len(relations) - 1
+        lateral_widget.select_relation(last)
+        table_widget.show_relation_at(last)
 
     @pyqtSlot(int)
     def _on_relation_clicked(self, row: int):
