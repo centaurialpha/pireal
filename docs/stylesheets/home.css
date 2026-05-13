@@ -61,22 +61,6 @@
   margin-bottom: 1.25rem;
 }
 
-.pi-btn-download {
-  background: #3465a4 !important;
-  color: #ffffff !important;
-  font-weight: 600;
-  font-size: 0.9rem;
-  padding: 0.6rem 1.6rem;
-  border-radius: 0.25rem;
-  border: none !important;
-  transition: opacity 0.15s;
-}
-
-.pi-btn-download:hover {
-  opacity: 0.88;
-  color: #ffffff !important;
-}
-
 .pi-btn-secondary {
   background: transparent !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
@@ -113,6 +97,24 @@
   width: 14rem;
   vertical-align: middle;
   margin-bottom: 0.15em;
+}
+
+.pi-btn-download,
+.md-typeset a.pi-btn-download,
+.md-typeset a.pi-btn-download:hover {
+  background: #3465a4 !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.6rem 1.6rem;
+  border-radius: 0.25rem;
+  border: none !important;
+  transition: opacity 0.15s;
+}
+
+.pi-btn-download:hover,
+.md-typeset a.pi-btn-download:hover {
+  opacity: 0.88;
 }
 
 @media screen and (max-width: 45em) {
