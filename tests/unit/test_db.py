@@ -183,3 +183,46 @@ def test_clear_query_results_does_not_mark_modified(db):
     db.clear_query_results()
 
     assert not db.modified
+
+
+def test_is_base_relation_true_for_loaded_relation(db):
+    r = Relation()
+    r.name = "students"
+    r.header = ["id"]
+    db.load(r)
+
+    assert db.is_base_relation("students")
+
+
+def test_is_base_relation_false_for_query_result(db):
+    r = Relation()
+    r.name = "q1"
+    r.header = ["id"]
+    db.load(r)
+    db.add_query_result("q1")
+
+    assert not db.is_base_relation("q1")
+
+
+def test_is_base_relation_false_for_unknown_name(db):
+    assert not db.is_base_relation("nonexistent")
+
+
+def test_is_base_relation_after_clear_query_results(db):
+    base = Relation()
+    base.name = "students"
+    base.header = ["id"]
+    db.load(base)
+
+    result = Relation()
+    result.name = "q1"
+    result.header = ["id"]
+    db.load(result)
+    db.add_query_result("q1")
+
+    db.clear_query_results()
+
+    # base sigue siendo base
+    assert db.is_base_relation("students")
+    # q1 fue eliminada, no existe
+    assert not db.is_base_relation("q1")

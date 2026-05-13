@@ -171,6 +171,11 @@ class QueryService:
         status_bar = Registry.get("status-bar", StatusBar)
         status_bar.show_message("", timeout=0)
 
+        for name in results:
+            if self._db.is_base_relation(name):
+                self._show_runtime_error(f"'{name}' is an existing base relation. Choose a different name.")
+                return
+
         for name, relation in results.items():
             self._db.load(relation)
             self._db.add_query_result(name)
