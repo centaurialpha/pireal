@@ -66,6 +66,12 @@ class DB(QObject):
             self._is_active = value
             self.databaseStateChanged.emit(value)
 
+    def is_base_relation(self, name: str) -> bool:
+        """
+        True si el nombre pertenece a una relación base (no a un resultado de query)
+        """
+        return name in self._relations and name not in self._query_results
+
     def add(self, relation: Relation) -> None:
         self._relations[relation.name] = relation
         self.modified = True

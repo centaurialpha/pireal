@@ -12,7 +12,10 @@ from pireal.core.pireal_file import (
     File,
     is_example_file,
 )
-from pireal.core.relation import DivisionIncompatibleError
+from pireal.core.relation import (
+    DivisionIncompatibleError,
+    UnionCompatibleError,
+)
 from pireal.gui.lateral_widget import (
     LateralWidget,
     RelationItemType,
@@ -66,6 +69,7 @@ class QueryService:
             query_widget.create_editor()
 
     def open(self, filename: str = "") -> None:
+        logger.debug("Opening query: '%s'", filename or "<dialog>")
         if not filename:
             filename, _ = QFileDialog.getOpenFileName(
                 self._parent,
@@ -124,6 +128,7 @@ class QueryService:
         status_bar.show_message(msg, timeout=0, error=True)
 
     def execute(self) -> None:
+        logger.debug("Executing queries")
         query_widget = Registry.get("query-widget", QueryWidget)
         table_widget = Registry.get("table-widget", TableWidget)
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
@@ -142,27 +147,34 @@ class QueryService:
             editor.editor.highlight_error(-1)
             editor.editor.show_run_cursor()
         except (MissingQuoteError, InvalidSyntaxError, ConsumeError) as err:
+            logger.warning("Query parse error (line %s): %s", err.lineno, err)
             editor.editor.highlight_error(err.lineno, message=str(err))
             return
 
         try:
             results = Evaluator(self._db.relations_dict()).evaluate(tree)
         except UndefinedRelationError as err:
+            logger.warning("Undefined relation (line %s): %s", err.lineno, err)
             editor.editor.highlight_error(err.lineno, message=str(err))
             return
-        except UndefinedAttributeError as err:
-            self._show_runtime_error(str(err))
-            return
-        except DuplicateRelationNameError as err:
-            self._show_runtime_error(str(err))
-            return
-        except DivisionIncompatibleError as err:
+        except (
+            UndefinedAttributeError,
+            DuplicateRelationNameError,
+            DivisionIncompatibleError,
+            UnionCompatibleError,
+        ) as err:
+            logger.error("Query evaluation error: %s", err)
             self._show_runtime_error(str(err))
             return
 
         # Ejecución exitosa: limpiar cualquier error previo de runtime
         status_bar = Registry.get("status-bar", StatusBar)
         status_bar.show_message("", timeout=0)
+
+        for name in results:
+            if self._db.is_base_relation(name):
+                self._show_runtime_error(f"'{name}' is an existing base relation. Choose a different name.")
+                return
 
         for name, relation in results.items():
             self._db.load(relation)
@@ -171,6 +183,8 @@ class QueryService:
             lateral_widget.add_item(relation, RelationItemType.Result)
 
         lateral_widget.select_result(len(results) - 1)
+
+        logger.info("Queries executed successfully: %d result(s)", len(results))
 
     def confirm_close(self) -> bool:
         """

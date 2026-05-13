@@ -198,6 +198,7 @@ class TableWidget(QWidget):
         super().__init__()
 
         self._relation_widgets: dict[str, QWidget] = {}
+        self._pending_relations: list[tuple[Relation, bool]] = []
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -255,7 +256,16 @@ class TableWidget(QWidget):
         self._refresh_icons()
 
     def show_relation_at(self, index: int) -> None:
-        self._stacked.setCurrentIndex(index)
+        # self._stacked.setCurrentIndex(index)
+        if index < 0 or index >= len(self._pending_relations):
+            return
+        relation, editable = self._pending_relations[index]
+        if relation.name not in self._relation_widgets:
+            self._remove_placeholder()
+            view = create_view(relation, editable=editable)
+            self._relation_widgets[relation.name] = view
+            self._stacked.addWidget(view)
+        self._stacked.setCurrentWidget(self._relation_widgets[relation.name])
 
     def _make_tool_btn(self, tooltip: str, size: int = 16) -> QToolButton:
         btn = QToolButton()
@@ -359,11 +369,12 @@ class TableWidget(QWidget):
         self._stacked_results.setCurrentIndex(index)
 
     def add_table_to_workspace(self, relation: Relation, editable=True):
-        self._remove_placeholder()
-        view = create_view(relation, editable=editable)
-        self._relation_widgets[relation.name] = view
-        self._stacked.addWidget(view)
-        self._stacked.setCurrentWidget(view)
+        self._pending_relations.append((relation, editable))
+        # self._remove_placeholder()
+        # view = create_view(relation, editable=editable)
+        # self._relation_widgets[relation.name] = view
+        # self._stacked.addWidget(view)
+        # self._stacked.setCurrentWidget(view)
 
     def add_table_to_results(self, relation: Relation, editable=False):
         view = create_view(relation, editable=editable)
@@ -389,6 +400,8 @@ class TableWidget(QWidget):
             if widget is not None:
                 self._stacked.removeWidget(widget)
                 widget.deleteLater()
+        self._relation_widgets.clear()
+        self._pending_relations.clear()
         self.clear_results()
         self._show_placeholder()
 
@@ -398,5 +411,6 @@ class TableWidget(QWidget):
             return
         self._stacked.removeWidget(widget)
         widget.deleteLater()
+        self._pending_relations = [(r, e) for r, e in self._pending_relations if r.name != relation_name]
         if self._stacked.count() == 0:
             self._show_placeholder()
