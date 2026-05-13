@@ -35,8 +35,8 @@ from pireal.utils import sanitize_data
 
 PLACEHOLDER = """\
 @personas:id,nombre,edad
-1,Gabriel,30
-2,Ana,25
+1,Gabriel,34
+2,Marisel,32
 
 @cursos:id,nombre
 1,Base de Datos

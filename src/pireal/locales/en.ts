@@ -787,4 +787,14 @@ Save before closing?</source>
         <source>Show execution tree</source>
         <translation type="unfinished" />
     </message>
+    <message>
+        <location filename="../translations.py" line="335" />
+        <source>or</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../translations.py" line="336" />
+        <source>code your database directly</source>
+        <translation type="unfinished" />
+    </message>
 </context></TS>

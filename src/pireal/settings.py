@@ -71,7 +71,7 @@ class Settings(QObject):
         if self._loaded:
             return
 
-        self.language: str = self._qs.value("language", "es")
+        self.language: str = self._qs.value("language", "en")
 
         self.font_family: str = self._qs.value("font_family", _get_default_font())
         self.font_size: int = self._qs.value("font_size", 12, type=int)

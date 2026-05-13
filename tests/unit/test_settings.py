@@ -34,7 +34,7 @@ def settings(tmp_path, qapp):
 @pytest.mark.parametrize(
     "attr, expected",
     [
-        ("language", "es"),
+        ("language", "en"),
         ("font_size", 12),
         ("highlight_current_line", True),
         ("match_parenthesis", True),
@@ -94,9 +94,9 @@ def test_no_auto_save_before_load(tmp_path, qapp):
     config_file = tmp_path / "settings.ini"
     with patch("pireal.settings.CONFIG_FILE", config_file):
         s = Settings()
-        s.language = "en"  # antes de load(), no debería persistir
+        s.language = "es"  # antes de load(), no debería persistir
 
     with patch("pireal.settings.CONFIG_FILE", config_file):
         s2 = Settings()
         s2.load()
-        assert s2.language == "es"  # default
+        assert s2.language == "en"  # default
