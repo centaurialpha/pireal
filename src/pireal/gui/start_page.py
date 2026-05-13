@@ -375,7 +375,7 @@ class StartPage(QWidget):
         hbox_btn.addStretch()
 
         # "or code your DB" link
-        or_lbl = QLabel("or")
+        or_lbl = QLabel(tr.TR_START_PAGE_OR)
         or_lbl.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         or_font = or_lbl.font()
         or_font.setPointSize(9)
@@ -386,7 +386,7 @@ class StartPage(QWidget):
         link_color = self.palette().color(QPalette.ColorRole.Link).name()
         code_link = QLabel(
             f'<a href="code" style="text-decoration:none; color:{link_color};">'
-            "<tt>&lt;/&gt;</tt> code your database directly →"
+            f"<tt>&lt;/&gt;</tt> {tr.TR_START_PAGE_CODE_LINK}"
             "</a>"
         )
         code_link.setAlignment(Qt.AlignmentFlag.AlignHCenter)
