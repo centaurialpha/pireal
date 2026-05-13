@@ -21,6 +21,7 @@
 import datetime
 import itertools
 import re
+from functools import lru_cache
 
 from pireal.core.ordered_set import OrderedSet
 from pireal.interpreter.utils import is_date, is_time
@@ -109,6 +110,7 @@ def union_compatible(operation):
     return inner
 
 
+@lru_cache(maxsize=2048)
 def _cast_value(value: str) -> int | float | datetime.date | datetime.time | str | None:
     try:
         return int(value)
