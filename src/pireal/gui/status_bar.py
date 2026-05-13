@@ -126,7 +126,8 @@ class StatusBar(QWidget):
         # Center - temporary messages (expanding)
         self._message_label = QLabel()
         self._message_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self._message_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        self._message_label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
+        self._message_label.setMinimumWidth(0)
         layout.addWidget(self._message_label)
 
         self._pipeline_pill = Pill(
@@ -164,6 +165,7 @@ class StatusBar(QWidget):
             self._message_label.setText(f'<span style="color:{color}">{msg}</span>')
         else:
             self._message_label.setText(msg)
+        self._message_label.setToolTip(msg)
         if timeout > 0:
             self._timer.start(timeout)
 
@@ -191,6 +193,7 @@ class StatusBar(QWidget):
     @pyqtSlot()
     def _clear_message(self) -> None:
         self._message_label.clear()
+        self._message_label.setToolTip("")
 
     @pyqtSlot(ColorScheme)
     def _apply_theme(self, scheme: ColorScheme) -> None:
