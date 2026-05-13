@@ -46,11 +46,11 @@ COMPARISON_SYMBOLS = {
 
 
 class NodeKind(Enum):
-    ASSIGNMENT = auto()  # resultado := ...
-    UNARY_OP = auto()  # σ, π
-    BINARY_OP = auto()  # ⋈, ∪, −, etc.
-    RELATION = auto()  # hoja — nombre de relación
-    CONDITION = auto()  # la condición dentro de σ
+    ASSIGNMENT = auto()
+    UNARY_OP = auto()
+    BINARY_OP = auto()
+    RELATION = auto()
+    CONDITION = auto()
 
 
 @dataclass
