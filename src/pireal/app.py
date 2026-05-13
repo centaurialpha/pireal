@@ -68,6 +68,7 @@ class Application:
         translator = QTranslator()
         is_ok = translator.load(translation(settings.language))
         if is_ok:
+            logger.warning("Translation not loaded for language '%s'", settings.language)
             self._app.installTranslator(translator)
         # Mantener la referencia porque Qt/C++ necesita
         # ptm horas de debuggggg
@@ -83,6 +84,7 @@ class Application:
         try:
             manager.apply(theme_id)
         except ValueError:
+            logger.warning("Theme '%s' not found, falling back to 'dark'", theme_id)
             manager.apply("dark")
             settings.theme = "dark"
 

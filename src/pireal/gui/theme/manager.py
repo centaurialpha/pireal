@@ -86,6 +86,7 @@ class ThemeManager(QObject):
         return self._themes.get(theme_id)
 
     def apply(self, theme_id: str):
+        logger.info("Applying theme '%s'", theme_id)
         theme = self.get(theme_id)
         if theme is None:
             available = list(self._themes.keys())

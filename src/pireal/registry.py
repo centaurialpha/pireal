@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from typing import TypeVar
 
 from PyQt6.QtCore import QObject
@@ -22,11 +23,16 @@ from PyQt6.QtCore import QObject
 T = TypeVar("T", bound=QObject)
 
 
+logger = logging.getLogger(__name__)
+
+
 class Registry:
     _components: dict[str, QObject] = {}
 
     @classmethod
     def register(cls, name: str, widget: QObject) -> None:
+        if name in cls._components:
+            logger.warning("Overwriting registry component '%s'", name)
         cls._components[name] = widget
 
     @classmethod
