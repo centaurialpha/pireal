@@ -18,6 +18,7 @@
 from PyQt6.QtCore import QCoreApplication
 
 TR_MENU_FILE = QCoreApplication.translate("Pireal", "&File")
+TR_MENU_VIEW = QCoreApplication.translate("Pireal", "&View")
 TR_MENU_SCHEME = QCoreApplication.translate("Pireal", "&Scheme")
 TR_MENU_HELP = QCoreApplication.translate("Pireal", "&Help")
 
@@ -305,7 +306,7 @@ TR_QUERY_PLAN_BTN_STEP = QCoreApplication.translate("Pireal", "Step ->")
 TR_QUERY_PLAN_BTN_RUN_ALL = QCoreApplication.translate("Pireal", "Run All")
 TR_QUERY_PLAN_BTN_RESET = QCoreApplication.translate("Pireal", "Reset")
 TR_QUERY_PLAN_SELECT_NODE = QCoreApplication.translate("Pireal", "Select a node to view its result")
-TR_QUERY_PLAN_COMPLETED = QCoreApplication.translate("Pireal", "✓ Execution completed")
+TR_QUERY_PLAN_COMPLETED = QCoreApplication.translate("Pireal", "Execution completed")
 TR_QUERY_PLAN_STEP_COUNT = QCoreApplication.translate("Pireal", "Step {current}/{total}")
 TR_QUERY_PLAN_RESULT_FORMAT = QCoreApplication.translate("Pireal", "{op} - {tuples} tuples, {attrs} attributes")
 
@@ -321,7 +322,15 @@ TR_RELATION_DIALOG_FIELD_1 = QCoreApplication.translate("Pireal", "Field_1")
 TR_RELATION_DIALOG_FIELD_2 = QCoreApplication.translate("Pireal", "Field_2")
 TR_NO_RECENT_DATABASES = QCoreApplication.translate("Pireal", "No recent databases.")
 
-TR_UPDATE_AVAILABLE = QCoreApplication.translate("Pireal", "Nueva versión {version} disponible. Click acá!!")
+TR_UPDATE_AVAILABLE = QCoreApplication.translate("Pireal", "New version {version} available. Click here!!")
 
 TR_SETTINGS_AUTOCOMPLETE = QCoreApplication.translate("Pireal", "Autocomplete")
 TR_SETTINGS_SHOW_QUERY_BLOCKS = QCoreApplication.translate("Pireal", "Show query block indicators")
+
+TR_TOOLTIP_RUN_QUERIES = QCoreApplication.translate("Pireal", "Run queries (F5)")
+TR_TOOLTIP_TOGGLE_SPLIT = QCoreApplication.translate("Pireal", "Toggle split view")
+TR_TOOLTIP_SHOW_SQL = QCoreApplication.translate("Pireal", "Show SQL")
+TR_TOOLTIP_SHOW_TREE = QCoreApplication.translate("Pireal", "Show execution tree")
+
+TR_START_PAGE_OR = QCoreApplication.translate("Pireal", "or")
+TR_START_PAGE_CODE_LINK = QCoreApplication.translate("Pireal", "code your database directly")

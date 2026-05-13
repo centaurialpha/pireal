@@ -146,12 +146,12 @@ file_menu.add_item(Action(tr.TR_MENU_FILE_SAVE_AS_QUERY, "controller:save_query_
 file_menu.add_item("separator")
 file_menu.add_item(Action(tr.TR_MENU_FILE_QUIT, "controller:quit", shortcut="Ctrl+Q"))
 
-view_menu = Menu("&View")
+view_menu = Menu(tr.TR_MENU_VIEW)
 view_menu.add_item(Action("Dark Mode", "controller:toggle_theme", is_checkable=True))
 view_menu.add_item("separator")
 view_menu.add_item(Action(tr.TR_SETTINGS_TITLE, "controller:show_settings", shortcut="Ctrl+,"))
 
-scheme_menu = Menu("&Scheme")
+scheme_menu = Menu(tr.TR_MENU_SCHEME)
 scheme_menu.add_item(Action(tr.TR_MENU_SCHEME_CREATE_RELATION, "controller:create_relation", requires_db=True))
 scheme_menu.add_item(
     Action(tr.TR_MENU_SCHEME_ADD_RELATIONS_FROM_TEXT, "controller:add_relations_from_text", requires_db=True)
@@ -161,7 +161,7 @@ scheme_menu.add_item(
     Action(tr.TR_MENU_SCHEME_EXECUTE_QUERIES, "controller:execute_queries", shortcut="F5", requires_db=True)
 )
 
-help_menu = Menu("&Help")
+help_menu = Menu(tr.TR_MENU_HELP)
 help_menu.add_item(Action(tr.TR_MENU_HELP_REPORT_ISSUE, "controller:report_issue"))
 help_menu.add_item(Action(tr.TR_MENU_HELP_ABOUT_PIREAL, "controller:about_pireal"))
 help_menu.add_item(Action(tr.TR_MENU_HELP_ABOUT_QT, "controller:about_qt"))

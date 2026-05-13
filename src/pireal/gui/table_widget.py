@@ -208,16 +208,16 @@ class TableWidget(QWidget):
         toolbar.setContentsMargins(0, 0, 0, 0)
         toolbar.addStretch()
 
-        self._btn_split = self._make_tool_btn("Toggle split view")
+        self._btn_split = self._make_tool_btn(tr.TR_TOOLTIP_TOGGLE_SPLIT)
         self._btn_split.setCheckable(True)
         self._btn_split.toggled.connect(self._on_split_toggled)
         toolbar.addWidget(self._btn_split)
 
-        self._btn_sql = self._make_tool_btn("Show SQL")
+        self._btn_sql = self._make_tool_btn(tr.TR_TOOLTIP_SHOW_SQL)
         self._btn_sql.clicked.connect(self.sqlRequested.emit)
         toolbar.addWidget(self._btn_sql)
 
-        self._btn_tree = self._make_tool_btn("Show execution tree")
+        self._btn_tree = self._make_tool_btn(tr.TR_TOOLTIP_SHOW_TREE)
         self._btn_tree.clicked.connect(self.treeRequested.emit)
         toolbar.addWidget(self._btn_tree)
 
@@ -233,7 +233,7 @@ class TableWidget(QWidget):
         toolbar.addWidget(sep)
         toolbar.addSpacing(4)
 
-        self._btn_run = self._make_tool_btn("Run queries (F5)")
+        self._btn_run = self._make_tool_btn(tr.TR_TOOLTIP_RUN_QUERIES)
         self._btn_run.clicked.connect(self._on_run_queries)
         toolbar.addWidget(self._btn_run)
 

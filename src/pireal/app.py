@@ -15,21 +15,30 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import annotations
+
 import logging
 import sys
+from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QTimer, QTranslator
+from PyQt6.QtCore import (
+    QTimer,
+    QTranslator,
+)
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication
 
 from pireal.core.db import DB
 from pireal.dirs import THEMES_DIR
-from pireal.gui.controller import Controller
-from pireal.gui.query_widget import QueryWidget
-from pireal.gui.right_pane import RightPane
-from pireal.gui.status_bar import StatusBar
 from pireal.registry import Registry
-from pireal.resources import image, translation
+from pireal.resources import (
+    image,
+    translation,
+)
+
+if TYPE_CHECKING:
+    from pireal.gui.query_widget import QueryWidget
+    from pireal.gui.status_bar import StatusBar
 
 logger = logging.getLogger(__name__)
 
@@ -56,10 +65,13 @@ class Application:
     def _initialize_translations(self):
         from pireal.settings import settings
 
+        print(f"language: {settings.language}")
         translator = QTranslator()
         is_ok = translator.load(translation(settings.language))
         if is_ok:
             self._app.installTranslator(translator)
+        print(f"translator loaded: {is_ok}")
+        print(f"path: {translation(settings.language)}")
         # Mantener la referencia porque Qt/C++ necesita
         # ptm horas de debuggggg
         self._translator = translator
@@ -78,11 +90,14 @@ class Application:
             settings.theme = "dark"
 
     def _initialize_widgets(self):
+        from pireal.gui.controller import Controller
         from pireal.gui.database_container import DatabaseContainer
         from pireal.gui.lateral_widget import LateralWidget
         from pireal.gui.main_window import Pireal
         from pireal.gui.query_widget import QueryWidget
+        from pireal.gui.right_pane import RightPane
         from pireal.gui.start_page import StartPage
+        from pireal.gui.status_bar import StatusBar
         from pireal.gui.table_widget import TableWidget
 
         logger.info("Widgets initialization")
