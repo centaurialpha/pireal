@@ -1,6 +1,6 @@
 # Crear temas
 
-¿No te convence ninguno de los temas que vienen por defecto? Podés crear el tuyo. Los temas son archivos JSON simples — no hace falta saber programar, solo elegir colores.
+¿No te convence ninguno de los temas que vienen por defecto? Podés crear el tuyo. Los temas son archivos JSON simples - no hace falta saber programar, solo elegir colores.
 
 ---
 
@@ -181,6 +181,6 @@ Guardá este archivo como `~/.pireal/themes/catppuccin-mocha.json` y aparecerá 
 
 ## Compartir tu tema
 
-Si creás un tema que te quedó bueno, compartilo — abrí un Pull Request o publicalo como gist en GitHub y linkealo en las issues.
+Si creás un tema que te quedó bueno, compartilo - abrí un Pull Request o publicalo como gist en GitHub y linkealo en las issues.
 
 A los que compartan un tema y sea aceptado al repo les invito una cerveza 🍺 (o una gaseosa, sin presiones).

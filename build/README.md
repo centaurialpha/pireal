@@ -54,5 +54,5 @@ uv run python build/build.py --skip-nuitka
   sudo pacman -S ccache   # Arch
   ```
 - `appimagetool` is downloaded automatically to `build/linux/` on first Linux build.
-- `build/windows/installer.iss` is generated automatically — do not edit it directly, edit `installer.iss.in`.
+- `build/windows/installer.iss` is generated automatically - do not edit it directly, edit `installer.iss.in`.
 - Both `dist/` and `build/linux/appimagetool` are in `.gitignore`.

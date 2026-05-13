@@ -3,7 +3,7 @@
 > *"Si no sabes cómo funcionan los compiladores, entonces no sabes cómo funcionan las computadoras. Si no estás 100% seguro de cómo funcionan los compiladores, entonces no sabes cómo funcionan las computadoras."*
 > -- Steve Yegge
 
-El núcleo de Pireal es su intérprete de Álgebra Relacional, construido completamente desde cero en Python. No depende de ninguna librería de parsing externa — cada componente fue diseñado e implementado a mano.
+El núcleo de Pireal es su intérprete de Álgebra Relacional, construido completamente desde cero en Python. No depende de ninguna librería de parsing externa - cada componente fue diseñado e implementado a mano.
 
 Entender cómo funciona un intérprete es uno de los temas más valiosos en la carrera de Ingeniería de Software. Pireal es un ejemplo real, pequeño y legible de estos conceptos en acción.
 
@@ -11,7 +11,7 @@ Entender cómo funciona un intérprete es uno de los temas más valiosos en la c
 
 ## ¿Por qué construir un intérprete desde cero?
 
-Existen librerías que generan parsers automáticamente (ANTLR, PLY, Lark). Usarlas hubiera sido más rápido, pero el objetivo de Pireal no es solo funcionar — es ser un **ejemplo didáctico** de cómo se procesa un lenguaje formal.
+Existen librerías que generan parsers automáticamente (ANTLR, PLY, Lark). Usarlas hubiera sido más rápido, pero el objetivo de Pireal no es solo funcionar - es ser un **ejemplo didáctico** de cómo se procesa un lenguaje formal.
 
 Además, el Álgebra Relacional tiene una gramática relativamente simple que se puede implementar con un parser recursivo descendente sin demasiada complejidad. Esto lo hace ideal para entender los conceptos sin ahogarse en casos edge.
 

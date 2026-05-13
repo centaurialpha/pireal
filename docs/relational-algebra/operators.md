@@ -112,7 +112,7 @@ result := student louter enrolled;
 
 ### Union - `union`
 
-Returns all rows from both relations. Both must have exactly the same columns — same names and same order. Duplicates are removed.
+Returns all rows from both relations. Both must have exactly the same columns - same names and same order. Duplicates are removed.
 
 ```
 result := r1 union r2;

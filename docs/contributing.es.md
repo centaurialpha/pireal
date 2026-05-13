@@ -1,6 +1,6 @@
 # Contribuir
 
-Las contribuciones son bienvenidas. Ya sea un reporte de bug, una funcionalidad nueva, o una corrección en la documentación — todo ayuda.
+Las contribuciones son bienvenidas. Ya sea un reporte de bug, una funcionalidad nueva, o una corrección en la documentación - todo ayuda.
 
 ---
 

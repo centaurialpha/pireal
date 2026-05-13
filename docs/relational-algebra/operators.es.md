@@ -112,7 +112,7 @@ resultado := alumno louter inscripto;
 
 ### Unión - `union`
 
-Devuelve todas las filas de ambas relaciones. Ambas deben tener exactamente las mismas columnas — mismos nombres y mismo orden. Los duplicados se eliminan.
+Devuelve todas las filas de ambas relaciones. Ambas deben tener exactamente las mismas columnas - mismos nombres y mismo orden. Los duplicados se eliminan.
 
 ```
 resultado := r1 union r2;

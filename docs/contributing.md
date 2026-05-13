@@ -1,6 +1,6 @@
 # Contributing
 
-Contributions are welcome. Whether it is a bug report, a new feature, or a documentation fix — everything helps.
+Contributions are welcome. Whether it is a bug report, a new feature, or a documentation fix - everything helps.
 
 ---
 
