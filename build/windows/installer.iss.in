@@ -31,3 +31,46 @@ Name: "{commondesktop}\Pireal"; Filename: "{app}\pireal.exe"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\pireal.exe"; Description: "{cm:LaunchProgram,Pireal}"; Flags: nowait postinstall skipifsilent
+
+[Code]
+function FindOldInstallation(): String;
+var
+  Paths: TArrayOfString;
+  I: Integer;
+begin
+  SetArrayLength(Paths, 4);
+  Paths[0] := ExpandConstant('{pf}\Pireal\maintenancetool.exe');
+  Paths[1] := ExpandConstant('{pf32}\Pireal\maintenancetool.exe');
+  Paths[2] := ExpandConstant('{pf64}\Pireal\maintenancetool.exe');
+  Paths[3] := ExpandConstant('{localappdata}\Pireal\maintenancetool.exe');
+  for I := 0 to GetArrayLength(Paths) - 1 do
+  begin
+    if FileExists(Paths[I]) then
+    begin
+      Result := Paths[I];
+      Exit;
+    end;
+  end;
+  Result := '';
+end;
+
+function InitializeSetup(): Boolean;
+var
+  OldTool: String;
+begin
+  OldTool := FindOldInstallation();
+  if OldTool <> '' then
+  begin
+    MsgBox(
+      'Se encontró una versión anterior de Pireal instalada.' + #13#10#13#10 +
+      'Antes de instalar Pireal 4.0.0, tenés que desinstalar esa versión (por si las moscas):' + #13#10 +
+      '  ' + OldTool + #13#10#13#10 +
+      'Una vez desinstalada, volvé a ejecutar este instalador.',
+      mbInformation,
+      MB_OK
+    );
+    Result := False;
+  end
+  else
+    Result := True;
+end;
