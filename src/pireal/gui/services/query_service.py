@@ -12,7 +12,10 @@ from pireal.core.pireal_file import (
     File,
     is_example_file,
 )
-from pireal.core.relation import DivisionIncompatibleError
+from pireal.core.relation import (
+    DivisionIncompatibleError,
+    UnionCompatibleError,
+)
 from pireal.gui.lateral_widget import (
     LateralWidget,
     RelationItemType,
@@ -154,7 +157,12 @@ class QueryService:
             logger.warning("Undefined relation (line %s): %s", err.lineno, err)
             editor.editor.highlight_error(err.lineno, message=str(err))
             return
-        except (UndefinedAttributeError, DuplicateRelationNameError, DivisionIncompatibleError) as err:
+        except (
+            UndefinedAttributeError,
+            DuplicateRelationNameError,
+            DivisionIncompatibleError,
+            UnionCompatibleError,
+        ) as err:
             logger.error("Query evaluation error: %s", err)
             self._show_runtime_error(str(err))
             return
