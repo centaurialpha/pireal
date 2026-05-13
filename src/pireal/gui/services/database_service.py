@@ -54,6 +54,7 @@ class DatabaseService:
         logger.info("Opening database '%s'", filename)
         file = File(filename)
         if not file.exists:
+            logger.warning("Database file not found: %s", filename)
             QMessageBox.warning(
                 self._parent,
                 tr.TR_MSG_FILE_NOT_FOUND_TITLE,
@@ -76,7 +77,7 @@ class DatabaseService:
             self._remember_folder(filename)
             self._recents.add(filename)
 
-        logger.info("Database opened")
+        logger.info("Database opened: %s", filename)
         return True
 
     def create(self) -> bool:
@@ -90,6 +91,8 @@ class DatabaseService:
 
         self._db.file = File(filepath)
         self._db.is_active = True
+
+        logger.info("New database created: %s", filepath)
         return True
 
     def close(self) -> bool:
@@ -108,6 +111,7 @@ class DatabaseService:
             if answer == QMessageBox.StandardButton.Yes:
                 self.save()
 
+        logger.info("Database closed")
         self._db.is_active = False
         return True
 
@@ -117,6 +121,8 @@ class DatabaseService:
         if self._db.is_new:
             return self.save_as()
         self._db.save()
+
+        logger.info("Database saved: '%s'", self._db.file.path if self._db.file is not None else "")
         return True
 
     def save_as(self) -> bool:
@@ -139,6 +145,7 @@ class DatabaseService:
         self._db.save()
         self._remember_folder(filename)
 
+        logger.info("Database saved as: '%s'", self._db.file.path if self._db.file is not None else "")
         return True
 
     def create_from_text(self) -> bool:
