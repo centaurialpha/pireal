@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-#
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2026 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -16,41 +14,47 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
+import json
 import logging
-
-from pkg_resources import parse_version
-from urllib.request import urlopen
 from urllib.error import URLError
+from urllib.request import Request, urlopen
 
-from PyQt6.QtCore import QObject, pyqtSignal as Signal
+from packaging.version import Version
+from PyQt6.QtCore import (
+    QObject,
+    pyqtSignal,
+)
 
 from pireal import __version__
 
 logger = logging.getLogger("updater")
 
-URL = "https://raw.githubusercontent.com/centaurialpha/pireal/main/version.txt"
+UPDATE_URL = "https://gabox.dev/pireal_version.json"
 
 
 class Updater(QObject):
-    finished = Signal()
+    finished = pyqtSignal()
+    updateAvailable = pyqtSignal(str, str)
 
-    def __init__(self):
+    def __init__(self, url: str = UPDATE_URL):
         QObject.__init__(self)
-        self.version = ""
+        self._url = url
 
     def check_updates(self):
         logger.info("Checking for updates...")
         try:
-            web_version = parse_version(urlopen(URL).read().decode().strip())
-            version = parse_version(__version__)
-            if version < web_version:
-                self.version = web_version
-                logger.info("new version found: %s", self.version)
+            request = Request(self._url, headers={"User-Agent": "pireal-updater"})
+            response = urlopen(request, timeout=5)
+            data = json.loads(response.read().decode())
+            web_version = Version(data["version"])
+            current_version = Version(__version__)
+
+            if current_version < web_version:
+                logger.info("new version found: %s", web_version)
+                self.updateAvailable.emit(str(web_version), data["url"])
             else:
                 logger.info("no new version available")
-        except URLError:
-            logger.exception("error while checking updates", exc_info=True)
+        except (URLError, KeyError, ValueError):
+            logger.exception("error checking updates")
         finally:
-            logger.info("updater finished")
-
-        self.finished.emit()
+            self.finished.emit()

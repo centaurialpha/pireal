@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright 2015-2017 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
@@ -20,50 +18,59 @@
 # This module is responsible for organizing called "tokens" pieces,
 # each of these tokens has a meaning in language
 
+from __future__ import annotations
+
 
 class InterpreterError(Exception):
-    """Excepción básica para errores generados por el intérprete"""
+    """Base exception for interpreter errors."""
+
+    lineno: int | None = None
+    column: int | None = None
 
 
 class MissingQuoteError(InterpreterError):
-    """Excepción para comillas faltantes en strings"""
+    """Missing closing quote in a string literal."""
 
-    def __init__(self, msg, lineno, col):
-        InterpreterError.__init__(self, msg.format(lineno))
-        self.lineno = lineno - 1
+    def __init__(self, lineno: int, col: int):
+        super().__init__(f"Missing closing quote on line {lineno}.")
+        self.lineno = lineno
         self.column = col
 
 
 class InvalidSyntaxError(InterpreterError):
-    """Excepción para errores de sintáxis generados por el Lexer"""
+    """Unexpected character found in the query."""
 
-    def __init__(self, lineno, col, char, msg="Invalid syntax on '{0}':'{1}'"):
-        InterpreterError.__init__(self, msg.format(lineno, col))
+    def __init__(self, lineno: int, col: int, char: str):
+        super().__init__(f"Unexpected character '{char}' on line {lineno}, column {col}.")
         self.lineno = lineno
         self.column = col
-        self.character = "<b>" + char + "</b>"
+        self.char = char
 
 
 class ConsumeError(InterpreterError):
-    """Excepción para errores generados por el Parser cuando no se espera
-    un determinado símbolo del lenguaje"""
+    """Unexpected token found while parsing."""
 
-    def __init__(self, expected, got, lineno, msg=None):
-        if msg is None:
-            msg = (
-                f"It is expected to find '{expected}' ('{expected.value}'), "
-                f"but '{got.value}' found in line: '{lineno}'"
-            )
-        super().__init__(msg)
+    def __init__(self, expected, got, lineno: int, got_value: str | None = None):
+        got_str = got_value or got.value
+        super().__init__(f"Syntax error on line {lineno}: expected '{expected.value}' but got '{got_str}'.")
         self.expected = expected
         self.got = got
         self.lineno = lineno
 
 
 class DuplicateRelationNameError(InterpreterError):
-    """Excepción para errores generados por el Interpreter cuando se
-    usa un nombre que ya existe en el SCOPE"""
+    """A relation name was defined more than once."""
 
-    def __init__(self, rname):
-        super().__init__()
+    def __init__(self, rname: str):
+        super().__init__(f"Relation '{rname}' is already defined in this query.")
         self.rname = rname
+
+
+class UndefinedAttributeError(InterpreterError):
+    """An attribute referenced in the query does not exist in the relation."""
+
+    def __init__(self, attribute: str, relation_name: str, lineno: int | None = None):
+        super().__init__(f"Attribute '{attribute}' does not exist in relation '{relation_name}'.")
+        self.attribute = attribute
+        self.relation_name = relation_name
+        self.lineno = lineno

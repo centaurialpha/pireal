@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-#
-# Copyright 2015-2016 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2025 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -19,7 +17,7 @@
 
 import platform
 
-from PyQt6.QtCore import QSettings
+from PyQt6.QtCore import QObject, QSettings, pyqtSignal
 from PyQt6.QtGui import QFontDatabase
 
 from pireal.dirs import CONFIG_FILE
@@ -33,109 +31,90 @@ SUPPORTED_FILES = (
 )
 
 
+MAX_RECENT_DATABASES = 10
+
+
 def get_extension_filter(extension):
     for sf in SUPPORTED_FILES:
         if extension in sf:
             return sf
 
 
-class SettingManager:
-    """Wrapper around QSettings to manage user settings"""
+def _get_default_font() -> str:
+    """Devuelve la fuente por defecto según el OS"""
+    families = QFontDatabase.families()
+
+    fonts = {
+        "Linux": ["Ubuntu Mono", "Liberation Mono", "Source Code Pro"],
+        "Windows": ["Consolas", "Courier New"],
+        "Darwin": ["SF Mono", "Monaco", "Menlo"],
+    }
+
+    preferred_fonts = fonts.get(platform.system(), ["Courier"])
+
+    for font in preferred_fonts:
+        if font in families:
+            return font
+
+    return "Courier"
+
+
+class Settings(QObject):
+    settingsChanged = pyqtSignal(str)
 
     def __init__(self):
+        super().__init__()
         self._qs = QSettings(str(CONFIG_FILE), QSettings.Format.IniFormat)
+        self._loaded = False
 
-    def load(self):
-        self._language: str = self._qs.value("language", defaultValue="en")
-        self._highlight_current_line: bool = self._qs.value(
-            "highlight_current_line", defaultValue=False, type=bool
-        )
-        self._match_parenthesis: bool = self._qs.value(
-            "match_parenthesis", defaultValue=True, type=bool
-        )
-        self._font_family: str = self._qs.value("font_family")
-        self._font_size: int = self._qs.value("font_size", defaultValue=12, type=int)
-        self._dark_mode: bool = self._qs.value(
-            "dark_mode", defaultValue=True, type=bool
-        )
+    def load(self) -> None:
+        if self._loaded:
+            return
 
-    @property
-    def language(self) -> str:
-        return self._language
+        self.language: str = self._qs.value("language", "es")
 
-    @language.setter
-    def language(self, lang):
-        if lang != self._language:
-            self._language = lang
-            self._qs.setValue("language", lang)
+        self.font_family: str = self._qs.value("font_family", _get_default_font())
+        self.font_size: int = self._qs.value("font_size", 12, type=int)
+        self.highlight_current_line: bool = self._qs.value("highlight_current_line", True, type=bool)
+        self.match_parenthesis: bool = self._qs.value("match_parenthesis", True, type=bool)
+        self.dark_mode: bool = self._qs.value("dark_mode", True, type=bool)
+        self.symbol_mode: bool = self._qs.value("symbol_mode", False, type=bool)
+        self.autocomplete: bool = self._qs.value("autocomplete", True, type=bool)
+        self.show_query_blocks: bool = self._qs.value("show_query_blocks", True, type=bool)
 
-    @property
-    def highlight_current_line(self) -> bool:
-        return self._highlight_current_line
+        if not self._qs.contains("theme"):
+            default_theme = "dark" if self.dark_mode else "light"
+        else:
+            default_theme = self._qs.value("theme")
+        self.theme: str = default_theme
 
-    @highlight_current_line.setter
-    def highlight_current_line(self, value):
-        if value != self._highlight_current_line:
-            self._highlight_current_line = value
-            self._qs.setValue("highlight_current_line", value)
+        self._loaded = True
 
-    @property
-    def match_parenthesis(self) -> bool:
-        return self._match_parenthesis
+    def save(self) -> None:
+        if not self._loaded:
+            return
 
-    @match_parenthesis.setter
-    def match_parenthesis(self, value):
-        if value != self._match_parenthesis:
-            self._match_parenthesis = value
-            self._qs.setValue("match_parenthesis", value)
+        self._qs.setValue("language", self.language)
+        self._qs.setValue("font_family", self.font_family)
+        self._qs.setValue("font_size", self.font_size)
+        self._qs.setValue("highlight_current_line", self.highlight_current_line)
+        self._qs.setValue("match_parenthesis", self.match_parenthesis)
+        self._qs.setValue("dark_mode", self.dark_mode)
+        self._qs.setValue("theme", self.theme)
+        self._qs.setValue("symbol_mode", self.symbol_mode)
+        self._qs.setValue("autocomplete", self.autocomplete)
+        self._qs.setValue("show_query_blocks", self.show_query_blocks)
 
-    @property
-    def font_family(self) -> str:
-        font = self._font_family
-        if font is None:
-            families = QFontDatabase.families()
-            preferred_fonts = []
-            if platform.system() == "Linux":
-                preferred_fonts.append("Ubuntu Mono")
-                preferred_fonts.append("Liberation Mono")
-                preferred_fonts.append("Source Code Pro")
-            elif platform.system() == "Windows":
-                preferred_fonts.append("Courier New")
-                preferred_fonts.append("Courier")
-            # FIXME: mac OSX
+        self._qs.sync()
 
-            font = None
-            for preferred_font in preferred_fonts:
-                if preferred_font in families:
-                    font = preferred_font
-                    break
-        return font
+    def __setattr__(self, name: str, value) -> None:
+        super().__setattr__(name, value)
 
-    @font_family.setter
-    def font_family(self, font):
-        if font != self._font_family:
-            self._font = font
-            self._qs.setValue("font_family", font)
-
-    @property
-    def font_size(self) -> int:
-        return self._font_size
-
-    @font_size.setter
-    def font_size(self, size):
-        if size != self._font_size:
-            self._font_size = size
-            self._qs.setValue("font_size", size)
-
-    @property
-    def dark_mode(self):
-        return self._dark_mode
-
-    @dark_mode.setter
-    def dark_mode(self, use_dark_mode):
-        if use_dark_mode != self._dark_mode:
-            self._dark_mode = use_dark_mode
-            self._qs.setValue("dark_mode", use_dark_mode)
+        if getattr(self, "_loaded", False) and not name.startswith("_"):
+            save_value = list(value) if isinstance(value, tuple) else value
+            self._qs.setValue(name, save_value)
+            self._qs.sync()
+            self.settingsChanged.emit(name)
 
 
-SETTINGS = SettingManager()
+settings = Settings()

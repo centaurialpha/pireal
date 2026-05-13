@@ -1,0 +1,97 @@
+% Consultas de Álgebra Relacional - Base de Datos de Capacitación de Empleados
+
+% 3.2 Operadores Fundamentales
+
+% ¿Qué empleados son gerentes?
+gerentes :=
+select eTitle='Manager' (employee);
+
+% ¿Qué títulos de empleados aparecen en la base de datos?
+titulos :=
+project eTitle (employee);
+
+% Nombres de los gerentes
+nombres_gerentes :=
+project eLast, eFirst (select eTitle = 'Manager' (employee));
+
+% 3.2.2 Conjuntos
+
+% ¿Qué empleados son gerentes o líderes de proyecto?
+gerentes_o_lideres :=
+(project eID (select eTitle='Manager' (employee))) union
+(project eID (select eTitle='Project Lead' (employee)));
+
+% ¿Qué gerentes no han tomado ningún curso?
+gerentes_sin_cursos :=
+(project eID (select eTitle='Manager' (employee))) difference
+(project eID (takes));
+
+% ¿Qué gerentes han tomado algún curso de capacitación?
+gerentes_con_cursos :=
+(project eID (select eTitle='Manager' (employee))) intersect
+(project eID (takes));
+
+% 3.2.3 Joins
+
+% Todas las combinaciones posibles de empleados y cursos
+empleados_cursos_posibles :=
+(project eID (employee)) product (project cID (trainingCourse));
+
+% Cursos que cada empleado NO ha tomado
+alg_CursosNoTomados :=
+empleados_cursos_posibles difference
+(project eID, cID (takes));
+
+% Nota: No hay sintaxis para theta-join en Pireal. Usar definición equivalente.
+% Empleados que son líderes de áreas tecnológicas
+empleados_lideres :=
+select eID=aLeadID (employee product technologyArea);
+
+% Títulos de cursos con fechas de inscripción
+cursos_fechas :=
+project cTitle, tDate (trainingCourse njoin takes);
+
+% División: Pireal no soporta el operador de división directamente.
+% Puede expresarse combinando proyección, producto y diferencia.
+
+% 3.3 Completitud Relacional
+
+% Resumen de consultas fundamentales
+
+q_seleccion :=
+select eTitle = 'Manager' (employee);
+
+q_proyeccion :=
+project eTitle (employee);
+
+q_union :=
+(project eID (select eTitle='Manager'(employee))) union 
+(project eID (select eTitle='Project Lead'(employee)));
+
+q_diferencia :=
+(project eID (select eTitle='Manager'(employee))) difference 
+(project eID (takes));
+
+q_producto :=
+(project eID (employee)) product (project cID (trainingCourse));
+
+% Consultas adicionales
+
+q_interseccion :=
+(project eID (select eTitle='Manager'(employee))) intersect 
+(project eID (takes));
+
+% Theta-join: Usar definición equivalente con operadores fundamentales
+q_theta_join :=
+select eID=aLeadID (employee product technologyArea);
+
+q_natural_join :=
+project cTitle, tDate (trainingCourse njoin takes);
+
+% División: No soportado directamente. 
+% Ejercicio: ¿Cómo expresarías "empleados que han tomado TODOS los cursos de Java"?
+
+% Agregación y Agrupamiento
+
+% Salarios de todos los empleados
+salarios_empleados := project eSalary (employee);

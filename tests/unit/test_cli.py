@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright 2015-2019 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
@@ -18,6 +16,7 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import shlex
+
 import pytest
 
 from pireal.core import cliparser
@@ -34,7 +33,7 @@ def test_parser_help(parser):
 
 
 def test_parser_args_valid(parser):
-    cmd = ["-d file.pdb", "--database lalala", "-v", "--verbose", "--version"]
+    cmd = ["-d file.pdb", "--database lalala", "-l DEBUG", "--version"]
     for line in cmd:
         cmdline = shlex.split(line)
         parser.parse_args(cmdline)

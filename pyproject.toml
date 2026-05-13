@@ -3,24 +3,32 @@ name = "pireal"
 dynamic = ["version"]
 description = "Relational Algebra Interpreter"
 readme = "README.md"
-requires-python = ">=3.10"
-license = {file = "COPYING"}
-authors = [
-    {name = "Gabriel Acosta", email = "acostadariogabriel@gmail.com"}
-]
+requires-python = ">=3.12"
+license = { file = "COPYING" }
+authors = [{ name = "Gabriel Acosta", email = "acostadariogabriel@gmail.com" }]
 maintainers = [
-    {name = "Gabriel Acosta", email = "acostadariogabriel@gmail.com"}
+  { name = "Gabriel Acosta", email = "acostadariogabriel@gmail.com" },
 ]
 classifiers = [
-    "Environment :: X11 Applications",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Topic :: Education",
-    "Topic :: Utilities",
+  "Environment :: X11 Applications",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Topic :: Education",
+  "Topic :: Utilities",
 ]
-dependencies = [
-    "PyQt6"
+dependencies = ["packaging>=24.2", "pyqt6>=6.8.1", "rich>=14.3.4"]
+
+[dependency-groups]
+dev = [
+  "hatch-vcs>=0.4.0",
+  "hatchling>=1.27.0",
+  "ipython>=9.3.0",
+  "nuitka>=4.0.8",
+  "pyqt6-stubs>=20250824",
+  "pytest>=8.3.5",
+  "pytest-qt>=4.5.0",
 ]
+docs = ["mkdocs-material>=9.7.1", "mkdocs-static-i18n[material]>=1.3.0"]
 
 [project.optional-dependencies]
 dev = ["pytest", "pytest-cov"]
@@ -29,11 +37,50 @@ extras = ["rich"]
 [project.scripts]
 pireal = "pireal.main:run"
 
-[tool.setuptools.packages.find]
-where = ["src"]
-
 [build-system]
-requires = ["setuptools", "setuptools_scm[toml]>=6.2", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
-[tool.setuptools_scm]
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pireal"]
+artifacts = ["src/pireal/resources/**"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["windows/*"]
+
+[tool.ruff.lint]
+select = [
+  # pycodestyle
+  "E",
+  # pyflakes
+  "F",
+  # pyupgrade
+  "UP",
+  # flake8-bugbear
+  "B",
+  # flake8-simplify
+  "SIM",
+  # isort
+  "I",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+split-on-trailing-comma = true
+force-wrap-aliases = true
+force-single-line = false
+
+[tool.pytest.ini_options]
+markers = [
+  "interpreter: interpreter tests",
+  "gui: tests that require a QApplication and Qt widgets",
+  "integration: end-to-end tests with full app stack",
+]

@@ -1,115 +1,112 @@
-class AST(object):
-    """Base class for all nodes"""
+# Copyright 2015-2026 - Gabriel Acosta <acostadariogabriel@gmail.com>
+#
+# This file is part of Pireal.
+#
+# Pireal is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# any later version.
+#
+# Pireal is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-    def __eq__(self, other):
-        attrs = [attr for attr in dir(self) if not attr.startswith("_")]
+from __future__ import annotations
 
-        boolean_values = []
-        for attr in attrs:
-            value = getattr(self, attr)
-            other_value = getattr(other, attr)
-            boolean_values.append(value == other_value)
+from dataclasses import dataclass, field
+from typing import Any
 
-        return all(boolean_values)
-
-
-class Variable(AST):
-    def __init__(self, token):
-        self.token = token
-        self.value = token.value
-
-
-class Number(AST):
-    def __init__(self, token):
-        self.num = token.value
-        self.token = token
+from pireal.interpreter.tokens import Token, TokenTypes
 
 
-class String(AST):
-    def __init__(self, token):
-        self.string = token.value
-        self.token = token
+@dataclass
+class Variable:
+    token: Token
+
+    @property
+    def value(self) -> str:
+        return str(self.token.value)
+
+    @property
+    def lineno(self) -> int | None:
+        return self.token.line
 
 
-class Date(AST):
-    def __init__(self, token):
-        self.date = token.value
+@dataclass
+class Number:
+    value: int | float
 
 
-class Time(AST):
-    def __init__(self, token):
-        self.time = token.value
+@dataclass
+class String:
+    value: str
 
 
-class ProjectExpr(AST):
-    def __init__(self, attrs, expr):
-        self.attrs = attrs
-        self.expr = expr
+@dataclass
+class Date:
+    value: object  # datetime.date
 
 
-class SelectExpr(AST):
-    def __init__(self, cond, expr):
-        self.condition = cond
-        self.expr = expr
+@dataclass
+class Time:
+    value: object  # datetime.time
 
 
-class BinaryOp(AST):
-    def __init__(self, left, op, right):
-        self.left = left
-        self.token = self.op = op
-        self.right = right
+@dataclass
+class ProjectExpr:
+    attrs: list[Variable]
+    expr: object  # cualquier nodo expresión
 
 
-class Condition(AST):
-    def __init__(self, op1, operator, op2):
-        self.op1 = op1
-        self.operator = operator
-        self.op2 = op2
+@dataclass
+class SelectExpr:
+    condition: object
+    expr: object
 
 
-class BooleanExpression(AST):
-    def __init__(self, left_formula, operator, right_formula):
-        self.left_formula = left_formula
-        self.operator = operator
-        self.right_formula = right_formula
+@dataclass
+class BinaryOp:
+    left: object
+    op: TokenTypes
+    right: object
 
 
-class Assignment(AST):
-    def __init__(self, rname, query):
-        self.rname = rname
-        self.query = query
+@dataclass
+class Condition:
+    op1: object
+    operator: Token
+    op2: object
 
 
-class Compound(AST):
-    def __init__(self):
-        self.children = []
+@dataclass
+class BooleanExpression:
+    left_formula: object
+    operator: TokenTypes
+    right_formula: object
 
 
-class NodeVisitor(object):
-    """Visitor pattern
+@dataclass
+class Assignment:
+    rname: Variable
+    query: object
 
-    A node visitor base class that walks the abstract syntax tree and calls
-    a visitor function for every node found. This function may return a value
-    which is forwarded by the `visit` method.
 
-    This class is meant to be subclassed, with the subclass adding visitor
-    methods.
+@dataclass
+class Compound:
+    children: list[Assignment] = field(default_factory=list)
 
-    Per default the visitor functions for the nodes are `visit_` + class
-    name of the node. So a `BinOp` node visit function would be
-    `visit_BinOp`. This behavior can be changed by overriding the `visit`
-    method. If no visitor function exists for a node the `_generic_visit`
-    visitor is used instead.
-    """
 
-    def visit(self, node):
-        """Visit a node"""
+class NodeVisitor:
+    """Base visitor. Subclasses implement visit_ClassName methods."""
 
-        method_name = "visit_" + node.__class__.__name__
+    def visit(self, node: object) -> Any:
+        method_name = f"visit_{type(node).__name__}"
         visitor = getattr(self, method_name, self._generic_visit)
         return visitor(node)
 
-    def _generic_visit(self, node):
-        """Called if not explicit visitor function exists for a node"""
-
-        raise Exception("No visit_{} method".format(node.__class__.__name__))
+    def _generic_visit(self, node: object) -> None:
+        raise NotImplementedError(f"No visit_{type(node).__name__} method defined")

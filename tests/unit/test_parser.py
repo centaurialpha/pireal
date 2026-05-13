@@ -1,100 +1,104 @@
+# Copyright 2015-2026 - Gabriel Acosta <acostadariogabriel@gmail.com>
+#
+# This file is part of Pireal.
+#
+# Pireal is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# any later version.
+#
+# Pireal is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Pireal; If not, see <http://www.gnu.org/licenses/>.
+
 import datetime
 
 import pytest
 
-from pireal.interpreter.scanner import Scanner
-from pireal.interpreter.lexer import Lexer, Token
-from pireal.interpreter.parser import Parser, Interpreter
 from pireal.interpreter import rast as ast
-from pireal.interpreter.tokens import TokenTypes
 from pireal.interpreter.exceptions import ConsumeError
+from pireal.interpreter.lexer import Lexer, Token
+from pireal.interpreter.parser import Parser
+from pireal.interpreter.scanner import Scanner
+from pireal.interpreter.tokens import TokenTypes
 
 pytestmark = pytest.mark.interpreter
 
 
-def test_mix_boolean_expression():
-    query = "name = 'gabox' or age >= 18 and age <= 30"
-    parser = Parser(Lexer(Scanner(query)))
+@pytest.fixture
+def make_parser():
+    def _make(query: str) -> Parser:
+        return Parser(Lexer(Scanner(query)))
 
-    node = parser.boolean_expression()
+    return _make
 
-    expected_node = ast.BooleanExpression(
+
+def test_boolean_expression_with_and_or(make_parser):
+    node = make_parser("name = 'gabox' or age >= 18 and age <= 30").boolean_expression()
+
+    expected = ast.BooleanExpression(
         left_formula=ast.BooleanExpression(
             left_formula=ast.Condition(
                 ast.Variable(Token(TokenTypes.ID, "name")),
                 Token(TokenTypes.EQUAL, "="),
-                ast.String(Token(TokenTypes.STRING, "gabox")),
+                ast.String("gabox"),
             ),
             operator=TokenTypes.OR,
             right_formula=ast.Condition(
                 ast.Variable(Token(TokenTypes.ID, "age")),
-                Token(TokenTypes.GREATHER_EQUAL, ">="),
-                ast.Number(Token(TokenTypes.INTEGER, 18)),
+                Token(TokenTypes.GREATER_EQUAL, ">="),
+                ast.Number(18),
             ),
         ),
         operator=TokenTypes.AND,
         right_formula=ast.Condition(
             ast.Variable(Token(TokenTypes.ID, "age")),
             Token(TokenTypes.LESS_EQUAL, "<="),
-            ast.Number(Token(TokenTypes.INTEGER, 30)),
+            ast.Number(30),
         ),
     )
-
-    assert node == expected_node
-
-
-def test_consume_error():
-    query = "q := select id=1 (personas)"
-    parser = Parser(Lexer(Scanner(query)))
-    with pytest.raises(ConsumeError):
-        parser.parse()
+    assert node == expected
 
 
-def test_consume_expression():
-    query = "select id=1 (personas)"
-    parser = Parser(Lexer(Scanner(query)))
+def test_expression_select(make_parser):
+    node = make_parser("select id=1 (personas)").expression()
 
-    node = parser.expression()
-    expected_node = ast.SelectExpr(
-        cond=ast.Condition(
+    expected = ast.SelectExpr(
+        condition=ast.Condition(
             op1=ast.Variable(Token(TokenTypes.ID, "id")),
             operator=Token(TokenTypes.EQUAL, "="),
-            op2=ast.Number(Token(TokenTypes.INTEGER, 1)),
+            op2=ast.Number(1),
         ),
         expr=ast.Variable(Token(TokenTypes.ID, "personas")),
     )
+    assert node == expected
 
-    assert node == expected_node
 
+def test_expression_project(make_parser):
+    node = make_parser("project name,age (personas)").expression()
 
-def test_consume_project():
-    query = "project name,age (personas)"
-    parser = Parser(Lexer(Scanner(query)))
-
-    node = parser.expression()
-
-    expected_node = ast.ProjectExpr(
+    expected = ast.ProjectExpr(
         attrs=[
             ast.Variable(Token(TokenTypes.ID, "name")),
             ast.Variable(Token(TokenTypes.ID, "age")),
         ],
         expr=ast.Variable(Token(TokenTypes.ID, "personas")),
     )
+    assert node == expected
 
-    assert node == expected_node
 
+def test_expression_nested(make_parser):
+    node = make_parser("select id='1' (project name,age (personas))").expression()
 
-def test_consume_nested_expression():
-    query = "select id='1' (project name,age (personas))"
-    parser = Parser(Lexer(Scanner(query)))
-
-    node = parser.expression()
-
-    expected_node = ast.SelectExpr(
-        cond=ast.Condition(
+    expected = ast.SelectExpr(
+        condition=ast.Condition(
             op1=ast.Variable(Token(TokenTypes.ID, "id")),
             operator=Token(TokenTypes.EQUAL, "="),
-            op2=ast.String(Token(TokenTypes.STRING, "1")),
+            op2=ast.String("1"),
         ),
         expr=ast.ProjectExpr(
             attrs=[
@@ -104,63 +108,7 @@ def test_consume_nested_expression():
             expr=ast.Variable(Token(TokenTypes.ID, "personas")),
         ),
     )
-
-    assert node == expected_node
-
-
-def test_consume_assignment():
-    query = "q := personas"
-    parser = Parser(Lexer(Scanner(query)))
-
-    node = parser.assignment()
-
-    expected_node = ast.Assignment(
-        rname=ast.Variable(Token(TokenTypes.ID, "q")),
-        query=ast.Variable(Token(TokenTypes.ID, "personas")),
-    )
-
-    assert node == expected_node
-
-
-@pytest.mark.parametrize(
-    "text,expected_node",
-    [
-        ("12", ast.Number(Token(TokenTypes.INTEGER, 12))),
-        ("12.3", ast.Number(Token(TokenTypes.REAL, 12.3))),
-        ("'hola'", ast.String(Token(TokenTypes.STRING, "hola"))),
-        ("'20/01/1991'", ast.Date(Token(TokenTypes.DATE, datetime.date(1991, 1, 20)))),
-        ("'12:30'", ast.Time(Token(TokenTypes.TIME, datetime.time(12, 30)))),
-    ],
-)
-def test_consume_litera(text, expected_node):
-    parser = Parser(Lexer(Scanner(text)))
-    node = parser.literal()
-
-    assert node == expected_node
-
-
-def test_consume_compound():
-    query = "q:=select id=1 (p);"
-    parser = Parser(Lexer(Scanner(query)))
-
-    node = parser.compound()
-
-    expected_node = ast.Compound()
-    expected_node.children = [
-        ast.Assignment(
-            rname=ast.Variable(Token(TokenTypes.ID, "q")),
-            query=ast.SelectExpr(
-                cond=ast.Condition(
-                    op1=ast.Variable(Token(TokenTypes.ID, "id")),
-                    operator=Token(TokenTypes.EQUAL, "="),
-                    op2=ast.Number(Token(TokenTypes.INTEGER, 1)),
-                ),
-                expr=ast.Variable(Token(TokenTypes.ID, "p")),
-            ),
-        )
-    ]
-
-    assert node == expected_node
+    assert node == expected
 
 
 @pytest.mark.parametrize(
@@ -173,127 +121,201 @@ def test_consume_compound():
         TokenTypes.DIFFERENCE,
     ],
 )
-def test_consume_expression_with_binary_operator(token_type):
-    query = f"(personas {token_type.value} salarios)"
-    parser = Parser(Lexer(Scanner(query)))
+def test_expression_binary_op(make_parser, token_type):
+    node = make_parser(f"(personas {token_type.value} salarios)").expression()
 
-    node = parser.expression()
-
-    expected_node = ast.BinaryOp(
+    expected = ast.BinaryOp(
         left=ast.Variable(Token(TokenTypes.ID, "personas")),
         op=token_type,
         right=ast.Variable(Token(TokenTypes.ID, "salarios")),
     )
+    assert node == expected
 
-    assert node == expected_node
+
+def test_assignment(make_parser):
+    node = make_parser("q := personas").assignment()
+
+    expected = ast.Assignment(
+        rname=ast.Variable(Token(TokenTypes.ID, "q")),
+        query=ast.Variable(Token(TokenTypes.ID, "personas")),
+    )
+    assert node == expected
 
 
 @pytest.mark.parametrize(
-    "token,expected",
+    "text, expected",
     [
-        (Token(TokenTypes.INTEGER, 23), 23),
-        (Token(TokenTypes.REAL, 3.14156), 3.14156),
+        ("12", ast.Number(12)),
+        ("12.3", ast.Number(12.3)),
+        ("'hola'", ast.String("hola")),
+        ("'20/01/1991'", ast.Date(datetime.date(1991, 1, 20))),
+        ("'12:30'", ast.Time(datetime.time(12, 30))),
     ],
 )
-def test_visit_number_node(token, expected):
-    node = ast.Number(token)
-
-    interpreter = Interpreter(None)
-    result = interpreter.visit_Number(node)
-
-    assert result == expected
+def test_literal(make_parser, text, expected):
+    node = make_parser(text).literal()
+    assert node == expected
 
 
-def test_visit_project_expression():
-    node = ast.ProjectExpr(
-        attrs=[
-            ast.Variable(Token(TokenTypes.ID, "name")),
-            ast.Variable(Token(TokenTypes.ID, "age")),
-        ],
-        expr=ast.Variable(Token(TokenTypes.ID, "personas")),
+def test_compound(make_parser):
+    node = make_parser("q:=select id=1 (p);").compound()
+
+    expected = ast.Compound(
+        children=[
+            ast.Assignment(
+                rname=ast.Variable(Token(TokenTypes.ID, "q")),
+                query=ast.SelectExpr(
+                    condition=ast.Condition(
+                        op1=ast.Variable(Token(TokenTypes.ID, "id")),
+                        operator=Token(TokenTypes.EQUAL, "="),
+                        op2=ast.Number(1),
+                    ),
+                    expr=ast.Variable(Token(TokenTypes.ID, "p")),
+                ),
+            )
+        ]
     )
-
-    expected = "personas.project('name', 'age')"
-
-    interpreter = Interpreter(None)
-    result = interpreter.visit_ProjectExpr(node)
-
-    assert result == expected
+    assert node == expected
 
 
-def test_visit_select_expression():
-    node = ast.SelectExpr(
-        cond=ast.Condition(
-            op1=ast.Variable(Token(TokenTypes.ID, "id")),
-            operator=Token(TokenTypes.EQUAL, "="),
-            op2=ast.Number(Token(TokenTypes.INTEGER, 1)),
-        ),
-        expr=ast.Variable(Token(TokenTypes.ID, "p")),
-    )
-
-    expected = 'p.select("id == 1")'
-
-    interpreter = Interpreter(None)
-    result = interpreter.visit_SelectExpr(node)
-
-    assert result == expected
+def test_consume_error(make_parser):
+    with pytest.raises(ConsumeError):
+        make_parser("q := select id=1 (personas)").parse()
 
 
-def test_visit_binary_op():
-    node = ast.BinaryOp(
-        left=ast.Variable(Token(TokenTypes.ID, "personas")),
-        op=TokenTypes.UNION,
-        right=ast.Variable(Token(TokenTypes.ID, "salarios")),
-    )
+def test_union_after_project_expressions(make_parser):
+    """Union entre dos project debe parsear correctamente"""
+    query = """q := 
+        (project eID (select eTitle='Manager' (employee))) union
+        (project eID (select eTitle='Lead' (employee)));"""
 
-    expected = "personas.union(salarios)"
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
 
-    interpreter = Interpreter(None)
-    result = interpreter.visit_BinaryOp(node)
+    # Raíz debe ser BinaryOp con union
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.UNION
 
-    assert result == expected
-
-
-def test_visit_boolean_expression():
-    node = ast.BooleanExpression(
-        left_formula=ast.BooleanExpression(
-            left_formula=ast.Condition(
-                ast.Variable(Token(TokenTypes.ID, "name")),
-                Token(TokenTypes.EQUAL, "="),
-                ast.String(Token(TokenTypes.STRING, "gabox")),
-            ),
-            operator=TokenTypes.OR,
-            right_formula=ast.Condition(
-                ast.Variable(Token(TokenTypes.ID, "age")),
-                Token(TokenTypes.GREATHER_EQUAL, ">="),
-                ast.Number(Token(TokenTypes.INTEGER, 18)),
-            ),
-        ),
-        operator=TokenTypes.AND,
-        right_formula=ast.Condition(
-            ast.Variable(Token(TokenTypes.ID, "age")),
-            Token(TokenTypes.LESS_EQUAL, "<="),
-            ast.Number(Token(TokenTypes.INTEGER, 30)),
-        ),
-    )
-
-    expected = "name == 'gabox' or age >= 18 and age <= 30"
-
-    interpreter = Interpreter(None)
-    result = interpreter.visit_BooleanExpression(node)
-
-    assert result == expected
+    # Ambos lados son ProjectExpr
+    assert isinstance(assignment.query.left, ast.ProjectExpr)
+    assert isinstance(assignment.query.right, ast.ProjectExpr)
 
 
-def test_interpreter():
-    query = "q:= project name,id (select name='gabox'(personas));"
+def test_union_after_select_expressions(make_parser):
+    """Union entre dos select debe parsear correctamente"""
+    query = "q := select edad > 25 (estudiantes) union select edad < 18 (estudiantes);"
 
-    parser = Parser(Lexer(Scanner(query)))
-    tree = parser.parse()
-    interpreter = Interpreter(tree)
-    interpreter.to_python()
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
 
-    assert "q" in interpreter.global_memory
-    python_code = "personas.select(\"name == 'gabox'\").project('name', 'id')"
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.UNION
+    assert isinstance(assignment.query.left, ast.SelectExpr)
+    assert isinstance(assignment.query.right, ast.SelectExpr)
 
-    assert python_code == interpreter.global_memory["q"]
+
+def test_intersect_after_project(make_parser):
+    """Intersect después de project debe funcionar"""
+    query = "q := project nombre (r1) intersect project nombre (r2);"
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.INTERSECT
+
+
+def test_difference_after_select(make_parser):
+    """Difference después de select debe funcionar"""
+    query = "q := select activo='si' (personas) difference select edad < 18 (personas);"
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.DIFFERENCE
+
+
+def test_njoin_after_parenthesized_expression(make_parser):
+    """Njoin después de expresión entre paréntesis"""
+    query = "q := (select edad >= 18 (estudiantes)) njoin inscripciones;"
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.NJOIN
+    assert isinstance(assignment.query.left, ast.SelectExpr)
+    assert isinstance(assignment.query.right, ast.Variable)
+
+
+def test_multiline_binary_expression(make_parser):
+    """Expresiones binarias en múltiples líneas"""
+    query = """q := 
+        project nombre (personas) 
+        union 
+        project nombre (empleados);"""
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.UNION
+
+
+def test_chained_binary_operations(make_parser):
+    """Múltiples operaciones binarias encadenadas"""
+    query = "q := r1 union r2 union r3;"
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    # Debe parsear left-to-right: (r1 union r2) union r3
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.UNION
+    assert isinstance(assignment.query.left, ast.BinaryOp)
+    assert assignment.query.left.op == TokenTypes.UNION
+
+
+def test_complex_nested_binary(make_parser):
+    """Expresión compleja con anidamiento"""
+    query = """q := 
+        (project id (select tipo='A' (tabla1))) union
+        (project id (select tipo='B' (tabla2))) intersect
+        (project id (tabla3));"""
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    # Debe parsear: ((union) intersect project)
+    assert isinstance(assignment.query, ast.BinaryOp)
+    # El último operador es intersect
+    assert assignment.query.op == TokenTypes.INTERSECT
+
+
+def test_product_after_complex_expressions(make_parser):
+    """Product después de expresiones complejas"""
+    query = "q := (select a=1 (r1)) product (project b (r2));"
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert assignment.query.op == TokenTypes.PRODUCT
+    assert isinstance(assignment.query.left, ast.SelectExpr)
+    assert isinstance(assignment.query.right, ast.ProjectExpr)
+
+
+@pytest.mark.parametrize(
+    "operator", ["union", "intersect", "difference", "product", "njoin", "louter", "router", "fouter", "divide"]
+)
+def test_all_binary_operators_after_project(make_parser, operator):
+    """Todos los operadores binarios deben funcionar después de project"""
+    query = f"q := project a (r1) {operator} project b (r2);"
+
+    tree = make_parser(query).parse()
+    assignment = tree.children[0]
+
+    assert isinstance(assignment.query, ast.BinaryOp)
+    assert isinstance(assignment.query.left, ast.ProjectExpr)
+    assert isinstance(assignment.query.right, ast.ProjectExpr)

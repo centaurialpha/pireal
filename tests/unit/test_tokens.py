@@ -1,45 +1,74 @@
-import unittest
+# Copyright 2015-2026 - Gabriel Acosta <acostadariogabriel@gmail.com>
+#
+# This file is part of Pireal.
+#
+# Pireal is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# any later version.
+#
+# Pireal is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from pireal.interpreter.tokens import (
-    TokenTypes,
-    _build_binary_operators,
-    _build_reserved_keywords,
+import pytest
+
+from pireal.interpreter.tokens import BINARY_OPERATORS, RESERVED_KEYWORDS, TokenTypes
+
+pytestmark = pytest.mark.interpreter
+
+
+def test_binary_operators():
+    expected = {
+        "product": TokenTypes.PRODUCT,
+        "intersect": TokenTypes.INTERSECT,
+        "union": TokenTypes.UNION,
+        "difference": TokenTypes.DIFFERENCE,
+        "njoin": TokenTypes.NJOIN,
+        "louter": TokenTypes.LOUTER,
+        "router": TokenTypes.ROUTER,
+        "fouter": TokenTypes.FOUTER,
+        "divide": TokenTypes.DIVIDE,
+    }
+    assert expected == BINARY_OPERATORS
+
+
+def test_reserved_keywords():
+    expected = {
+        "select": TokenTypes.SELECT,
+        "project": TokenTypes.PROJECT,
+        "product": TokenTypes.PRODUCT,
+        "intersect": TokenTypes.INTERSECT,
+        "union": TokenTypes.UNION,
+        "difference": TokenTypes.DIFFERENCE,
+        "njoin": TokenTypes.NJOIN,
+        "louter": TokenTypes.LOUTER,
+        "router": TokenTypes.ROUTER,
+        "fouter": TokenTypes.FOUTER,
+        "divide": TokenTypes.DIVIDE,
+        "and": TokenTypes.AND,
+        "or": TokenTypes.OR,
+    }
+    assert expected == RESERVED_KEYWORDS
+
+
+@pytest.mark.parametrize(
+    "op",
+    [
+        "product",
+        "intersect",
+        "union",
+        "difference",
+        "njoin",
+        "louter",
+        "router",
+        "fouter",
+        "divide",
+    ],
 )
-
-
-class TokenTestCase(unittest.TestCase):
-    def test_build_binary_operators(self):
-        expected_operators = {
-            "product": TokenTypes.PRODUCT,
-            "intersect": TokenTypes.INTERSECT,
-            "union": TokenTypes.UNION,
-            "difference": TokenTypes.DIFFERENCE,
-            "njoin": TokenTypes.NJOIN,
-            "louter": TokenTypes.LEFT_OUTER_JOIN,
-            "router": TokenTypes.RIGHT_OUTER_JOIN,
-            "fouter": TokenTypes.FULL_OUTER_JOIN,
-        }
-
-        binary_operators = _build_binary_operators()
-
-        self.assertDictEqual(binary_operators, expected_operators)
-
-    def test_build_reserved_keywords(self):
-        expected_keywords = {
-            "select": TokenTypes.SELECT,
-            "project": TokenTypes.PROJECT,
-            "product": TokenTypes.PRODUCT,
-            "intersect": TokenTypes.INTERSECT,
-            "union": TokenTypes.UNION,
-            "difference": TokenTypes.DIFFERENCE,
-            "njoin": TokenTypes.NJOIN,
-            "louter": TokenTypes.LEFT_OUTER_JOIN,
-            "router": TokenTypes.RIGHT_OUTER_JOIN,
-            "fouter": TokenTypes.FULL_OUTER_JOIN,
-            "and": TokenTypes.AND,
-            "or": TokenTypes.OR,
-        }
-
-        reserved_keywords = _build_reserved_keywords()
-
-        self.assertDictEqual(reserved_keywords, expected_keywords)
+def test_binary_operators_are_in_reserved_keywords(op):
+    assert op in RESERVED_KEYWORDS

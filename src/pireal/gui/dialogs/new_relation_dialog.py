@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-#
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2025 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -17,25 +15,27 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtWidgets import (
-    QMessageBox,
-    QDialog,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLineEdit,
-    QPushButton,
-    QSpacerItem,
-    QSizePolicy,
+from PyQt6.QtCore import (
+    Qt,
+    pyqtSignal as Signal,
 )
 from PyQt6.QtGui import QStandardItemModel
-from PyQt6.QtCore import Qt
-from PyQt6.QtCore import pyqtSignal as Signal
-
-import pireal
-from pireal.core import relation
-from pireal.gui.model_view_delegate import View, Header
+from PyQt6.QtWidgets import (
+    QDialog,
+    QHBoxLayout,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+)
 
 from pireal import translations as tr
+from pireal.core import relation
+from pireal.core.db import DB
+from pireal.gui.model_view_delegate import Header, View
+from pireal.registry import Registry
 
 
 class NewRelationDialog(QDialog):
@@ -70,8 +70,10 @@ class NewRelationDialog(QDialog):
         header = Header()
         self._view.setHorizontalHeader(header)
         self._view.setModel(QStandardItemModel(0, 2))
-        header.model().setHeaderData(0, Qt.Orientation.Horizontal, self.tr("Field 1"))
-        header.model().setHeaderData(1, Qt.Orientation.Horizontal, self.tr("Field 2"))
+        model = header.model()
+        assert model is not None
+        model.setHeaderData(0, Qt.Orientation.Horizontal, tr.TR_RELATION_DIALOG_FIELD_1)
+        model.setHeaderData(1, Qt.Orientation.Horizontal, tr.TR_RELATION_DIALOG_FIELD_2)
         # Botones para crear/cancelar
         hhbox = QHBoxLayout()
         hhbox.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding))
@@ -82,22 +84,28 @@ class NewRelationDialog(QDialog):
         box.addLayout(hhbox)
 
         # Conexiones
-        btn_add_tuple.clicked.connect(self.__add_tuple)
-        btn_delete_tuple.clicked.connect(self.__delete_tuple)
-        btn_add_column.clicked.connect(self.__add_column)
-        btn_delete_column.clicked.connect(self.__delete_column)
+        btn_add_tuple.clicked.connect(self._add_tuple)
+        btn_delete_tuple.clicked.connect(self._delete_tuple)
+        btn_add_column.clicked.connect(self._add_column)
+        btn_delete_column.clicked.connect(self._delete_column)
         btn_cancel.clicked.connect(self.close)
         btn_create.clicked.connect(self._create)
 
-    def __add_tuple(self):
+    def _add_tuple(self):
         """Agrega una tupla/fila al final de la tabla"""
-
         model = self._view.model()
+        assert model is not None
+
         model.insertRow(model.rowCount())
 
-    def __delete_tuple(self):
+    def _delete_tuple(self):
         model = self._view.model()
+        if model is None:
+            return
+
         selection = self._view.selectionModel()
+        if selection is None:
+            return
 
         if selection.hasSelection():
             r = QMessageBox.question(
@@ -118,33 +126,33 @@ class NewRelationDialog(QDialog):
                         model.removeRows(current, 1)
                     i -= 1
 
-    def __add_column(self):
+    def _add_column(self):
         model = self._view.model()
+        if model is None:
+            return
         model.insertColumn(model.columnCount())
 
-    def __delete_column(self):
+    def _delete_column(self):
         model = self._view.model()
+        if model is None:
+            return
+
         if model.columnCount() >= 2:
-            model.takeColumn(model.columnCount() - 1)
+            model.removeColumn(model.columnCount() - 1)
 
     def _create(self):
         relation_name = self._line_relation_name.text().strip()
         if not relation_name:
-            QMessageBox.critical(
-                self, "Error", tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME
-            )
+            QMessageBox.critical(self, "Error", tr.TR_RELATION_DIALOG_EMPTY_RELATION_NAME)
             return
-        pireal_instance = pireal.get_pireal_instance()
-        if (
-            relation_name
-            in pireal_instance.central_widget.get_active_db().table_widget.relations
-        ):
-            QMessageBox.information(
-                self, "Error", tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name)
-            )
+        db = Registry.get("db", DB)
+        if db.get(relation_name) is not None:
+            QMessageBox.information(self, "Error", tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name))
             return
         # Table model
         model = self._view.model()
+        if model is None:
+            return
         # Row and column count
         nrow = model.rowCount()
         ncol = model.columnCount()
@@ -154,22 +162,25 @@ class NewRelationDialog(QDialog):
         # Header
         try:
             header = []
-            for i in range(ncol):
-                text = model.horizontalHeaderItem(i).text().strip()
-                header.append(text)
+            for col in range(ncol):
+                text = model.headerData(col, Qt.Orientation.Horizontal)
+                if text:
+                    header.append(str(text).strip())
             rela.header = header
         except Exception as reason:
-            QMessageBox.critical(self, "Header Error", str(reason))
+            QMessageBox.critical(self, tr.TR_RELATION_DIALOG_HEADER_ERROR, str(reason))
             return
 
         # Load relation
         for row in range(nrow):
             tuples = []
             for column in range(ncol):
-                item = model.item(row, column)
+                index = model.index(row, column)
+                value = model.data(index, Qt.ItemDataRole.DisplayRole)
                 try:
-                    if not item.text().strip():
-                        raise Exception
+                    text = str(value).strip() if value is not None else ""
+                    if not text:
+                        raise Exception()
                 except Exception:
                     QMessageBox.information(
                         self,
@@ -177,7 +188,8 @@ class NewRelationDialog(QDialog):
                         tr.TR_RELATION_DIALOG_WHITESPACE.format(row + 1, column + 1),
                     )
                     return
-                tuples.append(item.text().strip())
+                else:
+                    tuples.append(text)
             rela.insert(tuple(tuples))
 
         # Data

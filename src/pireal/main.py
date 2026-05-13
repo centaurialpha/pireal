@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright 2015-2022 Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
@@ -17,31 +15,26 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-"""Run Pireal user interface"""
+"""
+Pireal - Interactive Relational Algebra Learning Tool
+
+Entry point for the application.
+"""
 
 import logging
-import os
+import logging.handlers
 import platform
 import sys
 from pathlib import Path
 
+from PyQt6.QtCore import QT_VERSION_STR, QDir
+
 from pireal import __version__
+from pireal.app import Application
 from pireal.core import cliparser
-from pireal.dirs import create_app_dirs
-from pireal.gui.main_window import Pireal
-from pireal.gui.theme import apply_theme
-from pireal.settings import SETTINGS
+from pireal.dirs import LOGS_DIR, create_app_dirs
 
-from PyQt6.QtCore import QDir, QLibraryInfo, QLocale, QT_VERSION_STR, QTranslator
-from PyQt6.QtGui import QFont, QFontDatabase, QIcon
-from PyQt6.QtWidgets import QApplication
-
-try:
-    from rich.logging import RichHandler as logger_handler
-except ImportError:
-    from logging import StreamHandler as logger_handler
-
-logger = logging.getLogger("main")
+logger = logging.getLogger()
 
 ROOT_DIR = Path(__file__).parent
 RESOURCES_DIR = ROOT_DIR / "resources"
@@ -53,17 +46,82 @@ if ROOT_DIR not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 
-def setup_logger(level: int):
-    FORMAT = "[%(asctime)s] [%(levelname)-6s]: %(name)s:%(funcName)-5s %(message)s"
-    TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-    logging.basicConfig(
-        level=level, format=FORMAT, datefmt=TIME_FORMAT, handlers=[logger_handler()]
+class ColoredFormatter(logging.Formatter):
+    COLORS = {
+        "DEBUG": "\033[36m",
+        "INFO": "\033[32m",
+        "WARNING": "\033[33m",
+        "ERROR": "\033[31m",
+        "CRITICAL": "\033[1;31m",
+    }
+    RESET = "\033[0m"
+
+    def __init__(self, fmt=None, datefmt=None, use_colors=True):
+        super().__init__(fmt, datefmt)
+        self.use_colors = use_colors and self._supports_color()
+
+    def _supports_color(self) -> bool:
+        # No usar colores si no es una terminal (ej: piped output)
+        if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
+            return False
+
+        # En Windows, habilitar ANSI (funciona en Win10+)
+        if platform.system() == "Windows":
+            try:
+                import os
+
+                os.system("")  # Habilita ANSI en consolas Win10+
+                return True
+            except Exception:
+                return False
+
+        return True
+
+    def format(self, record):
+        if self.use_colors:
+            levelname = record.levelname
+            if levelname in self.COLORS:
+                record.levelname = f"{self.COLORS[levelname]}{levelname}{self.RESET}"
+        return super().format(record)
+
+
+def setup_logger(level: int = logging.INFO) -> None:
+    """
+    Configure application logging.
+
+    Args:
+        level: Logging level (default: INFO)
+    """
+    console_fmt = "[%(levelname)-6s]: %(name)s:%(funcName)s - %(message)s"
+    file_fmt = "[%(asctime)s] [%(levelname)-6s] [%(process)d]: %(name)s:%(funcName)s:%(lineno)d - %(message)s"
+    date_format = "%Y-%m-%d %H:%M:%S"
+
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(ColoredFormatter(console_fmt))
+
+    log_file = LOGS_DIR / "pireal.log"
+
+    file_handler = logging.handlers.RotatingFileHandler(
+        log_file, maxBytes=10 * 1024 * 1024, backupCount=5, encoding="utf-8"
     )
+    if log_file.exists() and log_file.stat().st_size > 0:
+        file_handler.doRollover()  # Force rotation on startup
+    file_handler.setFormatter(logging.Formatter(file_fmt, datefmt=date_format))
+
+    logging.basicConfig(level=level, handlers=[console_handler, file_handler])
+
+    logger.info("Logging initialized at level %s", logging.getLevelName(level))
+    logger.info("Log file: %s", log_file)
 
 
 def run():
-    QDir.addSearchPath("icons", str(IMAGES_DIR))
-    QDir.addSearchPath("languages", str(LANGUAGES_DIR))
+    from importlib.resources import files
+
+    images_dir = str(files("pireal") / "resources" / "images")
+    lang_dir = str(files("pireal") / "resources" / "lang")
+
+    QDir.addSearchPath("icons", images_dir)
+    QDir.addSearchPath("languages", lang_dir)
 
     # Parse CLI
     args = cliparser.get_cli().parse_args()
@@ -71,69 +129,32 @@ def run():
         print(__version__)
         sys.exit(0)
 
+    if args.terminal:
+        from pireal.cli import run as run_terminal
+
+        db_path = Path(args.database) if args.database else None
+        sys.exit(run_terminal(db_path))
+
     # Creo los dirs antes de leer logs. see #84
     create_app_dirs()
 
     setup_logger(level=args.log_level)
 
-    start_pireal(args)
-
-
-def start_pireal(args):
-    # OS
+    logger = logging.getLogger(__name__)
     if platform.system() == "Linux":
         system, os_name = platform.uname()[:2]
     else:
         system = platform.uname()[0]
         os_name = platform.uname()[2]
 
-    # Python version
     python_version = platform.python_version()
 
-    logger.info("Running pireal %s...", __version__)
-    logger.info(
-        "Python %s on %s-%s, Qt %s", python_version, system, os_name, QT_VERSION_STR
-    )
+    logger.info("Running Pireal %s...", __version__)
+    logger.info("Python %s on %s-%s, Qt %s", python_version, os_name, system, QT_VERSION_STR)
 
-    app = QApplication(sys.argv)
-    app.setApplicationName("Pireal")
-    app.setApplicationDisplayName("Pireal")
-    app.setWindowIcon(QIcon("icons:pireal_icon.png"))
+    app = Application()
+    app.run()
 
-    SETTINGS.load()
 
-    app.setStyle("fusion")
-    apply_theme(app)
-
-    # Add Font Awesome
-    family = QFontDatabase.applicationFontFamilies(
-        QFontDatabase.addApplicationFont(str(IMAGES_DIR / "font-awesome.ttf"))
-    )[0]
-    font = QFont(family)
-    font.setStyleName("Solid")
-    app.setFont(font)
-    # Install translators
-    # Qt translations
-    system_locale_name = QLocale.system().name()
-    qt_languages_path = QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
-    qt_translator = QTranslator()
-    translator_loaded = qt_translator.load(
-        os.path.join(qt_languages_path, f"qt_{SETTINGS.language}.qm")
-    )
-    if not translator_loaded:
-        qt_translator.load(
-            os.path.join(
-                qt_languages_path, "qt_{}.qml".format(system_locale_name.split("_")[0])
-            )
-        )
-    app.installTranslator(qt_translator)
-    # App translator
-    translator = QTranslator()
-    if translator.load(f"languages:{SETTINGS.language}"):
-        app.installTranslator(translator)
-
-    check_updates = not args.no_check_updates
-    pireal_gui = Pireal(check_updates)
-    pireal_gui.show()
-
-    sys.exit(app.exec())
+if __name__ == "__main__":
+    run()

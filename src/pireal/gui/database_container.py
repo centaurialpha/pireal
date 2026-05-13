@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-#
-# Copyright 2015-2022 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2026 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -17,248 +15,107 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-import csv
-import logging
 
-from PyQt6.QtWidgets import QSplitter
-from PyQt6.QtWidgets import QFileDialog
-from PyQt6.QtWidgets import QMessageBox
-
-from PyQt6.QtCore import Qt
-from PyQt6.QtCore import QSettings
-from PyQt6.QtCore import pyqtSlot as Slot
-
-from pireal.gui.lateral_widget import LateralWidget
-from pireal.gui.table_widget import TableWidget
-from pireal.gui.model_view_delegate import create_view
-from pireal.gui.lateral_widget import RelationItemType
-
-from pireal.gui.query_container.query_container import (
-    QueryContainer,
-    QueryWidget,
+from PyQt6.QtCore import (
+    QSettings,
+    Qt,
+    pyqtSlot,
 )
-import pireal
-from pireal.core import relation, pfile, file_manager
-from pireal.dirs import DATA_SETTINGS
-from pireal import translations as tr
-from pireal import settings
+from PyQt6.QtWidgets import QSplitter
 
-logger = logging.getLogger(__name__)
+from pireal.core.db import DB
+from pireal.core.relation_loader import load_relations
+from pireal.dirs import DATA_SETTINGS
+from pireal.gui.lateral_widget import (
+    LateralWidget,
+    RelationItemType,
+)
+from pireal.gui.model_view_delegate import (
+    Delegate,
+    RelationModel,
+    View,
+)
+from pireal.gui.query_widget import QueryWidget
+from pireal.gui.right_pane import RightPane
+from pireal.gui.status_bar import StatusBar
+from pireal.gui.table_widget import TableWidget
+from pireal.registry import Registry
+
+
+def create_view(relation, *, editable=False):
+    view = View()
+    model = RelationModel(relation)
+    model.editable = editable
+    view.setModel(model)
+    view.setItemDelegate(Delegate())
+    return view
 
 
 class DatabaseContainer(QSplitter):
     def __init__(self, orientation=Qt.Orientation.Horizontal):
-        QSplitter.__init__(self, orientation)
-        self.pfile = None
+        super().__init__(orientation)
+        lateral_widget = Registry.get("lateral-widget", LateralWidget)
+        right_pane = Registry.get("right-pane", RightPane)
+        table_widget = Registry.get("table-widget", TableWidget)
+        query_widget = Registry.get("query-widget", QueryWidget)
 
-        self.lateral_widget = LateralWidget()
-        self.table_widget = TableWidget()
-        self.query_container = QueryContainer(self)
+        self.addWidget(lateral_widget)
+        self.addWidget(right_pane)
 
-        self._vsplitter = QSplitter(Qt.Orientation.Vertical)
-        self._vsplitter.addWidget(self.table_widget)
-        self._vsplitter.addWidget(self.query_container)
-        self.addWidget(self.lateral_widget)
-        self.addWidget(self._vsplitter)
+        self._database = Registry.get("db", DB)
 
-        self.modified = False
+        lateral_widget.relationClicked.connect(self._on_relation_clicked)
+        table_widget.sqlRequested.connect(query_widget._show_sql)
+        table_widget.treeRequested.connect(query_widget._show_tree)
+        self._database.relationsChanged.connect(query_widget.update_completer)
+        self._database.databaseStateChanged.connect(self._on_db_state_for_status)
 
-        self.__nquery = 1
-
-        # Connections
-        # FIXME
-        self.lateral_widget.relationClicked.connect(self._on_relation_clicked)
-        self.lateral_widget.resultClicked.connect(
-            self.table_widget._on_result_list_clicked
-        )
-
-        # lambda i: self.table_widget.stacked.setCurrentIndex(i))
-        # For change table widget item when up/down
-        # see issue #39
-        self.lateral_widget.relationSelectionChanged.connect(
-            lambda i: self.table_widget.stacked.setCurrentIndex(i)
-        )
-        self.query_container.saveEditor.connect(self.save_query)
-        self.setSizes([1, 1])
-
-    def _on_relation_clicked(self, index):
-        if not self.table_widget._other_tab.isVisible():
-            self.table_widget._tabs.setCurrentIndex(0)
-        self.table_widget.stacked.setCurrentIndex(index)
-
-    def dbname(self):
-        """Return display name"""
-
-        return self.pfile.display_name
-
-    def is_new(self):
-        return self.pfile.is_new
+    @pyqtSlot(bool)
+    def _on_db_state_for_status(self, active: bool) -> None:
+        status_bar = Registry.get("status-bar", StatusBar)
+        if active and self._database.file:
+            status_bar.update_db_name(self._database.file.display_name)
+        else:
+            status_bar.update_db_name("")
 
     def create_database(self, data):
-        for table in data.get("tables"):
-            # Get data
-            table_name = table.get("name")
-            header = table.get("header")
-            tuples = table.get("tuples")
+        table_widget = Registry.get("table-widget", TableWidget)
+        lateral_widget = Registry.get("lateral-widget", LateralWidget)
 
-            # Creo el objeto Relation
-            rela = relation.Relation()
-            rela.header = header
-            # Relleno el objeto con las tuplas
-            for _tuple in tuples:
-                rela.insert(_tuple)
-            # Se usa el patrón Modelo/Vista/Delegado
-            _view = self.create_table(rela, table_name)
-            # Add relation to relations dict
-            self.table_widget.add_relation(table_name, rela)
-            # Add table to stacked
-            self.table_widget.stacked.addWidget(_view)
-            # Add table name to list widget
-            # FIXME: feooo
-            rela.name = table_name
-            self.lateral_widget.add_item(rela, RelationItemType.Normal)
+        relations = list(load_relations(data))
+        for relation in relations:
+            self._database.load(relation)
+            table_widget.add_table_to_workspace(relation)
+            lateral_widget.add_item(relation, RelationItemType.Normal)
 
-    def create_table(self, relation_obj, relation_name, editable=True):
-        """Se crea la vista, el model y el delegado para @relation_obj"""
+        lateral_widget.select_relation(len(relations) - 1)
 
-        return create_view(relation_obj, editable=editable)
+    def add_relations(self, data):
+        table_widget = Registry.get("table-widget", TableWidget)
+        lateral_widget = Registry.get("lateral-widget", LateralWidget)
 
-    @Slot(bool)
-    def __on_model_modified(self, modified):
-        self.modified = modified
+        relations = list(load_relations(data))
+        for relation in relations:
+            self._database.add(relation)
+            table_widget.add_table_to_workspace(relation)
+            lateral_widget.add_item(relation, RelationItemType.Normal)
 
-    @Slot(int)
-    def __on_cardinality_changed(self, value):
-        self.lateral_widget.relation_list.update_cardinality(value)
+        lateral_widget.select_relation(len(relations) - 1)
 
-    def load_relation(self, filenames):
-        for filename in filenames:
-            with open(filename) as f:
-                csv_reader = csv.reader(f)
-                header = next(csv_reader)
-                rel = relation.Relation()
-                rel.header = header
-                for i in csv_reader:
-                    rel.insert(i)
-                relation_name = file_manager.get_basename(filename)
-                if not self.table_widget.add_relation(relation_name, rel):
-                    QMessageBox.information(
-                        self,
-                        tr.TR_MSG_INFORMATION,
-                        tr.TR_RELATION_NAME_ALREADY_EXISTS.format(relation_name),
-                    )
-                    return False
+    @pyqtSlot(int)
+    def _on_relation_clicked(self, row: int):
+        table_widget = Registry.get("table-widget", TableWidget)
+        table_widget.show_relation_at(row)
 
-            self.table_widget.add_table(rel, relation_name)
-            return True
-
-    def delete_relation(self):
-        index = self.lateral_widget.current_index()
-        name = self.lateral_widget.current_text()
-        if not name:
-            return
-        ret = QMessageBox.question(
-            self,
-            tr.TR_MSG_CONFIRMATION,
-            tr.TR_MSG_REMOVE_RELATION.format(name),
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-        )
-        if ret == QMessageBox.StandardButton.Yes:
-            self.lateral_widget.remove_relation(index)
-            self.table_widget.remove_table(index)
-            self.table_widget.remove_relation(name)
-            return True
-        return False
-
-    def new_query(self, filename):
-        editor_tab_at = self.query_container.is_open(filename)
-        if editor_tab_at != -1:
-            self.query_container.set_focus_editor_tab(editor_tab_at)
-        else:
-            query_widget = QueryWidget()
-            # Create object file
-            ffile = pfile.File(filename)
-            editor = query_widget.get_editor()
-            editor.pfile = ffile
-            if not filename:
-                ffile.filename = "untitled_{n}.pqf".format(n=self.__nquery)
-            else:
-                content = ffile.read()
-                editor.setPlainText(content)
-            self.query_container.add_tab(query_widget, ffile.display_name)
-            self.__nquery += 1
-
-    def save_query(self, editor):
-        if not editor:
-            editor = self.query_container.currentWidget().get_editor()
-        if not editor.modified:
-            return
-        if editor.is_new:
-            return self.save_query_as(editor)
-        # Get content of editor
-        content = editor.toPlainText()
-        try:
-            editor.pfile.save(data=content)
-        except Exception:
-            QMessageBox.critical(self, "Error", tr.TR_MSG_FILE_NOT_OPENED)
-            return False
-        editor.saved()
-        return editor.pfile.filename
-
-    def save_query_as(self, editor=None):
-        if not editor:
-            if self.query_container.currentWidget() is None:
-                return
-            editor = self.query_container.currentWidget().get_editor()
-        filename = QFileDialog.getSaveFileName(
-            self,
-            tr.TR_MSG_SAVE_QUERY_FILE,
-            editor.name,
-            settings.get_extension_filter(".pqf"),
-        )
-        filename = filename[0]
-        if not filename:
-            return
-        # Get the content
-        content = editor.toPlainText()
-        # Write the file
-        editor.pfile.save(data=content, path=filename)
-        editor.saved()
-        pireal_instance = pireal.get_pireal_instance()
-        pireal_instance.status_bar.show_message(
-            tr.TR_STATUS_QUERY_SAVED.format(filename)
-        )
-
-    def execute_queries(self):
-        self.query_container.execute_queries()
-
-    def execute_selection(self):
-        editor = self.query_container.currentWidget().get_editor()
-        text_cursor = editor.textCursor()
-        if text_cursor.hasSelection():
-            query = text_cursor.selectedText()
-            self.query_container.execute_queries(query)
-
-    def showEvent(self, event):
-        QSplitter.showEvent(self, event)
+    def showEvent(self, a0):
+        super().showEvent(a0)
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
-        vsizes = qsettings.value("vsplitter_sizes", None)
-        if vsizes is not None:
-            self._vsplitter.restoreState(vsizes)
-        else:
-            self._vsplitter.setSizes(
-                [round(self.height() / 3), round(self.height() / 6)]
-            )
         hsizes = qsettings.value("hsplitter_sizes", None)
         if hsizes is not None:
             self.restoreState(hsizes)
         else:
             self.setSizes([round(self.width() / 10), round(self.width() / 3)])
 
-    def save_sizes(self):
-        """Save sizes of Splitters"""
-
+    def save_state(self) -> None:
         qsettings = QSettings(str(DATA_SETTINGS), QSettings.Format.IniFormat)
-        qsettings.setValue("vsplitter_sizes", self._vsplitter.saveState())
         qsettings.setValue("hsplitter_sizes", self.saveState())
-        # FIXME: save sizes of query container

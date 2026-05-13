@@ -1,3 +1,21 @@
+# Copyright 2015-2026 - Gabriel Acosta <acostadariogabriel@gmail.com>
+#
+# This file is part of Pireal.
+#
+# Pireal is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# any later version.
+#
+# Pireal is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Pireal; If not, see <http://www.gnu.org/licenses/>.
+
+
 import pytest
 
 from pireal.core.ordered_set import OrderedSet
@@ -67,3 +85,9 @@ def test_difference():
     s2 = OrderedSet([3, 10])
     assert s1.difference(s2) == [1]
     assert s2.difference(s1) == [10]
+
+
+def test_getitem_invalid_index_raises_type_error():
+    s = OrderedSet([1, 2, 3])
+    with pytest.raises(TypeError, match="Invalid index type"):
+        s["invalid"]

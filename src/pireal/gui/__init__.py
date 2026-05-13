@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
@@ -16,10 +15,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
-
-"""
-Metadata
-"""
 
 __author__ = "Gabriel Acosta"
 __email__ = "acostadariogabriel at gmail"

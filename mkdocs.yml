@@ -1,0 +1,92 @@
+site_name: Pireal
+site_description: Un intérprete de Álgebra Relacional para aprender bases de datos
+repo_url: https://github.com/centaurialpha/pireal
+repo_name: centaurialpha/pireal
+edit_uri: edit/main/docs/
+
+copyright: Copyright &copy; 2015-2026 Gabriel Acosta
+
+extra:
+  version: "4.0.0"
+
+theme:
+  name: material
+  custom_dir: overrides
+  logo: images/pireal_icon.png
+  favicon: images/pireal_icon.ico
+  palette:
+    scheme: slate
+    primary: custom
+    accent: custom
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+  icon:
+    repo: fontawesome/brands/github
+  font:
+    text: Inter
+    code: JetBrains Mono
+
+extra_css:
+  - stylesheets/home.css
+  - stylesheets/custom.css
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Relational Algebra:
+      - Operators: relational-algebra/operators.md
+      - Examples: relational-algebra/examples.md
+  - User Guide:
+      - Databases: user-guide/databases.md
+      - Queries: user-guide/queries.md
+  - Under the Hood:
+      - The Interpreter: internals/interpreter.md
+      - Creating Themes: internals/themes.md
+  - Contributing: contributing.md
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: es
+          name: Español
+          build: true
+          nav_translations:
+            Home: Inicio
+            Getting Started: Primeros pasos
+            Relational Algebra: Álgebra Relacional
+            Operators: Operadores
+            Examples: Ejemplos
+            User Guide: Guía de uso
+            Databases: Bases de datos
+            Queries: Consultas
+            Under the Hood: Cómo funciona
+            The Interpreter: El intérprete
+            Creating Themes: Crear temas
+            Contributing: Contribuir
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - attr_list
+  - tables
+  - pymdownx.tilde

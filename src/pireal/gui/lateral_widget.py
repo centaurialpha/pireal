@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-#
-# Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2025 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -19,27 +17,70 @@
 
 import enum
 from collections import namedtuple
+from typing import cast
 
-from PyQt6.QtWidgets import QListView
-from PyQt6.QtWidgets import QVBoxLayout
-from PyQt6.QtWidgets import QFrame
-from PyQt6.QtWidgets import QLabel
-from PyQt6.QtWidgets import QSplitter
-from PyQt6.QtWidgets import QStyledItemDelegate
-from PyQt6.QtWidgets import QStyleOptionViewItem
-from PyQt6.QtWidgets import QStyle
-from PyQt6.QtWidgets import QSizePolicy
-
-from PyQt6.QtCore import Qt, QRect, QModelIndex
-from PyQt6.QtCore import QAbstractListModel
-from PyQt6.QtCore import pyqtSignal as Signal
+from PyQt6.QtCore import (
+    QAbstractListModel,
+    QEvent,
+    QModelIndex,
+    QRect,
+    Qt,
+    pyqtSignal,
+)
+from PyQt6.QtGui import (
+    QColor,
+    QFont,
+    QFontMetrics,
+    QPainter,
+    QPalette,
+)
+from PyQt6.QtWidgets import (
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QListView,
+    QMenu,
+    QSizePolicy,
+    QSplitter,
+    QStyle,
+    QStyledItemDelegate,
+    QStyleOptionViewItem,
+    QVBoxLayout,
+    QWidget,
+)
 
 from pireal import translations as tr
-
 
 RelationItem = namedtuple("RelationItem", "name cardinality degree")
 
 
+class _EmptyListView(QListView):
+    """QListView que muestra un mensaje placeholder cuando el modelo está vacío."""
+
+    def __init__(self, empty_text: str, parent=None):
+        super().__init__(parent)
+        self._empty_text = empty_text
+
+    def paintEvent(self, e):
+        super().paintEvent(e)
+        model = self.model()
+        if model is None or model.rowCount() > 0:
+            return
+        viewport = self.viewport()
+        if viewport is None:
+            return
+        painter = QPainter(viewport)
+        painter.save()
+        painter.setPen(self.palette().color(QPalette.ColorRole.PlaceholderText))
+        painter.drawText(
+            viewport.rect(),
+            Qt.AlignmentFlag.AlignCenter,
+            self._empty_text,
+        )
+        painter.restore()
+
+
+# FIXME: mejores nombres
 class RelationItemType(enum.Enum):
     Normal = "normal"
     Result = "result"
@@ -74,7 +115,8 @@ class RelationModel(QAbstractListModel):
         self._relations.clear()
         self.endResetModel()
 
-    def rowCount(self, index):
+    def rowCount(self, parent: QModelIndex | None = None) -> int:
+        _ = parent
         return len(self._relations)
 
     def data(self, index, role=Qt.ItemDataRole.DisplayRole):
@@ -100,108 +142,284 @@ class RelationModel(QAbstractListModel):
         }
 
 
-class RelationDelegate(QStyledItemDelegate):
-    def paint(self, painter, option, index):
-        opt = QStyleOptionViewItem(option)
-        self.initStyleOption(opt, index)
+class _CountBadge(QWidget):
+    _PADDING_H = 6
+    _PADDING_V = 2
 
-        model = index.model()
-        relation_name = model.data(index, model.NameRole)
-        cardinality = model.data(index, model.CardinalityRole)
-        degree = model.data(index, model.DegreeRole)
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._count = 0
+        self.hide()
+        fm = self.fontMetrics()
+        self.setFixedHeight(fm.height() + self._PADDING_V * 2)
 
-        opt.text = ""
-        opt.widget.style().drawControl(
-            QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget
-        )
+    def set_count(self, count: int) -> None:
+        self._count = count
+        if count > 0:
+            fm = self.fontMetrics()
+            w = fm.horizontalAdvance(str(count)) + self._PADDING_H * 2
+            self.setFixedWidth(w)
+            self.show()
+        else:
+            self.hide()
+        self.update()
 
-        rect = opt.rect
+    def paintEvent(self, a0) -> None:
+        _ = a0
+        if self._count == 0:
+            return
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
-        rect = rect.adjusted(5, 3, 5, -3)
-        painter.save()
+        color = self.palette().color(QPalette.ColorRole.PlaceholderText)
+        bg = QColor(color)
+        bg.setAlpha(35)
+        painter.setBrush(bg)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.drawRoundedRect(self.rect(), 3, 3)
 
-        font = painter.font()
+        painter.setPen(color)
+        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, str(self._count))
+
+
+class _SectionHeader(QWidget):
+    def __init__(self, text: str, parent=None):
+        super().__init__(parent)
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(8, 6, 8, 4)
+
+        self._label = QLabel(text.upper())
+        fm = self._label.fontMetrics()
+        font = self._label.font()
+        font.setPointSize(max(7, fm.height() // 2))
+        font.setLetterSpacing(QFont.SpacingType.AbsoluteSpacing, 1.5)
         font.setBold(True)
-        font.setPointSize(12)
-        painter.setFont(font)
-        painter.drawText(
-            QRect(rect.left(), rect.top(), rect.width(), round(rect.height() / 3)),
-            opt.displayAlignment,
-            relation_name,
-        )
+        self._label.setFont(font)
+        self._refresh_label_color()
+        layout.addWidget(self._label)
 
-        painter.restore()
+        self._badge = _CountBadge()
+        layout.addWidget(self._badge)
+        layout.addStretch()
 
-        painter.drawText(
-            QRect(rect.left(), rect.top(), rect.width(), rect.height()),
-            opt.displayAlignment,
-            "cardinality: " + str(cardinality),
-        )
+    def _refresh_label_color(self) -> None:
+        color = self.palette().color(QPalette.ColorRole.PlaceholderText).name()
+        self._label.setStyleSheet(f"color: {color};")
 
-        painter.drawText(
-            QRect(
-                rect.left(),
-                round(rect.top() + rect.height() / 2),
-                rect.width(),
-                round(rect.height() / 1.5),
-            ),
-            opt.displayAlignment,
-            "degree: " + str(degree),
-        )
+    def changeEvent(self, a0) -> None:
+        super().changeEvent(a0)
+        if a0 is not None and a0.type() == QEvent.Type.PaletteChange:
+            self._refresh_label_color()
 
-    def sizeHint(self, option, index):
-        size = super().sizeHint(option, index)
-        size.setHeight(round(size.height() * 4.5))
-        return size
+    def set_model(self, model: "RelationModel") -> None:
+        model.rowsInserted.connect(lambda *_: self._badge.set_count(model.rowCount()))
+        model.rowsRemoved.connect(lambda *_: self._badge.set_count(model.rowCount()))
+        model.modelReset.connect(lambda: self._badge.set_count(0))
+
+    def paintEvent(self, a0) -> None:
+        super().paintEvent(a0)
+        painter = QPainter(self)
+        color = self.palette().color(QPalette.ColorRole.Mid)
+        color.setAlpha(80)
+        painter.setPen(color)
+        painter.drawLine(0, self.height() - 1, self.width(), self.height() - 1)
 
 
 class RelationListView(QFrame):
-    def __init__(self, header_text="", parent=None):
+    def __init__(self, header_text="", empty_text="", parent=None):
         super().__init__(parent)
         self.setFrameShape(QFrame.Shape.StyledPanel)
         self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(3, 3, 3, 3)
-        header_lbl = QLabel(header_text)
-        font = header_lbl.font()
-        font.setPointSize(12)
-        header_lbl.setFont(font)
-        layout.addWidget(
-            header_lbl,
-            alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter,
-        )
-        self.view = QListView()
+        layout.setSpacing(0)
+        self._header = _SectionHeader(header_text)
+        layout.addWidget(self._header)
+        self.view = _EmptyListView(empty_text)
         layout.addWidget(self.view)
+
+    def set_model(self, model: "RelationModel") -> None:
+        self.view.setModel(model)
+        self._header.set_model(model)
+
+
+class RelationDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        if painter is None:
+            return
+
+        model = cast(RelationModel, index.model())
+        if model is None:
+            return
+
+        opt = QStyleOptionViewItem(option)
+        self.initStyleOption(opt, index)
+        opt.text = ""
+
+        is_selected = bool(opt.state & QStyle.StateFlag.State_Selected)
+        is_hover = bool(opt.state & QStyle.StateFlag.State_MouseOver)
+        palette = opt.palette
+        rect = opt.rect.adjusted(4, 3, -4, -3)
+
+        painter.save()
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        if is_selected:
+            bg = palette.color(QPalette.ColorRole.Highlight)
+            bg.setAlpha(25)
+            painter.fillRect(opt.rect, bg)
+        elif is_hover:
+            bg = palette.color(QPalette.ColorRole.Highlight)
+            bg.setAlpha(10)
+            painter.fillRect(opt.rect, bg)
+
+        if is_selected:
+            name_color = palette.color(QPalette.ColorRole.Highlight)
+            meta_color = palette.color(QPalette.ColorRole.Highlight)
+            meta_color.setAlpha(180)
+        else:
+            name_color = palette.color(QPalette.ColorRole.Text)
+            meta_color = palette.color(QPalette.ColorRole.PlaceholderText)
+
+        text_rect = rect.adjusted(10, 4, -8, -4)
+
+        name_font = QFont(painter.font())
+        name_font.setBold(True)
+        name_height = QFontMetrics(name_font).height()
+
+        meta_font = QFont(painter.font())
+        meta_font.setPointSize(meta_font.pointSize() - 1)
+        meta_height = QFontMetrics(meta_font).height()
+
+        top = text_rect.top() + (text_rect.height() - name_height - meta_height) // 2
+
+        name = model.data(index, model.NameRole)
+        cardinality = model.data(index, model.CardinalityRole)
+        degree = model.data(index, model.DegreeRole)
+
+        painter.setFont(name_font)
+        painter.setPen(name_color)
+        painter.drawText(
+            QRect(text_rect.left(), top, text_rect.width(), name_height), Qt.AlignmentFlag.AlignVCenter, name
+        )
+
+        painter.setFont(meta_font)
+        painter.setPen(meta_color)
+        painter.drawText(
+            QRect(text_rect.left(), top + name_height, text_rect.width(), meta_height),
+            Qt.AlignmentFlag.AlignVCenter,
+            f"{cardinality} tuples · {degree} attrs",
+        )
+
+        painter.restore()
+
+    def sizeHint(self, option, index):
+        name_font = QFont(option.font)
+        name_font.setBold(True)
+        name_height = QFontMetrics(name_font).height()
+        meta_font = QFont(option.font)
+        meta_font.setPointSize(meta_font.pointSize() - 1)
+        meta_height = QFontMetrics(meta_font).height()
+        size = super().sizeHint(option, index)
+        size.setHeight(name_height + meta_height + 26)
+        return size
+
+    def _paint(
+        self,
+        painter: QPainter | None,
+        option: "QStyleOptionViewItem",
+        index: QModelIndex,
+    ) -> None:
+        if painter is None:
+            return
+
+        model = cast(RelationModel, index.model())
+        if model is None:
+            return
+
+        opt = QStyleOptionViewItem(option)
+        self.initStyleOption(opt, index)
+        opt.text = ""
+
+        style = opt.widget.style()
+        if style is not None:
+            if opt.state & QStyle.StateFlag.State_Selected:
+                highlight = opt.palette.color(QPalette.ColorRole.Highlight)
+                highlight.setAlpha(150)
+                opt.palette.setColor(QPalette.ColorRole.Highlight, highlight)
+
+            style.drawControl(QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget)
+
+        is_selected = bool(opt.state & QStyle.StateFlag.State_Selected)
+        palette = opt.palette
+        name_color = (
+            palette.color(QPalette.ColorRole.HighlightedText) if is_selected else palette.color(QPalette.ColorRole.Text)
+        )
+        if is_selected:
+            meta_color = palette.color(QPalette.ColorRole.HighlightedText)
+            meta_color.setAlpha(180)
+        else:
+            meta_color = palette.color(QPalette.ColorRole.PlaceholderText)
+
+        rect = opt.rect.adjusted(12, 4, -8, -4)
+        name_font = QFont(painter.font())
+        name_font.setBold(True)
+        name_height = QFontMetrics(name_font).height()
+
+        meta_font = QFont(painter.font())
+        meta_font.setPointSize(meta_font.pointSize() - 1)
+        meta_height = QFontMetrics(meta_font).height()
+
+        top = rect.top() + (rect.height() - name_height - meta_height) // 2
+
+        painter.save()
+
+        name = model.data(index, model.NameRole)
+        cardinality = model.data(index, model.CardinalityRole)
+        degree = model.data(index, model.DegreeRole)
+        meta = f"{cardinality} tuples - {degree} attributes"
+
+        painter.setFont(name_font)
+        painter.setPen(name_color)
+        painter.drawText(QRect(rect.left(), top, rect.width(), name_height), Qt.AlignmentFlag.AlignVCenter, name)
+
+        painter.setFont(meta_font)
+        painter.setPen(meta_color)
+        painter.drawText(
+            QRect(rect.left(), top + name_height, rect.width(), meta_height), Qt.AlignmentFlag.AlignVCenter, meta
+        )
+        painter.restore()
+
+    def _sizeHint(self, option, index):
+        size = super().sizeHint(option, index)
+        name_font = QFont(option.font)
+        name_font.setBold(True)
+        name_height = QFontMetrics(name_font).height()
+        meta_font = QFont(option.font)
+        meta_font.setPointSize(meta_font.pointSize() - 1)
+        meta_height = QFontMetrics(meta_font).height()
+        size.setHeight(name_height + meta_height + 14)
+        return size
 
 
 class LateralWidget(QSplitter):
-    """
-    Widget que contiene la lista de relaciones y la lista de relaciones
-    del resultado de consultas
-    """
+    relationClicked = pyqtSignal(int)
+    resultClicked = pyqtSignal(int)
+    relationSelected = pyqtSignal(str, int, int)
+    deleteRelationRequested = pyqtSignal(int)
 
-    relationClicked = Signal(int)
-    relationSelectionChanged = Signal(int)
-
-    resultClicked = Signal(int)
-    resultSelectionChanged = Signal(int)
-
-    newRowsRequested = Signal(list)
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setOrientation(Qt.Orientation.Vertical)
-        # Lista de relaciones de la base de datos
-        self._relations_list = RelationListView(tr.TR_RELATIONS)
+    def __init__(self):
+        super().__init__(orientation=Qt.Orientation.Vertical)
+        self._relations_list = RelationListView(tr.TR_RELATIONS, tr.TR_NO_RELATIONS)
         self._relations_model = RelationModel()
-        self._relations_list.view.setModel(self._relations_model)
+        self._relations_list.set_model(self._relations_model)
         self._relations_list.view.setItemDelegate(RelationDelegate())
         self.addWidget(self._relations_list)
-        # Lista de relaciones del resultado de consultas
-        self._results_list = RelationListView(tr.TR_RESULTS)
+
+        self._results_list = RelationListView(tr.TR_RESULTS, tr.TR_NO_RESULTS)
         self._results_model = RelationModel()
-        self._results_list.view.setModel(self._results_model)
+        self._results_list.set_model(self._results_model)
         self._results_list.view.setItemDelegate(RelationDelegate())
         self.addWidget(self._results_list)
 
@@ -210,35 +428,65 @@ class LateralWidget(QSplitter):
             RelationItemType.Result: self._results_model,
         }
 
-        self._relations_list.view.clicked.connect(
-            lambda i: self.relationClicked.emit(i.row())
-        )
-        self._results_list.view.clicked.connect(
-            lambda i: self.resultClicked.emit(i.row())
-        )
+        self._relations_list.view.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self._relations_list.view.customContextMenuRequested.connect(self._on_relations_context_menu)
+        self._relations_list.view.clicked.connect(lambda index: self.relationClicked.emit(index.row()))
+        self._relations_list.view.clicked.connect(self._on_relation_clicked)
+        self._results_list.view.clicked.connect(lambda index: self.resultClicked.emit(index.row()))
+        self._results_list.view.clicked.connect(self._on_result_clicked)
 
-    def current_index(self):
-        index = self._relations_list.view.currentIndex()
-        return index.row()
+    def _on_relations_context_menu(self, pos):
+        index = self._relations_list.view.indexAt(pos)
+        if not index.isValid():
+            return
+        viewport = self._relations_list.view.viewport()
+        if viewport is None:
+            return
+        menu = QMenu(self)
+        delete_action = menu.addAction(tr.TR_MENU_SCHEME_REMOVE_RELATION)
+        action = menu.exec(viewport.mapToGlobal(pos))
+        if action == delete_action:
+            self.deleteRelationRequested.emit(index.row())
 
-    def current_text(self):
-        index = self.current_index()
-        relation = self._relations_model.relation_by_index(index)
-        return relation.name
-
-    def remove_relation(self, index):
+    def remove_relation(self, index: int):
         self._relations_model.remove_relation(index)
 
-    def add_item(self, relation, rtype: RelationItemType.Normal):
-        """Add relation to list of relations or results depending on rtype"""
+    def add_item(self, relation, relation_type: RelationItemType) -> None:
         item = RelationItem(relation.name, relation.cardinality(), relation.degree())
-
-        self._models[rtype].add_relation(item)
+        self._models[relation_type].add_relation(item)
 
     def clear(self):
-        """Clear list of relations"""
         self._relations_model.clear()
 
     def clear_results(self):
-        """Clear list of results"""
         self._results_model.clear()
+
+    def relation_name_by_index(self, index: int) -> str:
+        return self._relations_model.relation_by_index(index).name
+
+    def select_relation(self, index: int) -> None:
+        self._select_in_view(self._relations_list.view, index)
+
+    def select_result(self, index: int) -> None:
+        self._select_in_view(self._results_list.view, index)
+
+    def _select_in_view(self, view, index: int) -> None:
+        model = view.model()
+        if model is None or model.rowCount() == 0:
+            return
+        idx = model.index(index, 0)
+        view.setCurrentIndex(idx)
+
+    def _on_result_clicked(self, index) -> None:
+        self.resultClicked.emit(index.row())
+        self._emit_relation_selected(self._results_model, index)
+
+    def _on_relation_clicked(self, index) -> None:
+        self.relationClicked.emit(index.row())
+        self._emit_relation_selected(self._relations_model, index)
+
+    def _emit_relation_selected(self, model: RelationModel, index) -> None:
+        name = model.data(index, RelationModel.NameRole)
+        cardinality = model.data(index, RelationModel.CardinalityRole)
+        degree = model.data(index, RelationModel.DegreeRole)
+        self.relationSelected.emit(name, cardinality, degree)

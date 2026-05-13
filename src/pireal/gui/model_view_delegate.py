@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-#
-# Copyright 2015-2021 - Gabriel Acosta <acostadariogabriel@gmail.com>
+# Copyright 2015-2025 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
 #
@@ -18,24 +16,35 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from typing import Any
 
-from PyQt6.QtWidgets import QTableView
-from PyQt6.QtWidgets import QHeaderView
-from PyQt6.QtWidgets import QAbstractItemView
-from PyQt6.QtWidgets import QItemDelegate
-from PyQt6.QtWidgets import QInputDialog
+from PyQt6.QtCore import (
+    QAbstractTableModel,
+    QModelIndex,
+    Qt,
+    pyqtSlot as Slot,
+)
+from PyQt6.QtGui import (
+    QColor,
+    QFont,
+)
+from PyQt6.QtWidgets import (
+    QAbstractItemView,
+    QHeaderView,
+    QInputDialog,
+    QItemDelegate,
+    QTableView,
+)
 
-from PyQt6.QtGui import QColor
-
-from PyQt6.QtCore import QAbstractTableModel
-from PyQt6.QtCore import Qt
-from PyQt6.QtCore import QModelIndex
-from PyQt6.QtCore import pyqtSlot as Slot
 from pireal import translations as tr
-
-from pireal.gui.theme import get_color
+from pireal.core.db import DB
+from pireal.gui.theme.manager import get_theme_manager
+from pireal.registry import Registry
 
 logger = logging.getLogger("gui.model_view_delegate")
+
+
+# En model_view_delegate.py, agregar esta clase antes de View
 
 
 class RelationModel(QAbstractTableModel):
@@ -43,17 +52,22 @@ class RelationModel(QAbstractTableModel):
         super().__init__()
         self.editable = True
         self.relation = relation_object
-        self._null_text_color = QColor(get_color("BrightText"))
+        theme_manager = get_theme_manager()
+        self._null_color = theme_manager.current_scheme.placeholder_text
+        theme_manager.themeChanged.connect(self._on_theme_changed)
 
-    def rowCount(self, parent=QModelIndex()):
+    def _on_theme_changed(self, scheme):
+        self._null_color = scheme.placeholder_text
+
+    def rowCount(self, parent: QModelIndex | None = None) -> int:
         """Devuelve la cardinalidad de la relación"""
-        if parent.isValid():
+        if parent is not None and parent.isValid():
             return 0
         return self.relation.cardinality()
 
-    def columnCount(self, parent=QModelIndex()):
+    def columnCount(self, parent: QModelIndex | None = None):
         """Devuelve el grado de la relación"""
-        if parent.isValid():
+        if parent is not None and parent.isValid():
             return 0
         return self.relation.degree()
 
@@ -65,23 +79,28 @@ class RelationModel(QAbstractTableModel):
         data = self.relation.content
         if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
             return data[row][column]
-        elif role == Qt.ItemDataRole.ForegroundRole:
-            value = data[row][column]
-            if value == "null":
-                return self._null_text_color
+        elif role == Qt.ItemDataRole.ForegroundRole and data[row][column] == "null":
+            return self._null_color
+        elif role == Qt.ItemDataRole.FontRole and data[row][column] == "null":
+            font = QFont()
+            font.setItalic(True)
+            return font
         return None
 
-    def headerData(self, section, orientation, role):
-        if role == Qt.ItemDataRole.DisplayRole:
+    def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
+        if role == Qt.ItemDataRole.DisplayRole and orientation == Qt.Orientation.Horizontal:
             return self.relation.header[section]
 
-    def setHeaderData(self, section, orientation, value, role):
+    def setHeaderData(
+        self, section: int, orientation: Qt.Orientation, value: Any, role: int = Qt.ItemDataRole.DisplayRole
+    ) -> bool:
         if role == Qt.ItemDataRole.DisplayRole:
             old_value = self.relation.header[section]
             if value != old_value:
                 self.relation.header[section] = value
                 self.headerDataChanged.emit(orientation, section, section)
                 return True
+        return False
 
     def flags(self, index):
         flags = super().flags(index)
@@ -89,20 +108,22 @@ class RelationModel(QAbstractTableModel):
             flags |= Qt.ItemFlag.ItemIsEditable
         return flags
 
-    def setData(self, index, value, role):
+    def setData(self, index: QModelIndex, value: Any, role: int = Qt.ItemDataRole.DisplayRole):
         if index.isValid() and role == Qt.ItemDataRole.EditRole:
             current_value = self.data(index)
             if current_value != value:
                 self.relation.update(index.row(), index.column(), value)
                 self.dataChanged.emit(index, index)
-                logger.debug(
-                    "Editing %d:%d - Current: %s, New: %s",
-                    index.row(),
-                    index.column(),
-                    current_value,
-                    value,
-                )
-                # FIXME: avisar que se ha modificado la base de datos
+                if self.editable:
+                    logger.debug(
+                        "Editing %d:%d - Current: %s, New: %s",
+                        index.row(),
+                        index.column(),
+                        current_value,
+                        value,
+                    )
+                    db = Registry.get("db", DB)
+                    db.modified = True
                 return True
         return False
 
@@ -111,34 +132,87 @@ class View(QTableView):
     """Vista"""
 
     def __init__(self):
-        super(View, self).__init__()
-        # self.setAlternatingRowColors(CONFIG.get('alternatingRowColors'))
-        self.verticalHeader().hide()
+        super().__init__()
+        self.setAlternatingRowColors(True)
+        vheader = self.verticalHeader()
+        if vheader is not None:
+            vheader.hide()
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         # Scroll content per pixel
         self.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
         self.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
-        self.horizontalHeader().setHighlightSections(False)
+        header = self.horizontalHeader()
+        if header is not None:
+            header.setHighlightSections(False)
 
-    def resizeEvent(self, event):
-        super(View, self).resizeEvent(event)
+        self._apply_hover_style()
+
+        theme_manager = get_theme_manager()
+        theme_manager.themeChanged.connect(self._on_theme_changed)
+
+    def _on_theme_changed(self, scheme):
+        self._apply_hover_style()
+
+    def _apply_hover_style(self):
+        scheme = get_theme_manager().current_scheme
+
+        alternate = scheme.alternate_base
+        highlight = scheme.highlight
+
+        hover = QColor(highlight)
+        hover.setAlpha(30)
+        selected = QColor(highlight)
+        selected.setAlpha(45)
+
+        header_bg = scheme.base
+        header_border = QColor(scheme.text)
+        header_border.setAlpha(20)
+
+        self.setStyleSheet(f"""
+            QTableView {{
+                alternate-background-color: {alternate.name()};
+                selection-background-color: {selected.name(QColor.NameFormat.HexArgb)};
+                selection-color: {scheme.text.name()};
+            }}
+            QTableView::item:hover:!selected {{
+                background-color: {hover.name(QColor.NameFormat.HexArgb)};
+            }}
+            QHeaderView::section {{
+                background-color: {header_bg.name()};
+                color: {scheme.text.name()};
+                font-weight: bold;
+                padding: 4px 10px;
+                border: none;
+                border-right: 1px solid {header_border.name(QColor.NameFormat.HexArgb)};
+                border-bottom: 1px solid {header_border.name(QColor.NameFormat.HexArgb)};
+            }}
+            QHeaderView::section:last {{
+                border-right: none;
+            }}
+            QHeaderView::section:hover {{
+                background-color: {hover.name(QColor.NameFormat.HexArgb)};
+            }}
+        """)
+
+    def resizeEvent(self, e):
+        super().resizeEvent(e)
         self.adjust_columns()
 
     def adjust_columns(self):
         """Resize all sections to content and user interactive"""
-
         header = self.horizontalHeader()
-        for column in range(header.count()):
-            header.setSectionResizeMode(column, QHeaderView.ResizeMode.ResizeToContents)
-            width = header.sectionSize(column)
-            header.setSectionResizeMode(column, QHeaderView.ResizeMode.Interactive)
-            header.resizeSection(column, width)
-        self.horizontalHeader().setMinimumHeight(32)
+        if header is not None:
+            for column in range(header.count()):
+                header.setSectionResizeMode(column, QHeaderView.ResizeMode.ResizeToContents)
+                width = header.sectionSize(column)
+                header.setSectionResizeMode(column, QHeaderView.ResizeMode.Interactive)
+                header.resizeSection(column, width)
+            header.setMinimumHeight(36)
 
 
 class Header(QHeaderView):
     def __init__(self, orientation=Qt.Orientation.Horizontal, parent=None):
-        super(Header, self).__init__(orientation, parent)
+        super().__init__(orientation, parent)
         self.editable = True
         self.setSectionsClickable(True)
         self.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
@@ -150,11 +224,13 @@ class Header(QHeaderView):
     def _on_section_double_clicked(self, index):
         if not self.editable:
             return
-        name, ok = QInputDialog.getText(
-            self, tr.TR_INPUT_DIALOG_HEADER_TITLE, tr.TR_INPUT_DIALOG_HEADER_BODY
-        )
+        name, ok = QInputDialog.getText(self, tr.TR_INPUT_DIALOG_HEADER_TITLE, tr.TR_INPUT_DIALOG_HEADER_BODY)
         if ok:
-            self.model().setHeaderData(index, Qt.Orientation.Horizontal, name.strip())
+            model = self.model()
+            if model is not None:
+                model.setHeaderData(index, Qt.Orientation.Horizontal, name.strip())
+                db = Registry.get("db", DB)
+                db.modified = True
 
 
 class Delegate(QItemDelegate):
@@ -181,4 +257,7 @@ def create_view(relation, *, editable=False):
     model.editable = editable
     view.setModel(model)
     view.setItemDelegate(Delegate())
+    if editable:
+        header = Header()
+        view.setHorizontalHeader(header)
     return view

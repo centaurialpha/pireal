@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright 2015-2016 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
@@ -21,8 +19,9 @@ from __future__ import annotations
 
 
 class Scanner:
-    """
-    The Scanner is used to step through text character by character
+    """The Scanner.
+
+    Is used to step through text character by character
     and keep track of the line and column number of each passed character
     """
 
@@ -36,8 +35,7 @@ class Scanner:
 
     @property
     def char(self) -> str | None:
-        """Returns a character in the current index"""
-
+        """Return a character in the current index."""
         if self.index < len(self._text):
             return self._text[self.index]
 
@@ -46,13 +44,12 @@ class Scanner:
 
     def peek(self) -> str | None:
         peek_pos = self.index + 1
-        if peek_pos > len(self._text) - 1:
+        if peek_pos >= len(self._text):
             return None
         return self._text[peek_pos]
 
     def next(self) -> None:
-        """Move on to the next character in the scanned text"""
-
+        """Move on to the next character in the scanned text."""
         if self.char == "\n":
             # We are in a new line, therefore we increase the line
             # number and restart the column number
@@ -62,13 +59,5 @@ class Scanner:
             self.colno += 1
         self.index += 1
 
-    def next_char(self) -> str | None:
-        """Returns the next character in the source text"""
-
-        self.next()
-        return self.char
-
     def __repr__(self) -> str:
-        return "<Scanner at {line}:{col} - Character: {char}>".format(
-            line=self.lineno, col=self.colno, char=self.char
-        )
+        return f"<Scanner at {self.lineno}:{self.colno} - Character: {self.char}>"

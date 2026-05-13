@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright 2015-2019 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
@@ -36,9 +34,7 @@ def scanner_bot():
     return _make_scanner
 
 
-@pytest.mark.parametrize(
-    "text, pos, expected", [("hola", 1, "o"), ("hola", 3, "a"), ("hola", 9, None)]
-)
+@pytest.mark.parametrize("text, pos, expected", [("hola", 1, "o"), ("hola", 3, "a"), ("hola", 9, None)])
 def test_char_property(scanner_bot, text, pos, expected):
     sc = scanner_bot(text, pos)
     assert sc.char == expected
@@ -61,23 +57,6 @@ def test_next(scanner_bot, text, moves, expected):
     assert sc.index == index
 
 
-@pytest.mark.parametrize(
-    "text, moves, expected",
-    [
-        ("hola como estas", 1, "o"),
-        ("hola como estas", 4, " "),
-        ("hola como estas", 7, "m"),
-        ("hola como estas", 0, ""),
-    ],
-)
-def test_next_char(scanner_bot, text, moves, expected):
-    sc = scanner_bot(text)
-    char = ""
-    for _ in range(moves):
-        char = sc.next_char()
-    assert char == expected
-
-
 def test_repr(scanner_bot):
     sc = scanner_bot("pireal")
     assert repr(sc) == "<Scanner at 1:1 - Character: p>"
@@ -95,3 +74,34 @@ def test_peek(scanner_bot):
         sc.next()
     assert sc.char == "e"
     assert sc.peek() is None
+
+
+def test_peek_at_end(scanner_bot):
+    sc = scanner_bot("ab")
+    sc.next()  # en 'b'
+    assert sc.peek() is None
+
+
+def test_char_at_eof(scanner_bot):
+    sc = scanner_bot("a")
+    sc.next()
+    assert sc.char is None
+
+
+def test_lineno_colno_tracking(scanner_bot):
+    sc = scanner_bot("a\nb\nc")
+    sc.next()  # '\n'
+    assert sc.lineno == 1
+    sc.next()  # 'b'
+    assert sc.lineno == 2
+    assert sc.colno == 1
+    sc.next()  # '\n'
+    sc.next()  # 'c'
+    assert sc.lineno == 3
+    assert sc.colno == 1
+
+
+def test_repr_at_eof(scanner_bot):
+    sc = scanner_bot("a")
+    sc.next()
+    assert repr(sc) == "<Scanner at 1:2 - Character: None>"

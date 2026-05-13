@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright 2015-2020 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
@@ -17,57 +15,36 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-"""
-This module contains variables and functions related to directories used by Pireal
-"""
+"""Contains variables and functions related to directories used by Pireal."""
 
 import platform
 from pathlib import Path
 
 from PyQt6.QtCore import QStandardPaths
 
-
-_ROOT_DIR = Path(__file__).resolve().parent.parent
-
 _HOME_DIR = Path.home()
-
-EXAMPLES_DIR = _ROOT_DIR / "pireal" / "resources" / "samples"
-EXAMPLE_DB_FILENAME = EXAMPLES_DIR / "database.pdb"
 
 
 def _data_dir() -> Path:
-    """Return the app data dir for Pireal"""
-
-    pireal_dir_name = ".pireal"
+    """Return the app data dir for Pireal."""
 
     if platform.system() == "Linux":
         # Store data files in $HOME
+        pireal_dir_name = ".pireal"
         pireal_data_dir = _HOME_DIR / pireal_dir_name
     else:
         # In windows and mac, use standard paths provided by Qt
+        pireal_dir_name = "pireal"
         pireal_data_dir = (
-            Path(
-                QStandardPaths.writableLocation(
-                    QStandardPaths.StandardLocation.GenericDataLocation
-                )
-            )
-            / pireal_dir_name
+            Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.GenericDataLocation)) / pireal_dir_name
         )
 
     return pireal_data_dir
 
 
 def _get_databases_location() -> Path:
-    """Return the path used for store the user databases"""
-
-    db_dir = (
-        Path(
-            QStandardPaths.writableLocation(
-                QStandardPaths.StandardLocation.HomeLocation
-            )
-        )
-        / "PirealDBs"
-    )
+    """Return the path used for store the user databases."""
+    db_dir = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.HomeLocation)) / "PirealDBs"
 
     return db_dir
 
@@ -75,11 +52,12 @@ def _get_databases_location() -> Path:
 LOGS_DIR = _data_dir() / "logs"
 CONFIG_FILE = _data_dir() / "config.ini"
 DATA_SETTINGS = _data_dir() / "data_settings.ini"
-LANGUAGES_DIR = _ROOT_DIR / "pireal" / "resources" / "lang"
 DATABASES_DIR = _get_databases_location()
+THEMES_DIR = _data_dir() / "themes"
+LOCALES_DIR = Path(__file__).parent / "locales"
 
 
 def create_app_dirs():
-    """Create all dirs needed by Pireal"""
+    """Create all dirs needed by Pireal."""
     for d in (_data_dir(), LOGS_DIR, DATABASES_DIR):
         d.mkdir(exist_ok=True)

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright 2015-2019 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
@@ -20,9 +18,10 @@
 import argparse
 
 
-def get_cli():
+def get_cli() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--database", help="Database file")
+    parser.add_argument("--terminal", action="store_true", help="Run in terminal/REPL mode")
     parser.add_argument(
         "-l",
         "--log-level",
@@ -32,7 +31,5 @@ def get_cli():
         help="Set logger level",
     )
     parser.add_argument("--version", action="store_true", help="Version")
-    parser.add_argument(
-        "--no-check-updates", action="store_true", help="Disable check for updates"
-    )
+    parser.add_argument("--no-check-updates", action="store_true", help="Disable check for updates")
     return parser

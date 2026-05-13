@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
@@ -17,21 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
-# This necesary for sphinx
-from typing import cast
+from importlib.metadata import version
 
-from pkg_resources import get_distribution, DistributionNotFound
-
-try:
-    __version__ = get_distribution("pireal").version
-except DistributionNotFound:
-    # package is not installed
-    pass
-
-from pireal.gui.main_window import Pireal
-
-instance = None
-
-
-def get_pireal_instance() -> "Pireal":
-    return cast("Pireal", instance)
+__version__ = version("pireal")

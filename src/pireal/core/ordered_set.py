@@ -14,8 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
-"""
-OrderedSet implementation.
+"""OrderedSet implementation.
+
 Based on https://code.activestate.com/recipes/576694/ by Raymond Hettinger
 Based on https://github.com/LuminosoInsight/ordered-set
 """
@@ -25,6 +25,7 @@ from collections.abc import MutableSet, Sequence
 
 class OrderedSet(MutableSet):
     """Custom set that remembers its order.
+
     Yes, it may seem anti-mathematical (?, but this is real life
     """
 
@@ -34,11 +35,11 @@ class OrderedSet(MutableSet):
         if iterable is not None:
             self |= iterable
 
-    def add(self, key):
-        if key not in self._map:
-            self._map[key] = len(self._items)
-            self._items.append(key)
-        return self._map[key]
+    def add(self, value):
+        if value not in self._map:
+            self._map[value] = len(self._items)
+            self._items.append(value)
+        return self._map[value]
 
     def intersection(self, other):
         common = (item for item in self if item in other)
@@ -57,7 +58,7 @@ class OrderedSet(MutableSet):
         return set(self) == other
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__, list(self))
+        return f"{self.__class__.__name__}({list(self)!r})"
 
     def __reversed__(self):
         return reversed(self._items)
@@ -66,7 +67,7 @@ class OrderedSet(MutableSet):
         return len(self._items)
 
     def __iter__(self):
-        return iter(self._map)
+        return iter(self._items)
 
     def __contains__(self, key):
         return key in self._map
@@ -74,19 +75,18 @@ class OrderedSet(MutableSet):
     def __getitem__(self, index):
         if isinstance(index, slice) or hasattr(index, "__index__"):
             return self._items[index]
-        else:
-            raise TypeError("Mmmm error with %r", index)
+        raise TypeError(f"Invalid index type: {index!r}")
 
     def __setitem__(self, index, data):
         del self._map[self._items[index]]
         self._items[index] = data
         self._map[data] = index
 
-    def discard(self, key):
-        if key in self:
-            i = self._map[key]
+    def discard(self, value):
+        if value in self:
+            i = self._map[value]
             del self._items[i]
-            del self._map[key]
+            del self._map[value]
             for k, v in self._map.items():
                 if v >= i:
                     self._map[k] = v - 1

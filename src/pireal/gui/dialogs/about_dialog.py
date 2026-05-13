@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright 2015 - Gabriel Acosta <acostadariogabriel@gmail.com>
 #
 # This file is part of Pireal.
@@ -19,19 +17,36 @@
 
 from datetime import datetime
 
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import (
+    QPalette,
+    QPixmap,
+)
 from PyQt6.QtWidgets import (
     QDialog,
-    QVBoxLayout,
-    QLabel,
     QHBoxLayout,
-    QSpacerItem,
-    QSizePolicy,
+    QLabel,
     QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
 )
-from PyQt6.QtGui import QPixmap
-from PyQt6.QtCore import Qt
-from pireal import __version__, gui
-from pireal import translations as tr
+
+from pireal import (
+    __version__,
+    gui,
+    translations as tr,
+)
+from pireal.gui.widgets import Pill
+
+
+class VersionPill(Pill):
+    def __init__(self, parent=None):
+        super().__init__(
+            color_fn=lambda: self.palette().color(QPalette.ColorRole.PlaceholderText),
+            text=f"v{__version__}",
+            parent=parent,
+        )
 
 
 class AboutDialog(QDialog):
@@ -46,12 +61,8 @@ class AboutDialog(QDialog):
         vbox.addWidget(banner)
 
         # Version
-        lbl_version = QLabel("{0}".format(__version__))
-        lbl_version.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        font = lbl_version.font()
-        font.setPointSize(10)
-        lbl_version.setFont(font)
-        vbox.addWidget(lbl_version)
+        version_pill = VersionPill(self)
+        vbox.addWidget(version_pill, alignment=Qt.AlignmentFlag.AlignHCenter)
 
         # Description
         description = QLabel(tr.TR_DIALOG_ABOUT_PIREAL_BODY)
@@ -62,7 +73,7 @@ class AboutDialog(QDialog):
         vbox.addWidget(description)
 
         abuelo_agui_lbl = QLabel(
-            'In memory of my grandpa, Agui <span style="color: #EC7875"> </span>'
+            'Dedicated to Marisel, a wonderul woman who inspires me<span style="color: #EC7875"> </span>'
         )
         font = abuelo_agui_lbl.font()
         font.setPointSize(8)
@@ -71,10 +82,7 @@ class AboutDialog(QDialog):
         vbox.addWidget(abuelo_agui_lbl)
 
         # Copyright
-        copy = QLabel(
-            "<br>Copyright © 2015-{year} - "
-            "Gabriel 'gabo' Acosta".format(year=datetime.today().year)
-        )
+        copy = QLabel(f"<br>Copyright © 2015-{datetime.today().year} - Gabriel 'gabo' Acosta")
         copy.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         font = copy.font()
         font.setPointSize(9)
@@ -82,9 +90,7 @@ class AboutDialog(QDialog):
         vbox.addWidget(copy)
 
         # License and source
-        lbl_license_source = QLabel(
-            tr.TR_DIALOG_ABOUT_PIREAL_COPY.format(gui.__license__, gui.__source_code__)
-        )
+        lbl_license_source = QLabel(tr.TR_DIALOG_ABOUT_PIREAL_COPY.format(gui.__license__, gui.__source_code__))
         lbl_license_source.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         lbl_license_source.setOpenExternalLinks(True)
         font = lbl_license_source.font()
