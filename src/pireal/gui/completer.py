@@ -19,7 +19,7 @@ from PyQt6.QtCore import (
     QStringListModel,
     Qt,
 )
-from PyQt6.QtGui import QBrush
+from PyQt6.QtGui import QBrush, QPalette
 from PyQt6.QtWidgets import (
     QCompleter,
     QPlainTextEdit,
@@ -74,10 +74,17 @@ class PirealCompleter(QCompleter):
         popup = self.popup()
         if popup is None:
             return
+
         bg = scheme.editor.get(EditorColorRole.BACKGROUND).name()
+        fg = scheme.editor.get(EditorColorRole.FOREGROUND).name()
         border = scheme.highlight.name()
         h = scheme.highlight
         selected_bg = f"rgba({h.red()}, {h.green()}, {h.blue()}, 50)"
+
+        palette = popup.palette()
+        palette.setColor(QPalette.ColorRole.Text, scheme.editor.get(EditorColorRole.FOREGROUND))
+        palette.setColor(QPalette.ColorRole.Base, scheme.editor.get(EditorColorRole.BACKGROUND))
+        popup.setPalette(palette)
 
         popup.setMinimumWidth(220)
         popup.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
@@ -85,12 +92,14 @@ class PirealCompleter(QCompleter):
         popup.setStyleSheet(f"""
             QListView {{
                 background-color: {bg};
+                color: {fg};
                 border: 1px solid {border};
                 border-radius: 6px;
                 padding: 4px;
                 outline: 0;
             }}
             QListView::item {{
+                color: {fg};
                 padding: 4px 12px;
                 border-radius: 3px;
             }}

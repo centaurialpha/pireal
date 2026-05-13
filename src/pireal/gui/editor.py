@@ -114,6 +114,7 @@ class BracketHighlighter:
             if matched
             else scheme.editor.get(EditorColorRole.BRACKET_MISMATCH)
         )
+        color.setAlpha(80)
         selection.format.setBackground(color)
         selection.cursor = QTextCursor(block)
         selection.cursor.setPosition(block.position() + column_index)
