@@ -65,13 +65,10 @@ class Application:
     def _initialize_translations(self):
         from pireal.settings import settings
 
-        print(f"language: {settings.language}")
         translator = QTranslator()
         is_ok = translator.load(translation(settings.language))
         if is_ok:
             self._app.installTranslator(translator)
-        print(f"translator loaded: {is_ok}")
-        print(f"path: {translation(settings.language)}")
         # Mantener la referencia porque Qt/C++ necesita
         # ptm horas de debuggggg
         self._translator = translator
