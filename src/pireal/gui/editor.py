@@ -32,6 +32,7 @@ from PyQt6.QtGui import (
     QTextCharFormat,
     QTextCursor,
     QTextDocument,
+    QWheelEvent,
 )
 from PyQt6.QtWidgets import (
     QFrame,
@@ -654,6 +655,19 @@ class Editor(QPlainTextEdit):
         cursor = self.textCursor()
         cursor.select(cursor.SelectionType.WordUnderCursor)
         return cursor.selectedText()
+
+    def wheelEvent(self, e: QWheelEvent | None) -> None:
+        if e is None:
+            return
+
+        if e.modifiers() & Qt.KeyboardModifier.ControlModifier:
+            if e.angleDelta().y() > 0:
+                self.zoom_in()
+            else:
+                self.zoom_out()
+            e.accept()
+        else:
+            super().wheelEvent(e)
 
     def _handle_return(self) -> None:
         cursor = self.textCursor()
