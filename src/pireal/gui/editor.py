@@ -605,7 +605,6 @@ class Editor(QPlainTextEdit):
             Qt.Key.Key_Enter,
             Qt.Key.Key_Return,
             Qt.Key.Key_Tab,
-            Qt.Key.Key_Escape,
         ):
             e.ignore()
             return
@@ -651,9 +650,6 @@ class Editor(QPlainTextEdit):
         prefix = self._text_under_cursor()
         if len(prefix) < 2:
             popup.hide()
-            return
-
-        if self.completer.suppressed:
             return
 
         if prefix != self.completer.completionPrefix():

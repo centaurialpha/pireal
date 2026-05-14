@@ -370,11 +370,6 @@ class TableWidget(QWidget):
 
     def add_table_to_workspace(self, relation: Relation, editable=True):
         self._pending_relations.append((relation, editable))
-        # self._remove_placeholder()
-        # view = create_view(relation, editable=editable)
-        # self._relation_widgets[relation.name] = view
-        # self._stacked.addWidget(view)
-        # self._stacked.setCurrentWidget(view)
 
     def add_table_to_results(self, relation: Relation, editable=False):
         view = create_view(relation, editable=editable)
