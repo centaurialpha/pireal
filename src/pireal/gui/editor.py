@@ -592,6 +592,13 @@ class Editor(QPlainTextEdit):
             return
         model = self.completer.completionModel()
         e = cast(QKeyEvent, e)
+
+        if e.key() == Qt.Key.Key_Escape:
+            self.completer.suppressed = True
+            if popup.isVisible():
+                popup.hide()
+            return
+
         if model is None:
             return
         if popup.isVisible() and e.key() in (
@@ -634,9 +641,19 @@ class Editor(QPlainTextEdit):
 
         if e.modifiers() or not e.text():
             return
+
+        if e.key() == Qt.Key.Key_Backspace:
+            popup.hide()
+            return
+
+        self.completer.suppressed = False
+
         prefix = self._text_under_cursor()
         if len(prefix) < 2:
             popup.hide()
+            return
+
+        if self.completer.suppressed:
             return
 
         if prefix != self.completer.completionPrefix():

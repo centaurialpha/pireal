@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pireal.core.db import DB
 from pireal.registry import Registry
 
 
@@ -34,3 +35,4 @@ def mock_status_bar(qtbot):
     status_bar = StatusBar()
     qtbot.addWidget(status_bar)
     Registry.register("status-bar", status_bar)
+    Registry.register("db", DB())
