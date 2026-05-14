@@ -25,6 +25,7 @@ from PyQt6.QtCore import (
     pyqtSlot as Slot,
 )
 from PyQt6.QtGui import (
+    QBrush,
     QColor,
     QFont,
 )
@@ -39,7 +40,6 @@ from PyQt6.QtWidgets import (
 from pireal import translations as tr
 from pireal.core.db import DB
 from pireal.gui.theme.manager import get_theme_manager
-from pireal.gui.theme.schema import EditorColorRole
 from pireal.registry import Registry
 
 logger = logging.getLogger("gui.model_view_delegate")
@@ -57,7 +57,21 @@ class RelationModel(QAbstractTableModel):
 
         theme_manager = get_theme_manager()
         self._null_color = theme_manager.current_scheme.placeholder_text
+
+        db = Registry.get("db", DB)
+
+        db.hasModified.connect(self._on_db_modified)
         theme_manager.themeChanged.connect(self._on_theme_changed)
+
+    @Slot(bool)
+    def _on_db_modified(self, modified: bool) -> None:
+        print(modified, self._diry_cells)
+        if not modified and self._diry_cells:
+            self._diry_cells.clear()
+            self.dataChanged.emit(
+                self.index(0, 0),
+                self.index(self.rowCount() - 1, self.columnCount() - 1),
+            )
 
     def _on_theme_changed(self, scheme):
         self._null_color = scheme.placeholder_text
@@ -86,8 +100,8 @@ class RelationModel(QAbstractTableModel):
             return data[row][column]
 
         if is_dirty:
-            if role == Qt.ItemDataRole.ForegroundRole:
-                return get_theme_manager().current_scheme.editor.get(EditorColorRole.ERROR)
+            if role == Qt.ItemDataRole.BackgroundRole:
+                return QBrush(QColor(255, 185, 0, 50))
             if role == Qt.ItemDataRole.FontRole:
                 font = QFont()
                 font.setItalic(True)

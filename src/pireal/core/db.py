@@ -124,9 +124,8 @@ class DB(QObject):
 
     @modified.setter
     def modified(self, has_modified: bool) -> None:
-        if has_modified != self._modified:
-            self._modified = has_modified
-            self.hasModified.emit(has_modified)
+        self._modified = has_modified
+        self.hasModified.emit(has_modified)
 
     def __contains__(self, relation_name: str) -> bool:
         return relation_name in self._relations
