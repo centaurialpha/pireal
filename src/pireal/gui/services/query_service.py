@@ -50,7 +50,8 @@ class QueryService:
         self._last_folder = last_folder or str(Path.home())
 
     def _remember_folder(self, filepath: str) -> None:
-        self._last_folder = str(Path(filepath).parent)
+        if not is_example_file(File(filepath)):
+            self._last_folder = str(Path(filepath).parent)
 
     @property
     def last_folder(self) -> str:
@@ -87,7 +88,7 @@ class QueryService:
         editor = query_widget.current_editor()
         if editor is None:
             return False
-        if editor.file.is_new:
+        if editor.file.is_new or is_example_file(editor.file):
             return self.save_as()
         editor.file.save(editor.text())
         editor.saved()

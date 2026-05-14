@@ -78,14 +78,14 @@ class DatabaseContainer(QSplitter):
         else:
             status_bar.update_db_name("")
 
-    def create_database(self, data):
+    def create_database(self, data, *, editable: bool = True):
         table_widget = Registry.get("table-widget", TableWidget)
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
 
         relations = list(load_relations(data))
         for relation in relations:
             self._database.load(relation)
-            table_widget.add_table_to_workspace(relation)
+            table_widget.add_table_to_workspace(relation, editable=editable)
             lateral_widget.add_item(relation, RelationItemType.Normal)
 
         last = len(relations) - 1
