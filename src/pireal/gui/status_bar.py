@@ -41,7 +41,9 @@ from pireal.gui.theme.schema import (
 from pireal.gui.widgets import (
     ClickablePill,
     Pill,
+    RunPill,
 )
+from pireal.registry import Registry
 
 
 class _DbPill(Pill):
@@ -143,9 +145,13 @@ class StatusBar(QWidget):
         self._symbol_mode_label.hide()
         self._symbol_mode_label.clicked.connect(self._on_symbol_mode_clicked)
 
+        self._run_pill = RunPill()
+        self._run_pill.clicked.connect(self._on_run_clicked)
+
         layout.addWidget(self._line_col_label)
         layout.addWidget(self._pipeline_pill)
         layout.addWidget(self._symbol_mode_label)
+        layout.addWidget(self._run_pill)
 
         self._apply_theme(get_theme_manager().current_scheme)
         get_theme_manager().themeChanged.connect(self._apply_theme)
@@ -183,6 +189,12 @@ class StatusBar(QWidget):
         self._symbol_mode_on = enabled
         self._symbol_mode_label.set_enabled(enabled)
         self._symbol_mode_label.show()
+
+    @pyqtSlot()
+    def _on_run_clicked(self) -> None:
+        from pireal.gui.controller import Controller
+
+        Registry.get("controller", Controller).execute_queries()
 
     @pyqtSlot()
     def _on_symbol_mode_clicked(self) -> None:

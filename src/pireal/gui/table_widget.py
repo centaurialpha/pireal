@@ -17,8 +17,6 @@
 
 from PyQt6.QtCore import (
     QEvent,
-    QPoint,
-    QRect,
     QSize,
     Qt,
     pyqtSignal,
@@ -26,10 +24,7 @@ from PyQt6.QtCore import (
 )
 from PyQt6.QtGui import (
     QColor,
-    QFont,
-    QPainter,
     QPalette,
-    QPolygon,
 )
 from PyQt6.QtWidgets import (
     QHBoxLayout,
@@ -52,90 +47,6 @@ from pireal.gui.widgets import TogglePill
 from pireal.helpers import svg_icon
 from pireal.registry import Registry
 from pireal.resources import icon
-
-
-class _RunPill(QWidget):
-    clicked = pyqtSignal()
-    _PADDING_H = 12
-    _PADDING_V = 4
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.setToolTip("Run queries (F5)")
-        fm = self.fontMetrics()
-        icon_w = fm.height()
-        gap = 6
-        text_w = fm.horizontalAdvance("Run")
-        w = self._PADDING_H * 2 + icon_w + gap + text_w
-        h = fm.height() + self._PADDING_V * 2
-        self.setFixedSize(w, h)
-        self._success_color: QColor | None = None
-        self._hovered = False
-        self._refresh_color()
-        get_theme_manager().themeChanged.connect(lambda _: self._refresh_color())
-
-    def _refresh_color(self) -> None:
-        self._success_color = get_theme_manager().current_scheme.editor.get(EditorColorRole.SUCCESS)
-        self.update()
-
-    def mousePressEvent(self, a0) -> None:
-        if a0 is not None and a0.button() == Qt.MouseButton.LeftButton:
-            self.clicked.emit()
-        super().mousePressEvent(a0)
-
-    def enterEvent(self, event) -> None:
-        self._hovered = True
-        self.update()
-        super().enterEvent(event)
-
-    def leaveEvent(self, a0) -> None:
-        self._hovered = False
-        self.update()
-        super().leaveEvent(a0)
-
-    def paintEvent(self, a0) -> None:
-        if self._success_color is None:
-            return
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        bg = QColor(self._success_color)
-        bg.setAlpha(60 if self._hovered else 35)
-        painter.setBrush(bg)
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawRoundedRect(self.rect(), 1, 1)
-
-        fm = self.fontMetrics()
-        icon_h = fm.height()
-        total_w = icon_h + 6 + fm.horizontalAdvance("Run")
-        x = (self.width() - total_w) // 2
-        y_center = self.height() // 2
-
-        icon_rect = QRect(x, y_center - icon_h // 2, icon_h, icon_h)
-        painter.setPen(self._success_color)
-
-        # Triángulo play
-        points = [
-            icon_rect.topLeft() + QPoint(2, 1),
-            icon_rect.bottomLeft() + QPoint(2, -1),
-            QPoint(icon_rect.right() - 1, y_center),
-        ]
-
-        painter.setBrush(self._success_color)
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawPolygon(QPolygon(points))
-
-        font = painter.font()
-        font.setWeight(QFont.Weight.Medium)
-        painter.setFont(font)
-        painter.setPen(self._success_color)
-        text_x = x + icon_h + 6
-        painter.drawText(
-            QRect(text_x, 0, fm.horizontalAdvance("Run"), self.height()), Qt.AlignmentFlag.AlignVCenter, "Run"
-        )
-
-        painter.restore() if False else None
 
 
 class PlaceholderWidget(QWidget):
@@ -243,9 +154,9 @@ class TableWidget(QWidget):
         toolbar.addWidget(sep)
         toolbar.addSpacing(4)
 
-        self._btn_run = self._make_tool_btn(tr.TR_TOOLTIP_RUN_QUERIES)
-        self._btn_run.clicked.connect(self._on_run_queries)
-        toolbar.addWidget(self._btn_run)
+        # self._btn_run = self._make_tool_btn(tr.TR_TOOLTIP_RUN_QUERIES)
+        # self._btn_run.clicked.connect(self._on_run_queries)
+        # toolbar.addWidget(self._btn_run)
 
         layout.addLayout(toolbar)
 
@@ -322,7 +233,7 @@ class TableWidget(QWidget):
         # self._btn_split.setIcon(svg_icon(icon("columns-2.svg"), normal))
         self._btn_sql.setIcon(svg_icon(icon("code.svg"), normal))
         self._btn_tree.setIcon(svg_icon(icon("network.svg"), normal))
-        self._btn_run.setIcon(svg_icon(icon("play.svg"), success))
+        # self._btn_run.setIcon(svg_icon(icon("play.svg"), success))
 
         hover = self.palette().color(self.palette().ColorRole.Highlight)
         hover.setAlpha(35)
@@ -376,21 +287,21 @@ class TableWidget(QWidget):
         success_hover = QColor(success)
         success_hover.setAlpha(70)
 
-        run_style = f"""
-            QToolButton {{
-                border: none;
-                border-radius: 4px;
-                background-color: {success_bg.name(QColor.NameFormat.HexArgb)};
-            }}
-            QToolButton:hover {{
-                background-color: {success_hover.name(QColor.NameFormat.HexArgb)};
-            }}
-        """
+        # run_style = f"""
+        #     QToolButton {{
+        #         border: none;
+        #         border-radius: 4px;
+        #         background-color: {success_bg.name(QColor.NameFormat.HexArgb)};
+        #     }}
+        #     QToolButton:hover {{
+        #         background-color: {success_hover.name(QColor.NameFormat.HexArgb)};
+        #     }}
+        # """
 
         for btn in (self._btn_sql, self._btn_tree):
             btn.setStyleSheet(tool_btn_style)
 
-        self._btn_run.setStyleSheet(run_style)
+        # self._btn_run.setStyleSheet(run_style)
 
     @pyqtSlot()
     def _on_run_queries(self):
