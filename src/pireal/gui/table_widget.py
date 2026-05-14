@@ -121,10 +121,6 @@ class TableWidget(QWidget):
         toolbar.setContentsMargins(0, 0, 0, 0)
         toolbar.addStretch()
 
-        # self._btn_split = self._make_tool_btn(tr.TR_TOOLTIP_TOGGLE_SPLIT)
-        # self._btn_split.setCheckable(True)
-        # self._btn_split.toggled.connect(self._on_split_toggled)
-        # toolbar.addWidget(self._btn_split)
         self._pill_relations = TogglePill("Relations", checked=True)
         self._pill_results = TogglePill("Results", checked=False)
 
@@ -132,16 +128,10 @@ class TableWidget(QWidget):
         self._pill_results.toggled.connect(self._on_results_toggled)
 
         toolbar.addWidget(self._pill_relations)
+        toolbar.addSpacing(1)
         toolbar.addWidget(self._pill_results)
 
-        self._btn_sql = self._make_tool_btn(tr.TR_TOOLTIP_SHOW_SQL)
-        self._btn_sql.clicked.connect(self.sqlRequested.emit)
-        toolbar.addWidget(self._btn_sql)
-
-        self._btn_tree = self._make_tool_btn(tr.TR_TOOLTIP_SHOW_TREE)
-        self._btn_tree.clicked.connect(self.treeRequested.emit)
-        toolbar.addWidget(self._btn_tree)
-
+        toolbar.addSpacing(6)
         sep = QWidget()
         sep.setFixedSize(1, 14)
         sep.setAutoFillBackground(True)
@@ -150,13 +140,16 @@ class TableWidget(QWidget):
         color.setAlpha(80)
         palette.setColor(QPalette.ColorRole.Window, color)
         sep.setPalette(palette)
-        toolbar.addSpacing(4)
         toolbar.addWidget(sep)
         toolbar.addSpacing(4)
 
-        # self._btn_run = self._make_tool_btn(tr.TR_TOOLTIP_RUN_QUERIES)
-        # self._btn_run.clicked.connect(self._on_run_queries)
-        # toolbar.addWidget(self._btn_run)
+        self._btn_sql = self._make_tool_btn(tr.TR_TOOLTIP_SHOW_SQL)
+        self._btn_sql.clicked.connect(self.sqlRequested.emit)
+        toolbar.addWidget(self._btn_sql)
+
+        self._btn_tree = self._make_tool_btn(tr.TR_TOOLTIP_SHOW_TREE)
+        self._btn_tree.clicked.connect(self.treeRequested.emit)
+        toolbar.addWidget(self._btn_tree)
 
         layout.addLayout(toolbar)
 
@@ -350,8 +343,7 @@ class TableWidget(QWidget):
 
         # Auto-split
         if not self._stacked_results.isVisible():
-            # self._btn_split.setChecked(True)
-            pass
+            self._pill_results.set_checked(True)
 
     def clear_results(self):
         while self._stacked_results.count() > 0:
@@ -359,7 +351,7 @@ class TableWidget(QWidget):
             if widget is not None:
                 self._stacked_results.removeWidget(widget)
                 widget.deleteLater()
-        # self._btn_split.setChecked(False)
+        self._pill_results.set_checked(False)
 
     def clear(self):
         # limpiar workspace
