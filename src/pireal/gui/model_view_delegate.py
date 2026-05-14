@@ -53,7 +53,7 @@ class RelationModel(QAbstractTableModel):
         super().__init__()
         self.editable = True
         self.relation = relation_object
-        self._diry_cells: set[tuple[int, int]] = set()
+        self._dirty_cells: set[tuple[int, int]] = set()
 
         theme_manager = get_theme_manager()
         self._null_color = theme_manager.current_scheme.placeholder_text
@@ -65,9 +65,8 @@ class RelationModel(QAbstractTableModel):
 
     @Slot(bool)
     def _on_db_modified(self, modified: bool) -> None:
-        print(modified, self._diry_cells)
-        if not modified and self._diry_cells:
-            self._diry_cells.clear()
+        if not modified and self._dirty_cells:
+            self._dirty_cells.clear()
             self.dataChanged.emit(
                 self.index(0, 0),
                 self.index(self.rowCount() - 1, self.columnCount() - 1),
@@ -94,7 +93,7 @@ class RelationModel(QAbstractTableModel):
 
         row, column = index.row(), index.column()
         data = self.relation.content
-        is_dirty = (row, column) in self._diry_cells
+        is_dirty = (row, column) in self._dirty_cells
 
         if role in (Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole):
             return data[row][column]
@@ -143,7 +142,7 @@ class RelationModel(QAbstractTableModel):
             current_value = self.data(index)
             if current_value != value:
                 self.relation.update(index.row(), index.column(), value)
-                self._diry_cells.add((index.row(), index.column()))
+                self._dirty_cells.add((index.row(), index.column()))
                 self.dataChanged.emit(index, index)
                 if self.editable:
                     logger.debug(
