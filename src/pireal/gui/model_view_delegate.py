@@ -39,6 +39,7 @@ from PyQt6.QtWidgets import (
 from pireal import translations as tr
 from pireal.core.db import DB
 from pireal.gui.theme.manager import get_theme_manager
+from pireal.gui.theme.schema import EditorColorRole
 from pireal.registry import Registry
 
 logger = logging.getLogger("gui.model_view_delegate")
@@ -52,6 +53,8 @@ class RelationModel(QAbstractTableModel):
         super().__init__()
         self.editable = True
         self.relation = relation_object
+        self._diry_cells: set[tuple[int, int]] = set()
+
         theme_manager = get_theme_manager()
         self._null_color = theme_manager.current_scheme.placeholder_text
         theme_manager.themeChanged.connect(self._on_theme_changed)
@@ -77,14 +80,27 @@ class RelationModel(QAbstractTableModel):
 
         row, column = index.row(), index.column()
         data = self.relation.content
-        if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
+        is_dirty = (row, column) in self._diry_cells
+
+        if role in (Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole):
             return data[row][column]
-        elif role == Qt.ItemDataRole.ForegroundRole and data[row][column] == "null":
-            return self._null_color
-        elif role == Qt.ItemDataRole.FontRole and data[row][column] == "null":
-            font = QFont()
-            font.setItalic(True)
-            return font
+
+        if is_dirty:
+            if role == Qt.ItemDataRole.ForegroundRole:
+                return get_theme_manager().current_scheme.editor.get(EditorColorRole.ERROR)
+            if role == Qt.ItemDataRole.FontRole:
+                font = QFont()
+                font.setItalic(True)
+                return font
+
+        elif data[row][column] == "null":
+            if role == Qt.ItemDataRole.ForegroundRole:
+                return self._null_color
+            if role == Qt.ItemDataRole.FontRole:
+                font = QFont()
+                font.setItalic(True)
+                return font
+
         return None
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
@@ -113,6 +129,7 @@ class RelationModel(QAbstractTableModel):
             current_value = self.data(index)
             if current_value != value:
                 self.relation.update(index.row(), index.column(), value)
+                self._diry_cells.add((index.row(), index.column()))
                 self.dataChanged.emit(index, index)
                 if self.editable:
                     logger.debug(
