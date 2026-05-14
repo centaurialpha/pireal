@@ -30,25 +30,11 @@ from pireal.gui.lateral_widget import (
     LateralWidget,
     RelationItemType,
 )
-from pireal.gui.model_view_delegate import (
-    Delegate,
-    RelationModel,
-    View,
-)
 from pireal.gui.query_widget import QueryWidget
 from pireal.gui.right_pane import RightPane
 from pireal.gui.status_bar import StatusBar
 from pireal.gui.table_widget import TableWidget
 from pireal.registry import Registry
-
-
-def create_view(relation, *, editable=False):
-    view = View()
-    model = RelationModel(relation)
-    model.editable = editable
-    view.setModel(model)
-    view.setItemDelegate(Delegate())
-    return view
 
 
 class DatabaseContainer(QSplitter):
