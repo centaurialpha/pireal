@@ -209,6 +209,7 @@ class QueryWidget(QWidget):
             editor.file = File(display_name=f"untitled_{self._untitled_count}.pqf")
         self.add_editor(editor)
         self.show()
+        editor.editor.setFocus()
         return editor
 
     def _show_tree(self):
