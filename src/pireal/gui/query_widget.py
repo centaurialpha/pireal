@@ -196,6 +196,10 @@ class QueryWidget(QWidget):
         self._editor_tabs.setTabToolTip(index, editor_widget.file.path)
         self._editor_tabs.setCurrentIndex(index)
 
+        # sync completer
+        db = Registry.get("db", DB)
+        self.update_completer(list(db.relations_dict().keys()))
+
     def create_editor(self, file: File | None = None) -> "EditorWidget":
         editor = EditorWidget()
         if file is not None:
@@ -268,10 +272,19 @@ class QueryWidget(QWidget):
         return None
 
     def update_completer(self, relation_names: list[str]) -> None:
-        for i in range(self._editor_tabs.count()):
-            widget = self._editor_tabs.widget(i)
+        db = Registry.get("db", DB)
+        attributes: list[str] = []
+        for name in relation_names:
+            relation = db.get(name)
+            if relation is not None:
+                attributes.extend(relation.header)
+
+        attributes = list(dict.fromkeys(attributes))
+
+        for tab_index in range(self._editor_tabs.count()):
+            widget = self._editor_tabs.widget(tab_index)
             if isinstance(widget, EditorWidget):
-                widget.editor.completer.update_words(relation_names)
+                widget.editor.completer.update_words(relation_names, attributes)
 
     def close_current_editor(self):
         index = self._editor_tabs.currentIndex()
