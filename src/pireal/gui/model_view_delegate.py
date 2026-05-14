@@ -25,6 +25,7 @@ from PyQt6.QtCore import (
     pyqtSlot as Slot,
 )
 from PyQt6.QtGui import (
+    QBrush,
     QColor,
     QFont,
 )
@@ -52,9 +53,25 @@ class RelationModel(QAbstractTableModel):
         super().__init__()
         self.editable = True
         self.relation = relation_object
+        self._diry_cells: set[tuple[int, int]] = set()
+
         theme_manager = get_theme_manager()
         self._null_color = theme_manager.current_scheme.placeholder_text
+
+        db = Registry.get("db", DB)
+
+        db.hasModified.connect(self._on_db_modified)
         theme_manager.themeChanged.connect(self._on_theme_changed)
+
+    @Slot(bool)
+    def _on_db_modified(self, modified: bool) -> None:
+        print(modified, self._diry_cells)
+        if not modified and self._diry_cells:
+            self._diry_cells.clear()
+            self.dataChanged.emit(
+                self.index(0, 0),
+                self.index(self.rowCount() - 1, self.columnCount() - 1),
+            )
 
     def _on_theme_changed(self, scheme):
         self._null_color = scheme.placeholder_text
@@ -77,14 +94,27 @@ class RelationModel(QAbstractTableModel):
 
         row, column = index.row(), index.column()
         data = self.relation.content
-        if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
+        is_dirty = (row, column) in self._diry_cells
+
+        if role in (Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole):
             return data[row][column]
-        elif role == Qt.ItemDataRole.ForegroundRole and data[row][column] == "null":
-            return self._null_color
-        elif role == Qt.ItemDataRole.FontRole and data[row][column] == "null":
-            font = QFont()
-            font.setItalic(True)
-            return font
+
+        if is_dirty:
+            if role == Qt.ItemDataRole.BackgroundRole:
+                return QBrush(QColor(255, 185, 0, 50))
+            if role == Qt.ItemDataRole.FontRole:
+                font = QFont()
+                font.setItalic(True)
+                return font
+
+        elif data[row][column] == "null":
+            if role == Qt.ItemDataRole.ForegroundRole:
+                return self._null_color
+            if role == Qt.ItemDataRole.FontRole:
+                font = QFont()
+                font.setItalic(True)
+                return font
+
         return None
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
@@ -113,6 +143,7 @@ class RelationModel(QAbstractTableModel):
             current_value = self.data(index)
             if current_value != value:
                 self.relation.update(index.row(), index.column(), value)
+                self._diry_cells.add((index.row(), index.column()))
                 self.dataChanged.emit(index, index)
                 if self.editable:
                     logger.debug(
