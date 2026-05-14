@@ -18,7 +18,7 @@
 from collections.abc import Callable
 
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QColor, QPainter
+from PyQt6.QtGui import QColor, QPainter, QPalette
 from PyQt6.QtWidgets import QWidget
 
 
@@ -121,4 +121,63 @@ class ClickablePill(Pill):
         painter.drawRoundedRect(self.rect(), self._radius, self._radius)
 
         painter.setPen(color)
+        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._text)
+
+
+class TogglePill(ClickablePill):
+    """
+    Pill checkable
+    """
+
+    toggled = pyqtSignal(bool)
+
+    def __init__(
+        self,
+        text: str = "",
+        radius: int = 2,
+        checked: bool = True,
+        parent: QWidget | None = None,
+    ) -> None:
+        super().__init__(
+            color_fn=lambda: self.palette().color(QPalette.ColorRole.Highlight),
+            text=text,
+            radius=radius,
+            parent=parent,
+        )
+        self._checked = checked
+        self.clicked.connect(self._on_clicked)
+
+    @property
+    def is_checked(self) -> bool:
+        return self._checked
+
+    def set_checked(self, checked: bool) -> None:
+        if self._checked != checked:
+            self._checked = checked
+            self.update()
+            self.toggled.emit(self._checked)
+
+    def _on_clicked(self) -> None:
+        self.set_checked(not self._checked)
+
+    def paintEvent(self, a0) -> None:
+        _ = a0
+        if not self._text:
+            return
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        color = self._color_fn()
+        bg = QColor(color)
+        if self._checked:
+            bg.setAlpha(70 if self._hovered else 50)
+        else:
+            bg.setAlpha(30 if self._hovered else 15)
+        painter.setBrush(bg)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.drawRoundedRect(self.rect(), self._radius, self._radius)
+
+        text_color = QColor(color)
+        text_color.setAlpha(255 if self._checked else 140)
+        painter.setPen(text_color)
         painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._text)

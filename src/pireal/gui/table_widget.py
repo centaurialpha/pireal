@@ -48,6 +48,7 @@ from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.model_view_delegate import create_view
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.gui.theme.schema import EditorColorRole
+from pireal.gui.widgets import TogglePill
 from pireal.helpers import svg_icon
 from pireal.registry import Registry
 from pireal.resources import icon
@@ -209,10 +210,18 @@ class TableWidget(QWidget):
         toolbar.setContentsMargins(0, 0, 0, 0)
         toolbar.addStretch()
 
-        self._btn_split = self._make_tool_btn(tr.TR_TOOLTIP_TOGGLE_SPLIT)
-        self._btn_split.setCheckable(True)
-        self._btn_split.toggled.connect(self._on_split_toggled)
-        toolbar.addWidget(self._btn_split)
+        # self._btn_split = self._make_tool_btn(tr.TR_TOOLTIP_TOGGLE_SPLIT)
+        # self._btn_split.setCheckable(True)
+        # self._btn_split.toggled.connect(self._on_split_toggled)
+        # toolbar.addWidget(self._btn_split)
+        self._pill_relations = TogglePill("Relations", checked=True)
+        self._pill_results = TogglePill("Results", checked=False)
+
+        self._pill_relations.toggled.connect(self._on_relations_toggled)
+        self._pill_results.toggled.connect(self._on_results_toggled)
+
+        toolbar.addWidget(self._pill_relations)
+        toolbar.addWidget(self._pill_results)
 
         self._btn_sql = self._make_tool_btn(tr.TR_TOOLTIP_SHOW_SQL)
         self._btn_sql.clicked.connect(self.sqlRequested.emit)
@@ -267,12 +276,39 @@ class TableWidget(QWidget):
             self._stacked.addWidget(view)
         self._stacked.setCurrentWidget(self._relation_widgets[relation.name])
 
+    def _make_toggle_btn(self, label: str) -> QToolButton:
+        btn = QToolButton()
+        btn.setText(label)
+        btn.setCheckable(True)
+        btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly)
+        btn.setFixedHeight(22)
+
+        return btn
+
     def _make_tool_btn(self, tooltip: str, size: int = 16) -> QToolButton:
         btn = QToolButton()
         btn.setToolTip(tooltip)
         btn.setIconSize(QSize(size, size))
         btn.setFixedSize(28, 28)
         return btn
+
+    @pyqtSlot(bool)
+    def _on_relations_toggled(self, checked: bool) -> None:
+        if not checked and not self._pill_results.is_checked:
+            self._pill_relations.set_checked(True)
+            return
+        self._stacked.setVisible(checked)
+        if checked and self._stacked_results.isVisible():
+            self._splitter.setSizes([1, 1])
+
+    @pyqtSlot(bool)
+    def _on_results_toggled(self, checked: bool) -> None:
+        if not checked and not self._pill_relations.is_checked:
+            self._pill_results.set_checked(True)
+            return
+        self._stacked_results.setVisible(checked)
+        if checked and self._stacked.isVisible():
+            self._splitter.setSizes([1, 1])
 
     def changeEvent(self, a0: QEvent | None) -> None:
         super().changeEvent(a0)
@@ -283,7 +319,7 @@ class TableWidget(QWidget):
         normal = self.palette().color(self.palette().ColorRole.ButtonText)
         success = get_theme_manager().current_scheme.editor.get(EditorColorRole.SUCCESS)
 
-        self._btn_split.setIcon(svg_icon(icon("columns-2.svg"), normal))
+        # self._btn_split.setIcon(svg_icon(icon("columns-2.svg"), normal))
         self._btn_sql.setIcon(svg_icon(icon("code.svg"), normal))
         self._btn_tree.setIcon(svg_icon(icon("network.svg"), normal))
         self._btn_run.setIcon(svg_icon(icon("play.svg"), success))
@@ -306,6 +342,35 @@ class TableWidget(QWidget):
             }}
         """
 
+        highlight = self.palette().color(QPalette.ColorRole.Highlight)
+        highlight.setAlpha(35)
+        highlight_hex = highlight.name(QColor.NameFormat.HexArgb)
+        highlight_checked = self.palette().color(QPalette.ColorRole.Highlight)
+        highlight_checked.setAlpha(70)
+        highlight_checked_hex = highlight_checked.name(QColor.NameFormat.HexArgb)
+        fg = self.palette().color(QPalette.ColorRole.ButtonText).name()
+        fg_dim = self.palette().color(QPalette.ColorRole.PlaceholderText).name()
+
+        pill_style = f"""
+            QToolButton {{
+                border: none;
+                border-radius: 10px;
+                padding: 0px 8px;
+                color: {fg_dim};
+                background: transparent;
+                font-size: 11px;
+            }}
+            QToolButton:hover {{
+                background-color: {highlight_hex};
+                color: {fg};
+            }}
+            QToolButton:checked {{
+                background-color: {highlight_checked_hex};
+                color: {fg};
+            }}
+        """
+        self._pill_relations.setStyleSheet(pill_style)
+        self._pill_results.setStyleSheet(pill_style)
         success_bg = QColor(success)
         success_bg.setAlpha(45)
         success_hover = QColor(success)
@@ -322,7 +387,7 @@ class TableWidget(QWidget):
             }}
         """
 
-        for btn in (self._btn_split, self._btn_sql, self._btn_tree):
+        for btn in (self._btn_sql, self._btn_tree):
             btn.setStyleSheet(tool_btn_style)
 
         self._btn_run.setStyleSheet(run_style)
@@ -341,11 +406,7 @@ class TableWidget(QWidget):
             self._stacked_results.hide()
 
     def toggle_split(self):
-        if self._stacked_results.isVisible():
-            self._stacked_results.hide()
-        else:
-            self._stacked_results.show()
-            self._splitter.setSizes([1, 1])
+        self._pill_results.set_checked(not self._pill_results.is_checked)
 
     def _show_placeholder(self):
         if not self._has_placeholder():
@@ -378,7 +439,8 @@ class TableWidget(QWidget):
 
         # Auto-split
         if not self._stacked_results.isVisible():
-            self._btn_split.setChecked(True)
+            # self._btn_split.setChecked(True)
+            pass
 
     def clear_results(self):
         while self._stacked_results.count() > 0:
@@ -386,7 +448,7 @@ class TableWidget(QWidget):
             if widget is not None:
                 self._stacked_results.removeWidget(widget)
                 widget.deleteLater()
-        self._btn_split.setChecked(False)
+        # self._btn_split.setChecked(False)
 
     def clear(self):
         # limpiar workspace
