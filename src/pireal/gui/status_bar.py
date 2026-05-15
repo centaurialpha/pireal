@@ -46,11 +46,13 @@ from pireal.gui.widgets import (
 from pireal.registry import Registry
 
 
-class _DbPill(Pill):
+class _DbPill(ClickablePill):
     def __init__(self, parent=None):
         super().__init__(color_fn=lambda: get_theme_manager().current_scheme.highlight, parent=parent)
         self._modified = False
         self._base_text = ""
+        self.setCursor(Qt.CursorShape.ArrowCursor)
+        self.clicked.connect(self._on_clicked)
 
     def set_text(self, text: str) -> None:
         self._base_text = text
@@ -61,10 +63,25 @@ class _DbPill(Pill):
         self._color_fn = lambda: (
             QColor(210, 140, 30) if self._modified else get_theme_manager().current_scheme.highlight
         )
+        self.setCursor(Qt.CursorShape.PointingHandCursor if modified else Qt.CursorShape.ArrowCursor)
         super().set_text(self._display_text())
 
     def _display_text(self) -> str:
         return f"{self._base_text} •" if self._modified else self._base_text
+
+    @pyqtSlot()
+    def _on_clicked(self) -> None:
+        if not self._modified:
+            return
+        from pireal.gui.controller import Controller
+
+        Registry.get("controller", Controller).save_database()
+
+    def paintEvent(self, a0) -> None:
+        # hover solo activo cuando modificado
+        if not self._modified:
+            self._hovered = False
+        super().paintEvent(a0)
 
 
 class LineColPill(Pill):

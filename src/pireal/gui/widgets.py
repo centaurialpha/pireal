@@ -17,10 +17,22 @@
 
 from collections.abc import Callable
 
-from PyQt6.QtCore import QPoint, QRect, Qt, pyqtSignal
-from PyQt6.QtGui import QColor, QFont, QPainter, QPalette, QPolygon
+from PyQt6.QtCore import (
+    QPoint,
+    QRect,
+    Qt,
+    pyqtSignal,
+)
+from PyQt6.QtGui import (
+    QColor,
+    QFont,
+    QPainter,
+    QPalette,
+    QPolygon,
+)
 from PyQt6.QtWidgets import QWidget
 
+from pireal import translations as tr
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.gui.theme.schema import EditorColorRole
 
@@ -264,7 +276,9 @@ class RunPill(QWidget):
         painter.setPen(self._success_color)
         text_x = x + icon_h + 6
         painter.drawText(
-            QRect(text_x, 0, fm.horizontalAdvance("Run"), self.height()), Qt.AlignmentFlag.AlignVCenter, "Run"
+            QRect(text_x, 0, fm.horizontalAdvance(tr.TR_RUN_PILL_LABEL), self.height()),
+            Qt.AlignmentFlag.AlignVCenter,
+            tr.TR_RUN_PILL_LABEL,
         )
 
         painter.restore() if False else None
