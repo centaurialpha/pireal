@@ -43,10 +43,8 @@ from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.model_view_delegate import create_view
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.gui.theme.schema import EditorColorRole
-from pireal.gui.widgets import TogglePill
-from pireal.helpers import svg_icon
+from pireal.gui.widgets import ClickablePill, TogglePill
 from pireal.registry import Registry
-from pireal.resources import icon
 
 
 class PlaceholderWidget(QWidget):
@@ -121,8 +119,8 @@ class TableWidget(QWidget):
         toolbar.setContentsMargins(0, 0, 0, 0)
         toolbar.addStretch()
 
-        self._pill_relations = TogglePill("Relations", checked=True)
-        self._pill_results = TogglePill("Results", checked=False)
+        self._pill_relations = TogglePill(tr.TR_RELATIONS, checked=True)
+        self._pill_results = TogglePill(tr.TR_RESULTS, checked=False)
 
         self._pill_relations.toggled.connect(self._on_relations_toggled)
         self._pill_results.toggled.connect(self._on_results_toggled)
@@ -143,13 +141,17 @@ class TableWidget(QWidget):
         toolbar.addWidget(sep)
         toolbar.addSpacing(4)
 
-        self._btn_sql = self._make_tool_btn(tr.TR_TOOLTIP_SHOW_SQL)
-        self._btn_sql.clicked.connect(self.sqlRequested.emit)
-        toolbar.addWidget(self._btn_sql)
+        secondary_color = lambda: self.palette().color(QPalette.ColorRole.PlaceholderText)  # noqa
 
-        self._btn_tree = self._make_tool_btn(tr.TR_TOOLTIP_SHOW_TREE)
-        self._btn_tree.clicked.connect(self.treeRequested.emit)
-        toolbar.addWidget(self._btn_tree)
+        self._pill_sql = ClickablePill(secondary_color, "SQL")
+        self._pill_sql.clicked.connect(self.sqlRequested.emit)
+
+        self._pill_tree = ClickablePill(secondary_color, "Tree")
+        self._pill_tree.clicked.connect(self.treeRequested.emit)
+
+        toolbar.addWidget(self._pill_sql)
+        toolbar.addSpacing(1)
+        toolbar.addWidget(self._pill_tree)
 
         layout.addLayout(toolbar)
 
@@ -220,31 +222,25 @@ class TableWidget(QWidget):
             self._refresh_icons()
 
     def _refresh_icons(self) -> None:
-        normal = self.palette().color(self.palette().ColorRole.ButtonText)
         success = get_theme_manager().current_scheme.editor.get(EditorColorRole.SUCCESS)
-
-        # self._btn_split.setIcon(svg_icon(icon("columns-2.svg"), normal))
-        self._btn_sql.setIcon(svg_icon(icon("code.svg"), normal))
-        self._btn_tree.setIcon(svg_icon(icon("network.svg"), normal))
-        # self._btn_run.setIcon(svg_icon(icon("play.svg"), success))
 
         hover = self.palette().color(self.palette().ColorRole.Highlight)
         hover.setAlpha(35)
-        hover_hex = hover.name(QColor.NameFormat.HexArgb)
+        # hover_hex = hover.name(QColor.NameFormat.HexArgb)
 
-        tool_btn_style = f"""
-            QToolButton {{
-                border: none;
-                border-radius: 4px;
-                background: transparent;
-            }}
-            QToolButton:hover {{
-                background-color: {hover_hex};
-            }}
-            QToolButton:checked {{
-                background-color: {hover_hex};
-            }}
-        """
+        # tool_btn_style = f"""
+        #     QToolButton {{
+        #         border: none;
+        #         border-radius: 4px;
+        #         background: transparent;
+        #     }}
+        #     QToolButton:hover {{
+        #         background-color: {hover_hex};
+        #     }}
+        #     QToolButton:checked {{
+        #         background-color: {hover_hex};
+        #     }}
+        # """
 
         highlight = self.palette().color(QPalette.ColorRole.Highlight)
         highlight.setAlpha(35)
@@ -279,22 +275,6 @@ class TableWidget(QWidget):
         success_bg.setAlpha(45)
         success_hover = QColor(success)
         success_hover.setAlpha(70)
-
-        # run_style = f"""
-        #     QToolButton {{
-        #         border: none;
-        #         border-radius: 4px;
-        #         background-color: {success_bg.name(QColor.NameFormat.HexArgb)};
-        #     }}
-        #     QToolButton:hover {{
-        #         background-color: {success_hover.name(QColor.NameFormat.HexArgb)};
-        #     }}
-        # """
-
-        for btn in (self._btn_sql, self._btn_tree):
-            btn.setStyleSheet(tool_btn_style)
-
-        # self._btn_run.setStyleSheet(run_style)
 
     @pyqtSlot()
     def _on_run_queries(self):
