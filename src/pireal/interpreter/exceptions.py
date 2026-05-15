@@ -69,8 +69,12 @@ class DuplicateRelationNameError(InterpreterError):
 class UndefinedAttributeError(InterpreterError):
     """An attribute referenced in the query does not exist in the relation."""
 
-    def __init__(self, attribute: str, relation_name: str, lineno: int | None = None):
-        super().__init__(f"Attribute '{attribute}' does not exist in relation '{relation_name}'.")
+    def __init__(self, attribute: str, relation_name: str, lineno: int | None = None, suggestion: str | None = None):
+        msg = f"Attribute '{attribute}' does not exist in relation '{relation_name}'."
+        if suggestion:
+            msg += f" Did you mean '{suggestion}'?"
+        super().__init__(msg)
         self.attribute = attribute
         self.relation_name = relation_name
         self.lineno = lineno
+        self.suggestion = suggestion
