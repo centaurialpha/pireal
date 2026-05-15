@@ -286,10 +286,11 @@ class RelationDelegate(QStyledItemDelegate):
 
         name_font = QFont(painter.font())
         name_font.setBold(True)
+        name_font.setPointSize(name_font.pointSize() + 1)
         name_height = QFontMetrics(name_font).height()
 
         meta_font = QFont(painter.font())
-        meta_font.setPointSize(meta_font.pointSize() - 1)
+        meta_font.setPointSize(meta_font.pointSize() + 1)
         meta_height = QFontMetrics(meta_font).height()
 
         top = text_rect.top() + (text_rect.height() - name_height - meta_height) // 2
@@ -297,6 +298,8 @@ class RelationDelegate(QStyledItemDelegate):
         name = model.data(index, model.NameRole)
         cardinality = model.data(index, model.CardinalityRole)
         degree = model.data(index, model.DegreeRole)
+
+        meta = tr.TR_LATERAL_CARDINALITY_DEGREE.format(cardinality=cardinality, degree=degree)
 
         painter.setFont(name_font)
         painter.setPen(name_color)
@@ -306,10 +309,11 @@ class RelationDelegate(QStyledItemDelegate):
 
         painter.setFont(meta_font)
         painter.setPen(meta_color)
+
         painter.drawText(
             QRect(text_rect.left(), top + name_height, text_rect.width(), meta_height),
             Qt.AlignmentFlag.AlignVCenter,
-            f"{cardinality} tuples · {degree} attrs",
+            meta,
         )
 
         painter.restore()
@@ -317,12 +321,12 @@ class RelationDelegate(QStyledItemDelegate):
     def sizeHint(self, option, index):
         name_font = QFont(option.font)
         name_font.setBold(True)
+        name_font.setPointSize(name_font.pointSize() + 1)
         name_height = QFontMetrics(name_font).height()
         meta_font = QFont(option.font)
-        meta_font.setPointSize(meta_font.pointSize() - 1)
         meta_height = QFontMetrics(meta_font).height()
         size = super().sizeHint(option, index)
-        size.setHeight(name_height + meta_height + 26)
+        size.setHeight(name_height + meta_height + 22)
         return size
 
     def _paint(
@@ -390,17 +394,6 @@ class RelationDelegate(QStyledItemDelegate):
             QRect(rect.left(), top + name_height, rect.width(), meta_height), Qt.AlignmentFlag.AlignVCenter, meta
         )
         painter.restore()
-
-    def _sizeHint(self, option, index):
-        size = super().sizeHint(option, index)
-        name_font = QFont(option.font)
-        name_font.setBold(True)
-        name_height = QFontMetrics(name_font).height()
-        meta_font = QFont(option.font)
-        meta_font.setPointSize(meta_font.pointSize() - 1)
-        meta_height = QFontMetrics(meta_font).height()
-        size.setHeight(name_height + meta_height + 14)
-        return size
 
 
 class LateralWidget(QSplitter):
