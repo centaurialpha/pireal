@@ -212,8 +212,8 @@ class TogglePill(ClickablePill):
         painter.drawRoundedRect(self.rect(), self._radius, self._radius)
 
         text_color = QColor(color)
-        text_color.setAlpha(255 if self._checked else 140)
-        painter.setPen(color)
+        text_color.setAlpha(255 if self._checked else 160)
+        painter.setPen(text_color)
         painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._text)
 
 
@@ -264,7 +264,7 @@ class RunPill(QWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
         bg = QColor(self._success_color)
-        bg.setAlpha(60 if self._hovered else 35)
+        bg.setAlpha(45 if self._hovered else 25)
         painter.setBrush(bg)
         painter.setPen(Qt.PenStyle.NoPen)
         painter.drawRoundedRect(self.rect(), 1, 1)
