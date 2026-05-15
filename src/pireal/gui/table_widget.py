@@ -37,7 +37,10 @@ from pireal import translations as tr
 from pireal.core.relation import Relation
 from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.model_view_delegate import create_view
-from pireal.gui.widgets import ClickablePill, TogglePill
+from pireal.gui.widgets import (
+    ClickablePill,
+    TogglePill,
+)
 from pireal.registry import Registry
 
 

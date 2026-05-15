@@ -166,3 +166,27 @@ def test_divide():
 
     assert results["q"].header == ["student_id"]
     assert results["q"].content == {("1",), ("3",)}
+
+
+def test_undefined_relation_suggests_closest(relations):
+    with pytest.raises(UndefinedRelationError) as err:
+        evaluate("q := persnas;", relations)
+    assert err.value.suggestion == "personas"
+
+
+def test_undefined_relation_no_suggestion_when_too_different(relations):
+    with pytest.raises(UndefinedRelationError) as err:
+        evaluate("q := xxxxxxxx;", relations)
+    assert err.value.suggestion is None
+
+
+def test_undefined_attribute_suggests_closest(relations):
+    with pytest.raises(UndefinedAttributeError) as err:
+        evaluate("q := project nane (personas);", relations)
+    assert err.value.suggestion == "name"
+
+
+def test_undefined_attribute_in_select_suggests_closest(relations):
+    with pytest.raises(UndefinedAttributeError) as err:
+        evaluate("q := select ag=25 (personas);", relations)
+    assert err.value.suggestion == "age"

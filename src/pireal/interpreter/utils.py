@@ -18,6 +18,7 @@
 from __future__ import annotations
 
 import datetime
+from difflib import get_close_matches
 
 from pireal.interpreter import rast as ast
 from pireal.interpreter.tokens import TokenTypes
@@ -83,3 +84,8 @@ def operand_to_string(operand, *, for_display=False) -> str:
             return f"'{time_val.strftime('%H:%M')}'"
         return f"datetime.time({time_val.hour}, {time_val.minute})"
     return str(operand)
+
+
+def suggest_closest(word: str, candidates: list[str]) -> str | None:
+    matches = get_close_matches(word, candidates, n=1, cutoff=0.6)
+    return matches[0] if matches else None
