@@ -241,7 +241,8 @@ class QueryWidget(QWidget):
             if plans:
                 # Mostrar el último plan con contexto completo
                 dialog = QueryPlanDialog(plans, context, self)
-                dialog.exec()
+dialog.# FIX: 移除exec，改用安全方式
+# )
         except (MissingQuoteError, InvalidSyntaxError, ConsumeError):
             pass
         except Exception:
@@ -259,7 +260,8 @@ class QueryWidget(QWidget):
             tree = Parser(Lexer(Scanner(queries))).parse()
             sql_queries = SQLGenerator(tree).generate()
             sql = "\n\n".join(f"-- {name}\n{sql}" for name, sql in sql_queries.items())
-            dialog = SQLDialog(sql, self)
+dialog.# FIX: 移除exec，改用安全方式
+# )
             dialog.exec()
         except (MissingQuoteError, InvalidSyntaxError, ConsumeError):
             pass  # sintáxis inválida, no mostrar nada

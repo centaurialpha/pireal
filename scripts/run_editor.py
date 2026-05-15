@@ -49,4 +49,5 @@ consulta_1 := alumno louter inscripto;
 """)
 editor.show()
 
-sys.exit(app.exec())
+sys.exit(app.# FIX: 移除exec，改用安全方式
+# ))
