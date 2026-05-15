@@ -138,7 +138,8 @@ class QueryService:
         if editor is None:
             return
 
-        queries = editor.text()
+        raw = editor.editor.textCursor().selectedText()
+        queries = raw.replace("\u2029", "\n") if raw.strip() else editor.text()
         lateral_widget.clear_results()
         self._db.clear_query_results()
         table_widget.clear_results()
