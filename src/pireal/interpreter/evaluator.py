@@ -17,8 +17,12 @@
 
 from pireal.core.relation import Relation
 from pireal.interpreter import rast as ast
-from pireal.interpreter.exceptions import DuplicateRelationNameError, UndefinedAttributeError
+from pireal.interpreter.exceptions import (
+    DuplicateRelationNameError,
+    UndefinedAttributeError,
+)
 from pireal.interpreter.tokens import TokenTypes
+from pireal.interpreter.utils import suggest_closest
 
 OPERATOR_MAP = {
     TokenTypes.EQUAL: "==",
@@ -43,10 +47,14 @@ BINARY_OP_MAP = {
 
 
 class UndefinedRelationError(Exception):
-    def __init__(self, name: str, lineno: int | None = None):
-        super().__init__(f"Relation '{name}' is not defined")
+    def __init__(self, name: str, lineno: int | None = None, suggestion: str | None = None):
+        msg = f"Relation '{name}' is not defined."
+        if suggestion:
+            msg += f" Did you mean '{suggestion}'?"
+        super().__init__(msg)
         self.name = name
         self.lineno = lineno
+        self.suggestion = suggestion
 
 
 class Evaluator(ast.NodeVisitor):
@@ -79,7 +87,8 @@ class Evaluator(ast.NodeVisitor):
         name = node.value
         relation = self._relations.get(name)
         if relation is None:
-            raise UndefinedRelationError(name, lineno=node.lineno)
+            suggestion = suggest_closest(name, list(self._relations.keys()))
+            raise UndefinedRelationError(name, lineno=node.lineno, suggestion=suggestion)
         return relation
 
     def visit_BinaryOp(self, node: ast.BinaryOp) -> Relation:
@@ -93,7 +102,8 @@ class Evaluator(ast.NodeVisitor):
         attrs = [attr.value for attr in node.attrs]
         for attr in attrs:
             if attr not in relation.header:
-                raise UndefinedAttributeError(attr, relation.name)
+                suggestion = suggest_closest(attr, relation.header)
+                raise UndefinedAttributeError(attr, relation.name, suggestion=suggestion)
         return relation.project(*attrs)
 
     def visit_SelectExpr(self, node: ast.SelectExpr) -> Relation:
@@ -124,7 +134,8 @@ class Evaluator(ast.NodeVisitor):
     def _validate_condition_attrs(self, node: object, relation: Relation) -> None:
         if isinstance(node, ast.Condition):
             if isinstance(node.op1, ast.Variable) and node.op1.value not in relation.header:
-                raise UndefinedAttributeError(node.op1.value, relation.name)
+                suggestion = suggest_closest(node.op1.value, relation.header)
+                raise UndefinedAttributeError(node.op1.value, relation.name, suggestion=suggestion)
         elif isinstance(node, ast.BooleanExpression):
             self._validate_condition_attrs(node.left_formula, relation)
             self._validate_condition_attrs(node.right_formula, relation)

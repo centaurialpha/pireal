@@ -30,25 +30,11 @@ from pireal.gui.lateral_widget import (
     LateralWidget,
     RelationItemType,
 )
-from pireal.gui.model_view_delegate import (
-    Delegate,
-    RelationModel,
-    View,
-)
 from pireal.gui.query_widget import QueryWidget
 from pireal.gui.right_pane import RightPane
 from pireal.gui.status_bar import StatusBar
 from pireal.gui.table_widget import TableWidget
 from pireal.registry import Registry
-
-
-def create_view(relation, *, editable=False):
-    view = View()
-    model = RelationModel(relation)
-    model.editable = editable
-    view.setModel(model)
-    view.setItemDelegate(Delegate())
-    return view
 
 
 class DatabaseContainer(QSplitter):
@@ -78,14 +64,14 @@ class DatabaseContainer(QSplitter):
         else:
             status_bar.update_db_name("")
 
-    def create_database(self, data):
+    def create_database(self, data, *, editable: bool = True):
         table_widget = Registry.get("table-widget", TableWidget)
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
 
         relations = list(load_relations(data))
         for relation in relations:
             self._database.load(relation)
-            table_widget.add_table_to_workspace(relation)
+            table_widget.add_table_to_workspace(relation, editable=editable)
             lateral_widget.add_item(relation, RelationItemType.Normal)
 
         last = len(relations) - 1

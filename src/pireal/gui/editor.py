@@ -32,6 +32,7 @@ from PyQt6.QtGui import (
     QTextCharFormat,
     QTextCursor,
     QTextDocument,
+    QWheelEvent,
 )
 from PyQt6.QtWidgets import (
     QFrame,
@@ -181,6 +182,7 @@ class BracketHighlighter:
 class Editor(QPlainTextEdit):
     errorOccurred = pyqtSignal(int, str)
     errorCleared = pyqtSignal()
+    currentBlockChanged = pyqtSignal(str)
 
     def __init__(self, pfile=None):
         super().__init__()
@@ -193,6 +195,8 @@ class Editor(QPlainTextEdit):
 
         self._error_line = -1
         self._error_message = ""
+
+        self._last_block_name: str = ""
 
         theme_manager = get_theme_manager()
         theme_manager.themeChanged.connect(self._on_theme_changed)
@@ -270,6 +274,27 @@ class Editor(QPlainTextEdit):
             self.add_selection("parenthesis", bracket_selections)
         else:
             self.clear_selections("parenthesis")
+
+        block_name = self._current_block_name()
+        if block_name != self._last_block_name:
+            self._last_block_name = block_name
+            self.currentBlockChanged.emit(block_name)
+
+    def _current_block_name(self) -> str:
+        if not self._query_blocks:
+            return ""
+
+        cursor_line = self.textCursor().blockNumber()
+        doc = self.document()
+        if doc is None:
+            return ""
+        for start, end, _ in self._query_blocks:
+            if start <= cursor_line <= end:
+                text = doc.findBlockByLineNumber(start).text().strip()
+                # formato: "nombre :="
+                if ":=" in text:
+                    return text.split(":=")[0].strip()
+        return ""
 
     def _apply_theme(self, scheme: ColorScheme):
         """Aplica un ColorScheme al editor."""
@@ -591,13 +616,19 @@ class Editor(QPlainTextEdit):
             return
         model = self.completer.completionModel()
         e = cast(QKeyEvent, e)
+
+        if e.key() == Qt.Key.Key_Escape:
+            self.completer.suppressed = True
+            if popup.isVisible():
+                popup.hide()
+            return
+
         if model is None:
             return
         if popup.isVisible() and e.key() in (
             Qt.Key.Key_Enter,
             Qt.Key.Key_Return,
             Qt.Key.Key_Tab,
-            Qt.Key.Key_Escape,
         ):
             e.ignore()
             return
@@ -633,6 +664,13 @@ class Editor(QPlainTextEdit):
 
         if e.modifiers() or not e.text():
             return
+
+        if e.key() == Qt.Key.Key_Backspace:
+            popup.hide()
+            return
+
+        self.completer.suppressed = False
+
         prefix = self._text_under_cursor()
         if len(prefix) < 2:
             popup.hide()
@@ -654,6 +692,19 @@ class Editor(QPlainTextEdit):
         cursor = self.textCursor()
         cursor.select(cursor.SelectionType.WordUnderCursor)
         return cursor.selectedText()
+
+    def wheelEvent(self, e: QWheelEvent | None) -> None:
+        if e is None:
+            return
+
+        if e.modifiers() & Qt.KeyboardModifier.ControlModifier:
+            if e.angleDelta().y() > 0:
+                self.zoom_in()
+            else:
+                self.zoom_out()
+            e.accept()
+        else:
+            super().wheelEvent(e)
 
     def _handle_return(self) -> None:
         cursor = self.textCursor()

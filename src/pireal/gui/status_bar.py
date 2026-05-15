@@ -24,7 +24,6 @@ from PyQt6.QtCore import (
 from PyQt6.QtGui import (
     QColor,
     QPainter,
-    QPalette,
 )
 from PyQt6.QtWidgets import (
     QHBoxLayout,
@@ -40,15 +39,19 @@ from pireal.gui.theme.schema import (
 )
 from pireal.gui.widgets import (
     ClickablePill,
-    Pill,
+    RunPill,
+    TextPill,
 )
+from pireal.registry import Registry
 
 
-class _DbPill(Pill):
+class DBPill(ClickablePill):
     def __init__(self, parent=None):
         super().__init__(color_fn=lambda: get_theme_manager().current_scheme.highlight, parent=parent)
         self._modified = False
         self._base_text = ""
+        self.setCursor(Qt.CursorShape.ArrowCursor)
+        self.clicked.connect(self._on_clicked)
 
     def set_text(self, text: str) -> None:
         self._base_text = text
@@ -59,18 +62,25 @@ class _DbPill(Pill):
         self._color_fn = lambda: (
             QColor(210, 140, 30) if self._modified else get_theme_manager().current_scheme.highlight
         )
+        self.setCursor(Qt.CursorShape.PointingHandCursor if modified else Qt.CursorShape.ArrowCursor)
         super().set_text(self._display_text())
 
     def _display_text(self) -> str:
         return f"{self._base_text} •" if self._modified else self._base_text
 
+    @pyqtSlot()
+    def _on_clicked(self) -> None:
+        if not self._modified:
+            return
+        from pireal.gui.controller import Controller
 
-class LineColPill(Pill):
-    def __init__(self, parent: QWidget | None = None):
-        super().__init__(color_fn=self._pill_color, parent=parent)
+        Registry.get("controller", Controller).save_database()
 
-    def _pill_color(self):
-        return super().palette().color(QPalette.ColorRole.PlaceholderText)
+    def paintEvent(self, a0) -> None:
+        # hover solo activo cuando modificado
+        if not self._modified:
+            self._hovered = False
+        super().paintEvent(a0)
 
 
 class SymbolModePill(ClickablePill):
@@ -120,7 +130,7 @@ class StatusBar(QWidget):
         layout.setSpacing(6)
 
         # Left - db name (always visible, StatusBar only lives with an open DB)
-        self._db_label = _DbPill()
+        self._db_label = DBPill()
         layout.addWidget(self._db_label)
 
         # Center - temporary messages (expanding)
@@ -130,22 +140,33 @@ class StatusBar(QWidget):
         self._message_label.setMinimumWidth(0)
         layout.addWidget(self._message_label)
 
-        self._pipeline_pill = Pill(
+        self._pipeline_pill = TextPill(
             color_fn=lambda: get_theme_manager().current_scheme.editor.get(EditorColorRole.KEYWORD),
-            radius=3,
         )
         self._pipeline_pill.hide()
 
         # Right - technical indicators
-        self._line_col_label = LineColPill(self)
+        self._line_col_label = TextPill(
+            color_fn=lambda: get_theme_manager().current_scheme.editor.get(EditorColorRole.FOREGROUND),
+        )
 
         self._symbol_mode_label = SymbolModePill()
         self._symbol_mode_label.hide()
         self._symbol_mode_label.clicked.connect(self._on_symbol_mode_clicked)
 
+        self._block_pill = TextPill(
+            color_fn=lambda: get_theme_manager().current_scheme.editor.get(EditorColorRole.FOREGROUND),
+        )
+        self._block_pill.hide()
+
+        self._run_pill = RunPill()
+        self._run_pill.clicked.connect(self._on_run_clicked)
+
         layout.addWidget(self._line_col_label)
+        layout.addWidget(self._block_pill)
         layout.addWidget(self._pipeline_pill)
         layout.addWidget(self._symbol_mode_label)
+        layout.addWidget(self._run_pill)
 
         self._apply_theme(get_theme_manager().current_scheme)
         get_theme_manager().themeChanged.connect(self._apply_theme)
@@ -156,6 +177,13 @@ class StatusBar(QWidget):
 
     def hide_pipeline(self) -> None:
         self._pipeline_pill.hide()
+
+    def set_current_block(self, name: str) -> None:
+        if name:
+            self._block_pill.set_text(name)
+            self._block_pill.show()
+        else:
+            self._block_pill.hide()
 
     def show_message(self, msg: str, timeout: int = 4000, error: bool = False) -> None:
         self._timer.stop()
@@ -183,6 +211,12 @@ class StatusBar(QWidget):
         self._symbol_mode_on = enabled
         self._symbol_mode_label.set_enabled(enabled)
         self._symbol_mode_label.show()
+
+    @pyqtSlot()
+    def _on_run_clicked(self) -> None:
+        from pireal.gui.controller import Controller
+
+        Registry.get("controller", Controller).execute_queries()
 
     @pyqtSlot()
     def _on_symbol_mode_clicked(self) -> None:

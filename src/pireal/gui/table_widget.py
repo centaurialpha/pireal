@@ -16,20 +16,12 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt6.QtCore import (
-    QEvent,
-    QPoint,
-    QRect,
-    QSize,
     Qt,
     pyqtSignal,
     pyqtSlot,
 )
 from PyQt6.QtGui import (
-    QColor,
-    QFont,
-    QPainter,
     QPalette,
-    QPolygon,
 )
 from PyQt6.QtWidgets import (
     QHBoxLayout,
@@ -37,7 +29,6 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QSplitter,
     QStackedWidget,
-    QToolButton,
     QVBoxLayout,
     QWidget,
 )
@@ -48,93 +39,11 @@ from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.model_view_delegate import create_view
 from pireal.gui.theme.manager import get_theme_manager
 from pireal.gui.theme.schema import EditorColorRole
-from pireal.helpers import svg_icon
+from pireal.gui.widgets import (
+    ClickablePill,
+    TogglePill,
+)
 from pireal.registry import Registry
-from pireal.resources import icon
-
-
-class _RunPill(QWidget):
-    clicked = pyqtSignal()
-    _PADDING_H = 12
-    _PADDING_V = 4
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.setToolTip("Run queries (F5)")
-        fm = self.fontMetrics()
-        icon_w = fm.height()
-        gap = 6
-        text_w = fm.horizontalAdvance("Run")
-        w = self._PADDING_H * 2 + icon_w + gap + text_w
-        h = fm.height() + self._PADDING_V * 2
-        self.setFixedSize(w, h)
-        self._success_color: QColor | None = None
-        self._hovered = False
-        self._refresh_color()
-        get_theme_manager().themeChanged.connect(lambda _: self._refresh_color())
-
-    def _refresh_color(self) -> None:
-        self._success_color = get_theme_manager().current_scheme.editor.get(EditorColorRole.SUCCESS)
-        self.update()
-
-    def mousePressEvent(self, a0) -> None:
-        if a0 is not None and a0.button() == Qt.MouseButton.LeftButton:
-            self.clicked.emit()
-        super().mousePressEvent(a0)
-
-    def enterEvent(self, event) -> None:
-        self._hovered = True
-        self.update()
-        super().enterEvent(event)
-
-    def leaveEvent(self, a0) -> None:
-        self._hovered = False
-        self.update()
-        super().leaveEvent(a0)
-
-    def paintEvent(self, a0) -> None:
-        if self._success_color is None:
-            return
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        bg = QColor(self._success_color)
-        bg.setAlpha(60 if self._hovered else 35)
-        painter.setBrush(bg)
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawRoundedRect(self.rect(), 1, 1)
-
-        fm = self.fontMetrics()
-        icon_h = fm.height()
-        total_w = icon_h + 6 + fm.horizontalAdvance("Run")
-        x = (self.width() - total_w) // 2
-        y_center = self.height() // 2
-
-        icon_rect = QRect(x, y_center - icon_h // 2, icon_h, icon_h)
-        painter.setPen(self._success_color)
-
-        # Triángulo play
-        points = [
-            icon_rect.topLeft() + QPoint(2, 1),
-            icon_rect.bottomLeft() + QPoint(2, -1),
-            QPoint(icon_rect.right() - 1, y_center),
-        ]
-
-        painter.setBrush(self._success_color)
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawPolygon(QPolygon(points))
-
-        font = painter.font()
-        font.setWeight(QFont.Weight.Medium)
-        painter.setFont(font)
-        painter.setPen(self._success_color)
-        text_x = x + icon_h + 6
-        painter.drawText(
-            QRect(text_x, 0, fm.horizontalAdvance("Run"), self.height()), Qt.AlignmentFlag.AlignVCenter, "Run"
-        )
-
-        painter.restore() if False else None
 
 
 class PlaceholderWidget(QWidget):
@@ -206,22 +115,17 @@ class TableWidget(QWidget):
 
         # Toolbar
         toolbar = QHBoxLayout()
-        toolbar.setContentsMargins(0, 0, 0, 0)
+        toolbar.setContentsMargins(0, 0, 6, 0)
         toolbar.addStretch()
 
-        self._btn_split = self._make_tool_btn(tr.TR_TOOLTIP_TOGGLE_SPLIT)
-        self._btn_split.setCheckable(True)
-        self._btn_split.toggled.connect(self._on_split_toggled)
-        toolbar.addWidget(self._btn_split)
+        self._pill_relations = TogglePill(tr.TR_RELATIONS, checked=True)
+        self._pill_results = TogglePill(tr.TR_RESULTS, checked=False)
 
-        self._btn_sql = self._make_tool_btn(tr.TR_TOOLTIP_SHOW_SQL)
-        self._btn_sql.clicked.connect(self.sqlRequested.emit)
-        toolbar.addWidget(self._btn_sql)
+        toolbar.addWidget(self._pill_relations)
+        toolbar.addSpacing(1)
+        toolbar.addWidget(self._pill_results)
 
-        self._btn_tree = self._make_tool_btn(tr.TR_TOOLTIP_SHOW_TREE)
-        self._btn_tree.clicked.connect(self.treeRequested.emit)
-        toolbar.addWidget(self._btn_tree)
-
+        toolbar.addSpacing(6)
         sep = QWidget()
         sep.setFixedSize(1, 14)
         sep.setAutoFillBackground(True)
@@ -230,13 +134,20 @@ class TableWidget(QWidget):
         color.setAlpha(80)
         palette.setColor(QPalette.ColorRole.Window, color)
         sep.setPalette(palette)
-        toolbar.addSpacing(4)
         toolbar.addWidget(sep)
-        toolbar.addSpacing(4)
+        toolbar.addSpacing(6)
 
-        self._btn_run = self._make_tool_btn(tr.TR_TOOLTIP_RUN_QUERIES)
-        self._btn_run.clicked.connect(self._on_run_queries)
-        toolbar.addWidget(self._btn_run)
+        secondary_color = lambda: get_theme_manager().current_scheme.editor.get(EditorColorRole.FOREGROUND)  # noqa
+
+        self._pill_sql = ClickablePill(secondary_color, "SQL")
+        self._pill_sql.clicked.connect(self.sqlRequested.emit)
+
+        self._pill_tree = ClickablePill(secondary_color, "Tree")
+        self._pill_tree.clicked.connect(self.treeRequested.emit)
+
+        toolbar.addWidget(self._pill_sql)
+        toolbar.addSpacing(1)
+        toolbar.addWidget(self._pill_tree)
 
         layout.addLayout(toolbar)
 
@@ -251,12 +162,12 @@ class TableWidget(QWidget):
         self._show_placeholder()
 
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
-        lateral_widget.resultClicked.connect(self._on_result_list_clicked)
 
-        self._refresh_icons()
+        lateral_widget.resultClicked.connect(self._on_result_list_clicked)
+        self._pill_relations.toggled.connect(self._on_relations_toggled)
+        self._pill_results.toggled.connect(self._on_results_toggled)
 
     def show_relation_at(self, index: int) -> None:
-        # self._stacked.setCurrentIndex(index)
         if index < 0 or index >= len(self._pending_relations):
             return
         relation, editable = self._pending_relations[index]
@@ -267,65 +178,23 @@ class TableWidget(QWidget):
             self._stacked.addWidget(view)
         self._stacked.setCurrentWidget(self._relation_widgets[relation.name])
 
-    def _make_tool_btn(self, tooltip: str, size: int = 16) -> QToolButton:
-        btn = QToolButton()
-        btn.setToolTip(tooltip)
-        btn.setIconSize(QSize(size, size))
-        btn.setFixedSize(28, 28)
-        return btn
+    @pyqtSlot(bool)
+    def _on_relations_toggled(self, checked: bool) -> None:
+        if not checked and not self._pill_results.is_checked:
+            self._pill_relations.set_checked(True)
+            return
+        self._stacked.setVisible(checked)
+        if checked and self._stacked_results.isVisible():
+            self._splitter.setSizes([1, 1])
 
-    def changeEvent(self, a0: QEvent | None) -> None:
-        super().changeEvent(a0)
-        if a0 is not None and a0.type() == QEvent.Type.PaletteChange:
-            self._refresh_icons()
-
-    def _refresh_icons(self) -> None:
-        normal = self.palette().color(self.palette().ColorRole.ButtonText)
-        success = get_theme_manager().current_scheme.editor.get(EditorColorRole.SUCCESS)
-
-        self._btn_split.setIcon(svg_icon(icon("columns-2.svg"), normal))
-        self._btn_sql.setIcon(svg_icon(icon("code.svg"), normal))
-        self._btn_tree.setIcon(svg_icon(icon("network.svg"), normal))
-        self._btn_run.setIcon(svg_icon(icon("play.svg"), success))
-
-        hover = self.palette().color(self.palette().ColorRole.Highlight)
-        hover.setAlpha(35)
-        hover_hex = hover.name(QColor.NameFormat.HexArgb)
-
-        tool_btn_style = f"""
-            QToolButton {{
-                border: none;
-                border-radius: 4px;
-                background: transparent;
-            }}
-            QToolButton:hover {{
-                background-color: {hover_hex};
-            }}
-            QToolButton:checked {{
-                background-color: {hover_hex};
-            }}
-        """
-
-        success_bg = QColor(success)
-        success_bg.setAlpha(45)
-        success_hover = QColor(success)
-        success_hover.setAlpha(70)
-
-        run_style = f"""
-            QToolButton {{
-                border: none;
-                border-radius: 4px;
-                background-color: {success_bg.name(QColor.NameFormat.HexArgb)};
-            }}
-            QToolButton:hover {{
-                background-color: {success_hover.name(QColor.NameFormat.HexArgb)};
-            }}
-        """
-
-        for btn in (self._btn_split, self._btn_sql, self._btn_tree):
-            btn.setStyleSheet(tool_btn_style)
-
-        self._btn_run.setStyleSheet(run_style)
+    @pyqtSlot(bool)
+    def _on_results_toggled(self, checked: bool) -> None:
+        if not checked and not self._pill_relations.is_checked:
+            self._pill_results.set_checked(True)
+            return
+        self._stacked_results.setVisible(checked)
+        if checked and self._stacked.isVisible():
+            self._splitter.setSizes([1, 1])
 
     @pyqtSlot()
     def _on_run_queries(self):
@@ -333,19 +202,8 @@ class TableWidget(QWidget):
 
         Registry.get("controller", Controller).execute_queries()
 
-    def _on_split_toggled(self, checked: bool):
-        if checked:
-            self._stacked_results.show()
-            self._splitter.setSizes([1, 1])
-        else:
-            self._stacked_results.hide()
-
     def toggle_split(self):
-        if self._stacked_results.isVisible():
-            self._stacked_results.hide()
-        else:
-            self._stacked_results.show()
-            self._splitter.setSizes([1, 1])
+        self._pill_results.set_checked(not self._pill_results.is_checked)
 
     def _show_placeholder(self):
         if not self._has_placeholder():
@@ -370,11 +228,6 @@ class TableWidget(QWidget):
 
     def add_table_to_workspace(self, relation: Relation, editable=True):
         self._pending_relations.append((relation, editable))
-        # self._remove_placeholder()
-        # view = create_view(relation, editable=editable)
-        # self._relation_widgets[relation.name] = view
-        # self._stacked.addWidget(view)
-        # self._stacked.setCurrentWidget(view)
 
     def add_table_to_results(self, relation: Relation, editable=False):
         view = create_view(relation, editable=editable)
@@ -383,7 +236,7 @@ class TableWidget(QWidget):
 
         # Auto-split
         if not self._stacked_results.isVisible():
-            self._btn_split.setChecked(True)
+            self._pill_results.set_checked(True)
 
     def clear_results(self):
         while self._stacked_results.count() > 0:
@@ -391,7 +244,7 @@ class TableWidget(QWidget):
             if widget is not None:
                 self._stacked_results.removeWidget(widget)
                 widget.deleteLater()
-        self._btn_split.setChecked(False)
+        self._pill_results.set_checked(False)
 
     def clear(self):
         # limpiar workspace

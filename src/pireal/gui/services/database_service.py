@@ -30,7 +30,8 @@ class DatabaseService:
         self._last_folder = last_folder or str(Path.home())
 
     def _remember_folder(self, filepath: str) -> None:
-        self._last_folder = str(Path(filepath).parent)
+        if not is_example_file(File(filepath)):
+            self._last_folder = str(Path(filepath).parent)
 
     @property
     def last_folder(self) -> str:
@@ -64,16 +65,18 @@ class DatabaseService:
             return False
 
         content = sanitize_data(file.read())
+        file_is_example = is_example_file(file)
+        editable = not file_is_example
 
         database_container = Registry.get("database-container", DatabaseContainer)
-        database_container.create_database(content)
+        database_container.create_database(content, editable=editable)
 
         self._db.file = file
         self._db.is_active = True
 
         self._check_olakase_names()
 
-        if not is_example_file(file):
+        if not file_is_example:
             self._remember_folder(filename)
             self._recents.add(filename)
 
@@ -132,7 +135,7 @@ class DatabaseService:
         filename, _ = QFileDialog.getSaveFileName(
             self._parent,
             tr.TR_MSG_SAVE_DB_AS,
-            "",
+            self._last_folder,
             "Pireal Database File (*.pdb)",
         )
         if not filename:

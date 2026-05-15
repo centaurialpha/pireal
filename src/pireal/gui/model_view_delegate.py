@@ -25,8 +25,12 @@ from PyQt6.QtCore import (
     pyqtSlot as Slot,
 )
 from PyQt6.QtGui import (
+    QBrush,
     QColor,
     QFont,
+    QKeySequence,
+    QUndoCommand,
+    QUndoStack,
 )
 from PyQt6.QtWidgets import (
     QAbstractItemView,
@@ -47,14 +51,63 @@ logger = logging.getLogger("gui.model_view_delegate")
 # En model_view_delegate.py, agregar esta clase antes de View
 
 
+class EditCellCommand(QUndoCommand):
+    def __init__(self, model: "RelationModel", row: int, col: int, old_value: str, new_value: str):
+        super().__init__()
+        self._model = model
+        self._row = row
+        self._col = col
+        self._old_value = old_value
+        self._new_value = new_value
+
+    def undo(self) -> None:
+        self._model.relation.update(self._row, self._col, self._old_value)
+        index = self._model.index(self._row, self._col)
+        # si volvió al valor original, limpiar dirty
+        original = self._model._original_values.get((self._row, self._col))
+        if original is None or self._old_value == original:
+            self._model._dirty_cells.discard((self._row, self._col))
+        else:
+            self._model._dirty_cells.add((self._row, self._col))
+        self._model.dataChanged.emit(index, index)
+        self._model._sync_modified()
+
+    def redo(self) -> None:
+        self._model.relation.update(self._row, self._col, self._new_value)
+        index = self._model.index(self._row, self._col)
+        self._model._dirty_cells.add((self._row, self._col))
+        self._model.dataChanged.emit(index, index)
+        self._model._sync_modified()
+
+
 class RelationModel(QAbstractTableModel):
     def __init__(self, relation_object):
         super().__init__()
         self.editable = True
         self.relation = relation_object
+
+        self._undo_stack = QUndoStack(self)
+        self._dirty_cells: set[tuple[int, int]] = set()
+        self._original_values: dict[tuple[int, int], str] = {}
+
         theme_manager = get_theme_manager()
         self._null_color = theme_manager.current_scheme.placeholder_text
+
+        db = Registry.get("db", DB)
+
+        db.hasModified.connect(self._on_db_modified)
         theme_manager.themeChanged.connect(self._on_theme_changed)
+
+    @Slot(bool)
+    def _on_db_modified(self, modified: bool) -> None:
+        if not modified and self._dirty_cells:
+            self._dirty_cells.clear()
+            self._original_values.clear()
+            self._undo_stack.clear()
+            self.dataChanged.emit(
+                self.index(0, 0),
+                self.index(self.rowCount() - 1, self.columnCount() - 1),
+            )
 
     def _on_theme_changed(self, scheme):
         self._null_color = scheme.placeholder_text
@@ -77,14 +130,27 @@ class RelationModel(QAbstractTableModel):
 
         row, column = index.row(), index.column()
         data = self.relation.content
-        if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
+        is_dirty = (row, column) in self._dirty_cells
+
+        if role in (Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole):
             return data[row][column]
-        elif role == Qt.ItemDataRole.ForegroundRole and data[row][column] == "null":
-            return self._null_color
-        elif role == Qt.ItemDataRole.FontRole and data[row][column] == "null":
-            font = QFont()
-            font.setItalic(True)
-            return font
+
+        if is_dirty:
+            if role == Qt.ItemDataRole.BackgroundRole:
+                return QBrush(QColor(255, 185, 0, 50))
+            if role == Qt.ItemDataRole.FontRole:
+                font = QFont()
+                font.setItalic(True)
+                return font
+
+        elif data[row][column] == "null":
+            if role == Qt.ItemDataRole.ForegroundRole:
+                return self._null_color
+            if role == Qt.ItemDataRole.FontRole:
+                font = QFont()
+                font.setItalic(True)
+                return font
+
         return None
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
@@ -110,22 +176,35 @@ class RelationModel(QAbstractTableModel):
 
     def setData(self, index: QModelIndex, value: Any, role: int = Qt.ItemDataRole.DisplayRole):
         if index.isValid() and role == Qt.ItemDataRole.EditRole:
+            row, column = index.row(), index.column()
             current_value = self.data(index)
             if current_value != value:
-                self.relation.update(index.row(), index.column(), value)
-                self.dataChanged.emit(index, index)
-                if self.editable:
-                    logger.debug(
-                        "Editing %d:%d - Current: %s, New: %s",
-                        index.row(),
-                        index.column(),
-                        current_value,
-                        value,
-                    )
-                    db = Registry.get("db", DB)
-                    db.modified = True
+                if (row, column) not in self._original_values:
+                    self._original_values[(row, column)] = current_value
+                cmd = EditCellCommand(self, row, column, current_value, value)
+                self._undo_stack.push(cmd)
                 return True
         return False
+        # self.relation.update(index.row(), index.column(), value)
+        # self._dirty_cells.add((index.row(), index.column()))
+        # self.dataChanged.emit(index, index)
+        # if self.editable:
+        #     logger.debug(
+        #         "Editing %d:%d - Current: %s, New: %s",
+        #         index.row(),
+        #         index.column(),
+        #         current_value,
+        #         value,
+        #     )
+        #     db = Registry.get("db", DB)
+        #     db.modified = True
+        # return True
+        # return False
+
+    def _sync_modified(self) -> None:
+        if self.editable:
+            db = Registry.get("db", DB)
+            db.modified = bool(self._dirty_cells)
 
 
 class View(QTableView):
@@ -208,6 +287,19 @@ class View(QTableView):
                 header.setSectionResizeMode(column, QHeaderView.ResizeMode.Interactive)
                 header.resizeSection(column, width)
             header.setMinimumHeight(36)
+
+    def keyPressEvent(self, e) -> None:
+        if e is None:
+            return
+        model = self.model()
+        if isinstance(model, RelationModel):
+            if e.matches(QKeySequence.StandardKey.Undo):
+                model._undo_stack.undo()
+                return
+            if e.matches(QKeySequence.StandardKey.Redo):
+                model._undo_stack.redo()
+                return
+        super().keyPressEvent(e)
 
 
 class Header(QHeaderView):

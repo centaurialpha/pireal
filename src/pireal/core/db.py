@@ -100,11 +100,14 @@ class DB(QObject):
         logger.debug("clear() → relations: %s", list(self._relations.keys()))
 
     def clear_query_results(self) -> None:
+        changed = False
         for name in self._query_results[:]:
             if name in self._relations:
                 del self._relations[name]
-                self.relationsChanged.emit(list(self._relations.keys()))
+                changed = True
         self._query_results.clear()
+        if changed:
+            self.relationsChanged.emit(list(self._relations.keys()))
         logger.debug("clear_query_results() → relations: %s", list(self._relations.keys()))
 
     def get(self, relation_name: str) -> Relation | None:
@@ -124,9 +127,8 @@ class DB(QObject):
 
     @modified.setter
     def modified(self, has_modified: bool) -> None:
-        if has_modified != self._modified:
-            self._modified = has_modified
-            self.hasModified.emit(has_modified)
+        self._modified = has_modified
+        self.hasModified.emit(has_modified)
 
     def __contains__(self, relation_name: str) -> bool:
         return relation_name in self._relations

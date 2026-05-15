@@ -147,6 +147,8 @@ class QueryWidget(QWidget):
 
     def _on_tab_changed(self, index: int) -> None:
         status_bar = Registry.get("status-bar", StatusBar)
+        status_bar.set_current_block("")
+
         widget = self._editor_tabs.widget(index)
         if isinstance(widget, EditorWidget):
             cursor = widget.editor.textCursor()
@@ -190,11 +192,24 @@ class QueryWidget(QWidget):
         )
         editor_widget.editor.errorCleared.connect(lambda: status_bar.show_message("", timeout=0))
         editor_widget.editor.cursorPositionChanged.connect(lambda: self._on_cursor_moved(editor_widget))
+        editor_widget.editor.currentBlockChanged.connect(
+            lambda name: self._on_editor_block_changed(editor_widget, name)
+        )
 
         tab_text = editor_widget.file.display_name
         index = self._editor_tabs.addTab(editor_widget, tab_text)
         self._editor_tabs.setTabToolTip(index, editor_widget.file.path)
         self._editor_tabs.setCurrentIndex(index)
+
+        # sync completer
+        db = Registry.get("db", DB)
+        self.update_completer(list(db.relations_dict().keys()))
+
+    def _on_editor_block_changed(self, editor_widget: "EditorWidget", name: str) -> None:
+        if editor_widget == self.current_editor():
+            from pireal.gui.status_bar import StatusBar
+
+            Registry.get("status-bar", StatusBar).set_current_block(name)
 
     def create_editor(self, file: File | None = None) -> "EditorWidget":
         editor = EditorWidget()
@@ -205,6 +220,7 @@ class QueryWidget(QWidget):
             editor.file = File(display_name=f"untitled_{self._untitled_count}.pqf")
         self.add_editor(editor)
         self.show()
+        editor.editor.setFocus()
         return editor
 
     def _show_tree(self):
@@ -268,10 +284,19 @@ class QueryWidget(QWidget):
         return None
 
     def update_completer(self, relation_names: list[str]) -> None:
-        for i in range(self._editor_tabs.count()):
-            widget = self._editor_tabs.widget(i)
+        db = Registry.get("db", DB)
+        attributes: list[str] = []
+        for name in relation_names:
+            relation = db.get(name)
+            if relation is not None:
+                attributes.extend(relation.header)
+
+        attributes = list(dict.fromkeys(attributes))
+
+        for tab_index in range(self._editor_tabs.count()):
+            widget = self._editor_tabs.widget(tab_index)
             if isinstance(widget, EditorWidget):
-                widget.editor.completer.update_words(relation_names)
+                widget.editor.completer.update_words(relation_names, attributes)
 
     def close_current_editor(self):
         index = self._editor_tabs.currentIndex()
