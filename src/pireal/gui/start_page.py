@@ -264,8 +264,6 @@ class RecentDBDelegate(QStyledItemDelegate):
 class RecentDatabasesView(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setAutoFillBackground(True)
-
         vbox = QVBoxLayout(self)
         vbox.setContentsMargins(0, 0, 0, 0)
         vbox.setSpacing(4)
@@ -274,6 +272,8 @@ class RecentDatabasesView(QFrame):
         font = label.font()
         font.setPointSize(font.pointSize() - 1)
         label.setFont(font)
+        color = self.palette().color(QPalette.ColorRole.PlaceholderText).name()
+        label.setStyleSheet(f"color: {color}; letter-spacing: 1px;")
         vbox.addWidget(label)
 
         self._empty_label = QLabel(tr.TR_NO_RECENT_DATABASES)
@@ -339,34 +339,17 @@ class StartPage(QWidget):
         # Buttons
         hbox_btn = QHBoxLayout()
         btn_open_db = QPushButton(tr.TR_OPEN_DB)
-        btn_open_db.setMinimumSize(150, 0)
         btn_open_db.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
 
         btn_new_db = QPushButton(tr.TR_NEW_DB)
-        btn_new_db.setMinimumSize(150, 0)
         btn_new_db.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
 
         btn_example = QPushButton(tr.TR_EXAMPLE_DB)
-        btn_example.setMinimumSize(150, 0)
         btn_example.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        highlight = self.palette().color(QPalette.ColorRole.Highlight)
-        bg = QColor(highlight)
-        bg.setAlpha(35)
-        btn_example.setStyleSheet(f"""
-            QPushButton {{
-                background-color: {bg.name(QColor.NameFormat.HexArgb)};
-                color: {highlight.name()};
-                border: none;
-                border-radius: 4px;
-                padding: 6px 20px;
-                font-weight: 500;
-            }}
-            QPushButton:hover {{
-                background-color: {
-            QColor(highlight.red(), highlight.green(), highlight.blue(), 60).name(QColor.NameFormat.HexArgb)
-        };
-            }}
-        """)
+
+        for btn in (btn_open_db, btn_new_db, btn_example):
+            btn.setMinimumWidth(160)
+            btn.setMinimumHeight(28)
 
         hbox_btn.addStretch()
         hbox_btn.addWidget(btn_open_db)
@@ -420,6 +403,7 @@ class StartPage(QWidget):
         main_layout.addStretch(1)
         main_layout.addWidget(title_lbl, alignment=Qt.AlignmentFlag.AlignHCenter)
         main_layout.addWidget(subtitle_lbl, alignment=Qt.AlignmentFlag.AlignHCenter)
+        main_layout.addSpacing(16)
         main_layout.addWidget(self._update_label, alignment=Qt.AlignmentFlag.AlignHCenter)
         main_layout.addSpacing(16)
         main_layout.addLayout(hbox_btn)
@@ -463,8 +447,19 @@ class StartPage(QWidget):
         controller.create_database_from_text()
 
     def show_update(self, version: str, url: str) -> None:
-        palette = self.palette()
-        color = palette.color(palette.ColorRole.Link).name()
         message = tr.TR_UPDATE_AVAILABLE.format(version=version)
-        self._update_label.setText(f'<a href="{url}" style="color:{color}; text-decoration:none;">{message}</a>')
+        highlight = self.palette().color(QPalette.ColorRole.Highlight)
+        bg = QColor(highlight)
+        bg.setAlpha(8)
+
+        self._update_label.setText(
+            f'<a href="{url}" style="text-decoration:none; color:{highlight.name()};">{message}</a>'
+        )
+        self._update_label.setStyleSheet(f"""
+            QLabel {{
+                background-color: {bg.name(QColor.NameFormat.HexArgb)};
+                padding: 8px 16px;
+            }}
+        """)
+        self._update_label.setMinimumWidth(400)
         self._update_label.show()

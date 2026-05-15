@@ -158,12 +158,12 @@ class StatusBar(QWidget):
             color_fn=lambda: get_theme_manager().current_scheme.editor.get(EditorColorRole.FOREGROUND),
         )
         self._block_pill.hide()
-        layout.addWidget(self._block_pill)
 
         self._run_pill = RunPill()
         self._run_pill.clicked.connect(self._on_run_clicked)
 
         layout.addWidget(self._line_col_label)
+        layout.addWidget(self._block_pill)
         layout.addWidget(self._pipeline_pill)
         layout.addWidget(self._symbol_mode_label)
         layout.addWidget(self._run_pill)
