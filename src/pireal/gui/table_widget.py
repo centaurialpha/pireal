@@ -16,14 +16,11 @@
 # along with Pireal; If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt6.QtCore import (
-    QEvent,
-    QSize,
     Qt,
     pyqtSignal,
     pyqtSlot,
 )
 from PyQt6.QtGui import (
-    QColor,
     QPalette,
 )
 from PyQt6.QtWidgets import (
@@ -32,7 +29,6 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QSplitter,
     QStackedWidget,
-    QToolButton,
     QVBoxLayout,
     QWidget,
 )
@@ -41,8 +37,6 @@ from pireal import translations as tr
 from pireal.core.relation import Relation
 from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.model_view_delegate import create_view
-from pireal.gui.theme.manager import get_theme_manager
-from pireal.gui.theme.schema import EditorColorRole
 from pireal.gui.widgets import ClickablePill, TogglePill
 from pireal.registry import Registry
 
@@ -168,10 +162,7 @@ class TableWidget(QWidget):
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
         lateral_widget.resultClicked.connect(self._on_result_list_clicked)
 
-        self._refresh_icons()
-
     def show_relation_at(self, index: int) -> None:
-        # self._stacked.setCurrentIndex(index)
         if index < 0 or index >= len(self._pending_relations):
             return
         relation, editable = self._pending_relations[index]
@@ -181,22 +172,6 @@ class TableWidget(QWidget):
             self._relation_widgets[relation.name] = view
             self._stacked.addWidget(view)
         self._stacked.setCurrentWidget(self._relation_widgets[relation.name])
-
-    def _make_toggle_btn(self, label: str) -> QToolButton:
-        btn = QToolButton()
-        btn.setText(label)
-        btn.setCheckable(True)
-        btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly)
-        btn.setFixedHeight(22)
-
-        return btn
-
-    def _make_tool_btn(self, tooltip: str, size: int = 16) -> QToolButton:
-        btn = QToolButton()
-        btn.setToolTip(tooltip)
-        btn.setIconSize(QSize(size, size))
-        btn.setFixedSize(28, 28)
-        return btn
 
     @pyqtSlot(bool)
     def _on_relations_toggled(self, checked: bool) -> None:
@@ -216,78 +191,11 @@ class TableWidget(QWidget):
         if checked and self._stacked.isVisible():
             self._splitter.setSizes([1, 1])
 
-    def changeEvent(self, a0: QEvent | None) -> None:
-        super().changeEvent(a0)
-        if a0 is not None and a0.type() == QEvent.Type.PaletteChange:
-            self._refresh_icons()
-
-    def _refresh_icons(self) -> None:
-        success = get_theme_manager().current_scheme.editor.get(EditorColorRole.SUCCESS)
-
-        hover = self.palette().color(self.palette().ColorRole.Highlight)
-        hover.setAlpha(35)
-        # hover_hex = hover.name(QColor.NameFormat.HexArgb)
-
-        # tool_btn_style = f"""
-        #     QToolButton {{
-        #         border: none;
-        #         border-radius: 4px;
-        #         background: transparent;
-        #     }}
-        #     QToolButton:hover {{
-        #         background-color: {hover_hex};
-        #     }}
-        #     QToolButton:checked {{
-        #         background-color: {hover_hex};
-        #     }}
-        # """
-
-        highlight = self.palette().color(QPalette.ColorRole.Highlight)
-        highlight.setAlpha(35)
-        highlight_hex = highlight.name(QColor.NameFormat.HexArgb)
-        highlight_checked = self.palette().color(QPalette.ColorRole.Highlight)
-        highlight_checked.setAlpha(70)
-        highlight_checked_hex = highlight_checked.name(QColor.NameFormat.HexArgb)
-        fg = self.palette().color(QPalette.ColorRole.ButtonText).name()
-        fg_dim = self.palette().color(QPalette.ColorRole.PlaceholderText).name()
-
-        pill_style = f"""
-            QToolButton {{
-                border: none;
-                border-radius: 10px;
-                padding: 0px 8px;
-                color: {fg_dim};
-                background: transparent;
-                font-size: 11px;
-            }}
-            QToolButton:hover {{
-                background-color: {highlight_hex};
-                color: {fg};
-            }}
-            QToolButton:checked {{
-                background-color: {highlight_checked_hex};
-                color: {fg};
-            }}
-        """
-        self._pill_relations.setStyleSheet(pill_style)
-        self._pill_results.setStyleSheet(pill_style)
-        success_bg = QColor(success)
-        success_bg.setAlpha(45)
-        success_hover = QColor(success)
-        success_hover.setAlpha(70)
-
     @pyqtSlot()
     def _on_run_queries(self):
         from pireal.gui.controller import Controller
 
         Registry.get("controller", Controller).execute_queries()
-
-    def _on_split_toggled(self, checked: bool):
-        if checked:
-            self._stacked_results.show()
-            self._splitter.setSizes([1, 1])
-        else:
-            self._stacked_results.hide()
 
     def toggle_split(self):
         self._pill_results.set_checked(not self._pill_results.is_checked)
