@@ -86,6 +86,25 @@ class Pill(QWidget):
         painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._text)
 
 
+class TextPill(Pill):
+    def paintEvent(self, a0) -> None:
+        _ = a0
+
+        if not self._text:
+            return
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        color = self._color_fn()
+        bg = QColor(color)
+        bg.setAlpha(15)
+        painter.setBrush(bg)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.drawRoundedRect(self.rect(), self._radius, self._radius)
+
+        painter.setPen(color)
+        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._text)
+
+
 class ClickablePill(Pill):
     """
     Pill that emits clicked and shows hover feedback
@@ -194,7 +213,7 @@ class TogglePill(ClickablePill):
 
         text_color = QColor(color)
         text_color.setAlpha(255 if self._checked else 140)
-        painter.setPen(text_color)
+        painter.setPen(color)
         painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._text)
 
 

@@ -37,6 +37,8 @@ from pireal import translations as tr
 from pireal.core.relation import Relation
 from pireal.gui.lateral_widget import LateralWidget
 from pireal.gui.model_view_delegate import create_view
+from pireal.gui.theme.manager import get_theme_manager
+from pireal.gui.theme.schema import EditorColorRole
 from pireal.gui.widgets import (
     ClickablePill,
     TogglePill,
@@ -113,14 +115,11 @@ class TableWidget(QWidget):
 
         # Toolbar
         toolbar = QHBoxLayout()
-        toolbar.setContentsMargins(0, 0, 0, 0)
+        toolbar.setContentsMargins(0, 0, 6, 0)
         toolbar.addStretch()
 
         self._pill_relations = TogglePill(tr.TR_RELATIONS, checked=True)
         self._pill_results = TogglePill(tr.TR_RESULTS, checked=False)
-
-        self._pill_relations.toggled.connect(self._on_relations_toggled)
-        self._pill_results.toggled.connect(self._on_results_toggled)
 
         toolbar.addWidget(self._pill_relations)
         toolbar.addSpacing(1)
@@ -136,9 +135,9 @@ class TableWidget(QWidget):
         palette.setColor(QPalette.ColorRole.Window, color)
         sep.setPalette(palette)
         toolbar.addWidget(sep)
-        toolbar.addSpacing(4)
+        toolbar.addSpacing(6)
 
-        secondary_color = lambda: self.palette().color(QPalette.ColorRole.PlaceholderText)  # noqa
+        secondary_color = lambda: get_theme_manager().current_scheme.editor.get(EditorColorRole.FOREGROUND)  # noqa
 
         self._pill_sql = ClickablePill(secondary_color, "SQL")
         self._pill_sql.clicked.connect(self.sqlRequested.emit)
@@ -163,7 +162,10 @@ class TableWidget(QWidget):
         self._show_placeholder()
 
         lateral_widget = Registry.get("lateral-widget", LateralWidget)
+
         lateral_widget.resultClicked.connect(self._on_result_list_clicked)
+        self._pill_relations.toggled.connect(self._on_relations_toggled)
+        self._pill_results.toggled.connect(self._on_results_toggled)
 
     def show_relation_at(self, index: int) -> None:
         if index < 0 or index >= len(self._pending_relations):
