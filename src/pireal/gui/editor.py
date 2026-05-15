@@ -182,6 +182,7 @@ class BracketHighlighter:
 class Editor(QPlainTextEdit):
     errorOccurred = pyqtSignal(int, str)
     errorCleared = pyqtSignal()
+    currentBlockChanged = pyqtSignal(str)
 
     def __init__(self, pfile=None):
         super().__init__()
@@ -194,6 +195,8 @@ class Editor(QPlainTextEdit):
 
         self._error_line = -1
         self._error_message = ""
+
+        self._last_block_name: str = ""
 
         theme_manager = get_theme_manager()
         theme_manager.themeChanged.connect(self._on_theme_changed)
@@ -271,6 +274,27 @@ class Editor(QPlainTextEdit):
             self.add_selection("parenthesis", bracket_selections)
         else:
             self.clear_selections("parenthesis")
+
+        block_name = self._current_block_name()
+        if block_name != self._last_block_name:
+            self._last_block_name = block_name
+            self.currentBlockChanged.emit(block_name)
+
+    def _current_block_name(self) -> str:
+        if not self._query_blocks:
+            return ""
+
+        cursor_line = self.textCursor().blockNumber()
+        doc = self.document()
+        if doc is None:
+            return ""
+        for start, end, _ in self._query_blocks:
+            if start <= cursor_line <= end:
+                text = doc.findBlockByLineNumber(start).text().strip()
+                # formato: "nombre :="
+                if ":=" in text:
+                    return text.split(":=")[0].strip()
+        return ""
 
     def _apply_theme(self, scheme: ColorScheme):
         """Aplica un ColorScheme al editor."""

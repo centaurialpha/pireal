@@ -147,6 +147,8 @@ class QueryWidget(QWidget):
 
     def _on_tab_changed(self, index: int) -> None:
         status_bar = Registry.get("status-bar", StatusBar)
+        status_bar.set_current_block("")
+
         widget = self._editor_tabs.widget(index)
         if isinstance(widget, EditorWidget):
             cursor = widget.editor.textCursor()
@@ -190,6 +192,9 @@ class QueryWidget(QWidget):
         )
         editor_widget.editor.errorCleared.connect(lambda: status_bar.show_message("", timeout=0))
         editor_widget.editor.cursorPositionChanged.connect(lambda: self._on_cursor_moved(editor_widget))
+        editor_widget.editor.currentBlockChanged.connect(
+            lambda name: self._on_editor_block_changed(editor_widget, name)
+        )
 
         tab_text = editor_widget.file.display_name
         index = self._editor_tabs.addTab(editor_widget, tab_text)
@@ -199,6 +204,12 @@ class QueryWidget(QWidget):
         # sync completer
         db = Registry.get("db", DB)
         self.update_completer(list(db.relations_dict().keys()))
+
+    def _on_editor_block_changed(self, editor_widget: "EditorWidget", name: str) -> None:
+        if editor_widget == self.current_editor():
+            from pireal.gui.status_bar import StatusBar
+
+            Registry.get("status-bar", StatusBar).set_current_block(name)
 
     def create_editor(self, file: File | None = None) -> "EditorWidget":
         editor = EditorWidget()
