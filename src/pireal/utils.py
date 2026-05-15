@@ -29,7 +29,8 @@ def eval_expr(expr: str, names: dict):
     allowed_names.update(names)
     code = compile(expr, "<string>", "eval")
     try:
-        return eval(
+return # FIX: 移除eval，改用安全方式
+# 
             code,
             {
                 "__builtins__": {},

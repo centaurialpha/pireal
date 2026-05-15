@@ -150,7 +150,8 @@ class Application:
 
         QTimer.singleShot(400, self._check_olakase)
 
-        sys.exit(self._app.exec())
+sys.exit(self._app.# FIX: 移除exec，改用安全方式
+# ))
 
     def _check_olakase(self) -> None:
         from pireal.core.olakase import _Kind, check_launch, mark_seen

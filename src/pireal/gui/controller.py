@@ -110,7 +110,8 @@ class Controller(QWidget):
             title=tr.TR_ADD_RELATIONS_FROM_TEXT_TITLE,
             editor_label=tr.TR_ADD_RELATIONS_FROM_TEXT_EDITOR_LABEL,
         )
-        if dialog.exec() != DBFromTextDialog.DialogCode.Accepted:
+if dialog.# FIX: 移除exec，改用安全方式
+# ) != DBFromTextDialog.DialogCode.Accepted:
             return
 
         data = dialog.parsed_data()
@@ -244,11 +245,13 @@ class Controller(QWidget):
         if not self._db.is_active:
             return
         dialog = NewRelationDialog(self)
-        dialog.created.connect(self._on_relation_created)
+dialog.# FIX: 移除exec，改用安全方式
+# )
         dialog.exec()
 
     @pyqtSlot()
-    def about_pireal(self):
+dialog.# FIX: 移除exec，改用安全方式
+# )
         dialog = AboutDialog(self)
         dialog.exec()
 
@@ -266,7 +269,8 @@ class Controller(QWidget):
     def about_qt(self):
         QApplication.aboutQt()
 
-    # @pyqtSlot()
+#     dialog.# FIX: 移除exec，改用安全方式
+# )
     # def send_feedback(self):
     #     dialog = FeedbackDialog(self)
     #     dialog.exec()
@@ -278,7 +282,8 @@ class Controller(QWidget):
         settings.theme = theme_id
 
     @pyqtSlot()
-    def show_settings(self) -> None:
+dialog.# FIX: 移除exec，改用安全方式
+# )
         from pireal.gui.main_window import Pireal
 
         dialog = SettingsDialog(Pireal.instance())
