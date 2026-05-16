@@ -1,12 +1,22 @@
+.pi-page {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh - 5.6rem);
+}
+
 .pi-hero {
-  background: #1e2129;
-  padding: 3rem 2rem 4rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--pireal-header-bg);
+  padding: 2rem;
 }
 
 .pi-hero__inner {
   text-align: center;
   max-width: 760px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .pi-hero__title {
@@ -18,47 +28,37 @@
   line-height: 1.05;
 }
 
-.pi-symbol {
-  color: #3465a4;
-}
-
-.pi-badges {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  margin-bottom: 2rem;
-}
-
-.pi-badges img {
-  height: 20px;
-}
-
 .pi-hero__subtitle {
   font-size: 1.25rem;
-  margin: 0 0 0.5rem;
+  margin: 0 0 1.5rem;
   color: var(--md-default-fg-color--light);
   line-height: 1.5;
 }
 
-.pi-hero__subtitle strong {
-  color: var(--md-default-fg-color);
-  font-weight: 600;
-}
-
-.pi-hero__desc {
-  font-size: 0.95rem;
-  color: var(--md-default-fg-color--lighter);
-  margin: 0 0 1.5rem;
-  line-height: 1.7;
-}
-
-/* Buttons */
 .pi-hero__buttons {
   display: flex;
   gap: 0.75rem;
   justify-content: center;
   flex-wrap: wrap;
   margin-bottom: 1.25rem;
+}
+
+.pi-btn-download,
+.md-typeset a.pi-btn-download,
+.md-typeset a.pi-btn-download:hover {
+  background: var(--pireal-accent) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.6rem 1.6rem;
+  border-radius: 0.25rem;
+  border: none !important;
+  transition: opacity 0.15s;
+}
+
+.pi-btn-download:hover,
+.md-typeset a.pi-btn-download:hover {
+  opacity: 0.88;
 }
 
 .pi-btn-secondary {
@@ -76,7 +76,6 @@
   color: #ffffff !important;
 }
 
-/* Version line */
 .pi-hero__version {
   font-size: 0.78rem;
   color: var(--md-default-fg-color--lighter);
@@ -99,22 +98,18 @@
   margin-bottom: 0.15em;
 }
 
-.pi-btn-download,
-.md-typeset a.pi-btn-download,
-.md-typeset a.pi-btn-download:hover {
-  background: #3465a4 !important;
-  color: #ffffff !important;
-  font-weight: 600;
-  font-size: 0.9rem;
-  padding: 0.6rem 1.6rem;
-  border-radius: 0.25rem;
-  border: none !important;
-  transition: opacity 0.15s;
+.pi-story {
+  padding: 2rem;
+  border-top: 1px solid var(--md-default-fg-color--lightest);
 }
 
-.pi-btn-download:hover,
-.md-typeset a.pi-btn-download:hover {
-  opacity: 0.88;
+.pi-story__inner {
+  max-width: 760px;
+  margin: 0 auto;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  text-align: center;
 }
 
 @media screen and (max-width: 45em) {
