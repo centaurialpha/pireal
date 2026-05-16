@@ -11,6 +11,9 @@ COPY overrides/ overrides/
 
 RUN uv sync --group docs --frozen --no-install-project
 
+ARG DOCS_VERSION=dev
+ENV DOCS_VERSION=$DOCS_VERSION
+
 RUN uv run --no-project mkdocs build --strict
 
 FROM nginx:alpine
