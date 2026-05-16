@@ -1,29 +1,22 @@
-:root {
-  --md-primary-fg-color: #1e2129;
-  --md-primary-bg-color: #ffffff;
-  --md-accent-fg-color:  #3465a4;
-}
+[data-md-color-scheme="slate"] {
+  /* Header / nav bar */
+  --md-primary-fg-color:        #1e2129;
+  --md-primary-bg-color:        #ffffff;
 
-.md-typeset a {
-  color: #3465a4 !important;
+  /* Accent: indigo */
+  --md-accent-fg-color:         #3465a4;
+
+  /* Links en el cuerpo del texto */
+  --md-typeset-a-color:         #818cf8;  /* indigo-400, más legible sobre fondo oscuro */
+
+  /* Color de énfasis hover: deep purple: */
+  --pireal-accent-hover:        #7c3aed;
+
+  /* Expone el accent para home.css */
+  --pireal-accent:              #3465a4;
+  --pireal-header-bg:           #1e2129;
 }
 
 .md-typeset a:hover {
-  color: #7c3aed !important;
-}
-
-.md-typeset .admonition.success p a {
-  color: #7c3aed !important;
-}
-
-/* Link color activo en la nav lateral */
-.md-nav__link--active,
-.md-nav__link[aria-current="page"] {
-  color: #3465a4 !important;
-  font-weight: bold;
-}
-
-/* Links normales de la nav lateral */
-.md-nav__link {
-  color: var(--md-default-fg-color) !important;
+  color: var(--pireal-accent-hover);
 }

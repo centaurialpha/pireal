@@ -10,8 +10,14 @@
                         other: "Descargar",
                         getstarted: "Primeros pasos",
                         license: "Libre y de código abierto",
-                        subtitle: 'Un intérprete de <strong>Álgebra Relacional</strong> para aprender bases de datos desde cero.',
-                        desc: "Escribí consultas, explorá resultados, visualizá el árbol de sintaxis y generá SQL equivalente, sin instalar un motor de base de datos.",
+                        subtitle: "Un entorno práctico para el álgebra relacional.",
+                        story: `Pireal nació en 2015 por pura frustración. La herramienta estándar para álgebra
+                                relacional en la universidad era WinRDBI, escrita en Java, solo para Windows. Como
+                                usuario de Linux, eso no era una opción. Con experiencia en Python y Qt, la respuesta
+                                natural fue construir algo. Lo más difícil no fue la interfaz, fue entender cómo
+                                funcionan los intérpretes: scanners, lexers, parsers, ASTs. Ese desafío se convirtió
+                                en el mayor logro, construir Pireal enseñó más sobre cómo funcionan las computadoras
+                                que cualquier otra cosa.`,
                 },
                 en: {
                         windows: "Download for Windows",
@@ -20,8 +26,13 @@
                         other: "Download",
                         getstarted: "Get started",
                         license: "Free and open source",
-                        subtitle: 'A <strong>Relational Algebra</strong> interpreter for learning databases from the ground up.',
-                        desc: "Write queries, explore results, visualize the syntax tree and generate equivalent SQL, without installing a database engine.",
+                        subtitle: "A hands-on environment for relational algebra.",
+                        story: `Pireal was born in 2015 out of frustration. Back then, the standard tool for relational
+                                algebra practice at university was WinRDBI, Java-based, Windows-only. As a Linux user,
+                                that wasn't an option. With a background in Python and Qt, the natural response was to
+                                build something. The hardest part wasn't the interface, it was understanding how
+                                interpreters work: scanners, lexers, parsers, ASTs. That challenge became the biggest
+                                reward, building Pireal taught more about how computers actually work than anything else.`,
                 },
         };
 
@@ -72,7 +83,7 @@
                 const t = STRINGS[lang];
 
                 setText("pi-subtitle", t.subtitle);
-                setText("pi-desc", t.desc);
+                setText("pi-story-text", t.story);
                 setText("pi-getstarted-text", t.getstarted);
                 setText("pi-license-text", t.license);
                 setText("pi-download-text", t[os] || t.other);

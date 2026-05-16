@@ -17,47 +17,58 @@
   }
 </style>
 
-<section class="pi-hero">
-  <div class="pi-hero__inner md-typeset">
+<div class="pi-page">
 
-    <h1 class="pi-hero__title">
-      <img src="../images/pireal_logo-white.png" class="pi-hero__logo" alt="pireal">
-    </h1>
+  <section class="pi-hero">
+    <div class="pi-hero__inner md-typeset">
 
-    <p class="pi-hero__subtitle" id="pi-subtitle">
-      Un intérprete de <strong>Álgebra Relacional</strong>
-      para aprender bases de datos desde cero.
-    </p>
+      <h1 class="pi-hero__title">
+        <img src="{{ base_url }}/images/pireal_logo-white.png" class="pi-hero__logo" alt="pireal">
+      </h1>
 
-    <p class="pi-hero__desc" id="pi-desc">
-      Escribí consultas, explorá resultados, visualizá el árbol de sintaxis
-      y generá SQL equivalente, sin instalar un motor de base de datos.
-    </p>
+      <p class="pi-hero__subtitle" id="pi-subtitle">
+        A hands-on environment for relational algebra.
+      </p>
 
-    <div class="pi-hero__buttons">
-      <a id="pi-download-btn"
-         href="https://github.com/centaurialpha/pireal/releases/latest"
-         class="md-button pi-btn-download">
-        <span id="pi-download-text">Descargar</span>
-      </a>
-      <a href="getting-started/"
-         class="md-button pi-btn-secondary">
-        <span id="pi-getstarted-text">Primeros pasos</span>
-      </a>
+      <div class="pi-hero__buttons">
+        <a id="pi-download-btn"
+           href="https://github.com/centaurialpha/pireal/releases/latest"
+           class="md-button pi-btn-download">
+          <span id="pi-download-text">Download</span>
+        </a>
+        <a href="{{ base_url }}/getting-started/"
+           class="md-button pi-btn-secondary">
+          <span id="pi-getstarted-text">Get started</span>
+        </a>
+      </div>
+
+      <p class="pi-hero__version">
+        v<strong>{{ config.extra.version }}</strong>
+        &nbsp;·&nbsp;
+        <span id="pi-license-text">Free and open source</span>
+        &nbsp;·&nbsp;
+        <a href="{{ config.repo_url }}/blob/main/LICENSE">GPL v3</a>
+      </p>
+
     </div>
+  </section>
 
-    <p class="pi-hero__version">
-      v<strong>{{ config.extra.version | default("4.0.0") }}</strong>
-      &nbsp;·&nbsp;
-      <span id="pi-license-text">Libre y de código abierto</span>
-      &nbsp;·&nbsp;
-      <a href="{{ config.repo_url }}/blob/main/LICENSE">GPL v3</a>
-    </p>
+  <section class="pi-story">
+    <div class="pi-story__inner md-typeset">
+      <p id="pi-story-text">
+        Pireal was born in 2015 out of frustration. Back then, the standard tool for relational
+        algebra practice at university was WinRDBI, Java-based, Windows-only. As a Linux user,
+        that wasn't an option. With a background in Python and Qt, the natural response was to
+        build something. The hardest part wasn't the interface, it was understanding how
+        interpreters work: scanners, lexers, parsers, ASTs. That challenge became the biggest
+        reward, building Pireal taught more about how computers actually work than anything else.
+      </p>
+    </div>
+  </section>
 
-  </div>
-</section>
+</div>
 
-<script src="../javascripts/download.js"></script>
+<script src="{{ base_url }}/javascripts/download.js"></script>
 
 {% endblock %}
 
